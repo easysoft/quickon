@@ -1,0 +1,33 @@
+#!/bin/bash
+
+# ==================
+# PHP
+# ==================
+# Set environments for php-fpm
+export PHP_DEBUG=${PHP_DEBUG:-2}
+export MYSQL_HOST=${MYSQL_HOST:-127.0.0.1}
+export MYSQL_PORT=${MYSQL_PORT:-3306}
+export MYSQL_DB=${MYSQL_DB:-qucheng}
+export MYSQL_USER=${MYSQL_USER:-root}
+export MYSQL_PASSWORD=${MYSQL_PASSWORD:-pass4Qucheng}
+export MAXWAIT=${MAXWAIT:-30}
+
+# Set php-fpm parameter
+export PM_MAX_CHILDREN=${PM_MAX_CHILDREN:-5}
+export PM_START_NUM=${PM_START_NUM:-1}
+export PM_MIN_SPARE_NUM=${PM_MIN_SPARE_NUM:-1}
+export PM_MAX_SPARE_NUM=${PM_MAX_SPARE_NUM:-1}
+export PM_MAX_REQUESTS=${PM_MAX_REQUESTS:-512}
+
+# ==================
+# Nginx
+# ==================
+# Set nginx config
+export NGINX_WORKER_NUM=${NGINX_WORKER_NUM:-auto}
+export NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-32m}
+
+
+export QUCHENG_DATA_LIST="
+/data/php/session
+/data/php/logs
+/data/qucheng/www/data"

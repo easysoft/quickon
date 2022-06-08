@@ -1,0 +1,13 @@
+#!/bin/bash
+
+[ -n "${DEBUG:+1}" ] && set -x
+
+if [ -f "/etc/cron.d/www-data" ];then
+    /usr/bin/crontab -u www-data /etc/cron.d/www-data
+fi
+
+if [ -f "/etc/cron.d/root" ];then
+    /usr/bin/crontab -u root /etc/cron.d/root
+fi
+
+exec cron -f

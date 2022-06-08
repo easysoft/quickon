@@ -1,0 +1,16 @@
+.overview-container .cne-status-text {font-size: 16px; font-weight: 700; padding: 5px;}
+.overview-container h3 {font-size: 18px; font-weight: 700; margin-top: 10px;}
+.overview-container .col-left {width: 140px;}
+.overview-container .tile-title {color: #a0a0a0; font-size: 18px;}
+.overview-container .col-right .tiles {border-left: 1px solid #e5e8ec;}
+.overview-container .col-right .tile {width: 25%;}
+.overview-container .progress-group{margin-top: 25px;}
+.instance-container table thead tr {background-color: #dddddd;}
+.instance-container.cell {padding: 10px 20px 20px 20px;}
+.instance-container h3 {font-size: 18px; font-weight: 700; margin-top: 10px;}
+.instance-container .instance-status span{padding-left: 5px;}
+.instance-container .progress-group{margin-top: 0;}
+.instance-container .progress{margin-bottom: 0;}
+.dynamic-container {max-height: calc(100vh - 100px); overflow: scroll;}
+.dynamic-container h3 {font-size: 18px; font-weight: 700; margin-top: 10px;}
+.dynamic-container .panel-body {padding-top: 0;}

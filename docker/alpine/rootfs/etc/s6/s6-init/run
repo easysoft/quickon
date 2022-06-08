@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+
+[ -n "${DEBUG:+1}" ] && set -x
+
+# Load libraries
+. /opt/easysoft/scripts/liblog.sh
+. /opt/easysoft/scripts/libmysql.sh
+. /opt/easysoft/scripts/libfs.sh
+
+# Load Apache/PHP//ZenDAS environment variables
+. /etc/s6/s6-init/envs
+
+#=====================#
+# Init php-fpm config #
+#=====================#
+PHP_FPM_CFG="/usr/local/etc/php-fpm.d/www.conf"
+envsubst < ${PHP_FPM_CFG}.tpl > ${PHP_FPM_CFG}
+
+#===================#
+# Init nginx config #
+#===================#
+NGINX_MAIN_CFG="/etc/nginx/nginx.conf"
+NGINX_SITE_CFG="/etc/nginx/http.d/qucheng.conf"
+
+# /etc/nginx/nginx.conf
+sed -i "s/__NGINX_WORKER_NUM__/${NGINX_WORKER_NUM}/" $NGINX_MAIN_CFG
+sed -i "s/__NGINX_MAX_BODY_SIZE__/${NGINX_MAX_BODY_SIZE}/" $NGINX_MAIN_CFG $NGINX_SITE_CFG
+
+
+#=====================================#
+# Persistence directory for qucheng   #
+#=====================================#
+for dir in $QUCHENG_DATA_LIST
+do
+    # Ensure a directory exists and,is owned by the given user
+    ensure_dir_exists "$dir" "www-data"
+
+    if [ "$dir" == "/data/qucheng/www/data" ];then
+        # clear data directory in source code
+        [ -d /apps/qucheng/www/data ] && rm -rf /apps/qucheng/www/data
+
+        # make soft link /data/qucheng/www/data ---> /apps/qucheng/www/data
+        ln -s "$dir" /apps/qucheng/www/
+    fi
+done
+
+# Check and waiting mysql to be ready
+wait_for_mysql || exit 1
+
+# First run,init database
+if [ ! -f "/data/.initdb" ];then
+    # Initialize qucheng database
+    mysql_init_db "$MYSQL_DB"
+
+    # Import qucheng data
+    mysql_import_to_db "$MYSQL_DB" "/apps/qucheng/db/data.sql" && touch /data/.initdb
+fi

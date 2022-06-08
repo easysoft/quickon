@@ -1,0 +1,37 @@
+{
+    "gogs": {
+        "arch": "amd64",
+        "digest": "94e472efc3f04c4e3c2f3796fbeafdc7ccf0141544a984309ec84d09175c0853",
+        "distro": "alpine-3.15",
+        "type": "QUCHENG",
+        "version": "1.14.0-7"
+    },
+    "zentao": {
+        "arch": "amd64",
+        "digest": "18b2cca1e73380a4224f46732f4d9ea846a14ec28b462995cbc5e9db19a9407e",
+        "distro": "alpine",
+        "type": "QUCHENG",
+        "version": "3.0"
+    },
+    "render-template": {
+        "arch": "amd64",
+        "digest": "97c2ae4b001c5937e888b920bee7b1a40a076680caac53ded6d10f6207d54565",
+        "distro": "debian-10",
+        "type": "QUCHENG",
+        "version": "1.0.1-10"
+    },
+    "wait-for-port": {
+        "arch": "amd64",
+        "digest": "35c818ba3f4b5aae905959bc7d3a5e81fc63786e3c662b604612c0aa7fcda8fd",
+        "distro": "debian-10",
+        "type": "QUCHENG",
+        "version": "1.0.1-10"
+    },
+    "yq": {
+        "arch": "amd64",
+        "digest": "bdae511963f6a46ad128f41f9a6f2eec8c56fbb4929619fcd54232edfec6209e",
+        "distro": "debian-10",
+        "type": "QUCHENG",
+        "version": "4.24.5-0"
+    }
+}

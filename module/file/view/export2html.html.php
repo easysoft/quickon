@@ -1,0 +1,68 @@
+<?php
+/**
+ * The export2html view file of file module of QuCheng.
+ *
+ * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
+ * @author      Jianhua Wang <wangjianhua@easycorp.ltd>
+ * @package     file
+ * @version     $Id$
+ * @link        https://www.qucheng.cn
+ */
+?>
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+<meta http-equiv='Content-Type' content='text/html; charset=utf-8' />
+<style>
+table, th, td {font-size: 12px; border: 1px solid gray; border-collapse: collapse;}
+table th, table td {padding: 5px;}
+</style>
+<title><?php echo $fileName;?></title>
+<body>
+<?php if($this->post->kind == 'task') echo "<font color='red'>" . $this->lang->file->childTaskTips . '</font>';?>
+<table>
+  <tr>
+  <?php
+  foreach($fields as $fieldLabel)
+  {
+      echo "<th><nobr>$fieldLabel</nobr></th>\n";
+  }
+  ?>
+  </tr>
+<?php
+$rowspans = $this->post->rowspan ? $this->post->rowspan : array();
+$colspans = $this->post->colspan ? $this->post->colspan : array();
+$i = 0;
+foreach($rows as $row)
+{
+    echo "<tr valign='top'>\n";
+    $col        = 0;
+    $endColspan = 0;
+    foreach($fields as $fieldName => $fieldLabel)
+    {
+        $col ++;
+        if(!empty($endColspan) and $col < $endColspan) continue;
+        if(isset($endRowspan[$fieldName]) and $i < $endRowspan[$fieldName]) continue;
+        $fieldValue = isset($row->$fieldName) ? $row->$fieldName : '';
+        $rowspan = '';
+        if(isset($rowspans[$i]) and isset($rowspans[$i]['rows'][$fieldName]))
+        {
+            $rowspan = "rowspan='{$rowspans[$i]['rows'][$fieldName]}'";
+            $endRowspan[$fieldName] = $i + $rowspans[$i]['rows'][$fieldName];
+        }
+        $colspan = '';
+        if(isset($colspans[$i]) and isset($colspans[$i]['cols'][$fieldName]))
+        {
+            $colspan = "colspan='{$colspans[$i]['cols'][$fieldName]}'";
+            $endColspan = $col + $colspans[$i]['cols'][$fieldName];
+        }
+        echo "<td $rowspan $colspan><nobr>$fieldValue</nobr></td>\n";
+
+    }
+    echo "</tr>\n";
+    $i++;
+}
+?>
+</table>
+</body>
+</html>

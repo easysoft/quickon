@@ -1,0 +1,12 @@
+#dropMenu .col-left {padding-bottom: 0;}
+#cardsContainer .panel a:hover {color: #0b89b2;}
+#cardsContainer .row {min-height: calc(100vh - 160px);}
+#cardsContainer .panel-heading {padding-right: 20px;}
+#cardsContainer .instance-name {font-size: 18px; font-weight: 700; display: inline-block; padding: 8px 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle;}
+#cardsContainer .instance-detail {height: 80px;}
+#cardsContainer .instance-logo {float: left;}
+#cardsContainer .instance-logo img {width: 80px; height: 80px;}
+#cardsContainer .instance-desc {float: left; padding-left: 20px; width: calc(100% - 80px);}
+#cardsContainer .instance-desc {display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;}
+#cardsContainer .instance-footer {height: 50px; padding: 10px 20px; font-size: 14px; font-weight: bold;}
+#cardsContainer .instance-footer span {display: inline-block; margin: 0 10px;}

@@ -1,0 +1,65 @@
+<?php
+/**
+ * The model file of store module of QuCheng.
+ *
+ * @copyright Copyright 2021-2022 北京渠成软件有限公司(Beijing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @license   ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
+ * @author    Jianhua Wang <wangjanhua@easycorp.ltd>
+ * @package   store
+ * @version   $Id$
+ * @link      https://www.qucheng.cn
+ */
+class storeModel extends model
+{
+    /**
+     * Get switcher of browse page of store.
+     *
+     * @access public
+     * @return string
+     */
+    public function getBrowseSwitcher()
+    {
+        $title = $this->lang->store->cloudStore;
+
+        if($this->config->cloud->api->switchChannel) $title .= '（' . ($this->config->cloud->api->channel == 'stable' ? $this->lang->store->stableChannel : $this->lang->store->testChannel) . '）';
+
+        $output  = "<div class='btn-group header-btn'>";
+
+        if($this->config->cloud->api->switchChannel)
+        {
+            $stableActive = $this->config->cloud->api->channel == 'stable' ? 'active' : '';
+            $testActive   = $this->config->cloud->api->channel != 'stable' ? 'active' : '';
+
+            $output .= "<a href='javascript:;' class='btn'  data-toggle='dropdown'>{$title}<span class='caret' style='margin-bottom: -1px;margin-left:5px;'></span></a>";
+            $output .= "<ul class='dropdown-menu'>";
+            $output .= "<li class='{$stableActive}'>" . html::a(helper::createLink('store', 'browse', 'recTotal=0&perPage=20&pageID=1&channel=stable'), $this->lang->store->stableChannel) ."</li>";
+            $output .= "<li class='{$testActive}'>" . html::a(helper::createLink('store', 'browse', 'recTotal=0&perPage=20&pageID=1&channel=test'), $this->lang->store->testChannel) ."</li>";
+            $output .= "</ul>";
+        }
+        else
+        {
+            $output .= "<a href='javascript:;' class='btn'  data-toggle='dropdown'>{$title}</a>";
+        }
+
+        $output .= "</div>";
+
+        return $output;
+    }
+
+    /**
+     * Get switcher of app view page of store.
+     *
+     * @param  object $app
+     * @access public
+     * @return string
+     */
+    public function getAppViewSwitcher($app)
+    {
+        $output  = $this->getBrowseSwitcher();
+        $output .= "<div class='btn-group header-btn'>";
+        $output .= html::a(helper::createLink('store', 'appview', "id=$app->id"), $app->alias, '', 'class="btn"');
+        $output .= "</div>";
+
+        return $output;
+    }
+}

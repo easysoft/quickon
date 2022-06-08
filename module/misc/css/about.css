@@ -1,0 +1,5 @@
+#mainContent {padding-top: 50px !important;}
+#mainContent .main-header {display: none;}
+#mainContent .copyright {line-height: 20px;}
+#mainContent .copyright a {vertical-align: baseline;}
+.about-logo {border-radius: 10px;}

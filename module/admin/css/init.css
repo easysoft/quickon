@@ -1,0 +1,10 @@
+body {
+    background: #0b89b2 -webkit-gradient(linear, right top, left top, from(#10d4ff), to(#0b89b2))!important;
+    background: #0b89b2 -webkit-linear-gradient(right, #10d4ff0, #0b89b2 100%)!important;
+    background: #0b89b2 -o-linear-gradient(right, #10d4ff0, #0b89b2 100%)!important;
+    background: #0b89b2 linear-gradient(-90deg, #10d4ff 0, #0b89b2 100%)!important;
+}
+div .modal-dialog {width: 50%; margin-top: 10%;}
+.modal-body table tr th {text-align: right}
+div.modal-header {position: relative;}
+.modal-header strong {font-size: 18px; padding-left: 30px;}
