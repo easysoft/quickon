@@ -48,7 +48,7 @@
                 <div class='app-logo'>
                   <?php echo html::image($cloudApp->logo ? $cloudApp->logo : '', "referrer='origin'");?>
                 </div>
-                <p class="app-desc"><?php echo $cloudApp->desc;?>&nbsp;</p>
+                <p class="app-desc"><?php echo $cloudApp->introduction;?>&nbsp;</p>
               </div>
             </div>
             <div class='panel-footer app-footer'>
