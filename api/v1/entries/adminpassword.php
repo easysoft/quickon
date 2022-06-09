@@ -23,19 +23,19 @@ class adminPasswordEntry extends baseEntry
 
         if(!($token == $this->config->CNE->api->token || $token == $this->config->CNE->api->token))
         {
-            $this->send(401, array('code' => 401, 'messge' => 'Invalid token.'));
+            $this->send(401, array('code' => 401, 'message' => 'Invalid token.'));
         }
 
         $password = $this->request('password');
-        if(empty($password)) $this->send(401, array('code' => 401, 'messge' => 'Password must be not empty.'));
+        if(empty($password)) $this->send(401, array('code' => 401, 'message' => 'Password must be not empty.'));
 
         $admin = $this->loadModel('company')->getAdmin();
-        if(empty($admin)) $this->send(511, array('code' => 511, 'messge' => 'Admin account not found, please init admin account firstly.'));
+        if(empty($admin)) $this->send(511, array('code' => 511, 'message' => 'Admin account not found, please init admin account firstly.'));
 
         $this->dao->update(TABLE_USER)->set('password')->eq(md5($password))->autoCheck()->where('id')->eq($admin->id)->exec();
         $errorMsg = dao::isError();
-        if($errorMsg) $this->send(510, array('code' => '510', 'messge' => $errorMsg));
+        if($errorMsg) $this->send(510, array('code' => '510', 'message' => $errorMsg));
 
-        $this->send(200, array('code' => '200', 'messge' => 'success', 'data' => array('account' => $admin->account)));
+        $this->send(200, array('code' => '200', 'message' => 'success', 'data' => array('account' => $admin->account)));
     }
 }
