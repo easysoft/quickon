@@ -12,6 +12,20 @@
 class admin extends control
 {
     /**
+     * Index page.
+     * @access public
+     * @return void
+     */
+    public function index()
+    {
+        $this->loadModel('misc');
+
+        $this->view->title      = $this->lang->admin->common;
+        $this->view->position[] = $this->lang->admin->index;
+        $this->display();
+    }
+
+    /**
      * Init company and admin
      *
      * @access public

@@ -2,6 +2,7 @@
 $lang->navIcons['my']    = "<i class='icon icon-statistic'></i>";
 $lang->navIcons['store'] = "<i class='icon icon-program'></i>";
 $lang->navIcons['space'] = "<i class='icon icon-cube'></i>";
+$lang->navIcons['admin']     = "<i class='icon icon-cog-outline'></i>";
 
 $lang->visionList['qucheng'] = '渠成平台';
 
@@ -10,14 +11,16 @@ $lang->mainNav         = new stdclass();
 $lang->mainNav->my     = "{$lang->navIcons['my']} {$lang->my->shortCommon}|my|index|";
 $lang->mainNav->store  = "{$lang->navIcons['store']} {$lang->store->shortCommon}|store|index|";
 $lang->mainNav->space  = "{$lang->navIcons['space']} {$lang->space->shortCommon}|space|browse|";
+$lang->mainNav->admin  = "{$lang->navIcons['admin']} {$lang->admin->common}|admin|index|";
 
-$lang->dividerMenu = ',';
+$lang->dividerMenu = ',admin,';
 
 /* Menu order. */
-$lang->mainNav->menuOrder    = array();
-$lang->mainNav->menuOrder[5] = 'my';
-$lang->mainNav->menuOrder[7] = 'store';
-$lang->mainNav->menuOrder[9] = 'space';
+$lang->mainNav->menuOrder = array();
+$lang->mainNav->menuOrder[5]  = 'my';
+$lang->mainNav->menuOrder[7]  = 'store';
+$lang->mainNav->menuOrder[9]  = 'space';
+$lang->mainNav->menuOrder[65] = 'admin';
 
 /* My menu. */
 $lang->my->menu        = new stdclass();
@@ -33,6 +36,12 @@ $lang->space->menu = new stdclass();
 /* Instance menu. */
 $lang->instance->menu = new stdclass();
 //$lang->instance->menu->instance = array('link' => "{$lang->instance->install}|space|custominstall|");
+//
+/* Admin menu. */
+$lang->admin->menu            = new stdclass();
+$lang->admin->menu->index     = array('link' => "$lang->indexPage|admin|index", 'alias' => 'ztcompany');
+$lang->admin->menu->system    = array('link' => "{$lang->admin->system}|backup|index", 'subModule' => 'cron,backup,action,admin,search', 'exclude' => 'admin-index');
 
 $lang->navGroup = new stdclass();
 $lang->navGroup->instance = 'space';
+$lang->navGroup->backup   = 'admin';

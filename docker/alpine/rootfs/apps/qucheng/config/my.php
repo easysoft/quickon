@@ -21,6 +21,6 @@ $config->cloud->api->host = getenv('CLOUD_API_HOST');
 if(getenv('CLOUD_API_TOKEN'))       $config->cloud->api->token   = getenv('CLOUD_API_TOKEN');
 if(getenv('CLOUD_DEFAULT_CHANNEL')) $config->cloud->api->channel = getenv('CLOUD_DEFAULT_CHANNEL');
 
-$config->cloud->api->switchChannel = getenv('CLOUD_SWITCH_CHANNEL');
+$config->cloud->api->switchChannel = getenv('CLOUD_SWITCH_CHANNEL') == 'true' || getenv('CLOUD_SWITCH_CHANNEL') === true || getenv('CLOUD_SWITCH_CHANNEL') == 'on';
 
 $config->default->lang = 'zh-cn';

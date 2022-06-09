@@ -31,7 +31,7 @@ $lang->admin->errorEmpty['password2'] = "{$lang->admin->password2}不能为空";
 $lang->admin->errorDiffPasswords = "{$lang->admin->password}与{$lang->admin->password2}不一致";
 
 $lang->admin->info = new stdclass();
-$lang->admin->info->version = '当前系统的版本是%s，';
+$lang->admin->info->version = '当前系统的版本是%s';
 $lang->admin->info->links   = '您可以访问以下链接：';
 $lang->admin->info->log     = '超出存天数的日志会被删除，需要开启计划任务。';
 
