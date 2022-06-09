@@ -11,7 +11,7 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
             });
 
-            let id  = $(event.target).parent('button').attr('instance-id');
+            let id  = $(event.target).closest('button').attr('instance-id');
             let url = createLink('instance', 'ajaxUninstall', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
@@ -45,7 +45,7 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
             });
 
-            let id  = $(event.target).parent('button').attr('instance-id');
+            let id  = $(event.target).closest('button').attr('instance-id');
             let url = createLink('instance', 'ajaxStart', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
@@ -79,7 +79,7 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
             });
 
-            let id  = $(event.target).parent('button').attr('instance-id');
+            let id  = $(event.target).closest('button').attr('instance-id');
             let url = createLink('instance', 'ajaxStop', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
