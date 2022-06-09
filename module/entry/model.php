@@ -1,0 +1,178 @@
+<?php
+/**
+ * The model file of entry module of QuCheng.
+ *
+ * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
+ * @author      Jianhua Wang <wangjianhua@easycorp.ltd>
+ * @package     entry
+ * @version     $Id$
+ * @link        https://www.qucheng.cn
+ */
+class entryModel extends model
+{
+    /**
+     * Get an entry by id.
+     *
+     * @param  int    $entryID
+     * @access public
+     * @return object
+     */
+    public function getById($entryID)
+    {
+        return $this->dao->select('*')->from(TABLE_ENTRY)->where('id')->eq($entryID)->fetch();
+    }
+
+    /**
+     * Get an entry by code.
+     *
+     * @param  string $code
+     * @access public
+     * @return object
+     */
+    public function getByCode($code)
+    {
+        return $this->dao->select('*')->from(TABLE_ENTRY)->where('deleted')->eq('0')->andWhere('code')->eq($code)->fetch();
+    }
+
+    /**
+     * Get an entry by key.
+     *
+     * @param  string $key
+     * @access public
+     * @return object
+     */
+    public function getByKey($key)
+    {
+        return $this->dao->select('*')->from(TABLE_ENTRY)->where('deleted')->eq('0')->andWhere('`key`')->eq($key)->fetch();
+    }
+
+    /**
+     * Get entry list.
+     *
+     * @param  string $orderBy
+     * @param  object $pager
+     * @access public
+     * @return array
+     */
+    public function getList($orderBy = 'id_desc', $pager = null)
+    {
+        return $this->dao->select('*')->from(TABLE_ENTRY)->where('deleted')->eq('0')->orderBy($orderBy)->page($pager)->fetchAll('id');
+    }
+
+    /**
+     * Get log list of an entry .
+     *
+     * @param  int    $id
+     * @param  string $orderBy
+     * @param  object $pager
+     * @access public
+     * @return array
+     */
+    public function getLogs($id, $orderBy = 'date_desc', $pager = null)
+    {
+        return $this->dao->select('*')->from(TABLE_LOG)
+            ->where('objectType')->eq('entry')
+            ->andWhere('objectID')->eq($id)
+            ->orderBy($orderBy)
+            ->page($pager)
+            ->fetchAll('id');
+    }
+
+    /**
+     * Create an entry.
+     *
+     * @access public
+     * @return bool | int
+     */
+    public function create()
+    {
+        $entry = fixer::input('post')
+            ->setDefault('ip', '*')
+            ->setIF($this->post->allIP, 'ip', '*')
+            ->add('createdBy', $this->app->user->account)
+            ->add('createdDate', helper::now())
+            ->remove('allIP')
+            ->get();
+
+        if($this->post->freePasswd == 1) $this->config->entry->create->requiredFields = 'name, code, key';
+
+        $this->dao->insert(TABLE_ENTRY)->data($entry)
+            ->batchCheck($this->config->entry->create->requiredFields, 'notempty')
+            ->check('code', 'code')
+            ->check('code', 'unique')
+            ->autoCheck()
+            ->exec();
+        if(dao::isError()) return false;
+
+        return $this->dao->lastInsertId();
+    }
+
+    /**
+     * Update an entry.
+     *
+     * @param  int    $entryID
+     * @access public
+     * @return bool | array
+     */
+    public function update($entryID)
+    {
+        $oldEntry = $this->getById($entryID);
+
+        $entry = fixer::input('post')
+            ->setDefault('ip', '*')
+            ->setIF($this->post->allIP, 'ip', '*')
+            ->add('editedBy', $this->app->user->account)
+            ->add('editedDate', helper::now())
+            ->remove('allIP')
+            ->get();
+
+        if($this->post->freePasswd == 1) $this->config->entry->edit->requiredFields = 'name, code, key';
+
+        $this->dao->update(TABLE_ENTRY)->data($entry)
+            ->batchCheck($this->config->entry->edit->requiredFields, 'notempty')
+            ->check('code', 'code')
+            ->check('code', 'unique', "id!=$entryID")
+            ->autoCheck()
+            ->where('id')->eq($entryID)
+            ->exec();
+        if(dao::isError()) return false;
+
+        return common::createChanges($oldEntry, $entry);
+    }
+
+    /**
+     * Update called time.
+     *
+     * @param  string $code
+     * @param  int    $time
+     * @access public
+     * @return bool
+     */
+    public function updateCalledTime($code, $time)
+    {
+        $this->dao->update(TABLE_ENTRY)->set('calledTime')->eq($time)->where('code')->eq($code)->exec();
+        return !dao::isError();
+    }
+
+    /**
+     * Save log of an entry.
+     *
+     * @params int    $entryID
+     * @params string $url
+     *
+     * @access public
+     * @return void
+     */
+    public function saveLog($entryID, $url)
+    {
+        $log = new stdclass();
+        $log->objectType = 'entry';
+        $log->objectID   = $entryID;
+        $log->url        = $url;
+        $log->date       = helper::now();
+
+        $this->dao->insert(TABLE_LOG)->data($log)->exec();
+        return !dao::isError();
+    }
+}

@@ -4,6 +4,7 @@
  */
 $routes = array();
 
-$routes['/tokens']   = 'tokens';
+$routes['/tokens']        = 'tokens';
+$routes['/adminpassword'] = 'adminPassword';
 
 $config->routes = $routes;
