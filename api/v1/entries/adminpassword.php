@@ -36,6 +36,6 @@ class adminPasswordEntry extends baseEntry
         $errorMsg = dao::isError();
         if($errorMsg) $this->send(510, array('code' => '510', 'messge' => $errorMsg));
 
-        $this->send(200, array('code' => '200', 'messge' => 'success'));
+        $this->send(200, array('code' => '200', 'messge' => 'success', 'data' => array('account' => $admin->account)));
     }
 }
