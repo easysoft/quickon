@@ -26,8 +26,13 @@ export PM_MAX_REQUESTS=${PM_MAX_REQUESTS:-512}
 export NGINX_WORKER_NUM=${NGINX_WORKER_NUM:-auto}
 export NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-32m}
 
-
-export QUCHENG_DATA_LIST="
+export PERSISTENCE_LIST="
 /data/php/session
 /data/php/logs
+/data/qucheng
+/data/qucheng/backup
+/data/qucheng/www
+/data/qucheng/www/data"
+
+export PERSISTENCE_LINK_LIST="
 /data/qucheng/www/data"

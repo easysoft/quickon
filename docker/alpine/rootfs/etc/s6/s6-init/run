@@ -32,18 +32,16 @@ sed -i "s/__NGINX_MAX_BODY_SIZE__/${NGINX_MAX_BODY_SIZE}/" $NGINX_MAIN_CFG $NGIN
 #=====================================#
 # Persistence directory for qucheng   #
 #=====================================#
-for dir in $QUCHENG_DATA_LIST
+for dir in $PERSISTENCE_LIST
 do
     # Ensure a directory exists and,is owned by the given user
     ensure_dir_exists "$dir" "www-data"
+done
 
-    if [ "$dir" == "/data/qucheng/www/data" ];then
-        # clear data directory in source code
-        [ -d /apps/qucheng/www/data ] && rm -rf /apps/qucheng/www/data
-
-        # make soft link /data/qucheng/www/data ---> /apps/qucheng/www/data
-        ln -s "$dir" /apps/qucheng/www/
-    fi
+for ldir in $PERSISTENCE_LINK_LIST
+do
+    configure_permissions_ownership "$ldir" -d 777
+    make_soft_link "$ldir" "${ldir/data/apps}" "www-data"
 done
 
 # Check and waiting mysql to be ready

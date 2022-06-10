@@ -15,7 +15,7 @@ services:
     build:
         context: .
         dockerfile: docker/Dockerfile
-    image: qucheng:test
+    image: hub.qucheng.com/platform/qucheng:${TAG}
     container_name: qucheng
     ports:
       - '4080:80'

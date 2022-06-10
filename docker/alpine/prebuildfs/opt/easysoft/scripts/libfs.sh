@@ -10,6 +10,64 @@
 # Functions
 
 ########################
+# make link source directory to dest directory
+# Arguments:
+#   $1 - sourcepath
+#   $2 - destpath
+#   $3 - owner
+# Returns:
+#   None
+#########################
+make_soft_link() {
+    local source="${1:?path is missing}"
+    local dest="${2:?path is missing}"
+    local owner=${3:-}
+    local group=${4:-}
+
+
+    [ -d "$dest" ] && mv "$dest" "$dest".bak
+    [ ! -L "$dest" ] && ln -s "$source" "$dest"
+
+    if [[ -n $group ]]; then
+        chown -h "$owner":"$group" "$dest"
+    else
+        chown -h "$owner":"$owner" "$dest"
+    fi
+}
+
+########################
+# move dir to /data then make link
+# Arguments:
+#   $1 - sourcepath
+#   $2 - destpath
+#   $3 - owner
+#   $4 - group
+# Returns:
+#   None
+#########################
+move_and_make_soft_link() {
+    local source="${1:?path is missing}"
+    local dest="${2:?path is missing}"
+    local owner=${3:-}
+    local group=${4:-}
+    parent_source=$(dirname "$source")
+
+    ensure_dir_exists "$parent_source" "$owner" "$group"
+
+    # if exist /opt/zbox/data
+    # mv /opt/zbox/data /data/zbox/
+    # ln -s /data/zbox/data /opt/zbox/data
+    [ -d "$dest" ] && mv "$dest" "$parent_source/"
+    [ ! -L "$dest" ] && ln -s "$source" "$dest"
+
+    if [[ -n $group ]]; then
+        chown -h "$owner":"$group" "$dest"
+    else
+        chown -h "$owner":"$owner" "$dest"
+    fi
+}
+
+########################
 # Ensure a file/directory is owned (user and group) but the given user
 # Arguments:
 #   $1 - filepath
