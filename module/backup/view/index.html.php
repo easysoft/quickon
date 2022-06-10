@@ -95,7 +95,7 @@
     <h2>
       <span class='label label-info'>
       <?php echo $lang->backup->restoreTip;?>
-      <?php printf($lang->backup->holdDays, $config->backup->holdDays)?>
+      <?php //printf($lang->backup->holdDays, $config->backup->holdDays)?>
       </span>
     </h2>
   </div>

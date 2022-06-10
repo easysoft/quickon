@@ -30,13 +30,15 @@
       <tr>
         <td>
           <div class='input-group'>
-            <span class='input-group-addon'><?php echo $lang->backup->settingDir;?></span>
-            <?php echo html::input('settingDir', !empty($config->backup->settingDir) ? $config->backup->settingDir : $this->app->getTmpRoot() . 'backup/', "class='form-control'");?>
+            <span class='input-group-addon text-left'><?php echo $lang->backup->settingDir;?></span>
+            <div class='input-group-addon text-left' style='width: 100%;'>
+            <?php echo !empty($config->backup->settingDir) ? $config->backup->settingDir : '/data/qucheng/backup/';?>
+            </div>
           </div>
         </td>
       </tr>
       <?php if(common::hasPriv('backup', 'change')):?>
-      <tr>
+      <tr class='hidden'>
         <td>
           <div class='input-group'>
             <span class='input-group-addon'><?php echo $lang->backup->change;?></span>

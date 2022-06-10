@@ -11,7 +11,7 @@ $lang->mainNav         = new stdclass();
 $lang->mainNav->my     = "{$lang->navIcons['my']} {$lang->my->shortCommon}|my|index|";
 $lang->mainNav->store  = "{$lang->navIcons['store']} {$lang->store->shortCommon}|store|index|";
 $lang->mainNav->space  = "{$lang->navIcons['space']} {$lang->space->shortCommon}|space|browse|";
-$lang->mainNav->admin  = "{$lang->navIcons['admin']} {$lang->admin->common}|admin|index|";
+$lang->mainNav->admin  = "{$lang->navIcons['admin']} {$lang->admin->common}|backup|index|";
 
 $lang->dividerMenu = ',admin,';
 
@@ -39,7 +39,7 @@ $lang->instance->menu = new stdclass();
 //
 /* Admin menu. */
 $lang->admin->menu            = new stdclass();
-$lang->admin->menu->index     = array('link' => "$lang->indexPage|admin|index", 'alias' => 'ztcompany');
+//$lang->admin->menu->index     = array('link' => "$lang->indexPage|admin|index", 'alias' => 'ztcompany');
 $lang->admin->menu->system    = array('link' => "{$lang->admin->system}|backup|index", 'subModule' => 'cron,backup,action,admin,search', 'exclude' => 'admin-index');
 
 $lang->navGroup = new stdclass();
