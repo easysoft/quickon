@@ -64,6 +64,7 @@ $config->openMethods[] = 'sso.feishuauthen';
 $config->openMethods[] = 'sso.feishulogin';
 $config->openMethods[] = 'admin.ignore';
 $config->openMethods[] = 'admin.init';
+$config->openMethods[] = 'admin.resetpassword';
 $config->openMethods[] = 'personnel.unbindwhitelist';
 
 /* Define the tables. */

@@ -12,6 +12,29 @@
 class misc extends control
 {
     /**
+     * Return system status to CNE.
+     *
+     * @access public
+     * @return void
+     */
+    public function status()
+    {
+        $code    = 200;
+        $status  = 'ready';
+        $message = 'success';
+
+        if(!$this->loadModel('company')->getFirst())
+        {
+            $code    = 500;
+            $status  = 'fail';
+            $message = 'Please initialize firstly.';
+        }
+
+        header("HTTP/1.1 $code");
+        return print(json_encode(array('code' => $code, 'status' => $status, 'message' => $message)));
+    }
+
+    /**
      * Ping the server every 5 minutes to keep the session.
      *
      * @access public

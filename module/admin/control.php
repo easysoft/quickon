@@ -51,4 +51,45 @@ class admin extends control
         $this->view->title = $this->lang->admin->initAdmin;
         $this->display();
     }
+
+    /**
+     * Reset admin password.
+     *
+     * @access public
+     * @return viod
+     */
+    public function resetPassword()
+    {
+        $token = zget($_SERVER, 'HTTP_TOKEN');
+        if(!($token == $this->config->CNE->api->token || $token == $this->config->CNE->api->token))
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
+        }
+
+        $requestBody = json_decode(file_get_contents("php://input"));
+        $password = trim(zget($requestBody, 'password', ''));
+        if(empty($password))
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Password must be not empty.')));
+        }
+
+        $admin = $this->loadModel('company')->getAdmin();
+        if(empty($admin))
+        {
+            header("HTTP/1.1 511");
+            return print(json_encode(array('code' => 511, 'message' => 'Admin account not found, please init admin account firstly.')));
+        }
+
+        $this->dao->update(TABLE_USER)->set('password')->eq(md5($password))->autoCheck()->where('id')->eq($admin->id)->exec();
+        $errorMsg = dao::isError();
+        if($errorMsg)
+        {
+            header("HTTP/1.1 510");
+            return print(json_encode(array('code' => 510, 'message' => $errorMsg)));
+        }
+
+        return print(json_encode(array('code' => 200, 'message' => 'success', 'data' => array('account' => $admin->account))));
+    }
 }
