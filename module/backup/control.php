@@ -24,7 +24,7 @@ class backup extends control
         $this->backupPath = $this->backup->getBackupPath();
         if(!is_dir($this->backupPath))
         {
-            if(!mkdir($this->backupPath, 0777, true)) $this->view->error = sprintf($this->lang->backup->error->noWritable, dirname($this->backupPath));
+            if(!mkdir($this->backupPath, 0755, true)) $this->view->error = sprintf($this->lang->backup->error->noWritable, $this->backupPath);
         }
         else
         {
