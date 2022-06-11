@@ -90,6 +90,7 @@ class admin extends control
             return print(json_encode(array('code' => 510, 'message' => $errorMsg)));
         }
 
+        $this->dao->insert(TABLE_ACTION)->data(array('objectType' => 'admin', 'objectID' => $admin->id, 'actor' => $admin->account, 'action' => 'resetpassword', 'date' => date('Y-m-d H:i:s')))->autoCheck()->exec();
         return print(json_encode(array('code' => 200, 'message' => 'success', 'data' => array('account' => $admin->account))));
     }
 }

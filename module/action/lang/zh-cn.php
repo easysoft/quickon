@@ -62,13 +62,15 @@ $lang->action->objectTypes['user'] = '用户';
 $lang->action->desc = new stdclass();
 
 /* 用来显示动态信息。*/
-$lang->action->label            = new stdclass();
-$lang->action->label->instance  = '服务';
-$lang->action->label->start     = '启动了';
-$lang->action->label->stop      = '关闭了';
-$lang->action->label->install   = '安装了';
-$lang->action->label->uninstall = '卸载了';
-$lang->action->label->editname  = '修改了服务名称';
+$lang->action->label                = new stdclass();
+$lang->action->label->logout        = '退出系统';
+$lang->action->label->instance      = '服务';
+$lang->action->label->start         = '启动了';
+$lang->action->label->stop          = '关闭了';
+$lang->action->label->install       = '安装了';
+$lang->action->label->uninstall     = '卸载了';
+$lang->action->label->resetpassword = '重置了密码';
+$lang->action->label->editname      = '修改了服务名称';
 
 /* 动态信息按照对象分组 */
 $lang->action->dynamicAction = new stdclass();
@@ -96,6 +98,7 @@ $lang->action->dynamicInfo   = "<span class='timeline-tag'>%s</span> <span class
 $lang->action->noLinkDynamic = "<span class='timeline-tag'>%s</span> <span class='timeline-text' title='%s'>%s <em>%s</em> %s %s</span>";
 
 $lang->action->skipFields = new stdclass;
-$lang->action->skipFields->login    = array('objectLabel', 'objectName');
-$lang->action->skipFields->logout   = array('objectLabel', 'objectName');
-$lang->action->skipFields->editname = array('objectLabel');
+$lang->action->skipFields->login         = array('objectLabel', 'objectName');
+$lang->action->skipFields->logout        = array('objectLabel', 'objectName');
+$lang->action->skipFields->editname      = array('objectLabel');
+$lang->action->skipFields->resetpassword = array('objectLabel');
