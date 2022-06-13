@@ -1060,7 +1060,7 @@ class baseRouter
     public function setClientTheme($theme = '')
     {
         if(isset($this->config->client->theme)) $this->clientTheme = $this->config->client->theme;
-        if(isset($_COOKIE['theme']))            $this->clientTheme = $_COOKIE['theme'];
+        if(isset($_COOKIE['qTheme']))            $this->clientTheme = $_COOKIE['qTheme'];
         if(!empty($theme))                      $this->clientTheme = $theme;
 
         if(!empty($this->clientTheme))
@@ -1073,8 +1073,8 @@ class baseRouter
             $this->clientTheme = $this->config->default->theme;
         }
 
-        setcookie('theme', $this->clientTheme, $this->config->cookieLife, $this->config->webRoot, '', $this->config->cookieSecure, false);
-        if(!isset($_COOKIE['theme'])) $_COOKIE['theme'] = $this->clientTheme;
+        setcookie('qTheme', $this->clientTheme, $this->config->cookieLife, $this->config->webRoot, '', $this->config->cookieSecure, false);
+        if(!isset($_COOKIE['qTheme'])) $_COOKIE['qTheme'] = $this->clientTheme;
 
         return true;
     }

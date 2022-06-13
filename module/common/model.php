@@ -307,7 +307,7 @@ class commonModel extends model
             echo "<a href='javascript:;'>" . "<i class='icon icon-theme'></i> " . $lang->theme . "</a><ul class='dropdown-menu pull-left'>";
             foreach($app->lang->themes as $key => $value)
             {
-                echo "<li " . ($app->cookie->theme == $key ? "class='selected'" : '') . "><a href='javascript:selectTheme(\"$key\");' data-value='" . $key . "'>" . $value . "</a></li>";
+                echo "<li " . ($app->clientTheme == $key ? "class='selected'" : '') . "><a href='javascript:changeTheme(\"$key\");' data-value='" . $key . "'>" . $value . "</a></li>";
             }
             echo '</ul></li>';
 

@@ -1,4 +1,21 @@
 /**
+ * Change theme.
+ *
+ * @param  string $themeCode
+ * @access public
+ * @return void
+ */
+function changeTheme(themeCode)
+{
+    $.cookie('qTheme', themeCode,
+    {
+        expire: config.cookieLife,
+        path:   config.webRoot,
+    });
+    $.refreshPage(1)
+}
+
+/**
  * Set the ping url.
  *
  * @access public
