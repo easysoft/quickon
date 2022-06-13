@@ -81,3 +81,7 @@
 ### 集群管理
 
 > 支持集群节点的维护、平台模块的监控与伸缩。
+
+### 许可
+
+[ZPL](http://zpl.pub/page/zplv12.html)或者[AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html)
