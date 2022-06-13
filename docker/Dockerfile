@@ -15,8 +15,6 @@ RUN sed -i 's/dl-cdn.alpinelinux.org/mirrors.tencent.com/g' /etc/apk/repositorie
     && apk del tzdata \
     && rm -rf /var/cache/apk/* /etc/nginx/http.d/* /usr/local/etc/php-fpm.d/*
 
-ENV EASYSOFT_APP_NAME="QuCheng 1.0 beta2"
-
 # Install php core-exts
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "php-exts" "7.4.28" -c 2d85e4d24f5341b697881275ef0407f62815ed4f430087d2b091c4448b9da0a1
 
@@ -27,6 +25,11 @@ RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mysql-client" "
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "wait-for-port" "1.01" -c a1000444750bb68e05db7bdf6ab87682a413ad989d418557542ef2586e9ec63a
 
 COPY --chown=82 docker/alpine/rootfs /
+
+# qucheng envs
+ARG VERSION
+ENV QUCHENG_VER=${VERSION}
+ENV EASYSOFT_APP_NAME="QuCheng-Web $QUCHENG_VER"
 
 # Copy qucheng source code
 WORKDIR /apps/qucheng
