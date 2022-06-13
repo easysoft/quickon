@@ -342,17 +342,6 @@ class backup extends control
             if(isset($data->setting)) $setting = $data->setting;
             $this->loadModel('setting')->setItem('system.backup.setting', $setting);
 
-            $settingDir = $data->settingDir;
-            if($settingDir)
-            {
-                $settingDir = rtrim($settingDir, DS) . DS;
-                if(!is_dir($settingDir) and mkdir($settingDir, 0777, true)) return print(js::alert($this->lang->backup->error->noCreateDir));
-                if(!is_writable($settingDir)) return print(js::alert(strip_tags(sprintf($this->lang->backup->error->noWritable, $settingDir))));
-                if($data->settingDir == $this->app->getTmpRoot() . 'backup' . DS) $settingDir = '';
-            }
-
-            $this->setting->setItem('system.backup.settingDir', $settingDir);
-
             return print(js::reload('parent.parent'));
         }
         $this->display();
