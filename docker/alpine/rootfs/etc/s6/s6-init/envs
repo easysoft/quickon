@@ -15,8 +15,8 @@ export MAXWAIT=${MAXWAIT:-30}
 # Set php-fpm parameter
 export PM_MAX_CHILDREN=${PM_MAX_CHILDREN:-10}
 export PM_START_NUM=${PM_START_NUM:-2}
-export PM_MIN_SPARE_NUM=${PM_MIN_SPARE_NUM:-1}
-export PM_MAX_SPARE_NUM=${PM_MAX_SPARE_NUM:-1}
+export PM_MIN_SPARE_NUM=${PM_MIN_SPARE_NUM:-2}
+export PM_MAX_SPARE_NUM=${PM_MAX_SPARE_NUM:-8}
 export PM_MAX_REQUESTS=${PM_MAX_REQUESTS:-1024}
 
 # ==================
