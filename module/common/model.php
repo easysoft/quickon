@@ -1906,13 +1906,14 @@ EOT;
         else
         {
             $referer = helper::safe64Encode($this->app->getURI(true));
-            $locate  = helper::createLink('user', 'login', "referer=$referer");
             if(helper::isAjaxRequest())
             {
+                $locate  = helper::createLink('user', 'login',);
                 print(json_encode(array('result' => 'fail', 'message' => '', 'locate' => $locate)));
             }
             else
             {
+                $locate  = helper::createLink('user', 'login', "referer=$referer");
                 print(js::locate($locate));
             }
             die;
