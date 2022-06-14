@@ -39,7 +39,7 @@ $onlybody     = zget($_GET, 'onlybody', 'no');
   else
   {
       $minCssFile = $defaultTheme . $this->cookie->lang . '.' . $this->cookie->theme . '.css';
-      if(!file_exists($this->app->getThemeRoot() . 'default/' . $this->cookie->lang . '.' . $this->cookie->theme . '.css')) $minCssFile = $defaultTheme . 'en.' . $this->cookie->theme . '.css';
+      if(!file_exists($this->app->getThemeRoot() . 'default/' . $this->cookie->lang . '.' . $this->cookie->theme . '.css')) $minCssFile = $defaultTheme . 'en.' . $this->app->clientTheme . '.css';
       css::import($minCssFile);
       js::import($jsRoot . 'all.js');
       if($clientLang === 'ja') js::import($jsRoot . 'zui/lang.' . $clientLang . '.min.js');
