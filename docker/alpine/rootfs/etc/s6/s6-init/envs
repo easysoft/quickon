@@ -13,18 +13,18 @@ export MYSQL_PASSWORD=${MYSQL_PASSWORD:-pass4Qucheng}
 export MAXWAIT=${MAXWAIT:-30}
 
 # Set php-fpm parameter
-export PM_MAX_CHILDREN=${PM_MAX_CHILDREN:-5}
-export PM_START_NUM=${PM_START_NUM:-1}
-export PM_MIN_SPARE_NUM=${PM_MIN_SPARE_NUM:-1}
-export PM_MAX_SPARE_NUM=${PM_MAX_SPARE_NUM:-1}
-export PM_MAX_REQUESTS=${PM_MAX_REQUESTS:-512}
+export PM_MAX_CHILDREN=${PM_MAX_CHILDREN:-10}
+export PM_START_NUM=${PM_START_NUM:-2}
+export PM_MIN_SPARE_NUM=${PM_MIN_SPARE_NUM:-2}
+export PM_MAX_SPARE_NUM=${PM_MAX_SPARE_NUM:-8}
+export PM_MAX_REQUESTS=${PM_MAX_REQUESTS:-1024}
 
 # ==================
 # Nginx
 # ==================
 # Set nginx config
 export NGINX_WORKER_NUM=${NGINX_WORKER_NUM:-auto}
-export NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-32m}
+export NGINX_MAX_BODY_SIZE=${NGINX_MAX_BODY_SIZE:-128m}
 
 export PERSISTENCE_LIST="
 /data/php/session

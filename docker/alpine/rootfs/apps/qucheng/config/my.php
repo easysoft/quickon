@@ -1,7 +1,7 @@
 <?php
 $config->installed    = true;
 $config->debug        = getenv('PHP_DEBUG');
-$config->requestType  = 'GET';
+$config->requestType  = 'PATH_INFO';
 $config->timezone     = 'Asia/Shanghai';
 $config->db->host     = getenv('MYSQL_HOST');
 $config->db->port     = getenv('MYSQL_PORT');
