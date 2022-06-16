@@ -1,0 +1,8 @@
+# LICENSE
+
+The source code of qucheng is covered by the following dual licenses:
+
+(1) ZPL  1.2: <http://zpl.pub/page/zplv12.html> <br />
+(2) AGPL 3.0: <https://www.gnu.org/licenses/agpl-3.0.en.html>
+
+You can choose ZPL or AGPL to use qucheng.
