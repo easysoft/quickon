@@ -18,6 +18,7 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   `name` char(50),
   `appID` mediumint(8) unsigned NOT NULL,
   `appName` char(50) NOT NULL,
+  `appVersion` char(20) NOT NULL,
   `chart` char(50) NOT NULL,
   `logo` varchar(255),
   `version` char(50) NOT NULL,
@@ -199,24 +200,5 @@ CREATE TABLE `q_grouppriv` (
   UNIQUE KEY `group` (`group`,`module`,`method`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_entry`;
-CREATE TABLE IF NOT EXISTS `q_entry` (
-  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
-  `name` varchar(50) NOT NULL,
-  `account` varchar(30) NOT NULL DEFAULT '',
-  `code` varchar(20) NOT NULL,
-  `key` varchar(32) NOT NULL,
-  `freePasswd` enum('0','1') NOT NULL DEFAULT '0',
-  `ip` varchar(100) NOT NULL,
-  `desc` mediumtext NOT NULL,
-  `createdBy` varchar(30) NOT NULL,
-  `createdDate` datetime NOT NULL,
-  `calledTime` int(10) unsigned NOT NULL DEFAULT '0',
-  `editedBy` varchar(30) NOT NULL,
-  `editedDate` datetime NOT NULL,
-  `deleted` enum('0', '1') NOT NULL DEFAULT '0',
-  PRIMARY KEY `id` (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.0');
 REPLACE INTO `q_company` ( `name`, `admins`) VALUES ('', '');
+REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.0.3');

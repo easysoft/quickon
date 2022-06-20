@@ -34,11 +34,26 @@ $startTime = getTime();
 $app = router::createApp('pms', dirname(dirname(__FILE__)), 'router');
 
 /* installed or not. */
-if(!isset($config->installed) or !$config->installed) die(header('location: install.php'));
+//if(!isset($config->installed) or !$config->installed) die(header('location: install.php'));
 
 /* Check for need upgrade. */
 $config->installedVersion = $app->getInstalledVersion();
-if($config->version != $config->installedVersion) die(header('location: upgrade.php'));
+if($config->version != $config->installedVersion)
+{
+    $upgradeHtml = <<<UPGRADE
+<html><head><meta charset='utf-8'></head>
+  <body><table align='center' style='width:700px; margin-top:100px; border:1px solid gray; font-size:14px;'><tr><td style='padding:8px'>
+    <div>
+      <div style='margin: 20px auto;'>
+        <p>系统已更新，请登录后台运行升级指令:<code style='padding: 5px; border-radius: 4px; background-color: #ddd;'>q manage upgrade</code></p>
+        <p>The systemc has been updated, Please run command in console:<code style='padding: 5px; border-radius: 4px; background-color: #ddd;'>q manage upgrade</code></p>
+      <div>
+    </div>
+  </body>
+</html>
+UPGRADE;
+    die($upgradeHtml);
+}
 
 /* Run the app. */
 $common = $app->loadCommon();

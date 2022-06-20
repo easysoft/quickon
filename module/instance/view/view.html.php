@@ -16,7 +16,7 @@
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left instance-name'>
     <h3><?php echo $instance->name;?></h3>
-    <span><?php echo $instance->version;?></span>
+    <span><?php echo $instance->appVersion;?></span>
     <?php echo html::a($this->createLink('instance', 'editname', "id=$instance->id&onlybody=yes"), '<i class="icon-edit"></i>', '', "class='iframe' title='$lang->edit' data-width='600' data-app='space'");?>
   </div>
   <div class='btn-toolbar pull-right instance-panel'>
