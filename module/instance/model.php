@@ -184,19 +184,20 @@ class InstanceModel extends model
         if($result->code != 200) return false;
 
         $instanceData = new stdclass;
-        $instanceData->appId     = $app->id;
-        $instanceData->appName   = $app->alias;
-        $instanceData->name      = $app->alias;
-        $instanceData->logo      = $app->logo;
-        $instanceData->desc      = $app->desc;
-        $instanceData->source    = 'cloud';
-        $instanceData->chart     = $app->chart;
-        $instanceData->version   = $app->app_version;
-        $instanceData->space     = $space->id;
-        $instanceData->k8name    = $appData->name;
-        $instanceData->status    = 'creating';
-        $instanceData->createdBy = $this->app->user->account;
-        $instanceData->createdAt = date('Y-m-d H:i:s');
+        $instanceData->appId      = $app->id;
+        $instanceData->appName    = $app->alias;
+        $instanceData->name       = $app->alias;
+        $instanceData->logo       = $app->logo;
+        $instanceData->desc       = $app->desc;
+        $instanceData->source     = 'cloud';
+        $instanceData->chart      = $app->chart;
+        $instanceData->appVersion = $app->app_version;
+        $instanceData->version    = $app->version;
+        $instanceData->space      = $space->id;
+        $instanceData->k8name     = $appData->name;
+        $instanceData->status     = 'creating';
+        $instanceData->createdBy  = $this->app->user->account;
+        $instanceData->createdAt  = date('Y-m-d H:i:s');
 
         $instance = $this->createInstance($instanceData);
         if(dao::isError()) return false;
@@ -311,20 +312,19 @@ class InstanceModel extends model
         $params->namespace = $instance->spaceData->k8space;
 
         $instance->runDuration = 0;
-        $result = $this->cne->queryStatus($params);
-        if($result->code != 200) return $instance;
-        $instance->runDuration = intval($result->data->age);
+        $statusData = $this->cne->queryStatus($params);
+        if(empty($statusData)) return $instance;
 
-        if($instance->status != $result->data->status)
+        $instance->runDuration = intval($statusData->age);
+
+        if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
         {
-            $instance->status = $result->data->status;
-
-            if(isset($result->data->access_host) && $result->data->access_host) $instance->domain = $result->data->access_host;
-
             $this->dao->update(TABLE_INSTANCE)
-                ->set('status')->eq($instance->status)
-                ->beginIF($instance->domain)->set('domain')->eq($instance->domain)->fi()
+                ->set('status')->eq($statusData->status)
+                ->beginIF($statusData->version)->set('version')->eq($statusData->version)->fi()
+                ->beginIF($statusData->access_host)->set('domain')->eq($statusData->access_host)->fi()
                 ->where('id')->eq($instance->id)
+                ->autoCheck()
                 ->exec();
         }
 

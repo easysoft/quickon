@@ -96,6 +96,23 @@ class cneModel extends model
     }
 
     /**
+     * Get upgradable version of app from cloud market.
+     *
+     * @param  int    $appID
+     * @param  string $currentVersion
+     * @access public
+     * @return array|null Version list
+     */
+    public function getUpgradableVersion($appID, $currentVersion)
+    {
+        $apiUrl = '/api/market/app/version/upgradable';
+        $result = $this->apiGet($apiUrl, array('id' => $appID, 'version' => $currentVersion), $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return $result->data;
+    }
+
+    /**
      * Get app setting from cloud market.
      *
      * @param  int $id
@@ -347,13 +364,16 @@ class cneModel extends model
      *
      * @param  object $instance
      * @access public
-     * @return object
+     * @return object|null
      */
     public function queryStatus($instance)
     {
         $instance->channel = $this->config->CNE->api->channel;
         $apiUrl = "/api/cne/app/status";
-        return $this->apiGet($apiUrl, $instance, $this->config->CNE->api->headers);
+        $result = $this->apiGet($apiUrl, $instance, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result->data;
+
+        return null;
     }
 
     /**
