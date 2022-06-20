@@ -22,7 +22,7 @@
       <?php foreach($instances as $instance):?>
       <tr>
         <td><?php echo html::a($this->createLink('instance', 'view', "id=$instance->id"), $instance->name);?></td>
-        <td><?php echo $instance->version;?></td>
+        <td><?php echo $instance->appVersion;?></td>
         <td><?php echo html::a($this->createLink('space', 'browse', "id=$instance->space"), $instance->spaceData->name);?></td>
         <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
           <?php echo $this->instance->printStatus($instance, false);?>
