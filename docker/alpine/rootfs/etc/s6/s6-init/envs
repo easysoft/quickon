@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Global environments
+export RUN_MODE=${RUN_MODE:-prod}
+
 # ==================
 # PHP
 # ==================

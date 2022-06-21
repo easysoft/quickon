@@ -10,6 +10,7 @@ set -o pipefail
 
 # Load libraries
 . /opt/easysoft/scripts/liblog.sh
+. /opt/easysoft/scripts/libfs.sh
 . /opt/easysoft/scripts/libeasysoft.sh
 
 print_welcome_page
@@ -18,14 +19,14 @@ print_welcome_page
 ENABLE_CRON=${ENABLE_CRON:-false}
 
 # Enable php-fpm
-ln -s /etc/s6/s6-available/php-fpm /etc/s6/s6-enable/01-php-fpm
+make_soft_link "/etc/s6/s6-available/php-fpm" "/etc/s6/s6-enable/01-php-fpm" "www-data"
 
 # Enable nginx
-ln -s /etc/s6/s6-available/nginx /etc/s6/s6-enable/02-nginx
+make_soft_link "/etc/s6/s6-available/nginx" "/etc/s6/s6-enable/02-nginx" "www-data"
 
 # Prepare cron
 if [ "$ENABLE_CRON" == "true" ];then
-    ln -s /etc/s6/s6-available/cron /etc/s6/s6-enable/03-cron
+    make_soft_link "/etc/s6/s6-available/cron " "/etc/s6/s6-enable/03-cron" "www-data"
 fi
 
 # Start s6 or other custom cmd

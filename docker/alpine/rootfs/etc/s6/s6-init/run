@@ -9,7 +9,7 @@
 . /opt/easysoft/scripts/libmysql.sh
 . /opt/easysoft/scripts/libfs.sh
 
-# Load Apache/PHP//ZenDAS environment variables
+# Load QuCheng environment variables
 . /etc/s6/s6-init/envs
 
 #=====================#
@@ -38,11 +38,13 @@ do
     ensure_dir_exists "$dir" "www-data"
 done
 
-for ldir in $PERSISTENCE_LINK_LIST
-do
-    configure_permissions_ownership "$ldir" -d 777
-    make_soft_link "$ldir" "${ldir/data/apps}" "www-data"
-done
+if [ "${RUN_MODE}" == "prod" ];then
+    for ldir in $PERSISTENCE_LINK_LIST
+    do
+        configure_permissions_ownership "$ldir" -d 777
+        make_soft_link "$ldir" "${ldir/data/apps}" "www-data"
+    done
+fi
 
 # Check and waiting mysql to be ready
 wait_for_mysql || exit 1
@@ -50,7 +52,7 @@ wait_for_mysql || exit 1
 # First run,init database
 if [ ! -f "/data/.initdb" ];then
     # Initialize qucheng database
-    mysql_init_db "$MYSQL_DB"
+    mysql_init_db "$MYSQL_DB" || exit 1
 
     # Import qucheng data
     mysql_import_to_db "$MYSQL_DB" "/apps/qucheng/db/data.sql" && touch /data/.initdb
