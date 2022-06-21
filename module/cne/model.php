@@ -390,7 +390,7 @@ class cneModel extends model
     {
         $requestUri  = ($host ? $host : $this->config->CNE->api->host) . $url;
         $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data);
-        $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 10));
+        $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
@@ -409,7 +409,7 @@ class cneModel extends model
     public function apiPost($url, $data, $header = array(), $host = '')
     {
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'POST'), $header, 'json', 10));
+        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'POST'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
@@ -428,7 +428,7 @@ class cneModel extends model
     public function apiPut($url, $data, $header = array(), $host = '')
     {
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $header, 'json', 10));
+        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
@@ -447,7 +447,7 @@ class cneModel extends model
     public function apiDelete($url, $data, $header = array(), $host = '')
     {
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $header, 'json', 10));
+        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
