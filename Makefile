@@ -10,7 +10,12 @@ push: ## push 镜像
 	docker push hub.qucheng.com/platform/qucheng:$(TAG)
 
 run: ## 运行
-	docker-compose -f docker-compose.yml up -d
+	docker-compose -f docker-compose.yml up -d mysql qucheng
+
+run-dev: ## 运行开发环境
+	chown 82:82 . -R
+	[ ! -d www/data ] && mkdir -pv www/data  && chown 82.82 www/data 
+	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
 ps: run ## 运行状态
 	docker-compose -f docker-compose.yml ps

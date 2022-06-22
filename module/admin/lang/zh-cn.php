@@ -2,12 +2,12 @@
 /**
  * The admin module zh-cn file of QuCheng.
  *
- * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.com)
  * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
  * @author      Jianhua Wang <wangjianhua@easycorp.ltd>
  * @package     admin
  * @version     $Id$
- * @link        https://www.qucheng.cn
+ * @link        https://www.qucheng.com
  */
 $lang->admin->index         = '后台管理首页';
 $lang->admin->register      = '登记';

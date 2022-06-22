@@ -3,15 +3,15 @@
 * The config file. Don't modify this file directly, copy the item to my.php and change it.
 *
  *
- * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.com)
  * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
  * @author      Jianhua Wang <wangjianhua@easycorp.ltd>
  * @package     config
  * @version     $Id$
- * @link        https://www.qucheng.cn
+ * @link        https://www.qucheng.com
  */
-$config->manualUrl['home']    = 'https://www.qucheng.cn/book/quchenghelp.html?fullScreen=qucheng';
-$config->manualUrl['install'] = 'https://www.qucheng.cn/book/qucheng/qucheng-installation-11.html?fullScreen=qucheng';
+$config->manualUrl['home']    = 'https://www.qucheng.com/book/quchenghelp.html?fullScreen=qucheng';
+$config->manualUrl['install'] = 'https://www.qucheng.com/book/qucheng/qucheng-installation-11.html?fullScreen=qucheng';
 
 /* Supported charsets. */
 $config->charsets['zh-cn']['utf-8'] = 'UTF-8';

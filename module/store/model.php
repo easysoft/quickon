@@ -2,12 +2,12 @@
 /**
  * The model file of store module of QuCheng.
  *
- * @copyright Copyright 2021-2022 北京渠成软件有限公司(Beijing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @copyright Copyright 2021-2022 北京渠成软件有限公司(Beijing QuCheng Software Co,LTD, www.qucheng.com)
  * @license   ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
  * @author    Jianhua Wang <wangjanhua@easycorp.ltd>
  * @package   store
  * @version   $Id$
- * @link      https://www.qucheng.cn
+ * @link      https://www.qucheng.com
  */
 class storeModel extends model
 {
