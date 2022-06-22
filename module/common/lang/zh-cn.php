@@ -2,12 +2,12 @@
 /**
  * The common simplified chinese file of QuCheng.
  *
- * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.com)
  * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
  * @author      Jianhua Wang <wangjianhua@easycorp.ltd>
  * @package     common
  * @version     $Id$
- * @link        https://www.qucheng.cn
+ * @link        https://www.qucheng.com
  */
 include(dirname(__FILE__) . '/common.php');
 
@@ -317,8 +317,8 @@ $lang->downNotify     = "下载桌面提醒";
 $lang->clientName     = "客户端";
 $lang->downloadClient = "下载客户端";
 $lang->clientHelp     = "客户端使用说明";
-$lang->clientHelpLink = "http://www.qucheng.cn/book/quchenghelp/302.html#2";
-$lang->website        = "https://www.qucheng.cn";
+$lang->clientHelpLink = "http://www.qucheng.com/book/quchenghelp/302.html#2";
+$lang->website        = "https://www.qucheng.com";
 
 $lang->suhosinInfo     = "警告：数据太多，请在php.ini中修改<font color=red>sohusin.post.max_vars</font>和<font color=red>sohusin.request.max_vars</font>（大于%s的数）。 保存并重新启动apache或php-fpm，否则会造成部分数据无法保存。";
 $lang->maxVarsInfo     = "警告：数据太多，请在php.ini中修改<font color=red>max_input_vars</font>（大于%s的数）。 保存并重新启动apache或php-fpm，否则会造成部分数据无法保存。";

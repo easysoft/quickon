@@ -4,12 +4,12 @@
  *
  * All request of entries should be routed by this router.
  *
- * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.cn)
+ * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJing QuCheng Software Co,LTD, www.qucheng.com)
  * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
  * @author      Gang Liu <liugang@cnezsoft.com>
  * @package     QuCheng
  * @version     $Id: index.php 5036 2013-07-06 05:26:44Z wyd621@gmail.com $
- * @link        https://www.qucheng.cn
+ * @link        https://www.qucheng.com
  */
 /* Set the error reporting. */
 error_reporting(E_ALL);

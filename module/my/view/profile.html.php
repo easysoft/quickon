@@ -7,7 +7,7 @@
  * @author      Chunsheng Wang <chunsheng@cnezsoft.com>
  * @package     my
  * @version     $Id: profile.html.php 4694 2013-05-02 01:40:54Z chencongzhi520@gmail.com $
- * @link        http://www.qucheng.cn
+ * @link        http://www.qucheng.com
  */
 ?>
 <?php include '../../common/view/header.html.php';?>

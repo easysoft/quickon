@@ -7,7 +7,7 @@
  * @author      Yidong Wang <yidong@cnezsoft.com>
  * @package     common
  * @version     $Id$
- * @link        http://www.qucheng.cn
+ * @link        http://www.qucheng.com
  */
 ?>
 <div class="dropdown">
