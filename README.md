@@ -23,7 +23,7 @@
 
 ## 逻辑架构图
 
-![logical-architecture](https://img.qucheng.com/www/manual/2022/06/logical-architecture.png)
+![logical-architecture](https://img.qucheng.com/www/manual/2022/06/logical-architecture2.png)
 
 ### 业务层
 
