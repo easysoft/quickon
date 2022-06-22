@@ -87,7 +87,7 @@ class InstanceModel extends model
      */
     public function createInstance($instance)
     {
-        $this->dao->insert(TABLE_INSTANCE)->data($instance)->exec();
+        $this->dao->insert(TABLE_INSTANCE)->data($instance)->autoCheck()->exec();
 
         return $this->getByID($this->dao->lastInsertID());
     }
@@ -150,15 +150,29 @@ class InstanceModel extends model
     }
 
     /**
+     * Check if the domain exists.
+     *
+     * @param  int    $secondDomain
+     * @access public
+     * @return bool   true: exists, false: not exist.
+     */
+    public function domainExists($secondDomain)
+    {
+        $domain = $secondDomain . '.' . $this->config->instance->primaryDomain;
+        return boolval($this->dao->select('id')->from(TABLE_INSTANCE)->where('domain')->eq($domain)->andWhere('deleted')->eq(0)->fetch());
+    }
+
+    /**
      * Install app.
      *
      * @param  object $app
      * @param  array  $settings settings of app, for example: cup, memory.
+     * @param  object $customData
      * @param  int    $spaceID
      * @access public
      * @return false|object Failure: return false, Success: return instance
      */
-    public function install($app, $settings = array(), $spaceID = null)
+    public function install($app, $settings = array(), $customData = null, $spaceID = null)
     {
         $this->loadModel('store');
         $this->app->loadLang('store');
@@ -186,7 +200,8 @@ class InstanceModel extends model
         $instanceData = new stdclass;
         $instanceData->appId      = $app->id;
         $instanceData->appName    = $app->alias;
-        $instanceData->name       = $app->alias;
+        $instanceData->name       = !empty($customData->customName)   ? $customData->customName : $app->alias;
+        $instanceData->domain     = !empty($customData->customDomain) ? $customData->customDomain . '.' . $this->config->instance->primaryDomain : '';
         $instanceData->logo       = $app->logo;
         $instanceData->desc       = $app->desc;
         $instanceData->source     = 'cloud';
@@ -472,6 +487,23 @@ class InstanceModel extends model
 
         $output .= "<div class='btn-group header-btn'>";
         $output .= html::a($instanceLink, $instance->appName, '', 'class="btn"');
+        $output .= "</div>";
+
+        return $output;
+    }
+
+    /**
+     * Get switcher of custom installation page of store.
+     *
+     * @param  object $app
+     * @access public
+     * @return array
+     */
+    public function getInstallSwitcher($app)
+    {
+        $output  = $this->loadModel('store')->getAppViewSwitcher($app);
+        $output .= "<div class='btn-group header-btn'>";
+        $output .= html::a(helper::createLink('instance', 'install', "id=$app->id"), $this->lang->instance->installApp, '', 'class="btn"');
         $output .= "</div>";
 
         return $output;

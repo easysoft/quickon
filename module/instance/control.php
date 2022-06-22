@@ -135,26 +135,38 @@ class instance extends control
     /**
      * Install app.
      *
-     * @param  int $appID
+     * @param  int    $appID
      * @access public
      * @return void
      */
-    public function ajaxInstall($appID)
+    public function install($appID)
     {
-        $appInfo= $this->cne->getAppInfo($appID);
+        $cloudApp = $this->cne->getAppInfo($appID);
 
-        $response = array();
-        $response['result']  = 'fail';
-        $response['message'] = zget($this->lang->instance->notices, 'installFail');
-
-        if($this->instance->install($appInfo))
+        $customData= array();
+        if(!empty($_POST))
         {
-            $response['result']  = 'success';
-            $response['message'] = zget($this->lang->instance->notices, 'installSuccess');
-            $response['locate']  = helper::createLink('space', 'browse');
+            $customData = fixer::input('post')
+                ->trim('customName')->setDefault('customName', '')
+                ->trim('customDomain')->setDefault('customDomain', null)
+                ->get();
+            if($this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->domainExists));
+
+            $result = $this->instance->install($cloudApp, array(), $customData);
+            if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => 'parent'));
         }
 
-        return $this->send($response);
+        $this->lang->switcherMenu = $this->instance->getInstallSwitcher($cloudApp);
+
+        $this->view->position[] = $this->view->title;
+
+        $this->view->title        = $this->lang->instance->install . $cloudApp->alias;
+        $this->view->cloudApp     = $cloudApp;
+        $this->view->secondDomain = zget($customData, 'customDomain', strtolower(helper::randStr(4)));
+
+        $this->display();
     }
 
     /**

@@ -7,6 +7,7 @@ $lang->instance->status     = '状态';
 $lang->instance->cpu        = 'CPU';
 $lang->instance->mem        = '内存';
 $lang->instance->space      = '空间';
+$lang->instance->domain     = '域名';
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';
@@ -17,6 +18,7 @@ $lang->instance->defaultAccount   = '默认用户';
 $lang->instance->defaultPassword  = '默认密码';
 $lang->instance->operationLog     = '操作记录';
 $lang->instance->installedService = '已安装服务';
+$lang->instance->installApp       = '安装应用';
 
 $lang->instance->log = new stdclass;
 $lang->instance->log->date    = '日期';
@@ -90,6 +92,7 @@ $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
 $lang->instance->notices['submiting']        = '提交中，请稍候...';
 
 $lang->instance->instanceNotExists = '服务不存在';
+$lang->instance->domainExists      = '域名已被占用，请使用其它域名。';
 $lang->instance->caplicasTooSmall  = '副本数不能小于1';
 $lang->instance->empty             = '暂无服务';
 $lang->instance->noComponent       = '无组件，点击';
