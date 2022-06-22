@@ -32,12 +32,12 @@
             </td>
             <td></td>
           </tr>
-          <tr class='hidden'>
+          <tr>
             <th class='w-150px'><?php echo $lang->instance->domain;?></th>
             <td class='w-200px'>
               <div class='input-group'>
-                <?php //echo html::input('customDomain', $secondDomain, "class='form-control' maxlength='10'");?>
-                <span class='input-group-addon'><?php echo $config->instance->primaryDomain;?></span>
+                <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='6' readonly='readonly'");?>
+                <span class='input-group-addon'><?php echo $config->CNE->api->domain;?></span>
               </div>
             </td>
             <td></td>

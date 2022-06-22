@@ -143,7 +143,7 @@ class instance extends control
     {
         $cloudApp = $this->cne->getAppInfo($appID);
 
-        $customData= array();
+        $customData = new stdclass;
         if(!empty($_POST))
         {
             $customData = fixer::input('post')
@@ -152,7 +152,17 @@ class instance extends control
                 ->get();
             if($this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->domainExists));
 
-            $result = $this->instance->install($cloudApp, array(), $customData);
+            //if(!validater::checkLength($customData->customDomain, 10, 2)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
+            //if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
+
+            $settings = array();
+            if($customData->customDomain)
+            {
+                $settings['ingress_host']    = $this->instance->fullDomain($customData->customDomain);
+                $settings['ingress_enabled'] = 'true';
+            }
+
+            $result = $this->instance->install($cloudApp, $settings, $customData);
             if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => 'parent'));
@@ -162,9 +172,9 @@ class instance extends control
 
         $this->view->position[] = $this->view->title;
 
-        $this->view->title        = $this->lang->instance->install . $cloudApp->alias;
-        $this->view->cloudApp     = $cloudApp;
-        $this->view->secondDomain = zget($customData, 'customDomain', strtolower(helper::randStr(4)));
+        $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
+        $this->view->cloudApp    = $cloudApp;
+        $this->view->thirdDomain = $this->instance->randThirdDomain();
 
         $this->display();
     }
