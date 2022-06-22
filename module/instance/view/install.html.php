@@ -25,7 +25,7 @@
         <tbody>
           <tr>
             <th class='w-150px'><?php echo $lang->instance->name;?></th>
-            <td class='w-200px'>
+            <td class='w-300px'>
               <div class='input-group'>
                 <?php echo html::input('customName', $cloudApp->alias, "class='form-control' maxlength='20'");?>
               </div>
@@ -34,9 +34,9 @@
           </tr>
           <tr>
             <th class='w-150px'><?php echo $lang->instance->domain;?></th>
-            <td class='w-200px'>
+            <td class='w-300px'>
               <div class='input-group'>
-                <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='6' readonly='readonly'");?>
+                <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='20'");?>
                 <span class='input-group-addon'><?php echo $config->CNE->api->domain;?></span>
               </div>
             </td>

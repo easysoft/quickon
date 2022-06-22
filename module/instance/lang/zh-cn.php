@@ -98,5 +98,5 @@ $lang->instance->empty             = '暂无服务';
 $lang->instance->noComponent       = '无组件，点击';
 
 $lang->instance->errors = new stdclass;
-$lang->instance->errors->domainLength         = '域名长度必须介于2-10字符之间';
+$lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';
 $lang->instance->errors->wrongDomainCharacter = '域名只能是英文字母和数字';

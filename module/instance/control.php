@@ -155,8 +155,8 @@ class instance extends control
                 ->get();
             if($this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->domainExists));
 
-            //if(!validater::checkLength($customData->customDomain, 10, 2)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
-            //if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
+            if(!validater::checkLength($customData->customDomain, 20, 2))      return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
+            if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
 
             $settings = array();
             if($customData->customDomain)

@@ -165,7 +165,7 @@ class InstanceModel extends model
      */
     public function randThirdDomain($length = 4, $triedTimes = 0)
     {
-        if($triedTimes > 10) $length++;
+        if($triedTimes > 16) $length++;
 
         $thirdDomain = strtolower(helper::randStr($length));
         if(!$this->domainExists($thirdDomain)) return $thirdDomain;
