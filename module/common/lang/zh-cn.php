@@ -25,9 +25,10 @@ $lang->percent   = '%';
 $lang->dash      = '-';
 $lang->and       = '和';
 
-$lang->qucheng        = '渠成';
-$lang->aboutQuCheng   = '关于渠成';
-$lang->quchengSummary = '基于云原生的应用交付平台。';
+$lang->qucheng         = '渠成';
+$lang->quchengPlatform = '渠成平台';
+$lang->aboutQuCheng    = '关于渠成';
+$lang->quchengSummary  = '基于云原生的应用交付平台。';
 
 $lang->pmsName        = '开源版';
 $lang->proName        = '专业版';
