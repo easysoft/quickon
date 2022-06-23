@@ -275,7 +275,9 @@ class instance extends control
         if(empty($id)) return print(json_encode(array('code' => 401, 'message' => 'Invalid id.')));
 
         $instance = $this->instance->getByID($id);
-        $instance->space = $instance->spaceData ? $instance->spaceData->k8space : '';
+        if(empty($instance)) return print(json_encode(array('code' => 404, 'message' => 'Not found.', 'data' => array())));
+
+        $instance->space = $instance->spaceData && isset($instance->spaceData->k8space) ? $instance->spaceData->k8space : '';
         unset($instance->desc);
         unset($instance->spaceData);
 

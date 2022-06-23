@@ -54,24 +54,27 @@ $config->openMethods[] = 'misc.features';
 $config->openMethods[] = 'misc.status';
 $config->openMethods[] = 'file.read';
 $config->openMethods[] = 'index.changelog';
-$config->openMethods[] = 'my.preference';
 $config->openMethods[] = 'my.changepassword';
 $config->openMethods[] = 'my.profile';
 $config->openMethods[] = 'my.settutorialconfig';
 $config->openMethods[] = 'doc.selectlibtype';
-$config->openMethods[] = 'sso.getfeishusso';
-$config->openMethods[] = 'sso.feishuauthen';
-$config->openMethods[] = 'sso.feishulogin';
 $config->openMethods[] = 'admin.ignore';
 $config->openMethods[] = 'admin.init';
 $config->openMethods[] = 'admin.resetpassword';
 $config->openMethods[] = 'instance.apidetail';
-$config->openMethods[] = 'personnel.unbindwhitelist';
 
 $config->notIframeMethods = array();
 $config->notIframeMethods[] = 'admin.resetpassword';
 $config->notIframeMethods[] = 'admin.init';
 $config->notIframeMethods[] = 'instance.apidetail';
+$config->notIframeMethods[] = 'user.login';
+$config->notIframeMethods[] = 'user.deny';
+$config->notIframeMethods[] = 'user.logout';
+$config->notIframeMethods[] = 'my.changepassword';
+$config->notIframeMethods[] = 'file.read';
+$config->notIframeMethods[] = 'file.uploadimages';
+$config->notIframeMethods[] = 'file.download';
+$config->notIframeMethods[] = 'misc.status';
 
 /* Define the tables. */
 define('TABLE_USER',          '`' . $config->db->prefix . 'user`');

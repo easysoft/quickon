@@ -1956,10 +1956,9 @@ EOT;
 
         $module = $this->app->getModuleName();
         $method = $this->app->getMethodName();
+        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade') return;
+
         if($this->isNotIframeMethod($module, $method)) return;
-
-        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade' || ($module == 'user' && ($method == 'login' || $method == 'deny' || $method == 'logout')) || ($module == 'my' && ($method == 'changepassword' || $method == 'preference')) || ($module == 'file' && $method == 'read') || ($module == 'file' && $method == 'download') || ($module == 'file' && $method == 'uploadimages') ||($module == 'misc' && $method == 'status')) return;
-
 
         $url = helper::safe64Encode($_SERVER['REQUEST_URI']);
         $redirectUrl = helper::createLink('index', 'index', "open=$url");
