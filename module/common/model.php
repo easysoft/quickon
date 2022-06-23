@@ -170,7 +170,7 @@ class commonModel extends model
     }
 
     /**
-     * Juage a method of one module is open or not?
+     * Judge a method of one module is open or not?
      *
      * @param  string $module
      * @param  string $method
@@ -195,6 +195,21 @@ class commonModel extends model
             if($module == 'tutorial' and $method == 'quit')   return true;
             if($module == 'tutorial' and $method == 'wizard') return true;
         }
+        return false;
+    }
+
+    /**
+     * Judge a method of one module should skip 'checkIframe' or not?
+     *
+     * @param  string $module
+     * @param  stirng $method
+     * @access public
+     * @return mixed
+     */
+    public function isNotIframeMethod($module, $method)
+    {
+        if(in_array("$module.$method", $this->config->notIframeMethods)) return true;
+
         return false;
     }
 
@@ -1941,7 +1956,10 @@ EOT;
 
         $module = $this->app->getModuleName();
         $method = $this->app->getMethodName();
-        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade' || ($module == 'user' && ($method == 'login' || $method == 'deny' || $method == 'logout')) || ($module == 'my' && ($method == 'changepassword' || $method == 'preference')) || ($module == 'file' && $method == 'read') || ($module == 'file' && $method == 'download') || ($module == 'file' && $method == 'uploadimages') ||($module == 'admin' && $method = 'init') ||($module == 'misc' && $method == 'status')) return;
+        if($this->isNotIframeMethod($module, $method)) return;
+
+        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade' || ($module == 'user' && ($method == 'login' || $method == 'deny' || $method == 'logout')) || ($module == 'my' && ($method == 'changepassword' || $method == 'preference')) || ($module == 'file' && $method == 'read') || ($module == 'file' && $method == 'download') || ($module == 'file' && $method == 'uploadimages') ||($module == 'misc' && $method == 'status')) return;
+
 
         $url = helper::safe64Encode($_SERVER['REQUEST_URI']);
         $redirectUrl = helper::createLink('index', 'index', "open=$url");

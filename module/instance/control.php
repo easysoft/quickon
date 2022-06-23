@@ -255,4 +255,30 @@ class instance extends control
 
         return $this->send(array('result' => 'success', 'data' => $statusList));
     }
+
+    /**
+     *  Get instance info for q tool in console.
+     *
+     * @param  int    $id
+     * @access public
+     * @return mixed
+     */
+    public function ajaxDetail($id)
+    {
+        $token = zget($_SERVER, 'HTTP_TOKEN');
+        if(!($token == $this->config->CNE->api->token || $token == $this->config->cloud->api->token))
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
+        }
+
+        if(empty($id)) return print(json_encode(array('code' => 401, 'message' => 'Invalid id.')));
+
+        $instance = $this->instance->getByID($id);
+        $instance->space = $instance->spaceData ? $instance->spaceData->k8space : '';
+        unset($instance->desc);
+        unset($instance->spaceData);
+
+        return print(json_encode(array('code' => 200, 'message' => '', 'data' => $instance)));
+    }
 }

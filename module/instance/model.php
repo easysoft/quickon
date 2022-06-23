@@ -35,7 +35,7 @@ class InstanceModel extends model
         $instance = $this->dao->select('*')->from(TABLE_INSTANCE)->where('id')->eq($id)->andWhere('deleted')->eq(0)->fetch();
         if(!$instance) return null;
 
-        $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->eq($instance->space)->fetch();
+        $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
 
         return $instance;
     }

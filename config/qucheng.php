@@ -65,7 +65,13 @@ $config->openMethods[] = 'sso.feishulogin';
 $config->openMethods[] = 'admin.ignore';
 $config->openMethods[] = 'admin.init';
 $config->openMethods[] = 'admin.resetpassword';
+$config->openMethods[] = 'instance.ajaxdetail';
 $config->openMethods[] = 'personnel.unbindwhitelist';
+
+$config->notIframeMethods = array();
+$config->notIframeMethods[] = 'admin.resetpassword';
+$config->notIframeMethods[] = 'admin.init';
+$config->notIframeMethods[] = 'instance.ajaxdetail';
 
 /* Define the tables. */
 define('TABLE_USER',          '`' . $config->db->prefix . 'user`');
