@@ -25,13 +25,13 @@ const (
 )
 
 func Serve(ctx context.Context) error {
+	var err error
 	stopCh := make(chan struct{})
 
 	klog.Info("Initialize clusters")
-	err := cluster.Init(stopCh)
-	if err != nil {
-		klog.Fatal(err)
-		os.Exit(1)
+	for cluster.Init(stopCh) != nil {
+		klog.Errorf("initialize failed")
+		time.Sleep(time.Second * 10)
 	}
 
 	klog.Info("Setup cron tasks")
