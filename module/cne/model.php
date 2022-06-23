@@ -96,14 +96,14 @@ class cneModel extends model
     }
 
     /**
-     * Get upgradable version of app from cloud market.
+     * Get upgradable versions of app from cloud market.
      *
      * @param  int    $appID
      * @param  string $currentVersion
      * @access public
      * @return array|null Version list
      */
-    public function getUpgradableVersion($appID, $currentVersion)
+    public function getUpgradableVersions($appID, $currentVersion)
     {
         $apiUrl = '/api/market/app/version/upgradable';
         $result = $this->apiGet($apiUrl, array('id' => $appID, 'version' => $currentVersion), $this->config->cloud->api->headers, $this->config->cloud->api->host);

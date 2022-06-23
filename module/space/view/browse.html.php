@@ -16,9 +16,10 @@
 <div id='mainMenu' class='clearfix'>
   <div class="btn-toolbar pull-right">
     <div class="btn-group">
-      <?php $browseUrl= $this->inLink('browse', "spaceID={$currentSpace->id}"); ?>
-      <?php echo html::a($browseUrl . '&browseType=bylist', "<i class='icon-list'></i>", '', "class='btn btn-icon " . ($browseType != 'bycard' ? 'text-primary':'') . "' title='{$lang->space->byList}'");?>
-      <?php echo html::a($browseUrl . '&browseType=bycard', "<i class='icon-cards-view'></i>", '', "class='btn btn-icon " . ($browseType == 'bycard' ? 'text-primary':'') . "' title='{$lang->space->byCard}'");?>
+      <?php $listUrl= $this->inLink('browse', "spaceID={$currentSpace->id}&browseType=bylist"); ?>
+      <?php $cardUrl= $this->inLink('browse', "spaceID={$currentSpace->id}&browseType=bycard"); ?>
+      <?php echo html::a($listUrl, "<i class='icon-list'></i>", '', "class='btn btn-icon " . ($browseType != 'bycard' ? 'text-primary':'') . "' title='{$lang->space->byList}'");?>
+      <?php echo html::a($cardUrl, "<i class='icon-cards-view'></i>", '', "class='btn btn-icon " . ($browseType == 'bycard' ? 'text-primary':'') . "' title='{$lang->space->byCard}'");?>
     </div>
   </div>
 </div>

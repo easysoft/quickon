@@ -28,7 +28,7 @@
     </div>
     <table class='table table-condensed table-bordered active-disabled table-fixed'>
       <thead class="text-center">
-        <tr class='bg-gray'>
+        <tr>
           <th class='w-150px'><?php echo $lang->backup->name;?></th>
           <th class='w-100px'><?php echo $lang->backup->status?></th>
           <th class='w-100px'><?php echo $lang->backup->currentVersion;?></th>
@@ -41,7 +41,10 @@
           <td><?php echo $lang->quchengPlatform;?></td>
           <td><?php echo $lang->quchengPlatform;?></td>
           <td><?php echo $config->version;?></td>
-          <td><?php echo $config->version;?></td>
+          <td>
+            <?php echo $config->version;?>
+            <?php echo html::a('https://www.qucheng.com/dynamic.html', "&nbsp;<i class='icon icon-info-sign' style='color: #4E83F0;'></i>", '_blank', "title='{$lang->backup->versionInfo}'");?>
+          </td>
           <td class="hidden">
             <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link');?>
             <?php echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link');?>

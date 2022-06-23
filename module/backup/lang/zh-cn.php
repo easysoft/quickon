@@ -47,6 +47,7 @@ $lang->backup->confirmRestore  = '是否还原该备份？';
 $lang->backup->holdDays        = '备份保留最近 %s 天';
 $lang->backup->copiedFail      = '复制失败的文件：';
 $lang->backup->restoreTip      = '还原功能只还原数据库。';
+$lang->backup->versionInfo     = '点击查看新版本介绍';
 
 $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';

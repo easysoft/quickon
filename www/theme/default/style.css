@@ -11,6 +11,7 @@
 /* Finish task #5068*/
 .main-table .table{cursor:pointer;}
 .table-striped > tbody > tr:nth-child(2n+1) > td, .table-striped > tbody > tr:nth-child(2n+1) > th{background:none;}
+.table > thead > tr {background-color: #f4f5f7;}
 
 #pageNav .btn-group.angle-btn{margin-right:10px !important;}
 
