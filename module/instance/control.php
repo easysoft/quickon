@@ -263,7 +263,7 @@ class instance extends control
      * @access public
      * @return mixed
      */
-    public function ajaxDetail($id)
+    public function apiDetail($id)
     {
         $token = zget($_SERVER, 'HTTP_TOKEN');
         if(!($token == $this->config->CNE->api->token || $token == $this->config->cloud->api->token))
