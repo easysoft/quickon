@@ -1,0 +1,59 @@
+#!/bin/bash
+
+# shellcheck disable=SC1091
+
+[ -n "${DEBUG:+1}" ] && set -x
+
+# Load libraries
+. /opt/easysoft/scripts/liblog.sh
+. /opt/easysoft/scripts/libmysql.sh
+. /opt/easysoft/scripts/libfs.sh
+
+# Load QuCheng environment variables
+. /etc/s6/s6-init/envs
+
+#=====================================#
+# Persistence directory for qucheng   #
+#=====================================#
+for dir in $PERSISTENCE_LIST
+do
+    # Ensure a directory exists and,is owned by the given user
+    ensure_dir_exists "$dir" "www-data"
+done
+
+if [ "${RUN_MODE}" == "prod" ];then
+    for ldir in $PERSISTENCE_LINK_LIST
+    do
+        configure_permissions_ownership "$ldir" -d 777
+        make_soft_link "$ldir" "${ldir/data/apps}" "www-data"
+    done
+fi
+
+#=====================#
+#   Prepare PHP       #
+#=====================#
+PHP_CLI_INI="/etc/php/7.4/cli/php.ini"
+PHP_APACHE_INI="/etc/php/7.4/apache2/php.ini"
+
+info "Render php.ini with environment variables."
+/usr/bin/render-template /etc/php/7.4/php.ini.tpl > ${PHP_CLI_INI}
+/usr/bin/render-template /etc/php/7.4/php.ini.tpl > ${PHP_APACHE_INI}
+
+#=====================#
+#   Prepare Apache    #
+#=====================#
+SITE_CFG="/etc/apache2/sites-enabled/site.conf"
+info "Render apache sites config with envionment variables."
+/usr/bin/render-template ${SITE_CFG}.tpl > $SITE_CFG
+
+# Check and waiting mysql to be ready
+wait_for_mysql || exit 1
+
+# First run,init database
+if [ ! -f "/data/.initdb" ];then
+    # Initialize qucheng database
+    mysql_init_db "$MYSQL_DB" || exit 1
+
+    # Import qucheng data
+    mysql_import_to_db "$MYSQL_DB" "/apps/qucheng/db/data.sql" && touch /data/.initdb
+fi

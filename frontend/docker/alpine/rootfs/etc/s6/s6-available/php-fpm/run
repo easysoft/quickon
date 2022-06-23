@@ -1,4 +1,0 @@
-#!/bin/bash
-
-# Start php-fpm
-/usr/local/sbin/php-fpm -F --fpm-config /usr/local/etc/php-fpm.conf

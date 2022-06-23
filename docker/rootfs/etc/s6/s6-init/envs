@@ -1,0 +1,43 @@
+#!/bin/bash
+
+# Global environments
+export RUN_MODE=${RUN_MODE:-prod}
+export ENABLE_CRON=${ENABLE_CRON:-false}
+export ENABLE_BACKEND=${ENABLE_BACKEND:-true}
+
+#=========#
+#   PHP   #
+#=========#
+# Set environments for php
+export PHP_SESSION_TYPE=${PHP_SESSION_TYPE:-files}
+export PHP_SESSION_PATH=${PHP_SESSION_PATH:-/data/php/session}
+export PHP_ERROR_LOG=${PHP_ERROR_LOG:-/data/php/log/error.log}
+export PHP_DEBUG=${PHP_DEBUG:-2}
+export MYSQL_HOST=${MYSQL_HOST:-127.0.0.1}
+export MYSQL_PORT=${MYSQL_PORT:-3306}
+export MYSQL_DB=${MYSQL_DB:-qucheng}
+export MYSQL_USER=${MYSQL_USER:-root}
+export MYSQL_PASSWORD=${MYSQL_PASSWORD:-pass4Qucheng}
+export MAXWAIT=${MAXWAIT:-30}
+
+#==========#
+# Apache   #
+#==========#
+export APP_DOMAIN=${APP_DOMAIN:-*}
+
+#=======================#
+# Persistence directory #
+#=======================#
+export PERSISTENCE_LIST="
+/data/php/session
+/data/php/log
+/data/qucheng
+/data/qucheng/backup
+/data/qucheng/www
+/data/qucheng/www/data"
+
+#==========================================#
+# Persistence directory and make soft link #
+#==========================================#
+export PERSISTENCE_LINK_LIST="
+/data/qucheng/www/data"

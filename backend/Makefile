@@ -11,8 +11,7 @@ GOSUMDB = sum.golang.google.cn
 
 BUILD_RELEASE   ?= $(shell cat VERSION || echo "0.0.1")
 BUILD_DATE := $(shell date "+%Y%m%d")
-GIT_COMMIT := $(shell git rev-parse --short HEAD || echo "abcdefgh")
-APP_VERSION := ${BUILD_RELEASE}-${BUILD_DATE}-${GIT_COMMIT}
+APP_VERSION := $(BUILD_RELEASE)-${BUILD_DATE}-$(GIT_COMMIT)
 
 LDFLAGS := "-w \
 	-X $(VERSION_PKG).release=$(APP_VERSION) \

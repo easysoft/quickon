@@ -1,5 +1,0 @@
-!**/*.go
-!**/*.mod
-!**/*.sum
-!Makefile
-!VERSION

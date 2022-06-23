@@ -1,0 +1,6 @@
+.git 
+!**/*.go
+!**/*.mod
+!**/*.sum
+!Makefile
+!VERSION

@@ -1,0 +1,56 @@
+before_script:
+  - docker info
+  - echo "build $CI_COMMIT_REF_NAME"
+
+# after_script:
+#   - echo "build done"
+
+workflow:
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "master" || $CI_COMMIT_REF_NAME == "test" || $CI_COMMIT_REF_NAME == "release"
+      when: always
+    - if: $CI_COMMIT_TAG
+      when: always
+    # - if: $CI_COMMIT_REF_NAME == "feat/ci" # test ci only
+    #   when: always
+    - when: never
+
+stages:
+  - gentag
+  - build
+  - deploy
+
+gentag-branch:
+  stage: gentag
+  script:
+    - tag=$(echo "$CI_COMMIT_REF_NAME" | tr '/' '-')
+    - echo "BUILD_TAG=${tag}" >  build.tag
+  artifacts:
+    reports:
+      dotenv: build.tag
+  only:
+    - branches
+
+gentag-tags:
+  stage: gentag
+  script:
+    - echo "BUILD_TAG=${CI_COMMIT_TAG}" >  build.tag
+  artifacts:
+    reports:
+      dotenv: build.tag
+  only:
+    - tags
+
+build:
+  stage: build
+  script:
+    - make build && make push
+  after_script:
+    - echo "clean build"
+
+deploy:
+  stage: deploy
+  script:
+    - kubectl rollout restart deploy/qucheng -n cne-system --kubeconfig=$HOME/.kube/pre.kubeconfig
+  only:
+    - test
