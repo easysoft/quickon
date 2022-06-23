@@ -331,13 +331,7 @@ class cneModel extends model
      */
     public function installApp($appData)
     {
-        $settings = array();
-        foreach($appData->settings as $key => $value)
-        {
-            if(strpos($key, 'replicas') !== false && intval($value) < 1) $value = 1; // Replicas must be greater 0.
-            $settings[] = array('key' => str_replace('_', '.', $key), 'value' => $value);
-        }
-        $appData->settings = $settings;
+        $appData->settings = $this->trasformSettings($appData->settings);
 
         $appData->channel = $this->config->CNE->api->channel;
 
@@ -357,6 +351,43 @@ class cneModel extends model
         $instance->channel = $this->config->CNE->api->channel;
         $apiUrl = "/api/cne/app/uninstall";
         return $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Config app instance.
+     *
+     * @param  int    $instance
+     * @param  int    $settings
+     * @access public
+     * @return true
+     */
+    public function configApp($instance, $settings)
+    {
+        $instance->settings = $this->transformedSettings($settings);
+        $instance->channel  = $this->config->CNE->api->channel;
+        $apiUrl = "/api/cne/app/settings";
+        $result = $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
+     * Trasform setting format.
+     *
+     * @param  array  $settings
+     * @access private
+     * @return aray
+     */
+    private function trasformSettings($settings)
+    {
+        $transformedSettings = array();
+        foreach($settings as $key => $value)
+        {
+            if(strpos($key, 'replicas') !== false && intval($value) < 1) $value = 1; // Replicas must be greater 0.
+            $transformedSettings[] = array('key' => str_replace('_', '.', $key), 'value' => $value);
+        }
+        return $transformedSettings;
     }
 
     /**

@@ -17,6 +17,7 @@ $(function()
             let res = JSON.parse(response);
             if(res.result == 'success')
             {
+                config.onlybody = 'no';
                 window.parent.$.apps.open(createLink('space', 'browse'), 'space');
             }
             else

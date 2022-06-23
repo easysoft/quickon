@@ -31,6 +31,7 @@ services:
       - CNE_API_HOST=http://cne.internal-pre.chandao.net
       - CLOUD_API_HOST=http://cne-market.internal-pre.chandao.net
       - CLOUD_DEFAULT_CHANNEL=test
+      - APP_DOMAIN=dev.haogs.cn
 
   qucheng-dev:
     image: hub.qucheng.com/platform/qucheng:${TAG}

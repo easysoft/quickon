@@ -11,6 +11,12 @@
  */
 class InstanceModel extends model
 {
+    /**
+     * Construct method: load CNE model, and set primaryDomain.
+     *
+     * @access public
+     * @return mixed
+     */
     public function __construct()
     {
         parent::__construct();
@@ -29,7 +35,7 @@ class InstanceModel extends model
         $instance = $this->dao->select('*')->from(TABLE_INSTANCE)->where('id')->eq($id)->andWhere('deleted')->eq(0)->fetch();
         if(!$instance) return null;
 
-        $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->eq($instance->space)->fetch();
+        $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
 
         return $instance;
     }
@@ -150,15 +156,45 @@ class InstanceModel extends model
     }
 
     /**
+     * Create third domain.
+     *
+     * @param  int    $length
+     * @param  int    $triedTimes
+     * @access public
+     * @return mixed
+     */
+    public function randThirdDomain($length = 4, $triedTimes = 0)
+    {
+        if($triedTimes > 16) $length++;
+
+        $thirdDomain = strtolower(helper::randStr($length));
+        if(!$this->domainExists($thirdDomain)) return $thirdDomain;
+
+        return $this->randThirdDomain($length, $triedTimes++);
+    }
+
+    /**
+     * Return full domain.
+     *
+     * @param  string $thirdDomain
+     * @access public
+     * @return mixed
+     */
+    public function fullDomain($thirdDomain)
+    {
+        return $thirdDomain . '.' . $this->config->CNE->api->domain;
+    }
+
+    /**
      * Check if the domain exists.
      *
-     * @param  int    $secondDomain
+     * @param  int    $thirdDomain
      * @access public
      * @return bool   true: exists, false: not exist.
      */
-    public function domainExists($secondDomain)
+    public function domainExists($thirdDomain)
     {
-        $domain = $secondDomain . '.' . $this->config->instance->primaryDomain;
+        $domain = $this->fullDomain($thirdDomain);
         return boolval($this->dao->select('id')->from(TABLE_INSTANCE)->where('domain')->eq($domain)->andWhere('deleted')->eq(0)->fetch());
     }
 
@@ -201,7 +237,7 @@ class InstanceModel extends model
         $instanceData->appId      = $app->id;
         $instanceData->appName    = $app->alias;
         $instanceData->name       = !empty($customData->customName)   ? $customData->customName : $app->alias;
-        $instanceData->domain     = !empty($customData->customDomain) ? $customData->customDomain . '.' . $this->config->instance->primaryDomain : '';
+        $instanceData->domain     = !empty($customData->customDomain) ? $this->fullDomain($customData->customDomain) : '';
         $instanceData->logo       = $app->logo;
         $instanceData->desc       = $app->desc;
         $instanceData->source     = 'cloud';
