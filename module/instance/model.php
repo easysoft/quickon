@@ -476,7 +476,22 @@ class InstanceModel extends model
     public function printLog($instance, $log)
     {
         $action = zget($this->lang->instance->actionList, $log->action, $this->lang->actions);
-        echo $log->actorName . sprintf($action, $instance->appName);
+
+        $logText = $log->actorName . sprintf($action, $instance->appName);
+
+        $extra = json_decode($log->extra);
+        if(!empty($extra))
+        {
+            if($log->action == 'editname' && isset($extra->data))
+            {
+                $oldName  = zget($extra->data, 'oldName', '');
+                $newName  = zget($extra->data, 'newName', '');
+                $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName) . '。';
+            }
+
+        }
+
+        echo $logText;
     }
 
     /*

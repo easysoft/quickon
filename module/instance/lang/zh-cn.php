@@ -91,6 +91,8 @@ $lang->instance->notices['installFail']      = '安装失败';
 $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
 $lang->instance->notices['submiting']        = '提交中，请稍候...';
 
+$lang->instance->nameChangeTo = '从 %s 改为 %s ';
+
 $lang->instance->instanceNotExists = '服务不存在';
 $lang->instance->domainExists      = '域名已被占用，请使用其它域名。';
 $lang->instance->caplicasTooSmall  = '副本数不能小于1';

@@ -77,11 +77,11 @@ class instance extends control
             $this->instance->updateByID($id, $newInstance);
             if(dao::isError())
             {
-                $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('code' => 600), 'app' => array('alias' => $instance->appName, 'app_version' => $instance->version))));
+                $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('result' => 'fail'), 'data' => array('oldName' => $instance->name, 'newName' => $newInstance->name))));
                 return $this->send(array('result' => 'fail', 'message' => dao::getError()));
             }
 
-            $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('code' => 200), 'app' => array('alias' => $instance->appName, 'app_version' => $instance->version))));
+            $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('result' => 'success'), 'data' => array('oldName' => $instance->name, 'newName' => $newInstance->name))));
             return print(js::closeModal('parent.parent', 'this', "function(){parent.parent.location.reload();}"));
         }
 
