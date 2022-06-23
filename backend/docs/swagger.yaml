@@ -1,0 +1,508 @@
+definitions:
+  model.AppCreateModel:
+    properties:
+      chart:
+        type: string
+      cluster:
+        type: string
+      name:
+        type: string
+      namespace:
+        type: string
+      settings:
+        items:
+          $ref: '#/definitions/model.stringSetting'
+        type: array
+    required:
+    - chart
+    - name
+    - namespace
+    type: object
+  model.AppManageModel:
+    properties:
+      chart:
+        type: string
+      cluster:
+        type: string
+      name:
+        type: string
+      namespace:
+        type: string
+    required:
+    - chart
+    - name
+    - namespace
+    type: object
+  model.AppModel:
+    properties:
+      cluster:
+        type: string
+      name:
+        type: string
+      namespace:
+        type: string
+    required:
+    - name
+    - namespace
+    type: object
+  model.Middleware:
+    properties:
+      name:
+        type: string
+      namespace:
+        type: string
+      type:
+        description: 类型
+        type: string
+    required:
+    - name
+    - namespace
+    - type
+    type: object
+  model.NamespaceBase:
+    properties:
+      cluster:
+        type: string
+      name:
+        type: string
+    required:
+    - name
+    type: object
+  model.stringSetting:
+    properties:
+      key:
+        type: string
+      value:
+        type: string
+    type: object
+  router.response2xx:
+    properties:
+      data: {}
+      message:
+        type: string
+      pagination: {}
+      success:
+        type: boolean
+    type: object
+  router.response5xx:
+    properties:
+      data: {}
+      message:
+        type: string
+      pagination: {}
+      success:
+        default: false
+        type: boolean
+    type: object
+info:
+  contact:
+    name: QuCheng Pangu Team
+  description: CNE API.
+  license:
+    name: Z PUBLIC LICENSE 1.2
+  title: CNE API
+  version: 1.0.0
+paths:
+  /api/cne/app/install:
+    post:
+      consumes:
+      - application/json
+      description: 安装接口
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AppCreateModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 安装接口
+      tags:
+      - 应用管理
+  /api/cne/app/settings:
+    post:
+      consumes:
+      - application/json
+      description: 设置应用
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AppCreateModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 设置应用
+      tags:
+      - 应用管理
+  /api/cne/app/start:
+    post:
+      consumes:
+      - application/json
+      description: 启动应用
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AppManageModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 启动应用
+      tags:
+      - 应用管理
+  /api/cne/app/status:
+    get:
+      consumes:
+      - application/json
+      description: 应用状态
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - in: query
+        name: cluster
+        type: string
+      - in: query
+        name: name
+        required: true
+        type: string
+      - in: query
+        name: namespace
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 应用状态
+      tags:
+      - 应用管理
+  /api/cne/app/stop:
+    post:
+      consumes:
+      - application/json
+      description: 关闭应用
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AppManageModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 关闭应用
+      tags:
+      - 应用管理
+  /api/cne/app/uninstall:
+    post:
+      consumes:
+      - application/json
+      description: 卸载接口
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.AppModel'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 卸载接口
+      tags:
+      - 应用管理
+  /api/cne/middleware/install:
+    post:
+      consumes:
+      - application/json
+      description: 安装中间件
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Middleware'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 安装中间件
+      tags:
+      - 中间件
+  /api/cne/middleware/uninstall:
+    post:
+      consumes:
+      - application/json
+      description: 卸载中间件
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.Middleware'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 卸载中间件
+      tags:
+      - 中间件
+  /api/cne/namespace:
+    get:
+      consumes:
+      - multipart/form-data
+      description: 查询命名空间
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - in: query
+        name: cluster
+        type: string
+      - in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 查询命名空间
+      tags:
+      - 命名空间
+  /api/cne/namespace/create:
+    post:
+      consumes:
+      - application/json
+      description: 创建命名空间
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.NamespaceBase'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 创建命名空间
+      tags:
+      - 命名空间
+  /api/cne/namespace/recycle:
+    post:
+      consumes:
+      - application/json
+      description: 删除命名空间
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.NamespaceBase'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 删除命名空间
+      tags:
+      - 命名空间
+swagger: "2.0"

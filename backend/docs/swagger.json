@@ -1,0 +1,795 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "CNE API.",
+        "title": "CNE API",
+        "contact": {
+            "name": "QuCheng Pangu Team"
+        },
+        "license": {
+            "name": "Z PUBLIC LICENSE 1.2"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/api/cne/app/install": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "安装接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "应用管理"
+                ],
+                "summary": "安装接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AppCreateModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/app/settings": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "设置应用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "应用管理"
+                ],
+                "summary": "设置应用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AppCreateModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/app/start": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "启动应用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "应用管理"
+                ],
+                "summary": "启动应用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AppManageModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/app/status": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "应用状态",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "应用管理"
+                ],
+                "summary": "应用状态",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "name": "cluster",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "name": "namespace",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/app/stop": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "关闭应用",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "应用管理"
+                ],
+                "summary": "关闭应用",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AppManageModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/app/uninstall": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "卸载接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "应用管理"
+                ],
+                "summary": "卸载接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.AppModel"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/middleware/install": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "安装中间件",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "中间件"
+                ],
+                "summary": "安装中间件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Middleware"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/middleware/uninstall": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "卸载中间件",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "中间件"
+                ],
+                "summary": "卸载中间件",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Middleware"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/namespace": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "查询命名空间",
+                "consumes": [
+                    "multipart/form-data"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "查询命名空间",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "name": "cluster",
+                        "in": "query"
+                    },
+                    {
+                        "type": "string",
+                        "name": "name",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/namespace/create": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "创建命名空间",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "创建命名空间",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.NamespaceBase"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/namespace/recycle": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "删除命名空间",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "命名空间"
+                ],
+                "summary": "删除命名空间",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
+                    },
+                    {
+                        "description": "meta",
+                        "name": "body",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.NamespaceBase"
+                        }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "model.AppCreateModel": {
+            "type": "object",
+            "required": [
+                "chart",
+                "name",
+                "namespace"
+            ],
+            "properties": {
+                "chart": {
+                    "type": "string"
+                },
+                "cluster": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "settings": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.stringSetting"
+                    }
+                }
+            }
+        },
+        "model.AppManageModel": {
+            "type": "object",
+            "required": [
+                "chart",
+                "name",
+                "namespace"
+            ],
+            "properties": {
+                "chart": {
+                    "type": "string"
+                },
+                "cluster": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.AppModel": {
+            "type": "object",
+            "required": [
+                "name",
+                "namespace"
+            ],
+            "properties": {
+                "cluster": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Middleware": {
+            "type": "object",
+            "required": [
+                "name",
+                "namespace",
+                "type"
+            ],
+            "properties": {
+                "name": {
+                    "type": "string"
+                },
+                "namespace": {
+                    "type": "string"
+                },
+                "type": {
+                    "description": "类型",
+                    "type": "string"
+                }
+            }
+        },
+        "model.NamespaceBase": {
+            "type": "object",
+            "required": [
+                "name"
+            ],
+            "properties": {
+                "cluster": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.stringSetting": {
+            "type": "object",
+            "properties": {
+                "key": {
+                    "type": "string"
+                },
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "router.response2xx": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "pagination": {},
+                "success": {
+                    "type": "boolean"
+                }
+            }
+        },
+        "router.response5xx": {
+            "type": "object",
+            "properties": {
+                "data": {},
+                "message": {
+                    "type": "string"
+                },
+                "pagination": {},
+                "success": {
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        }
+    }
+}

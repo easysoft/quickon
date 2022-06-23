@@ -1,0 +1,70 @@
+run:
+  timeout: 5m
+
+issues:
+  exclude:
+    - G101 # gosec: Potential hardcoded credentials
+  max-same-issues: 0
+  # Excluding configuration per-path, per-linter, per-text and per-source
+  exclude-rules:
+    # exclude ineffassing linter for generated files for conversion
+    - linters:
+        - dogsled
+      text:  "declaration has 3 blank identifiers"
+      path: _test\.go
+    - linters:
+        - dupl
+      path: _test\.go
+
+linters:
+  # TODO: fix errors so that all of the linters below pass.
+  # The linters that are commented out, as well as those explicitly disabled,
+  # are currently failing.  We should fix those failures or define exclusion
+  # rules, and then enable those linters.
+  disable-all: true
+  enable:
+    # - goerr113
+    - gofmt
+    - goimports
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - misspell
+    # - revive
+    - staticcheck
+    - structcheck
+    # - typecheck
+    # - unused
+    - varcheck
+
+linters-settings:
+  gosimple:
+    go: "1.18"
+  unused:
+    go: "1.18"
+  govet:
+    enable-all: true
+    disable:
+      - fieldalignment
+      - shadow
+  stylecheck:
+    # Select the Go version to target. The default is '1.13'.
+    go: "1.18"
+    # https://staticcheck.io/docs/options#checks
+    checks: [ "all", "-S1*", "-ST1000", "-ST1003", "-ST1016", "-ST1020", "-ST1021", "-ST1022", "-SA5011", "-SA1019", "-SA2002"]
+    # https://staticcheck.io/docs/options#dot_import_whitelist
+    dot-import-whitelist:
+      - fmt
+    # https://staticcheck.io/docs/options#initialisms
+    initialisms: [ "ACL", "API", "ASCII", "CPU", "CSS", "DNS", "EOF", "GUID", "HTML", "HTTP", "HTTPS", "ID", "IP", "JSON", "QPS", "RAM", "RPC", "SLA", "SMTP", "SQL", "SSH", "TCP", "TLS", "TTL", "UDP", "UI", "GID", "UID", "UUID", "URI", "URL", "UTF8", "VM", "XML", "XMPP", "XSRF", "XSS" ]
+    # https://staticcheck.io/docs/options#http_status_code_whitelist
+    http-status-code-whitelist: [ "200", "400", "404", "500" ]
+
+  nakedret:
+    # default 30
+    max-func-lines: 100
+
+  gocyclo:
+    # default 30
+    max-complexity: 100
