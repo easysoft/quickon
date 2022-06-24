@@ -15,9 +15,10 @@
 <?php js::set('instanceIdList',  array($instance->id));?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left instance-name'>
+    <span class='q-title-bar'></span>
     <h3><?php echo $instance->name;?></h3>
     <span><?php echo $instance->appVersion;?></span>
-    <?php echo html::a($this->createLink('instance', 'editname', "id=$instance->id&onlybody=yes"), '<i class="icon-edit"></i>', '', "class='iframe' title='$lang->edit' data-width='600' data-app='space'");?>
+    <?php echo html::a($this->createLink('instance', 'editname', "id=$instance->id", '', true), '<i class="icon-edit"></i>', '', "class='iframe' title='$lang->edit' data-width='600' data-app='space'");?>
   </div>
   <div class='btn-toolbar pull-right instance-panel'>
     <div class="btn-group">

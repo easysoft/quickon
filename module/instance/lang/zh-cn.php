@@ -102,3 +102,4 @@ $lang->instance->noComponent       = '无组件，点击';
 $lang->instance->errors = new stdclass;
 $lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';
 $lang->instance->errors->wrongDomainCharacter = '域名只能是英文字母和数字';
+$lang->instance->errors->noAppInfo            = '获取应用数据失败，请稍候重试。';

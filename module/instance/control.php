@@ -68,7 +68,6 @@ class instance extends control
      */
     public function editName($id)
     {
-        $_GET['onlybody'] = 'yes';
         $instance = $this->instance->getByID($id);
 
         if(!empty($_POST))
@@ -142,9 +141,8 @@ class instance extends control
      */
     public function install($appID)
     {
-        $_GET['onlybody'] = 'yes';
-
         $cloudApp = $this->cne->getAppInfo($appID);
+        if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
         $customData = new stdclass;
         if(!empty($_POST))

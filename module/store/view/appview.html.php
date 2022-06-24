@@ -24,7 +24,7 @@
       <div class="main-header">
         <h2 class="app-name"><?php echo $cloudApp->alias;?></h2>
         <div class="btn-group dropdown pull-right">
-          <?php echo html::a(helper::createLink('instance', 'install', "id={$cloudApp->id}&onlybody=yes"), $lang->instance->install, '', "class='iframe btn btn-primary' title='{$lang->instance->install}' data-width='600' data-app='space'");?>
+          <?php echo html::a(helper::createLink('instance', 'install', "id={$cloudApp->id}", '', true), $lang->instance->install, '', "class='iframe btn btn-primary' title='{$lang->instance->install}' data-width='600' data-app='space'");?>
         </div>
       </div>
       <table class="table table-data">
