@@ -1,14 +1,18 @@
-date_time := $(shell date +%Y%m%d )
+date_time := $(shell date +%Y%m%d)
 export commit_id := $(shell git rev-parse --short HEAD)
 export branch_name := $(shell git branch -r --contains | head -1 | sed -E -e "s%(HEAD ->|origin|upstream)/?%%g" | xargs )
-export TAG := $(shell echo $(branch_name)-$(date_time)-$(commit_id) )
+
+ifeq ($(branch_name),test)
+  export TAG=test
+else
+  export TAG=$(branch_name)-$(date_time)-$(commit_id)
+endif
 
 help: ## this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 build-pubilc: ## 构建后端服务
-	docker build --build-arg VERSION=$(TAG) \
-        --build-arg GIT_COMMIT=$(commit_id) \
+	docker build --build-arg GIT_COMMIT=$(commit_id) \
         --build-arg GIT_BRANCH=$(branch_name) \
         -t qucheng-backend -f backend/Dockerfile .
 
