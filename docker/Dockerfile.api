@@ -4,7 +4,7 @@
 
 FROM hub.qucheng.com/library/debian:11.3-slim
 
-COPY --from=hub.qucheng.com/platform/qucheng:master-20220624-0f208db /apps/qucheng/bin/backend /usr/bin/cne-api
+COPY --from=qucheng-backend /go/src/_output/bin/cne-api /usr/bin/cne-api
 
 RUN chmod +x /usr/bin/cne-api
 

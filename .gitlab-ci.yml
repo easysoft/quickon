@@ -45,6 +45,7 @@ build:
   stage: build
   script:
     - make build && make push
+    - make build-api && make push-api
   after_script:
     - echo "clean build"
 

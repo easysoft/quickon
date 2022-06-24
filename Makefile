@@ -6,15 +6,19 @@ export TAG := $(shell echo $(branch_name)-$(date_time)-$(commit_id) )
 help: ## this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
-build: ## 构建镜像
+build-pubilc: ## 构建后端服务
 	docker build --build-arg VERSION=$(TAG) \
-	--build-arg GIT_COMMIT=$(commit_id) \
-	--build-arg GIT_BRANCH=$(branch_name) \
+        --build-arg GIT_COMMIT=$(commit_id) \
+        --build-arg GIT_BRANCH=$(branch_name) \
+        -t qucheng-backend -f backend/Dockerfile .
+
+build: build-pubilc ## 构建镜像
+	docker build --build-arg VERSION=$(TAG) \
 	-t hub.qucheng.com/platform/qucheng:$(TAG) -f docker/Dockerfile .
 
-build-api: build ## 构建api程序
-	sed -i "s/__TAG__/$(TAG)/" docker/Dockerfile.api
-	docker build -t hub.qucheng.com/platform/cne-api:$(TAG) -f docker/Dockerfile.api docker
+build-api: build-pubilc ## 构建api程序
+	docker build --build-arg VERSION=$(TAG) \
+        -t hub.qucheng.com/platform/cne-api:$(TAG) -f docker/Dockerfile.api .
 
 build-all: build build-api # 构建所有镜像
 
