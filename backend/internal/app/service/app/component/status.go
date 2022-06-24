@@ -33,11 +33,15 @@ func parseStatus(replicas, availableReplicas, updatedReplicas, readyReplicas int
 
 	if replicas > 0 && readyReplicas < replicas {
 		appStatus = constant.AppStatusStarting
+		return
 	}
 
 	for _, pod := range pods {
 		createTime := pod.CreationTimestamp
 		for _, ctnStatus := range pod.Status.ContainerStatuses {
+			if ctnStatus.Started == nil {
+				break
+			}
 			if !*ctnStatus.Started {
 				if ctnStatus.RestartCount >= 3 {
 					appStatus = constant.AppStatusAbnormal
