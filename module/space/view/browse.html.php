@@ -15,7 +15,7 @@
 <?php js::set('instanceIdList',   array_column($instances, 'id'));?>
 <div id='mainMenu' class='clearfix'>
   <form id="spaceSearchForm" method="post" class="not-watch load-indicator">
-    <div class="btn-toolbar pull-left">
+    <div class="hidden btn-toolbar pull-left">
         <div class="input-control search-box has-icon-left has-icon-right search-example" id="searchboxExample">
           <?php echo html::input('search', '', "type='search' placeholder='{$lang->space->searchInstance}' autocomplete='off' class='form-control search-input text-left'");?>
         </div>
