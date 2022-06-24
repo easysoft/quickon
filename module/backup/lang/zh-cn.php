@@ -30,7 +30,6 @@ $lang->backup->rollback = '回滚';
 $lang->backup->restart  = '重启';
 $lang->backup->delete   = '删除';
 
-
 $lang->backup->statusList['success'] = '成功';
 $lang->backup->statusList['fail']    = '失败';
 

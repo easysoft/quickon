@@ -30,7 +30,6 @@
       <thead class="text-center">
         <tr>
           <th class='w-150px'><?php echo $lang->backup->name;?></th>
-          <th class='w-100px'><?php echo $lang->backup->status?></th>
           <th class='w-100px'><?php echo $lang->backup->currentVersion;?></th>
           <th class='w-100px'><?php echo $lang->backup->latestVersion;?></th>
           <th class='hidden actionWidth'><?php echo $lang->actions?></th>
@@ -38,7 +37,6 @@
       </thead>
       <tbody class='text-center'>
         <tr>
-          <td><?php echo $lang->quchengPlatform;?></td>
           <td><?php echo $lang->quchengPlatform;?></td>
           <td><?php echo $config->version;?></td>
           <td>
