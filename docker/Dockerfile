@@ -11,12 +11,7 @@ RUN sed -i -r 's/(deb|security).debian.org/mirrors.aliyun.com/g' /etc/apt/source
 
 WORKDIR /go/src
 
-ARG GIT_COMMIT
-ARG GIT_BRANCH
-
 ENV GOPROXY=https://goproxy.cn,direct
-
-COPY VERSION .
 
 COPY backend/go.mod go.mod
 
@@ -24,10 +19,14 @@ COPY backend/go.sum go.sum
 
 RUN go mod download
 
+COPY VERSION .
+
 COPY backend .
 
-RUN make build && upx -9 /go/src/_output/bin/cne-api
+ARG GIT_COMMIT
+ARG GIT_BRANCH
 
+RUN make build && upx -9 /go/src/_output/bin/cne-api
 
 # Build qucheng image
 FROM hub.qucheng.com/library/debian:11.3-slim
