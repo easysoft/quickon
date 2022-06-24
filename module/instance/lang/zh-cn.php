@@ -66,8 +66,10 @@ $lang->instance->componentFields['cpu_limit'] = 'CPU';
 $lang->instance->componentFields['mem_limit'] = '内存';
 
 $lang->instance->start         = '启动';
+$lang->instance->restart       = '重启';
 $lang->instance->stop          = '关闭';
 $lang->instance->install       = '安装';
+$lang->instance->update        = '更新';
 $lang->instance->customInstall = '自定义安装';
 $lang->instance->uninstall     = '卸载';
 $lang->instance->visit         = '访问';

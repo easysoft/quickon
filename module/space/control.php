@@ -26,6 +26,7 @@ class space extends control
     public function browse($spaceID = null, $browseType = 'bycard', $recTotal = 0, $recPerPage = 20, $pageID = 1)
     {
         $this->loadModel('instance');
+        $this->loadModel('store');
 
         if($spaceID)
         {
@@ -36,10 +37,20 @@ class space extends control
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
+        $searchName = '';
+        if(!empty($_POST))
+        {
+            $conditions = fixer::input('post')
+                ->trim('search')
+                ->setDefault('search', '')
+                ->get();
+            $searchName = $conditions->search;
+        }
+
         $this->app->loadClass('pager', true);
         $pager = pager::init($recTotal, $recPerPage, $pageID);
 
-        $instances = $this->space->getSpaceInstances($space->id, $pager);
+        $instances = $this->space->getSpaceInstances($space->id, $searchName, $pager);
 
         $this->lang->switcherMenu = $this->space->getSwitcher($space, 'space', 'browse');
 

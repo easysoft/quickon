@@ -67,12 +67,13 @@ class spaceModel extends model
      * @access public
      * @return array
      */
-    public function getSpaceInstances($spaceID, $pager = null)
+    public function getSpaceInstances($spaceID, $searchName = '', $pager = null)
     {
         $space     = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->eq($spaceID)->fetch();
         $instances = $this->dao->select('*')->from(TABLE_INSTANCE)
             ->where('deleted')->eq(0)
             ->andWhere('space')->eq($spaceID)
+            ->beginIF(!empty($searchName))->andWhere('name')->like("%{$searchName}%")->fi()
             ->orderBy('id desc')->page($pager)->fetchAll('id');
 
         return $instances;
