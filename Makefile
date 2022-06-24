@@ -12,8 +12,19 @@ build: ## 构建镜像
 	--build-arg GIT_BRANCH=$(branch_name) \
 	-t hub.qucheng.com/platform/qucheng:$(TAG) -f docker/Dockerfile .
 
-push: ## push 镜像
+build-api: build ## 构建api程序
+	sed -i "s/__TAG__/$(TAG)/" docker/Dockerfile.api
+	docker build -t hub.qucheng.com/platform/cne-api:$(TAG) -f docker/Dockerfile.api docker
+
+build-all: build build-api # 构建所有镜像
+
+push: ## push qucheng 镜像
 	docker push hub.qucheng.com/platform/qucheng:$(TAG)
+
+push-api: ## push api镜像
+	docker push hub.qucheng.com/platform/cne-api:$(TAG)
+
+push-all: push push-api ## push 所有镜像
 
 run: ## 运行
 	docker-compose -f docker-compose.yml up -d mysql qucheng

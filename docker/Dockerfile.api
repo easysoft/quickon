@@ -1,0 +1,11 @@
+# Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
+# Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
+# license that can be found in the LICENSE file.
+
+FROM hub.qucheng.com/library/debian:11.3-slim
+
+COPY --from=hub.qucheng.com/platform/qucheng:master-20220624-0f208db /apps/qucheng/bin/backend /usr/bin/cne-api
+
+RUN chmod +x /usr/bin/cne-api
+
+CMD ["/usr/bin/cne-api", "serve"]
