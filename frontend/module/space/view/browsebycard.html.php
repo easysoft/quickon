@@ -33,7 +33,7 @@
             </div>
           </div>
           <div class='panel-footer instance-footer'>
-            <div class="pull-left"><?php echo $instance->version;?></div>
+            <div class="pull-left"><?php echo $instance->appVersion;?></div>
             <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
               <?php $this->instance->printStatus($instance);?>
             </div>

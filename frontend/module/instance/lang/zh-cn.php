@@ -7,6 +7,7 @@ $lang->instance->status     = '状态';
 $lang->instance->cpu        = 'CPU';
 $lang->instance->mem        = '内存';
 $lang->instance->space      = '空间';
+$lang->instance->domain     = '域名';
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';
@@ -17,6 +18,7 @@ $lang->instance->defaultAccount   = '默认用户';
 $lang->instance->defaultPassword  = '默认密码';
 $lang->instance->operationLog     = '操作记录';
 $lang->instance->installedService = '已安装服务';
+$lang->instance->installApp       = '安装应用';
 
 $lang->instance->log = new stdclass;
 $lang->instance->log->date    = '日期';
@@ -64,8 +66,10 @@ $lang->instance->componentFields['cpu_limit'] = 'CPU';
 $lang->instance->componentFields['mem_limit'] = '内存';
 
 $lang->instance->start         = '启动';
+$lang->instance->restart       = '重启';
 $lang->instance->stop          = '关闭';
 $lang->instance->install       = '安装';
+$lang->instance->update        = '更新';
 $lang->instance->customInstall = '自定义安装';
 $lang->instance->uninstall     = '卸载';
 $lang->instance->visit         = '访问';
@@ -89,7 +93,15 @@ $lang->instance->notices['installFail']      = '安装失败';
 $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
 $lang->instance->notices['submiting']        = '提交中，请稍候...';
 
+$lang->instance->nameChangeTo = ' %s 修改为 %s  。';
+
 $lang->instance->instanceNotExists = '服务不存在';
+$lang->instance->domainExists      = '域名已被占用，请使用其它域名。';
 $lang->instance->caplicasTooSmall  = '副本数不能小于1';
 $lang->instance->empty             = '暂无服务';
 $lang->instance->noComponent       = '无组件，点击';
+
+$lang->instance->errors = new stdclass;
+$lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';
+$lang->instance->errors->wrongDomainCharacter = '域名只能是英文字母和数字';
+$lang->instance->errors->noAppInfo            = '获取应用数据失败，请稍候重试。';

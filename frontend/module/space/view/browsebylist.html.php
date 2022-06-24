@@ -32,7 +32,7 @@
         <tr>
           <td><?php echo html::a($this->createLink('instance', 'view', "id=$instance->id"), $instance->name);?></td>
           <td><?php echo html::a($this->createLink('store', 'appview', "id=$instance->appID"), $instance->appName);?></td>
-          <td><?php echo $instance->version;?></td>
+          <td><?php echo $instance->appVersion;?></td>
           <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
             <?php echo zget($lang->instance->statusList, $instance->status, '');?>
           </td>

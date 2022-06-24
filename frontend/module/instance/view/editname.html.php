@@ -13,10 +13,7 @@
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <div id='mainContent' class='main-content'>
   <div class='main-header'>
-    <h2>
-      <i class='icon-pencil'></i>
-      <?php echo $lang->instance->editName;?>
-    </h2>
+    <h2><?php echo $lang->instance->editName;?></h2>
   </div>
   <form method='post' target='hiddenwin' id='dataform'>
     <table class='table table-form'>

@@ -21,7 +21,7 @@ js::set('appsLang',      $lang->index->app);
 js::set('appsMenuItems', commonModel::getMainNavList($app->rawModule));
 js::set('defaultOpen',   $open);
 js::set('manualText',    $lang->manual);
-js::set('manualUrl',     ((!empty($config->isINT)) ? $config->manualUrl['install'] : $config->manualUrl['home']) . '&theme=' . $_COOKIE['theme']);
+js::set('manualUrl',     (!empty($config->isINT) ? $config->manualUrl['install'] : $config->manualUrl['home']));
 ?>
 <style>
 #versionTitle {margin: 8px 3px 0px 0px; background-image: url(<?php echo $config->webRoot . 'theme/default/images/main/version-upgrade.svg';?>);}

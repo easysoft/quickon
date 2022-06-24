@@ -10,3 +10,4 @@
 #cardsContainer .instance-desc {display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; vertical-align: middle;}
 #cardsContainer .instance-footer {height: 50px; padding: 10px 20px; font-size: 14px; font-weight: bold;}
 #cardsContainer .instance-footer span {display: inline-block; margin: 0 10px;}
+.input-group-btn {float: left;}

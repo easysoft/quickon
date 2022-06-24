@@ -96,6 +96,23 @@ class cneModel extends model
     }
 
     /**
+     * Get upgradable versions of app from cloud market.
+     *
+     * @param  int    $appID
+     * @param  string $currentVersion
+     * @access public
+     * @return array|null Version list
+     */
+    public function getUpgradableVersions($appID, $currentVersion)
+    {
+        $apiUrl = '/api/market/app/version/upgradable';
+        $result = $this->apiGet($apiUrl, array('id' => $appID, 'version' => $currentVersion), $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return $result->data;
+    }
+
+    /**
      * Get app setting from cloud market.
      *
      * @param  int $id
@@ -314,13 +331,7 @@ class cneModel extends model
      */
     public function installApp($appData)
     {
-        $settings = array();
-        foreach($appData->settings as $key => $value)
-        {
-            if(strpos($key, 'replicas') !== false && intval($value) < 1) $value = 1; // Replicas must be greater 0.
-            $settings[] = array('key' => str_replace('_', '.', $key), 'value' => $value);
-        }
-        $appData->settings = $settings;
+        $appData->settings = $this->trasformSettings($appData->settings);
 
         $appData->channel = $this->config->CNE->api->channel;
 
@@ -343,17 +354,57 @@ class cneModel extends model
     }
 
     /**
+     * Config app instance.
+     *
+     * @param  int    $instance
+     * @param  int    $settings
+     * @access public
+     * @return true
+     */
+    public function configApp($instance, $settings)
+    {
+        $instance->settings = $this->transformedSettings($settings);
+        $instance->channel  = $this->config->CNE->api->channel;
+        $apiUrl = "/api/cne/app/settings";
+        $result = $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
+     * Trasform setting format.
+     *
+     * @param  array  $settings
+     * @access private
+     * @return aray
+     */
+    private function trasformSettings($settings)
+    {
+        $transformedSettings = array();
+        foreach($settings as $key => $value)
+        {
+            if(strpos($key, 'replicas') !== false && intval($value) < 1) $value = 1; // Replicas must be greater 0.
+            $transformedSettings[] = array('key' => str_replace('_', '.', $key), 'value' => $value);
+        }
+        return $transformedSettings;
+    }
+
+    /**
      * Query status of an app instance.
      *
      * @param  object $instance
      * @access public
-     * @return object
+     * @return object|null
      */
     public function queryStatus($instance)
     {
         $instance->channel = $this->config->CNE->api->channel;
         $apiUrl = "/api/cne/app/status";
-        return $this->apiGet($apiUrl, $instance, $this->config->CNE->api->headers);
+        $result = $this->apiGet($apiUrl, $instance, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result->data;
+
+        return null;
     }
 
     /**
@@ -370,7 +421,7 @@ class cneModel extends model
     {
         $requestUri  = ($host ? $host : $this->config->CNE->api->host) . $url;
         $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data);
-        $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 10));
+        $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
@@ -389,7 +440,7 @@ class cneModel extends model
     public function apiPost($url, $data, $header = array(), $host = '')
     {
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'POST'), $header, 'json', 10));
+        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'POST'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
@@ -408,7 +459,7 @@ class cneModel extends model
     public function apiPut($url, $data, $header = array(), $host = '')
     {
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $header, 'json', 10));
+        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();
@@ -427,7 +478,7 @@ class cneModel extends model
     public function apiDelete($url, $data, $header = array(), $host = '')
     {
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $header, 'json', 10));
+        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return $this->getError();

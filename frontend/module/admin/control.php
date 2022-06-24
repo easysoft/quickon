@@ -61,7 +61,7 @@ class admin extends control
     public function resetPassword()
     {
         $token = zget($_SERVER, 'HTTP_TOKEN');
-        if(!($token == $this->config->CNE->api->token || $token == $this->config->CNE->api->token))
+        if(!($token == $this->config->CNE->api->token || $token == $this->config->cloud->api->token))
         {
             header("HTTP/1.1 401");
             return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));

@@ -1924,3 +1924,5 @@ td.c-actions .btn-link:hover {
 #bars > li.active > a > span, #bars > li.active > a:active > span, #bars > li.active > a:focus > span {
     border-bottom: 2px solid #61be68!important;
 }
+
+.body-modal .main-header h2 {font-size: 16px; font-weight: 700; line-height: 18px; border-left: 4px solid #33bc59; padding-left: 10px; margin: 8px 0;}

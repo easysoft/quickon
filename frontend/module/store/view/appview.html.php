@@ -24,13 +24,7 @@
       <div class="main-header">
         <h2 class="app-name"><?php echo $cloudApp->alias;?></h2>
         <div class="btn-group dropdown pull-right">
-          <?php echo html::commonButton($lang->store->install, "app-id='{$cloudApp->id}'", 'btn-install btn btn-primary');?>
-          <?php if(!empty($components)):?>
-          <button class="btn btn-primary" data-toggle="dropdown"><span class="caret"></span></button>
-          <ul class="dropdown-menu pull-right" id='exportActionMenu'>
-            <li><?php common::printLink('instance', 'custominstall', "id={$cloudApp->id}", $lang->store->customInstall,'',);?></li>
-          </ul>
-          <?php endif?>
+          <?php echo html::a(helper::createLink('instance', 'install', "id={$cloudApp->id}", '', true), $lang->instance->install, '', "class='iframe btn btn-primary' title='{$lang->instance->install}' data-width='600' data-app='space'");?>
         </div>
       </div>
       <table class="table table-data">

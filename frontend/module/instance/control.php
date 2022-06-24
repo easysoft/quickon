@@ -76,11 +76,11 @@ class instance extends control
             $this->instance->updateByID($id, $newInstance);
             if(dao::isError())
             {
-                $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('code' => 600), 'app' => array('alias' => $instance->appName, 'app_version' => $instance->version))));
+                $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('result' => 'fail'), 'data' => array('oldName' => $instance->name, 'newName' => $newInstance->name))));
                 return $this->send(array('result' => 'fail', 'message' => dao::getError()));
             }
 
-            $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('code' => 200), 'app' => array('alias' => $instance->appName, 'app_version' => $instance->version))));
+            $this->action->create('instance', $instance->id, 'editname', '', json_encode(array('result' => array('result' => 'success'), 'data' => array('oldName' => $instance->name, 'newName' => $newInstance->name))));
             return print(js::closeModal('parent.parent', 'this', "function(){parent.parent.location.reload();}"));
         }
 
@@ -135,26 +135,49 @@ class instance extends control
     /**
      * Install app.
      *
-     * @param  int $appID
+     * @param  int    $appID
      * @access public
      * @return void
      */
-    public function ajaxInstall($appID)
+    public function install($appID)
     {
-        $appInfo= $this->cne->getAppInfo($appID);
+        $cloudApp = $this->cne->getAppInfo($appID);
+        if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
-        $response = array();
-        $response['result']  = 'fail';
-        $response['message'] = zget($this->lang->instance->notices, 'installFail');
-
-        if($this->instance->install($appInfo))
+        $customData = new stdclass;
+        if(!empty($_POST))
         {
-            $response['result']  = 'success';
-            $response['message'] = zget($this->lang->instance->notices, 'installSuccess');
-            $response['locate']  = helper::createLink('space', 'browse');
+            $customData = fixer::input('post')
+                ->trim('customName')->setDefault('customName', '')
+                ->trim('customDomain')->setDefault('customDomain', null)
+                ->get();
+            if($this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->domainExists));
+
+            if(!validater::checkLength($customData->customDomain, 20, 2))      return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
+            if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
+
+            $settings = array();
+            if($customData->customDomain)
+            {
+                $settings['ingress_host']    = $this->instance->fullDomain($customData->customDomain);
+                $settings['ingress_enabled'] = 'true';
+            }
+
+            $result = $this->instance->install($cloudApp, $settings, $customData);
+            if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => 'parent'));
         }
 
-        return $this->send($response);
+        $this->lang->switcherMenu = $this->instance->getInstallSwitcher($cloudApp);
+
+        $this->view->position[] = $this->view->title;
+
+        $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
+        $this->view->cloudApp    = $cloudApp;
+        $this->view->thirdDomain = $this->instance->randThirdDomain();
+
+        $this->display();
     }
 
     /**
@@ -229,5 +252,33 @@ class instance extends control
         $statusList = $this->instance->batchFresh($instances);
 
         return $this->send(array('result' => 'success', 'data' => $statusList));
+    }
+
+    /**
+     *  Get instance info for q tool in console.
+     *
+     * @param  int    $id
+     * @access public
+     * @return mixed
+     */
+    public function apiDetail($id)
+    {
+        $token = zget($_SERVER, 'HTTP_TOKEN');
+        if(!($token == $this->config->CNE->api->token || $token == $this->config->cloud->api->token))
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
+        }
+
+        if(empty($id)) return print(json_encode(array('code' => 401, 'message' => 'Invalid id.')));
+
+        $instance = $this->instance->getByID($id);
+        if(empty($instance)) return print(json_encode(array('code' => 404, 'message' => 'Not found.', 'data' => array())));
+
+        $instance->space = $instance->spaceData && isset($instance->spaceData->k8space) ? $instance->spaceData->k8space : '';
+        unset($instance->desc);
+        unset($instance->spaceData);
+
+        return print(json_encode(array('code' => 200, 'message' => '', 'data' => $instance)));
     }
 }

@@ -16,7 +16,7 @@ if(!class_exists('config')){class config{}}
 if(!function_exists('getWebRoot')){function getWebRoot(){}}
 
 /* 基本设置。Basic settings. */
-$config->version       = '1.0';          // 渠成版本。 The version of Qucheng. Don't change it.
+$config->version       = '1.0.3';          // 渠成版本。 The version of Qucheng. Don't change it.
 $config->charset       = 'UTF-8';              // 编码。 The encoding of Qucheng.
 $config->cookieLife    = time() + 2592000;     // Cookie的生存时间。The cookie life time.
 $config->timezone      = 'Asia/Shanghai';      // 时区设置。        The time zone setting, for more see http://www.php.net/manual/en/timezones.php.
@@ -75,9 +75,10 @@ $config->CNE = new stdclass;
 $config->CNE->api = new stdclass;
 $config->CNE->api->host    = '';
 $config->CNE->api->auth    = 'X-Auth-Token';
-$config->CNE->api->token   = 'gwaN4KynqNqQoPD7eN8s'; // Please set token in my.php.
+$config->CNE->api->token   = 'reiquai7pei7thei4iePe5ait3Kaiquu'; // Please set token in my.php.
 $config->CNE->api->headers = array('Content-Type: application/json');
 $config->CNE->api->channel = 'stable';
+$config->CNE->api->domain  = 'demo.haogs.cn';
 
 $config->cloud = new stdclass;
 $config->cloud->api = new stdclass;

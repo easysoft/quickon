@@ -1,16 +1,22 @@
 <?php
-$lang->backup->common      = '系统备份';
-$lang->backup->index       = '备份首页';
-$lang->backup->history     = '备份历史';
-$lang->backup->delete      = '删除备份';
-$lang->backup->backup      = '开始备份';
-$lang->backup->restore     = '还原';
-$lang->backup->change      = '保留时间';
-$lang->backup->changeAB    = '修改';
-$lang->backup->rmPHPHeader = '去除安全设置';
-$lang->backup->setting     = '设置';
+$lang->backup->common         = '系统备份';
+$lang->backup->shortCommon    = '备份';
+$lang->backup->systemInfo     = '系统信息';
+$lang->backup->index          = '备份首页';
+$lang->backup->history        = '备份历史';
+$lang->backup->delete         = '删除备份';
+$lang->backup->backup         = '开始备份';
+$lang->backup->restore        = '还原';
+$lang->backup->change         = '保留时间';
+$lang->backup->changeAB       = '修改';
+$lang->backup->rmPHPHeader    = '去除安全设置';
+$lang->backup->setting        = '设置';
 
 $lang->backup->settingAction = '备份设置';
+
+$lang->backup->name           = '名称';
+$lang->backup->currentVersion = '当前版本';
+$lang->backup->latestVersion  = '最新版本';
 
 $lang->backup->time     = '备份时间';
 $lang->backup->files    = '备份文件';
@@ -18,6 +24,11 @@ $lang->backup->allCount = '总文件数';
 $lang->backup->count    = '备份文件数';
 $lang->backup->size     = '大小';
 $lang->backup->status   = '状态';
+
+$lang->backup->upgrade  = '升级';
+$lang->backup->rollback = '回滚';
+$lang->backup->restart  = '重启';
+$lang->backup->delete   = '删除';
 
 $lang->backup->statusList['success'] = '成功';
 $lang->backup->statusList['fail']    = '失败';
@@ -35,6 +46,7 @@ $lang->backup->confirmRestore  = '是否还原该备份？';
 $lang->backup->holdDays        = '备份保留最近 %s 天';
 $lang->backup->copiedFail      = '复制失败的文件：';
 $lang->backup->restoreTip      = '还原功能只还原数据库。';
+$lang->backup->versionInfo     = '点击查看新版本介绍';
 
 $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';

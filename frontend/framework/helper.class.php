@@ -204,43 +204,56 @@ class helper extends baseHelper
         return round($traffic / (1024 * 1024), $precision) >= 1 ? round($traffic / (1024 * 1024), $precision) . 'GB' : (round($traffic / 1024, $precision) >= 1 ? round($traffic / 1024, $precision) . 'MB' : round($traffic, $precision) . 'KB');
     }
 
-	/**
-	 * Trim version to xuanxuan version format.
-	 *
-	 * @param  string    $version
-	 * @access public
-	 * @return string
-	 */
-	public function trimVersion($version)
-	{
-		return preg_replace_callback(
-			'/([0-9]+)((?:\.[0-9]+)?)((?:\.[0-9]+)?)(?:[\s\-\+]?)((?:[a-z]+)?)((?:\.?[0-9]+)?)/i',
-			function($matches)
-			{
-				$major      = $matches[1];
-				$minor      = $matches[2];
-				$patch      = $matches[3];
-				$preRelease = $matches[4];
-				$build      = $matches[5];
+    /**
+     * Trim version to xuanxuan version format.
+     *
+     * @param  string    $version
+     * @access public
+     * @return string
+     */
+    public function trimVersion($version)
+    {
+        return preg_replace_callback(
+            '/([0-9]+)((?:\.[0-9]+)?)((?:\.[0-9]+)?)(?:[\s\-\+]?)((?:[a-z]+)?)((?:\.?[0-9]+)?)/i',
+            function($matches)
+            {
+                $major      = $matches[1];
+                $minor      = $matches[2];
+                $patch      = $matches[3];
+                $preRelease = $matches[4];
+                $build      = $matches[5];
 
-				$versionStrs = array(
-					$major,
-					$minor ?: ".0",
-				);
+                $versionStrs = array(
+                    $major,
+                    $minor ?: ".0",
+                );
 
-				if($patch && $patch !== ".0" && $patch !== "0") array_push($versionStrs, $patch);
-				if($preRelease ?: $build) array_push($versionStrs, " ");
-				if($preRelease) array_push($versionStrs, $preRelease);
-				if($build)
-				{
-					if(!$preRelease) array_push($versionStrs, "build");
-					array_push($versionStrs, mb_substr($build, 0, 1) === "." ? substr($build, 1) : $build);
-				}
-				return join("", $versionStrs);
-			},
-			$version
-		);
-	}
+                if($patch && $patch !== ".0" && $patch !== "0") array_push($versionStrs, $patch);
+                if($preRelease ?: $build) array_push($versionStrs, " ");
+                if($preRelease) array_push($versionStrs, $preRelease);
+                if($build)
+                {
+                    if(!$preRelease) array_push($versionStrs, "build");
+                    array_push($versionStrs, mb_substr($build, 0, 1) === "." ? substr($build, 1) : $build);
+                }
+                return join("", $versionStrs);
+            },
+            $version
+        );
+    }
+
+    /**
+     * Generate rand string.
+     *
+     * @param  int    $length
+     * @access public
+     * @return string
+     */
+    static public function randStr($length = 4)
+    {
+        $seeds = str_shuffle('abcdefghijklmnpqrstuvwxyzABCDEFGHIJKLMNPQRSTUVWXYZ123456789');
+        return substr($seeds, 0, $length);
+    }
 
     /**
      * Request API.
