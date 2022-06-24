@@ -15,10 +15,7 @@
 <div id='mainContent' class='main-content'>
   <div class='center-block'>
     <div class='main-header'>
-      <div class="q-modal-title">
-        <span class='q-title-bar'></span>
-        <span class='q-title-text'><?php echo $lang->instance->installApp . $cloudApp->alias . $cloudApp->app_version;?></span>
-      </div>
+      <h2><?php echo $lang->instance->installApp . $cloudApp->alias . $cloudApp->app_version;?></h2>
     </div>
     <form id='installForm' action='<?php echo helper::createLink("instance", "install", "id={$cloudApp->id}", '', '', false);?>' class="cell not-watch load-indicator main-form">
       <table class="table table-form">

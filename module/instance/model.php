@@ -477,7 +477,7 @@ class InstanceModel extends model
     {
         $action = zget($this->lang->instance->actionList, $log->action, $this->lang->actions);
 
-        $logText = $log->actorName . sprintf($action, $instance->appName);
+        $logText = $log->actorName  . ' ' . sprintf($action, $instance->appName);
 
         $extra = json_decode($log->extra);
         if(!empty($extra))
@@ -486,7 +486,7 @@ class InstanceModel extends model
             {
                 $oldName  = zget($extra->data, 'oldName', '');
                 $newName  = zget($extra->data, 'newName', '');
-                $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName) . '。';
+                $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName);
             }
 
         }
