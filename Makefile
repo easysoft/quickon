@@ -21,7 +21,7 @@ build: build-pubilc ## 构建镜像
 	-t hub.qucheng.com/platform/qucheng:$(TAG) -f docker/Dockerfile .
 
 build-api: build-pubilc ## 构建api程序
-	docker -t hub.qucheng.com/platform/cne-api:$(TAG) -f docker/Dockerfile.api .
+	docker build -t hub.qucheng.com/platform/cne-api:$(TAG) -f docker/Dockerfile.api .
 
 build-all: build build-api # 构建所有镜像
 
