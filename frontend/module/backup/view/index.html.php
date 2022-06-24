@@ -38,7 +38,7 @@
       <tbody class='text-center'>
         <tr>
           <td><?php echo $lang->quchengPlatform;?></td>
-          <td><?php echo $config->version;?></td>
+          <td><?php echo $config->platformVersion;?></td>
           <td>
             <?php echo $config->version;?>
             <?php echo html::a('https://www.qucheng.com/dynamic.html', "&nbsp;<i class='icon icon-info-sign' style='color: #4E83F0;'></i>", '_blank', "title='{$lang->backup->versionInfo}'");?>

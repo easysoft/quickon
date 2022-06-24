@@ -99,7 +99,7 @@ js::set('manualUrl',     (!empty($config->isINT) ? $config->manualUrl['install']
       <?php endif;?>
       <a href='<?php echo $lang->website;?>' class="btn btn-sm btn-link" target='_blank' title='<?php echo $version;?>'>
         <img src="<?php echo $config->webRoot . 'theme/default/images/main/' . $this->lang->logoImg;?>" style="width: 24px;height: 24px;border-radius: 3px;vertical-align: bottom;"/>
-        <span class='version'><?php echo $versionName;?></span>
+        <span class='version'><?php echo $config->platformVersion;?></span>
       </a>
       <div id="globalSearchDiv">
         <div class="hidden input-group">
