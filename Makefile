@@ -1,6 +1,6 @@
 date_time := $(shell date +%Y%m%d )
 export commit_id := $(shell git rev-parse --short HEAD)
-export branch_name := $(shell git branch --show-current|sed 's#/#-#g')
+export branch_name := $(shell git branch --show-current | tr '/' '-' )
 export TAG := $(shell echo $(branch_name)-$(date_time)-$(commit_id) )
 
 help: ## this help

@@ -10,6 +10,7 @@ frontend/www/data
 *.dll
 *.so
 *.dylib
+.Makefile.swp
 
 # Test binary, built with `go test -c`
 *.test
