@@ -97,10 +97,10 @@ js::set('manualUrl',     (!empty($config->isINT) ? $config->manualUrl['install']
       <?php $versionName = $lang->qucheng . $config->version;?>
       <a href='javascript:void(0)' id='bizLink' class='hidden btn btn-link' style='color: #B57D4F;'><span class='upgrade'><?php echo $lang->bizName;?></span> <i class='text-danger icon-pro-version'></i></a>
       <?php endif;?>
-      <a href='<?php echo $lang->website;?>' class="btn btn-sm btn-link" target='_blank' title='<?php echo $version;?>'>
-        <img src="<?php echo $config->webRoot . 'theme/default/images/main/' . $this->lang->logoImg;?>" style="width: 24px;height: 24px;border-radius: 3px;vertical-align: bottom;"/>
-        <span class='version'><?php echo $config->platformVersion;?></span>
-      </a>
+      <span class='btn btn-link'>
+        <img src="<?php echo $config->webRoot . 'theme/default/images/main/' . $this->lang->logoImg;?>" style="width: 20px;height: 20px;vertical-align: bottom;"/>
+        <span class='version'><?php echo $lang->qucheng . ' ' . $config->platformVersion;?></span>
+      </span>
       <div id="globalSearchDiv">
         <div class="hidden input-group">
           <div id='searchbox'>
