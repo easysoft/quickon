@@ -34,7 +34,7 @@
             <td class='w-300px'>
               <div class='input-group'>
                 <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='20'");?>
-                <span class='input-group-addon'><?php echo $config->CNE->api->domain;?></span>
+                <span class='input-group-addon'><?php echo $config->CNE->app->domain;?></span>
               </div>
             </td>
             <td></td>

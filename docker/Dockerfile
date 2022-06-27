@@ -17,7 +17,7 @@ ENV TZ=Asia/Shanghai \
     DEBIAN_FRONTEND=noninteractive
 
 RUN sed -i -r 's/(deb|security).debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list \
-    && install_packages curl wget tzdata zip unzip s6 pwgen cron \
+    && install_packages curl wget tzdata zip unzip s6 pwgen cron apt-transport-https ca-certificates procps \
     && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone \
     && dpkg-reconfigure --frontend noninteractive tzdata
