@@ -1925,4 +1925,44 @@ td.c-actions .btn-link:hover {
     border-bottom: 2px solid #61be68!important;
 }
 
-.body-modal .main-header h2 {font-size: 16px; font-weight: 700; line-height: 18px; border-left: 4px solid #33bc59; padding-left: 10px; margin: 8px 0;}
+.body-modal .main-header h2 {
+    font-size: 16px;
+    font-weight: 700;
+    line-height: 18px;
+    border-left: 4px solid #33bc59;
+    padding-left: 10px;
+    margin: 8px 0;
+}
+
+.q-card-title {
+    border-left: solid #33BC59 4px;
+    padding-left: 20px;
+    margin-top: 8px;
+    margin-left: -21px;
+    line-height:18px;
+    font-size: 18px;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: middle;
+}
+
+.q-metal {
+    position: absolute;
+    top: -1px;
+    right: 20px;
+    width: 46px;
+    height: 27px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
+    background: #ffa058;
+    background: linear-gradient(-24deg, transparent 10px, #ffa058 0) bottom right,
+                linear-gradient(24deg, transparent 10px, #ffa058 0) bottom left;
+    background-size: 50% 100%;
+    background-repeat: no-repeat;
+    text-align: center;
+    padding-top: 3px;
+}
+.q-metal a {color: #ffffff; font-size: 12px;}
+

@@ -70,6 +70,7 @@ $lang->instance->restart       = '重启';
 $lang->instance->stop          = '关闭';
 $lang->instance->install       = '安装';
 $lang->instance->update        = '更新';
+$lang->instance->upgrade       = '升级';
 $lang->instance->customInstall = '自定义安装';
 $lang->instance->uninstall     = '卸载';
 $lang->instance->visit         = '访问';
@@ -92,6 +93,8 @@ $lang->instance->notices['installSuccess']   = '安装成功';
 $lang->instance->notices['installFail']      = '安装失败';
 $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
 $lang->instance->notices['submiting']        = '提交中，请稍候...';
+$lang->instance->notices['upgradeSuccess']   = '升级成功';
+$lang->instance->notices['upgradeFail']      = '升级失败';
 
 $lang->instance->nameChangeTo = ' %s 修改为 %s  。';
 

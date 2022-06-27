@@ -76,6 +76,13 @@ class spaceModel extends model
             ->beginIF(!empty($searchName))->andWhere('name')->like("%{$searchName}%")->fi()
             ->orderBy('id desc')->page($pager)->fetchAll('id');
 
+        $this->loadModel('cne');
+        foreach($instances as $instance)
+        {
+            $higherVersionList = $this->cne->getUpgradableVersions($instance->appID, $instance->version);
+            $instance->higherVersionList = $higherVersionList;
+        }
+
         return $instances;
     }
 

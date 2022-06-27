@@ -154,6 +154,31 @@ class cneModel extends model
     }
 
     /**
+     * Upgrade app instance to version.
+     *
+     * @param  object $instance
+     * @param  string $toVersion
+     * @access public
+     * @return bool
+     */
+    public function upgradeToVersion($instance, $toVersion = '')
+    {
+        $setting = array();
+        $setting['cluster']   = '';
+        $setting['namespace'] = $instance->spaceData->k8space;
+        $setting['name']      = $instance->k8name;
+        $setting['channel']   = $this->config->CNE->api->channel;
+        $setting['chart']     = $instance->chart;
+        $setting['version']   = $toVersion;
+
+        $apiUrl = "/api/cne/app/settings";
+        $result = $this->apiPost($apiUrl, $setting, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
      * Get cluster metrics of CNE platform.
      *
      * @param  string $cluster

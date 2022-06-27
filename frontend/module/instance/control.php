@@ -93,6 +93,39 @@ class instance extends control
     }
 
     /**
+     * Upgrade instnace
+     *
+     * @param  int    $id
+     * @access public
+     * @return mixed
+     */
+    public function upgrade($id)
+    {
+        $instance = $this->instance->getByID($id);
+        $higherVersions = $this->cne->getUpgradableVersions($instance->appID, $instance->version);
+        $versionList = array_combine(array_column($higherVersions, 'version'), array_column($higherVersions,'app_version'));
+
+        if($_POST)
+        {
+            $postData = fixer::input('post')->get();
+
+            $success = $this->cne->upgradeToVersion($instance, $postData->version);
+
+            if(!$success) $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['upgradeFail']));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['upgradeSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => '_self'));
+        }
+
+        $this->view->title       = $this->lang->instance->upgrade . $instance->name;
+        $this->view->instance    = $instance;
+        $this->view->versionList = $versionList;
+
+        $this->view->position[] = $this->lang->instance->upgrade;
+
+        $this->display();
+    }
+
+    /**
      * Install app by custom settings.
      *
      * @param int $id

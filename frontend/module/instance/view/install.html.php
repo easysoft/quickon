@@ -21,8 +21,8 @@
       <table class="table table-form">
         <tbody>
           <tr>
-            <th class='w-150px'><?php echo $lang->instance->name;?></th>
-            <td class='w-300px'>
+            <th class='w-70px'><?php echo $lang->instance->name;?></th>
+            <td class='w-200px'>
               <div class='input-group'>
                 <?php echo html::input('customName', $cloudApp->alias, "class='form-control' maxlength='20'");?>
               </div>

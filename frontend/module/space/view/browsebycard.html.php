@@ -20,16 +20,27 @@
     <?php foreach ($instances as $instance):?>
     <div class='col-xs-6 col-sm-3 col-lg-2' data-id='<?php echo $instance->id;?>'>
       <div class='panel'>
-        <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
-          <div class='panel-heading text-center'>
-            <div class="instance-name"><?php echo $instance->name;?>&nbsp;</div>
+          <div class='panel-heading'>
+            <div class="q-card-title">
+              <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                <?php echo $instance->name;?>&nbsp;
+              </a>
+            </div>
+            <?php if(!empty($instance->higherVersionList)):?>
+            <div class="q-metal"><?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), $lang->space->upgrade, '', "class='iframe' title='$lang->edit' data-width='500' data-app='space'");?></div>
+            <?php endif;?>
           </div>
           <div class='panel-body'>
             <div class="instance-detail">
-              <div class='instance-logo'>
-                <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
-              </div>
-              <p class="instance-desc"><?php echo $instance->desc;?>&nbsp;</p>
+              <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                <div class='instance-logo'>
+                  <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
+                </div>
+                <p class="instance-desc"><?php echo $instance->desc;?>&nbsp;</p>
+              </a>
+            </div>
+            <div class="instance-actions">
+              <?php echo html::a('//' . $instance->domain, $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'");?>
             </div>
           </div>
           <div class='panel-footer instance-footer'>
