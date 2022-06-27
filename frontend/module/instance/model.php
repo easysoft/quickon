@@ -182,7 +182,7 @@ class InstanceModel extends model
      */
     public function fullDomain($thirdDomain)
     {
-        return $thirdDomain . '.' . $this->config->CNE->api->domain;
+        return $thirdDomain . '.' . $this->config->CNE->app->domain;
     }
 
     /**

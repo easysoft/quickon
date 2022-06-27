@@ -79,7 +79,9 @@ $config->CNE->api->auth    = 'X-Auth-Token';
 $config->CNE->api->token   = 'reiquai7pei7thei4iePe5ait3Kaiquu'; // Please set token in my.php.
 $config->CNE->api->headers = array('Content-Type: application/json');
 $config->CNE->api->channel = 'stable';
-$config->CNE->api->domain  = 'demo.haogs.cn';
+
+$config->CNE->app = new stdclass;
+$config->CNE->app->domain = 'demo.haogs.cn';
 
 $config->cloud = new stdclass;
 $config->cloud->api = new stdclass;
