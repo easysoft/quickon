@@ -6,9 +6,13 @@ package app
 
 import (
 	"context"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
+	"fmt"
 	"reflect"
 	"strings"
+
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/component"
@@ -302,6 +306,28 @@ func (i *Instance) GetSchema(component, category string) string {
 		}
 	}
 	return data
+}
+
+func (i *Instance) GetPvcList() []model.AppRespPvc {
+	var result []model.AppRespPvc
+	pvcList, err := i.ks.Clients.Base.CoreV1().PersistentVolumeClaims(i.namespace).List(i.ctx, metav1.ListOptions{LabelSelector: i.selector.String()})
+	if err != nil {
+		tlog.WithCtx(i.ctx).ErrorS(err, "list pvc failed")
+		return result
+	}
+	for _, pvc := range pvcList.Items {
+		quantity := pvc.Spec.Resources.Requests[v1.ResourceStorage]
+		p := model.AppRespPvc{
+			Name: pvc.Name, VolumeName: pvc.Spec.VolumeName, AccessModes: pvc.Spec.AccessModes,
+			Size: quantity.AsApproximateFloat64(),
+			Path: fmt.Sprintf("%s-%s-%s", pvc.Namespace, pvc.Name, pvc.Spec.VolumeName),
+		}
+		if pvc.Spec.StorageClassName != nil {
+			p.StorageClassName = *pvc.Spec.StorageClassName
+		}
+		result = append(result, p)
+	}
+	return result
 }
 
 func (i *Instance) GetMetrics() *model.AppMetric {

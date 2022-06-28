@@ -6,9 +6,10 @@ package router
 
 import (
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 	"net/http"
 	"sync"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
@@ -502,6 +503,34 @@ func AppComSchema(c *gin.Context) {
 	}
 
 	data := i.GetSchema(query.Component, query.Category)
+	renderJson(c, http.StatusOK, data)
+}
+
+func AppPvcList(c *gin.Context) {
+	var (
+		ctx = c.Request.Context()
+
+		err   error
+		query model.AppModel
+		i     *app.Instance
+	)
+	if err = c.ShouldBindQuery(&query); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	if err != nil {
+		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
+		if errors.Is(err, app.ErrAppNotFound) {
+			renderError(c, http.StatusNotFound, err)
+			return
+		}
+		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		return
+	}
+
+	data := i.GetPvcList()
 	renderJson(c, http.StatusOK, data)
 }
 

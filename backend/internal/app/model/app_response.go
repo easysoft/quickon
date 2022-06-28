@@ -4,7 +4,11 @@
 
 package model
 
-import "gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+import (
+	v1 "k8s.io/api/core/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+)
 
 type AppRespStatus struct {
 	Status     string                   `json:"status"`
@@ -71,4 +75,13 @@ type ClusterMetric struct {
 
 type Component struct {
 	Name string `json:"name"`
+}
+
+type AppRespPvc struct {
+	Name             string                          `json:"pvc_name"`
+	VolumeName       string                          `json:"pvc_volume"`
+	AccessModes      []v1.PersistentVolumeAccessMode `json:"pvc_access_modes"`
+	StorageClassName string                          `json:"pvc_storage_class"`
+	Size             float64                         `json:"pvc_storage_size"`
+	Path             string                          `json:"pvc_path"`
 }

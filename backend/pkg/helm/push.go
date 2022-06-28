@@ -2,8 +2,9 @@ package helm
 
 import (
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/push"
 	"io/ioutil"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/push"
 )
 
 func Push(path, repo string) error {

@@ -1,10 +1,11 @@
 package schema
 
 import (
-	"helm.sh/helm/v3/pkg/chart"
 	"sort"
 	"strconv"
 	"strings"
+
+	"helm.sh/helm/v3/pkg/chart"
 )
 
 type Schema struct {
