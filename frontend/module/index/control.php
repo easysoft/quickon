@@ -33,12 +33,9 @@ class index extends control
      */
     public function index($open = '')
     {
-        $latestVersionList = array();
-        if(isset($this->config->global->latestVersionList)) $latestVersionList = json_decode($this->config->global->latestVersionList);
-
-        $this->view->title             = $this->lang->index->common;
-        $this->view->open              = helper::safe64Decode($open);
-        $this->view->latestVersionList = $latestVersionList;
+        $this->view->title         = $this->lang->index->common;
+        $this->view->open          = helper::safe64Decode($open);
+        $this->view->shouldUpgrade = version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '>');
 
         $this->display();
     }

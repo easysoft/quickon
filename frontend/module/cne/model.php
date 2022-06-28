@@ -96,6 +96,29 @@ class cneModel extends model
     }
 
     /**
+     * Get the latest version of QuCheng platform.
+     *
+     * @access public
+     * @return string|null
+     */
+    public function platformLatestVersion()
+    {
+        $latestVersion = $this->config->platformVersion;
+
+        // 39 is the ID of QuCheng app. 39 is temporary value, it will be replace very soon.
+        $versionList = $this->getUpgradableVersions(39, $this->config->platformVersion);
+        if(empty($versionList)) return $latestVersion;
+
+        foreach($versionList as $version)
+        {
+            if(version_compare($this->config->platformVersion, $version, '>=')) continue;
+            $latestVersion = $version;
+        }
+
+        return $latestVersion;
+    }
+
+    /**
      * Get upgradable versions of app from cloud market.
      *
      * @param  int    $appID

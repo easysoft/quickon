@@ -12,6 +12,7 @@ $lang->index->app->close  = '关闭';
 $lang->index->upgradeVersion = '可升级版本';
 $lang->index->upgradeNow     = '现在升级';
 $lang->index->upgrade        = '升级';
+$lang->index->upgradeTo      = '升级到';
 $lang->index->log            = '查看版本更新日志 >';
 $lang->index->detailed       = '详情';
 $lang->index->website        = '请访问官网';

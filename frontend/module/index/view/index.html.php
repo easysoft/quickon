@@ -24,25 +24,11 @@ js::set('manualText',    $lang->manual);
 js::set('manualUrl',     (!empty($config->isINT) ? $config->manualUrl['install'] : $config->manualUrl['home']));
 ?>
 <style>
-#versionTitle {margin: 8px 3px 0px 0px; background-image: url(<?php echo $config->webRoot . 'theme/default/images/main/version-upgrade.svg';?>);}
-.icon-version {width: 20px; height: 24px; margin: -4px 3px 0px 0px; background-image: url(<?php echo $config->webRoot . 'theme/default/images/main/version-new.svg';?>);}
-.icon-version:before {content:"";}
-.version-hr {margin-top: 15px; margin-bottom: 15px;}
-
-<?php if(empty($latestVersionList)):?>
-#upgradeContent {top: -272px; height: 262px;}
-#latestVersionList {height: 200px;}
-<?php endif;?>
-
 <?php if(commonModel::isTutorialMode()):?>
 #menuMoreNav > li.dropdown:hover + .tooltip {display: none!important;}
 #menuMoreList > li.active {position: relative;}
 #menuMoreList > li.active:before {content: ' '; display: block; position: absolute; left: 100%; border-width: 5px 5px 5px 0; border-style: solid; border-color: transparent; border-right-color: #ff9800; width: 0; height: 0; top: 12px}
 #menuMoreList > li.active:after {content: attr(data-tip); display: block; position: absolute; left: 100%; background-color: #f1a325; color: #fff; top: 3px; white-space: nowrap; line-height: 16px; padding: 8px 10px; margin-left: 5px; border-radius: 4px;}
-<?php endif;?>
-
-<?php if($this->config->vision == 'lite'):?>
-#searchbox .dropdown-menu.show-quick-go.with-active {min-height: 180px;}
 <?php endif;?>
 </style>
 <div id='menu'>
@@ -89,68 +75,11 @@ js::set('manualUrl',     (!empty($config->isINT) ? $config->manualUrl['install']
   <ul id='bars' class='nav nav-default'></ul>
   <div id='poweredBy'>
     <div id="globalBarLogo">
-      <?php if(trim($config->visions, ',') == 'lite'):?>
-      <?php $version     = $config->liteVersion;?>
-      <?php $versionName = $lang->liteName . $config->liteVersion;?>
-      <?php else:?>
-      <?php $version     = $config->version;?>
-      <?php $versionName = $lang->qucheng . $config->version;?>
-      <a href='javascript:void(0)' id='bizLink' class='hidden btn btn-link' style='color: #B57D4F;'><span class='upgrade'><?php echo $lang->bizName;?></span> <i class='text-danger icon-pro-version'></i></a>
-      <?php endif;?>
-      <span class='btn btn-link'>
-        <img src="<?php echo $config->webRoot . 'theme/default/images/main/' . $this->lang->logoImg;?>" style="width: 20px;height: 20px;vertical-align: bottom;"/>
+      <?php echo $shouldUpgrade ? html::a(helper::createLink('backup', 'index'), "<i class='icon icon-arrow-up-circle'></i>", '', "title='{$lang->index->upgradeTo} {$this->session->platformLatestVersion}' class='btn btn-link'") : '';?>
+      <span class='version-container'>
+        <img src="<?php echo $config->webRoot . 'theme/default/images/main/' . $this->lang->logoImg;?>"/>
         <span class='version'><?php echo $lang->qucheng . ' ' . $config->platformVersion;?></span>
       </span>
-      <div id="globalSearchDiv">
-        <div class="hidden input-group">
-          <div id='searchbox'>
-            <?php echo common::printSearchBox();?>
-          </div>
-          <div class="input-control search-box search-box-circle has-icon-left has-icon-right search-example" id="searchboxExample">
-            <input id="globalSearchInput" type="search" onclick="this.value=''" onkeydown="if(event.keyCode==13) $.gotoObject();" class="form-control search-input" placeholder="<?php echo $lang->index->pleaseInput;?>" autocomplete="off">
-          </div>
-          <span class="input-group-btn" onclick="javascript:$.gotoObject();">
-            <button id="globalSearchButton" class="btn btn-secondary" type="button"><i class="icon icon-search"></i></button>
-          </span>
-        </div>
-      </div>
-    </div>
-    <div id='upgradeContent' class='main-table'>
-      <div class='main-header' style='padding: 5px 20px 5px 15px;'>
-        <i class='version-upgrade' id='versionTitle'></i>
-        <h2>
-          <?php echo $lang->index->upgradeVersion;?>
-        </h2>
-      </div>
-      <div id="latestVersionList">
-        <?php if(empty($latestVersionList)):?>
-        <div class="table-empty-tip">
-          <a href='<?php echo $lang->website;?>' target='_blank'>
-            <span class="label label-badge label-info label-outline"><?php echo $lang->index->website . ': '. $lang->website;?></span>
-          </a>
-        </div>
-        <?php else:?>
-        <div class='version-content'>
-          <?php $lastVersion = end($latestVersionList);?>
-          <?php foreach($latestVersionList as $versionNumber => $version):?>
-          <div class="version-list">
-            <div>
-              <i class='version-upgrade icon-version'></i>
-              <h4><?php echo $version->name;?></h4>
-            </div>
-            <div class="version-detail"><?php echo $version->explain;?></div>
-            <div class="version-footer">
-              <a href="<?php echo inLink('changeLog', 'version=' . $versionNumber);?>" class="btn btn-link iframe" data-width="800"><?php echo $lang->index->log;?></strong></a>
-              <a href='<?php echo $version->link?>' class='btn btn-primary upgrade-now' style='color: white;' target='_blank'><?php echo $lang->index->upgradeNow;?></a>
-            </div>
-          </div>
-          <?php if($version->name != $lastVersion->name):?>
-          <hr class='version-hr'>
-          <?php endif;?>
-          <?php endforeach;?>
-        </div>
-        <?php endif;?>
-      </div>
     </div>
   </div>
 </div>

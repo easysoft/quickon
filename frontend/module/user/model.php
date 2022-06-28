@@ -83,6 +83,9 @@ class userModel extends model
         /* Keep login. */
         if($this->post->keepLogin) $this->keepLogin($user);
 
+        /* Save latest version of QuCheng platform to session.  */
+        $this->session->set('platformLatestVersion', $this->loadModel('cne')->platformLatestVersion());
+
         return $user;
     }
 

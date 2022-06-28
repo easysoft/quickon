@@ -78,39 +78,13 @@ body.menu-hide {padding-left: 0;}
 #flodNav .dropdown-submenu:focus > a, #flodNav .dropdown-submenu:hover > a {background-color: rgba(0,0,0,.2);}
 #poweredBy {width: 40%; position: absolute; top: 4px; right: 0; padding: 0 20px 0 0;}
 
-#globalSearchDiv {width: 200px; float: right; margin-right: 4px;}
-#globalSearchDiv .input-group {width: 194px; float: right; margin-top: 2px;}
-#searchbox .dropdown-menu.show-quick-go.with-active {min-width: 270px;}
-#searchbox .dropdown-menu.show-quick-go > li {padding: 0 5px;}
-#searchbox .dropdown-menu {min-width: 150px;}
-
-#globalSearchInput {height: 28px; padding-left: 10px; border-right: 0px;}
-#globalSearchButton {height: 28px;}
-#globalSearchButton > i {position: relative; top: -2px}
-
 #globalBarLogo {width: 100%; float: right;}
-#globalBarLogo a:first-child {margin-right: 10px;}
+#globalBarLogo img {width: 18px; height: 18px;}
 #globalBarLogo a {float: right; margin: 0px 2px;}
-#globalBarLogo a .icon {font-size: 24px; color: #16a8f8;}
+#globalBarLogo a .icon {font-size: 14px; color: #ff7673;}
+#globalBarLogo .version-container {padding-top: 4px;}
 #globalBarLogo span {float: right; margin: 0px 2px; line-height: 20px;}
-#globalBarLogo span.version {font-size: 13px; position: relative;padding-top: 2px;}
-
-#searchbox a {float: left; width: 100%;}
-#searchbox a:hover {color: white;}
-#searchbox {width: 100%;}
-#searchbox .dropdown-menu {margin-top: 0px; left: 1px; position: absolute; top: -50px;}
-#searchbox .dropdown-menu > li > a {padding: 5px 0px 5px 2px;}
-#searchbox .dropdown-menu > li {display: none;}
-#searchbox .dropdown-menu > li.search-type-all {width: 100%; display: block;}
-#searchbox .dropdown-menu > li:hover {position: relative;}
-#searchbox .dropdown-menu.show-quick-go.with-active {position: absolute; top: initial; bottom: 4px; min-height: 318px; padding-top: 30px;}
-#searchbox .dropdown-menu.show-quick-go > li {display: block;}
-#searchbox .dropdown-menu.show-quick-go > li.active {width: 100%; position: absolute; top: 0; left: 0; right: 0;}
-#searchbox .dropdown-menu>li.active>a, #searchbox .dropdown-menu>li.selected>a {position: relative; color: #fff; background-color: #16a8f8;}
-#searchbox .dropdown-menu>li.selected>a:after {position: absolute; top: 2px; right: 4px; display: block; font-family: ZentaoIcon; font-size: 18px; font-size: 14px; font-style: normal; font-weight: 400; font-variant: normal; line-height: 1; line-height: 20px; text-transform: none; content: "\e5ca"; speak: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale;}
-
-#upgradeContent {display: none; position: absolute; top: -330px; right: 10px; width: 65%; height: 322px; background-color: #fff; padding: 5px 0; border: 1px solid rgba(0,0,0,.15); border-color: rgba(0,0,0,.1); opacity: 1; border-radius: 4px; box-shadow: 0 6px 12px rgba(0,0,0,.12), 0 1px 3px rgba(0,0,0,.1);}
-#latestVersionList {height: 270px; overflow: auto;}
+#globalBarLogo span.version {font-size: 13px; padding-top: 2px;}
 
 .version-upgrade {width: 14px; height: 16px; float: left; background-repeat: no-repeat; background-position: center ; background-size: cover; display: block;}
 .version-content {padding: 10px 15px;}
@@ -119,8 +93,3 @@ body.menu-hide {padding-left: 0;}
 .upgrade-now {float: right;}
 .color-primary {color: #3280fc;}
 .showFeatures .modal-body{max-height: 550px !important;}
-
-@media screen and (max-height: 768px)
-{
-  #upgradeContent{width: 85%;}
-}
