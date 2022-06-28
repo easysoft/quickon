@@ -4,6 +4,23 @@
 
 FROM hub.qucheng.com/library/debian:11.3-slim
 
+LABEL maintainer "zhouyueqiu <zhouyueqiu@easycorp.ltd>"
+
+ENV OS_ARCH="amd64" \
+    OS_NAME="debian-11" \
+    HOME_PAGE="www.qucheng.com"
+
+COPY docker/prebuildfs /
+
+ENV TZ=Asia/Shanghai \
+    DEBIAN_FRONTEND=noninteractive
+
+RUN sed -i -r 's/(deb|security).debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list \
+    && install_packages curl wget tzdata zip unzip pwgen apt-transport-https ca-certificates procps \
+    && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
+    && echo ${TZ} > /etc/timezone \
+    && dpkg-reconfigure --frontend noninteractive tzdata
+
 COPY --from=qucheng-backend /go/src/_output/bin/cne-api /usr/bin/cne-api
 
 RUN chmod +x /usr/bin/cne-api
