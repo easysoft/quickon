@@ -2,7 +2,7 @@
 $lang->navIcons['my']    = "<i class='icon icon-gauge'></i>";
 $lang->navIcons['store'] = "<i class='icon icon-store'></i>";
 $lang->navIcons['space'] = "<i class='icon icon-apps'></i>";
-$lang->navIcons['admin']     = "<i class='icon icon-cog-outline'></i>";
+$lang->navIcons['admin']     = "<i class='icon icon-home-more'></i>";
 
 $lang->visionList['qucheng'] = '渠成平台';
 

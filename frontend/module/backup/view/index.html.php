@@ -32,7 +32,7 @@
           <th class='w-150px'><?php echo $lang->backup->name;?></th>
           <th class='w-100px'><?php echo $lang->backup->currentVersion;?></th>
           <th class='w-100px'><?php echo $lang->backup->latestVersion;?></th>
-          <th class='hidden actionWidth'><?php echo $lang->actions?></th>
+          <th class='actionWidth'><?php echo $lang->actions?></th>
         </tr>
       </thead>
       <tbody class='text-center'>
@@ -40,13 +40,14 @@
           <td><?php echo $lang->quchengPlatform;?></td>
           <td><?php echo $config->platformVersion;?></td>
           <td>
-            <?php echo $config->version;?>
+            <?php echo $this->session->platformLatestVersion;?>
             <?php echo html::a('https://www.qucheng.com/dynamic.html', "&nbsp;<i class='icon icon-info-sign' style='color: #4E83F0;'></i>", '_blank', "title='{$lang->backup->versionInfo}'");?>
           </td>
-          <td class="hidden">
-            <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link');?>
-            <?php echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link');?>
-            <?php echo html::commonButton($lang->backup->restart, '', 'btn btn-link');?>
+          <td>
+            <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link', 'upload');?>
+            <?php echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
+            <?php echo html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
+            <?php echo html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
           </td>
         </tr>
       </tbody>
@@ -69,8 +70,8 @@
           <th class='w-100px'><?php echo $lang->backup->allCount?></th>
           <th class='w-100px'><?php echo $lang->backup->count?></th>
           <th class='w-100px'><?php echo $lang->backup->size?></th>
-          <th class='w-100px'><?php echo $lang->backup->status?></th>
-          <th class='actionWidth'><?php echo $lang->actions?></th>
+          <th class='w-60px'><?php echo $lang->backup->status?></th>
+          <th class='w-140px'><?php echo $lang->actions?></th>
         </tr>
       </thead>
       <tbody class='text-center'>
@@ -112,8 +113,8 @@
                 echo html::a(inlink('rmPHPHeader', "file={$backupFile->name}"), $lang->backup->rmPHPHeader, 'hiddenwin', "class='rmPHPHeader'");
                 echo "<br />";
             }
-            if(common::hasPriv('backup', 'restore')) echo html::a(inlink('restore', "file={$backupFile->name}&confirm=yes"), $lang->backup->restore, 'hiddenwin', "class='restore'");
-            if(common::hasPriv('backup', 'delete')) echo html::a(inlink('delete', "file=$backupFile->name"), $lang->delete, 'hiddenwin');
+            if(common::hasPriv('backup', 'restore')) echo html::a(inlink('restore', "file={$backupFile->name}&confirm=yes"), "<i class='icon-history'></i> " . $lang->backup->restore, 'hiddenwin', "class='btn btn-link'");
+            if(common::hasPriv('backup', 'delete')) echo html::a(inlink('delete', "file=$backupFile->name"),  "<i class='icon-trash'></i> " . $lang->delete, 'hiddenwin', "class='btn btn-link'");
             ?>
           </td>
           <?php endif;?>
