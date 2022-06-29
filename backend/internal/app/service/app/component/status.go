@@ -33,7 +33,6 @@ func parseStatus(replicas, availableReplicas, updatedReplicas, readyReplicas int
 
 	if replicas > 0 && readyReplicas < replicas {
 		appStatus = constant.AppStatusStarting
-		return
 	}
 
 	for _, pod := range pods {
