@@ -45,9 +45,9 @@
           </td>
           <td>
             <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload');?>
-            <?php echo //html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
-            <?php echo //html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
-            <?php echo //html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
+            <?php //echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
+            <?php //echo html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
+            <?php //echo html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
           </td>
         </tr>
       </tbody>

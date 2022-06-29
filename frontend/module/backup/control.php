@@ -397,7 +397,7 @@ class backup extends control
      */
     public function ajaxUpgradePlatform()
     {
-        if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<=')
+        if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<='))
         {
             $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->beenLatestVersion));
         }
