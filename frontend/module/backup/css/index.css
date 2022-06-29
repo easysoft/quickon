@@ -1,3 +1,6 @@
 .errorFiles {text-align: left; padding: 5px;}
 div.main-header { border-bottom: 0;}
 .main-col table { margin-bottom: 60px;}
+.btn-wide {width: 100px; margin: 0 10px;}
+#upgradeModal .modal-content {padding-bottom: 20px;}
+#upgradeModal .confirm-text{font-weight: 700;}

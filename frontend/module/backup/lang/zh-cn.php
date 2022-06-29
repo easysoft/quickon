@@ -47,10 +47,12 @@ $lang->backup->holdDays        = '备份保留最近 %s 天';
 $lang->backup->copiedFail      = '复制失败的文件：';
 $lang->backup->restoreTip      = '还原功能只还原数据库。';
 $lang->backup->versionInfo     = '点击查看新版本介绍';
+$lang->backup->confirmUpgrade  = '请确认是否升级渠成平台？';
 
 $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';
 $lang->backup->success->restore = '还原成功！';
+$lang->backup->success->upgrade = '升级成功！';
 
 $lang->backup->error = new stdclass();
 $lang->backup->error->noCreateDir = '备份目录不存在，也无法创建该目录';
@@ -60,3 +62,6 @@ $lang->backup->error->restoreSQL  = "数据库还原失败，错误：%s";
 $lang->backup->error->restoreFile = "附件还原失败，错误：%s";
 $lang->backup->error->backupFile  = "附件备份失败，错误：%s";
 $lang->backup->error->backupCode  = "代码备份失败，错误：%s";
+
+$lang->backup->error->upgradeFail       = "升级失败!";
+$lang->backup->error->beenLatestVersion = "已经是最新版，无需升级!";

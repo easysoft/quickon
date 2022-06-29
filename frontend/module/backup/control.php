@@ -31,6 +31,8 @@ class backup extends control
             if(!is_writable($this->backupPath)) $this->view->error = sprintf($this->lang->backup->error->noWritable, $this->backupPath);
         }
         if(!is_writable($this->app->getTmpRoot())) $this->view->error = sprintf($this->lang->backup->error->noWritable, $this->app->getTmpRoot());
+
+        $this->loadModel('action');
     }
 
     /**
@@ -41,8 +43,6 @@ class backup extends control
      */
     public function index()
     {
-        $this->loadModel('action');
-
         $backups = array();
         if(empty($this->view->error))
         {
@@ -387,5 +387,29 @@ class backup extends control
         }
 
         return print($message);
+    }
+
+    /**
+     * Upgrade platform by ajax.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxUpgradePlatform()
+    {
+        if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<=')
+        {
+            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->beenLatestVersion));
+        }
+
+        $success = $this->loadModel('cne')->upgradePlatform();
+        if($success)
+        {
+            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade));
+        }
+        else
+        {
+            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail));
+        }
     }
 }

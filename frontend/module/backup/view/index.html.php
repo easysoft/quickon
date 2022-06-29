@@ -44,10 +44,10 @@
             <?php echo html::a('https://www.qucheng.com/dynamic.html', "&nbsp;<i class='icon icon-info-sign' style='color: #4E83F0;'></i>", '_blank', "title='{$lang->backup->versionInfo}'");?>
           </td>
           <td>
-            <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link', 'upload');?>
-            <?php echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
-            <?php echo html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
-            <?php echo html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
+            <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload');?>
+            <?php echo //html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
+            <?php echo //html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
+            <?php echo //html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
           </td>
         </tr>
       </tbody>
@@ -138,6 +138,21 @@
       <div class="modal-body">
         <p><?php echo $lang->backup->waitting?></p>
         <div id='message'><?php echo sprintf($lang->backup->progressSQL, 0);?></div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="upgradeModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog w-400px">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h2 class="text-center"><?php echo $lang->backup->upgrade;?></h2>
+        <div class="text-center confirm-text"><?php echo $lang->backup->confirmUpgrade;?></div>
+      </div>
+      <div class="text-center">
+        <?php echo html::commonButton($lang->cancel, "data-dismiss='modal'", 'btn btn-wide');?>
+        <?php echo html::commonButton($lang->backup->upgrade, "id='submitUpgrade'", 'btn btn-primary btn-wide');?>
       </div>
     </div>
   </div>
