@@ -30,6 +30,7 @@ $lang->instance->actionList['uninstall'] = '卸载了%s';
 $lang->instance->actionList['start']     = '启动了%s';
 $lang->instance->actionList['stop']      = '关闭了%s';
 $lang->instance->actionList['editname']  = '修改了名称';
+$lang->instance->actionList['upgrade']   = '升级了%s';
 
 $lang->instance->sourceList = array();
 $lang->instance->sourceList['cloud'] = '渠成公共市场';
@@ -93,10 +94,12 @@ $lang->instance->notices['installSuccess']   = '安装成功';
 $lang->instance->notices['installFail']      = '安装失败';
 $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
 $lang->instance->notices['submiting']        = '提交中，请稍候...';
+$lang->instance->notices['confirmUpgrade']   = '确定要升级 %s 到 %s 吗?';
 $lang->instance->notices['upgradeSuccess']   = '升级成功';
 $lang->instance->notices['upgradeFail']      = '升级失败';
 
-$lang->instance->nameChangeTo = ' %s 修改为 %s  。';
+$lang->instance->nameChangeTo    = ' %s 修改为 %s  。';
+$lang->instance->versionChangeTo = ' %s 升级为 %s  。';
 
 $lang->instance->instanceNotExists = '服务不存在';
 $lang->instance->domainExists      = '域名已被占用，请使用其它域名。';

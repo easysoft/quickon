@@ -108,24 +108,25 @@ class InstanceModel extends model
      */
     public function updateStatus($id, $status)
     {
-        return $this->updateByID($id, array('status' => trim($status)));
+        $instanceData = new stdclass;
+        $instanceData->status = trim($status);
+        return $this->updateByID($id, $instanceData);
     }
 
     /**
      * Update instance by id.
      *
-     * @param  int          $id
-     * @param  object|array $newInstance
+     * @param  int    $id
+     * @param  object $newInstance
      * @access public
      * @return void
      */
     public function updateByID($id, $newInstance)
     {
-
         return $this->dao->update(TABLE_INSTANCE)->data($newInstance)
             ->autoCheck()
             ->checkIF(isset($newInstance->name), 'name', 'notempty')
-            ->checkIF(isset($newInstance->status), 'status', 'in', $this->lang->instance->statusList)
+            ->checkIF(isset($newInstance->status), 'status', 'in', array_keys($this->lang->instance->statusList))
             ->where('id')->eq($id)->exec();
     }
 
@@ -323,6 +324,26 @@ class InstanceModel extends model
         return $result;
     }
 
+    /**
+     * Upgrade app instnace to higher version.
+     *
+     * @param  object $instance
+     * @param  string $toVersion
+     * @access public
+     * @return bool
+     */
+    public function upgrade($instance, $toVersion)
+    {
+        $success = $this->cne->upgradeToVersion($instance, $toVersion);
+        if(!$success) return false;
+
+        $instanceData = new stdclass;
+        $instanceData->version = $toVersion;
+        $this->updateByID($instances->id, $instanceData);
+
+        return true;
+    }
+
     /*
      * Query and update instances status.
      *
@@ -488,7 +509,12 @@ class InstanceModel extends model
                 $newName  = zget($extra->data, 'newName', '');
                 $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName);
             }
-
+            if($log->action == 'upgrade' && isset($extra->data))
+            {
+                $oldVersion = zget($extra->data, 'oldVersion', '');
+                $newVersion = zget($extra->data, 'newVersion', '');
+                $logText .= ', ' . sprintf($this->lang->instance->versionChangeTo, $oldVersion, $newVersion);
+            }
         }
 
         echo $logText;
