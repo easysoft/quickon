@@ -266,6 +266,7 @@ $lang->error->le              = "『%s』应当不大于『%s』。";
 $lang->error->notempty        = "『%s』不能为空。";
 $lang->error->empty           = "『%s』必须为空。";
 $lang->error->equal           = "『%s』必须为『%s』。";
+$lang->error->in              = "『%s』值无效。";
 $lang->error->int             = array("『%s』应当是数字。", "『%s』应当介于『%s-%s』之间。");
 $lang->error->float           = "『%s』应当是数字，可以是小数。";
 $lang->error->email           = "『%s』应当为合法的EMAIL。";

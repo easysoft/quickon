@@ -27,7 +27,7 @@
               </a>
             </div>
             <?php if(!empty($instance->higherVersionList)):?>
-            <div class="q-metal"><?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), $lang->space->upgrade, '', "class='iframe' title='$lang->edit' data-width='500' data-app='space'");?></div>
+            <div class="q-metal"><?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), $lang->space->upgrade, '', "class='iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?></div>
             <?php endif;?>
           </div>
           <div class='panel-body'>
@@ -41,6 +41,9 @@
             </div>
             <div class="instance-actions">
               <?php echo html::a('//' . $instance->domain, $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'");?>
+              <?php if(!empty($instance->higherVersionList)):?>
+              <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>" . $lang->space->upgrade, '', "class='btn btn-link iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
+              <?php endif;?>
             </div>
           </div>
           <div class='panel-footer instance-footer'>

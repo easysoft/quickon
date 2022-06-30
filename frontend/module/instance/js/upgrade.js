@@ -13,6 +13,7 @@ $(function()
         $.post($('#upgradeForm').attr('action'), $('#upgradeForm').serializeArray()).done(function(response)
         {
             loadingDialog.modal('hide');
+            window.parent.$('#triggerModal').modal('hide');
 
             let res = JSON.parse(response);
             if(res.result == 'success')
@@ -22,11 +23,7 @@ $(function()
             }
             else
             {
-                bootbox.alert(
-                {
-                    title:   instanceNotices.fail,
-                    message: res.message,
-                });
+                alert(res.message);
             }
         });
     });
