@@ -48,8 +48,8 @@ RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/*
 
 # qucheng envs
 ARG VERSION
-ENV APP_VERSION=$VERSION
-ENV EASYSOFT_APP_NAME="QuCheng $VERSION"
+ENV BUILD_VERSION=$VERSION
+ENV EASYSOFT_APP_NAME="QuCheng $BUILD_VERSION"
 
 # Copy qucheng source code
 WORKDIR /apps/qucheng

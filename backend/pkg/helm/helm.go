@@ -7,10 +7,11 @@ package helm
 import (
 	"context"
 	"fmt"
+	"log"
+	"os"
+
 	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/schema"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
@@ -20,8 +21,9 @@ import (
 	"helm.sh/helm/v3/pkg/getter"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/strvals"
-	"log"
-	"os"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/schema"
 )
 
 type Action struct {

@@ -55,11 +55,21 @@ func Config(r *gin.Engine) {
 		api.GET("/app/settings/simple", AppSimpleSettings)
 		api.GET("/app/status", AppStatus)
 		api.GET("/app/metric", AppMetric)
+		api.GET("/app/pvc", AppPvcList)
 		api.GET("/test", AppTest)
 
 		api.GET("/app/components", AppComponents)
 		api.GET("/app/component/categories", AppComCategory)
 		api.GET("/app/component/schema", AppComSchema)
+
+		api.POST("/app/backup")
+		api.GET("/app/backup")
+		api.GET("/app/backup/status")
+		api.GET("/app/backup/detail")
+
+		api.POST("/app/restore")
+		api.GET("/app/restore")
+		api.GET("/app/restore/status")
 
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)

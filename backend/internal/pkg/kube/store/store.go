@@ -6,8 +6,12 @@ package store
 
 import (
 	"fmt"
+	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
+	quchenginf "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions"
+	quchenglister "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/listers/qucheng/v1beta1"
 	"time"
 
+	quchengclientset "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
 	metaappsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/api/core/v1"
 	metanetworkv1 "k8s.io/api/networking/v1"
@@ -37,6 +41,9 @@ type Informer struct {
 	Secrets      cache.SharedIndexInformer
 	Deployments  cache.SharedIndexInformer
 	StatefulSets cache.SharedIndexInformer
+
+	Backups  cache.SharedIndexInformer
+	Restores cache.SharedIndexInformer
 }
 
 func (i *Informer) Run(stopCh chan struct{}) {
@@ -49,6 +56,8 @@ func (i *Informer) Run(stopCh chan struct{}) {
 	go i.Secrets.Run(stopCh)
 	go i.Deployments.Run(stopCh)
 	go i.StatefulSets.Run(stopCh)
+	go i.Backups.Run(stopCh)
+	go i.Restores.Run(stopCh)
 
 	if !cache.WaitForCacheSync(stopCh,
 		i.Nodes.HasSynced,
@@ -60,6 +69,8 @@ func (i *Informer) Run(stopCh chan struct{}) {
 		i.Secrets.HasSynced,
 		i.Deployments.HasSynced,
 		i.StatefulSets.HasSynced,
+		i.Backups.HasSynced,
+		i.Restores.HasSynced,
 	) {
 		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
 	}
@@ -75,10 +86,14 @@ type Lister struct {
 	Secrets      v1.SecretLister
 	Deployments  appsv1.DeploymentLister
 	StatefulSets appsv1.StatefulSetLister
+
+	Backups  quchenglister.BackupLister
+	Restores quchenglister.RestoreLister
 }
 
 type Clients struct {
 	Base *kubernetes.Clientset
+	Cne  *quchengclientset.Clientset
 }
 
 type Storer struct {
@@ -126,6 +141,19 @@ func NewStorer(config rest.Config) *Storer {
 
 		s.informers.StatefulSets = factory.Apps().V1().StatefulSets().Informer()
 		s.listers.StatefulSets = factory.Apps().V1().StatefulSets().Lister()
+	}
+
+	if cs, err := quchengclientset.NewForConfig(&config); err != nil {
+		klog.ErrorS(err, "failed to prepare kubeclient")
+	} else {
+		s.Clients.Cne = cs
+		factory := quchenginf.NewSharedInformerFactory(cs, resyncPeriod)
+
+		s.informers.Backups = factory.Qucheng().V1beta1().Backups().Informer()
+		s.listers.Backups = factory.Qucheng().V1beta1().Backups().Lister()
+
+		s.informers.Restores = factory.Qucheng().V1beta1().Restores().Informer()
+		s.listers.Restores = factory.Qucheng().V1beta1().Restores().Lister()
 	}
 
 	return s
@@ -205,4 +233,20 @@ func (s *Storer) GetStatefulSet(namespace string, name string) (*metaappsv1.Stat
 
 func (s *Storer) ListStatefulSets(namespace string, selector labels.Selector) ([]*metaappsv1.StatefulSet, error) {
 	return s.listers.StatefulSets.StatefulSets(namespace).List(selector)
+}
+
+func (s *Storer) GetBackup(namespace string, name string) (*quchengv1beta1.Backup, error) {
+	return s.listers.Backups.Backups(namespace).Get(name)
+}
+
+func (s *Storer) ListBackups(namespace string, selector labels.Selector) ([]*quchengv1beta1.Backup, error) {
+	return s.listers.Backups.Backups(namespace).List(selector)
+}
+
+func (s *Storer) GetRestore(namespace string, name string) (*quchengv1beta1.Restore, error) {
+	return s.listers.Restores.Restores(namespace).Get(name)
+}
+
+func (s *Storer) ListRestores(namespace string, selector labels.Selector) ([]*quchengv1beta1.Restore, error) {
+	return s.listers.Restores.Restores(namespace).List(selector)
 }

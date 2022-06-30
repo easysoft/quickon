@@ -2,9 +2,10 @@ package helm
 
 import (
 	"errors"
+	"net/url"
+
 	"helm.sh/helm/v3/pkg/cli"
 	"helm.sh/helm/v3/pkg/repo"
-	"net/url"
 )
 
 func FindRepoName(repository string) (string, error) {
