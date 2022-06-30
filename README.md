@@ -52,6 +52,12 @@
 
 资源层是服务器和存储，支持虚拟化和分布式存储。渠成平台最少1台机器就可以运行，如果你有更多的服务器，平台支持集群扩容。
 
+## 安装与使用
+
+- [快速安装文档](https://www.qucheng.com/book/Installation-manual/quick-install-6.html)
+- [使用文档](https://www.qucheng.com/book/Installation-manual/account-11.html)
+- [命令行工具](https://www.qucheng.com/book/Installation-manual/cli-12.html)
+
 ## 主要功能列表
 
 ### 应用市场

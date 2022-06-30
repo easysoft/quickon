@@ -4,10 +4,10 @@ export branch_name := $(shell git branch -r --contains | head -1 | sed -E -e "s%
 
 ifeq ($(branch_name),test)
   export TAG=test
-  export APP_VERSION=$(branch_name)-$(date_time)-$(commit_id)
+  export BUILD_VERSION=$(branch_name)-$(date_time)-$(commit_id)
 else
   export TAG=$(branch_name)-$(date_time)-$(commit_id)
-  export APP_VERSION=$(TAG)
+  export BUILD_VERSION=$(TAG)
 endif
 
 help: ## this help
@@ -19,7 +19,7 @@ build-pubilc: ## 构建后端服务
         -t qucheng-backend -f backend/Dockerfile .
 
 build: build-pubilc ## 构建镜像
-	docker build --build-arg VERSION=$(APP_VERSION) \
+	docker build --build-arg VERSION=$(BUILD_VERSION) \
 	-t hub.qucheng.com/platform/qucheng:$(TAG) -f docker/Dockerfile .
 
 build-api: build-pubilc ## 构建api程序
