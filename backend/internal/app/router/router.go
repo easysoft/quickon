@@ -62,6 +62,15 @@ func Config(r *gin.Engine) {
 		api.GET("/app/component/categories", AppComCategory)
 		api.GET("/app/component/schema", AppComSchema)
 
+		api.POST("/app/backup")
+		api.GET("/app/backup")
+		api.GET("/app/backup/status")
+		api.GET("/app/backup/detail")
+
+		api.POST("/app/restore")
+		api.GET("/app/restore")
+		api.GET("/app/restore/status")
+
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)
