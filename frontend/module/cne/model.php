@@ -105,10 +105,22 @@ class cneModel extends model
      * @access public
      * @return mixed
      */
-    public function getUpgradableVersions($currentVersion, $appID = 0, $appName = '', $channel = 'stable')
+    public function getUpgradableVersions($currentVersion, $appID = 0, $appName = '', $channel = '')
     {
-        $apiUrl = '/api/market/app/version/upgradable';
-        $result = $this->apiGet($apiUrl, array('id' => $appID, 'name' => $appName, 'version' => $currentVersion, 'channel' => $channel), $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        $channel = $channel ? $channel : $this->config->cloud->api->channel;
+        $apiUrl  = '/api/market/app/version/upgradable';
+
+        $conditions = array('version' => $currentVersion, 'channel' => $channel);
+        if($appID)
+        {
+            $conditions['id'] = $appID;
+        }
+        else
+        {
+            $conditions['name'] = $appName;
+        }
+
+        $result  = $this->apiGet($apiUrl, $conditions, $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return array();
 
         return $result->data;
@@ -122,7 +134,7 @@ class cneModel extends model
      */
     public function platformLatestVersion()
     {
-        $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng');
+        $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng', $this->config->cloud->api->channel);
 
         return $this->pickHighestVersion($versionList, $this->config->platformVersion);
     }
