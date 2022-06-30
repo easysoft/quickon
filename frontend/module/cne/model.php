@@ -130,7 +130,7 @@ class cneModel extends model
      * Get the latest version of QuCheng platform.
      *
      * @access public
-     * @return string|null
+     * @return object
      */
     public function platformLatestVersion()
     {
@@ -145,12 +145,13 @@ class cneModel extends model
      * @param  int    $appID
      * @param  string $currentVersion
      * @access public
-     * @return array|null Version list
+     * @return string
      */
     public function appLatestVersion($appID, $currentVersion)
     {
         $versionList = $this->getUpgradableVersions($currentVersion, $appID);
-        return $this->pickHighestVersion($versionList, $currentVersion);
+        $versionData = $this->pickHighestVersion($versionList, $currentVersion);
+        return $versionData->version;
     }
 
 
@@ -164,10 +165,14 @@ class cneModel extends model
      */
     private function pickHighestVersion($versionList, $comparedVersion = '0.0.0')
     {
-        $latestVersion = $comparedVersion;
-        foreach($versionList as $version) if(version_compare(str_replace('-', '.', $version->version), str_replace('-', '.', $latestVersion), '>')) $latestVersion = $version->version;
+        $highestVersion = new stdclass;
+        $highestVersion->version = $comparedVersion;
+        foreach($versionList as $version)
+        {
+            if(version_compare(str_replace('-', '.', $version->version), str_replace('-', '.', $highestVersion->version), '>')) $highestVersion = $version;
+        }
 
-        return $latestVersion;
+        return $highestVersion;
     }
 
     /**

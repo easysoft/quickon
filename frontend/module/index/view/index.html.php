@@ -75,10 +75,10 @@ js::set('manualUrl',     (!empty($config->isINT) ? $config->manualUrl['install']
   <ul id='bars' class='nav nav-default'></ul>
   <div id='poweredBy'>
     <div id="globalBarLogo">
-      <?php echo $shouldUpgrade ? html::a(helper::createLink('backup', 'index'), "<i class='icon icon-arrow-up-circle'></i>", '', "title='{$lang->index->upgradeTo} {$this->session->platformLatestVersion}' class='btn btn-link'") : '';?>
+      <?php echo $shouldUpgrade ? html::a(helper::createLink('backup', 'index'), "<i class='icon icon-arrow-up-circle'></i>", '', "title='{$lang->index->upgradeTo} {$this->session->platformLatestVersion->version}' class='btn btn-link'") : '';?>
       <span class='version-container'>
         <img src="<?php echo $config->webRoot . 'theme/default/images/main/' . $this->lang->logoImg;?>"/>
-        <span class='version'><?php echo $lang->qucheng . ' ' . $config->platformVersion . ($config->debug ? getenv('APP_VERSION') . ' ' . getenv('BUILD_VERSION') : '');?></span>
+        <span class='version'><?php echo $lang->qucheng . ' ' . getenv('APP_VERSION') . ($config->debug ? ' ' . $config->platformVersion . ' ' . getenv('BUILD_VERSION') : '');?></span>
       </span>
     </div>
   </div>

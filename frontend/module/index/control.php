@@ -35,7 +35,7 @@ class index extends control
     {
         $this->view->title         = $this->lang->index->common;
         $this->view->open          = helper::safe64Decode($open);
-        $this->view->shouldUpgrade = version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '>');
+        $this->view->shouldUpgrade = version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>');
 
         $this->display();
     }
