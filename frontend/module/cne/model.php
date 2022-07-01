@@ -220,14 +220,14 @@ class cneModel extends model
     }
 
     /**
-     * Upgrade platform to latest version.
+     * Upgrade or degrade platform version.
      *
+     * @param  string $version
      * @access public
      * @return bool
      */
-    public function upgradePlatform()
+    public function setPlatformVersion($version)
     {
-        global $app;
         $instance = new stdclass;
         $instance->k8name = 'qucheng';
         $instance->chart  = 'qucheng';
@@ -235,7 +235,7 @@ class cneModel extends model
         $instance->spaceData = new stdclass;
         $instance->spaceData->k8space = 'cne-system';
 
-        return $this->upgradeToVersion($instance, $app->session->platformLatestVersion);
+        return $this->upgradeToVersion($instance, $version);
     }
 
     /**

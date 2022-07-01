@@ -65,3 +65,4 @@ $lang->backup->error->backupCode  = "代码备份失败，错误：%s";
 
 $lang->backup->error->upgradeFail       = "升级失败!";
 $lang->backup->error->beenLatestVersion = "已经是最新版，无需升级!";
+$lang->backup->error->requireVersion    = "必须上传版本号!";

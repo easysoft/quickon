@@ -408,15 +408,34 @@ class backup extends control
         $backFileName = "{$this->backupPath}{$fileName}.sql";
         $result = $this->backup->backSQL($backFileName);
 
-        $success = $this->loadModel('cne')->upgradePlatform();
+        $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
         if($success)
         {
             session_destroy();
             $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade));
         }
-        else
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail));
+    }
+
+    /**
+     * Degrade platform version. Only for debug!!!
+     *
+     * @param  string $version
+     * @access public
+     * @return void
+     */
+    public function ajaxDegradePlatform($version = '')
+    {
+        if(empty($version)) $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->requireVersion));
+
+        $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
+        if($success)
         {
-            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail));
+            session_destroy();
+            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade . $version));
         }
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail . $version));
     }
 }
