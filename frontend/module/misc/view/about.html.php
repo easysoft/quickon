@@ -10,11 +10,7 @@
           <td class='text-center w-160px'>
             <img class="about-logo" src='<?php echo $config->webRoot . 'theme/default/images/main/' . $lang->logoImg;?>' />
             <h4>
-              <?php if(trim($config->visions, ',') == 'lite'):?>
-              <?php echo $lang->liteName.$config->liteVersion; ?>
-              <?php else:?>
-              <?php printf($lang->misc->qucheng->version, $config->version); ?>
-              <?php endif;?>
+              <?php printf($lang->misc->qucheng->version, getenv('APP_VERSION')); ?>
             </h4>
           </td>
           <td>
@@ -22,8 +18,8 @@
           </td>
         </tr>
         <tr>
+          <td><div class='text-center'><?php echo $lang->designedByAIUX;?></div></td>
           <td colspan='2' class="copyright text-right text-middle">
-            <div class='pull-left'><?php echo $lang->designedByAIUX;?></div>
             <?php echo $lang->misc->copyright;?>
           </td>
         </tr>

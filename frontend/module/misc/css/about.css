@@ -1,4 +1,4 @@
-#mainContent {padding-top: 50px !important;}
+#mainContent {padding-top: 50px !important; min-height: 240px;}
 #mainContent .main-header {display: none;}
 #mainContent .copyright {line-height: 20px;}
 #mainContent .copyright a {vertical-align: baseline;}
