@@ -62,14 +62,14 @@ func Config(r *gin.Engine) {
 		api.GET("/app/component/categories", AppComCategory)
 		api.GET("/app/component/schema", AppComSchema)
 
-		api.POST("/app/backup")
-		api.GET("/app/backup")
-		api.GET("/app/backup/status")
+		api.POST("/app/backup", AppBackupCreate)
+		api.GET("/app/backups", AppBackupList)
+		api.GET("/app/backup/status", AppBackupStatus)
 		api.GET("/app/backup/detail")
 
-		api.POST("/app/restore")
+		api.POST("/app/restore", AppRestoreCreate)
 		api.GET("/app/restore")
-		api.GET("/app/restore/status")
+		api.GET("/app/restore/status", AppRestoreStatus)
 
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)

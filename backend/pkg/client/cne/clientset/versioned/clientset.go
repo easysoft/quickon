@@ -21,10 +21,11 @@ import (
 	"fmt"
 	"net/http"
 
-	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
 	discovery "k8s.io/client-go/discovery"
 	rest "k8s.io/client-go/rest"
 	flowcontrol "k8s.io/client-go/util/flowcontrol"
+
+	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
 )
 
 type Interface interface {

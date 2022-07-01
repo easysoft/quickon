@@ -21,12 +21,13 @@ import (
 	"context"
 	"time"
 
-	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
-	scheme "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/scheme"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	types "k8s.io/apimachinery/pkg/types"
 	watch "k8s.io/apimachinery/pkg/watch"
 	rest "k8s.io/client-go/rest"
+
+	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
+	scheme "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/scheme"
 )
 
 // DbServicesGetter has a method to return a DbServiceInterface.

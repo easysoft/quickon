@@ -21,14 +21,15 @@ import (
 	"context"
 	time "time"
 
-	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
-	versioned "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
-	internalinterfaces "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions/internalinterfaces"
-	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/listers/qucheng/v1beta1"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	watch "k8s.io/apimachinery/pkg/watch"
 	cache "k8s.io/client-go/tools/cache"
+
+	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
+	versioned "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
+	internalinterfaces "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions/internalinterfaces"
+	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/listers/qucheng/v1beta1"
 )
 
 // DbServiceInformer provides access to a shared informer and lister for

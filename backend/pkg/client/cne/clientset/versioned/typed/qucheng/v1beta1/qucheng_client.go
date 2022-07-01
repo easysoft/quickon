@@ -20,9 +20,10 @@ package v1beta1
 import (
 	"net/http"
 
+	rest "k8s.io/client-go/rest"
+
 	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/scheme"
-	rest "k8s.io/client-go/rest"
 )
 
 type QuchengV1beta1Interface interface {

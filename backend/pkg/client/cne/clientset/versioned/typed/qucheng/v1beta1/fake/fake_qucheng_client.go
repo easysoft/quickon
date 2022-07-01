@@ -18,9 +18,10 @@ limitations under the License.
 package fake
 
 import (
-	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
+
+	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
 )
 
 type FakeQuchengV1beta1 struct {

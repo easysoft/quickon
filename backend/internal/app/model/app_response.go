@@ -85,3 +85,15 @@ type AppRespPvc struct {
 	Size             float64                         `json:"pvc_storage_size"`
 	Path             string                          `json:"pvc_path"`
 }
+
+type AppRespBackup struct {
+	Name        string                 `json:"name"`
+	CreateTime  int64                  `json:"create_time"`
+	StorageName string                 `json:"storage_name"`
+	Status      string                 `json:"status"`
+	Archives    []AppRespBackupArchive `json:"archives"`
+}
+
+type AppRespBackupArchive struct {
+	Path string `json:"path"`
+}
