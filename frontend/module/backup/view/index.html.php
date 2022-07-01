@@ -16,9 +16,6 @@
   <div class="content"><i class='icon-exclamation-sign'></i> <?php echo $error;?></div>
 </div>
 <?php endif;?>
-<div id='mainMenu' class='clearfix'>
-  <div class='btn-toolbar pull-left'><?php // common::printAdminSubMenu('system');?></div>
-</div>
 <div id='mainContent' class="main-row">
   <div class="main-col main-content">
     <div class='main-header'>
@@ -44,7 +41,7 @@
             <?php echo html::a('https://www.qucheng.com/dynamic.html', "&nbsp;<i class='icon icon-info-sign' style='color: #4E83F0;'></i>", '_blank', "title='{$lang->backup->versionInfo}'");?>
           </td>
           <td>
-            <?php echo html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload');?>
+            <?php echo version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>') ?  html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload') : '';?>
             <?php //echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
             <?php //echo html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
             <?php //echo html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
