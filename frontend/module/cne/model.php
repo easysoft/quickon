@@ -136,7 +136,10 @@ class cneModel extends model
     {
         $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng', $this->config->cloud->api->channel);
 
-        return $this->pickHighestVersion($versionList, $this->config->platformVersion);
+        $latestVersion = $this->pickHighestVersion($versionList, $this->config->platformVersion);
+        if(empty($latestVersion->app_version)) $latestVersion->app_version = getenv('APP_VERSION');
+
+        return $latestVersion;
     }
 
     /**
