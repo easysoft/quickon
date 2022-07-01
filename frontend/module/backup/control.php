@@ -411,6 +411,7 @@ class backup extends control
         $success = $this->loadModel('cne')->upgradePlatform();
         if($success)
         {
+            session_destroy();
             $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade));
         }
         else
