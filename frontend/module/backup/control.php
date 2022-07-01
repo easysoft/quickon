@@ -429,13 +429,13 @@ class backup extends control
     {
         if(empty($version)) $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->requireVersion));
 
-        $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
+        $success = $this->loadModel('cne')->setPlatformVersion($version);
         if($success)
         {
             session_destroy();
-            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade . $version));
+            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->degrade . $version, 'locate' => '/'));
         }
 
-        $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail . $version));
+        $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->degradeFail . $version));
     }
 }

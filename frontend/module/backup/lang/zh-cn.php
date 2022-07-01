@@ -53,6 +53,7 @@ $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';
 $lang->backup->success->restore = '还原成功！';
 $lang->backup->success->upgrade = '升级成功！';
+$lang->backup->success->degrade = '降级成功！';
 
 $lang->backup->error = new stdclass();
 $lang->backup->error->noCreateDir = '备份目录不存在，也无法创建该目录';
@@ -64,5 +65,6 @@ $lang->backup->error->backupFile  = "附件备份失败，错误：%s";
 $lang->backup->error->backupCode  = "代码备份失败，错误：%s";
 
 $lang->backup->error->upgradeFail       = "升级失败!";
+$lang->backup->error->degradeFail       = "降级失败!";
 $lang->backup->error->beenLatestVersion = "已经是最新版，无需升级!";
 $lang->backup->error->requireVersion    = "必须上传版本号!";
