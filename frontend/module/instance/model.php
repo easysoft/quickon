@@ -469,18 +469,18 @@ class InstanceModel extends model
         $actionHtml = '';
 
         $disableStart = !$this->canDo('start', $instance);
-        $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'", "btn-start btn btn-lg btn-action " . ($disableStart ? 'disabled' : ''));
+        $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-lg btn-action");
 
         $disableStop = !$this->canDo('stop', $instance);
-        $actionHtml .= html::commonButton('<i class="icon-off"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'", 'btn-stop btn btn-lg btn-action ' . ($disableStop ? 'disabled' : '') . "'");
+        $actionHtml .= html::commonButton('<i class="icon-off"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn btn-lg btn-action');
 
         $disableUninstall = !$this->canDo('uninstall', $instance);
-        $actionHtml      .= html::commonButton('<i class="icon-trash"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'", 'btn-uninstall btn btn-lg btn-action ' . ($disableUninstall ? 'disabled' : '') . "'");
+        $actionHtml      .= html::commonButton('<i class="icon-trash"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn btn-lg btn-action');
 
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//'.$instance->domain, '<i class="icon icon-menu-my"></i>', '', "title='{$this->lang->instance->visit}' " . 'target="_blank"  class="btn btn-lg btn-action btn-link ' . ($disableVisit ? 'disabled' : '') . '"');
+            $actionHtml  .= html::a('//'.$instance->domain, '<i class="icon icon-menu-my"></i>', '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg btn-action btn-link'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;
