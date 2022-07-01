@@ -1,38 +1,19 @@
 package router
 
 import (
-	"errors"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
-
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
+	"net/http"
 )
 
 func AppBackupCreate(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
-		query model.AppModel
-		i     *app.Instance
+		op model.AppModel
 	)
-	if err = c.ShouldBindJSON(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &op)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -47,25 +28,12 @@ func AppBackupCreate(c *gin.Context) {
 
 func AppRestoreCreate(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err error
-		op  model.AppBackupModel
-		i   *app.Instance
+		op model.AppBackupModel
 	)
-	if err = c.ShouldBindJSON(&op); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, op.Cluster, op.Namespace).GetApp(op.Name)
+	_, i, code, err := LookupApp(c, &op)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", op.Cluster, "namespace", op.Namespace, "name", op.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -80,25 +48,12 @@ func AppRestoreCreate(c *gin.Context) {
 
 func AppBackupStatus(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppBackupModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -113,25 +68,12 @@ func AppBackupStatus(c *gin.Context) {
 
 func AppRestoreStatus(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppRestoreModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -146,25 +88,12 @@ func AppRestoreStatus(c *gin.Context) {
 
 func AppBackupList(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
