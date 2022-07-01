@@ -102,23 +102,28 @@ class instance extends control
     public function upgrade($id)
     {
         $instance = $this->instance->getByID($id);
-        $higherVersions = $this->cne->getUpgradableVersions($instance->appID, $instance->version);
-        $versionList = array_combine(array_column($higherVersions, 'version'), array_column($higherVersions,'app_version'));
+        $instance->latestVersion = $this->cne->appLatestVersion($instance->appID, $instance->version);
 
         if($_POST)
         {
             $postData = fixer::input('post')->get();
 
-            $success = $this->cne->upgradeToVersion($instance, $postData->version);
+            if($postData->confirm == 'yes') $success = $this->instance->upgrade($instance, $instance->latestVersion);
 
-            if(!$success) $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['upgradeFail']));
+            $logExtra = array('result' => 'success', 'data' => array('oldVersion' => $instance->version, 'newVersion' => $instance->latestVersion));
+            if(!$success)
+            {
+                $logExtra['result'] = 'fail';
+                $this->loadModel('action')->create('instance', $instance->id, 'upgrade', '', json_encode($logExtra));
+                $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['upgradeFail']));
+            }
 
+            $this->loadModel('action')->create('instance', $instance->id, 'upgrade', '', json_encode($logExtra));
             $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['upgradeSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => '_self'));
         }
 
         $this->view->title       = $this->lang->instance->upgrade . $instance->name;
         $this->view->instance    = $instance;
-        $this->view->versionList = $versionList;
 
         $this->view->position[] = $this->lang->instance->upgrade;
 

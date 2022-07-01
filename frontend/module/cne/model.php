@@ -96,43 +96,86 @@ class cneModel extends model
     }
 
     /**
+     * Get upgradable versions of app from cloud market.
+     *
+     * @param  string $currentVersion
+     * @param  int    $appID          appID is required if no appName.
+     * @param  string $appName        appName is required if no appID.
+     * @param  string $channel
+     * @access public
+     * @return mixed
+     */
+    public function getUpgradableVersions($currentVersion, $appID = 0, $appName = '', $channel = '')
+    {
+        $channel = $channel ? $channel : $this->config->cloud->api->channel;
+        $apiUrl  = '/api/market/app/version/upgradable';
+
+        $conditions = array('version' => $currentVersion, 'channel' => $channel);
+        if($appID)
+        {
+            $conditions['id'] = $appID;
+        }
+        else
+        {
+            $conditions['name'] = $appName;
+        }
+
+        $result  = $this->apiGet($apiUrl, $conditions, $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        if(!isset($result->code) || $result->code != 200) return array();
+
+        return $result->data;
+    }
+
+    /**
      * Get the latest version of QuCheng platform.
      *
      * @access public
-     * @return string|null
+     * @return object
      */
     public function platformLatestVersion()
     {
-        $latestVersion = $this->config->platformVersion;
+        $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng', $this->config->cloud->api->channel);
 
-        // 39 is the ID of QuCheng app. 39 is temporary value, it will be replace very soon.
-        $versionList = $this->getUpgradableVersions(39, $this->config->platformVersion);
-        if(empty($versionList)) return $latestVersion;
-
-        foreach($versionList as $version)
-        {
-            if(version_compare($this->config->platformVersion, $version, '>=')) continue;
-            $latestVersion = $version;
-        }
+        $latestVersion = $this->pickHighestVersion($versionList, $this->config->platformVersion);
+        if(empty($latestVersion->app_version)) $latestVersion->app_version = getenv('APP_VERSION');
 
         return $latestVersion;
     }
 
     /**
-     * Get upgradable versions of app from cloud market.
+     * Get the latest versions of app from cloud market.
      *
      * @param  int    $appID
      * @param  string $currentVersion
      * @access public
-     * @return array|null Version list
+     * @return string
      */
-    public function getUpgradableVersions($appID, $currentVersion)
+    public function appLatestVersion($appID, $currentVersion)
     {
-        $apiUrl = '/api/market/app/version/upgradable';
-        $result = $this->apiGet($apiUrl, array('id' => $appID, 'version' => $currentVersion), $this->config->cloud->api->headers, $this->config->cloud->api->host);
-        if(!isset($result->code) || $result->code != 200) return null;
+        $versionList = $this->getUpgradableVersions($currentVersion, $appID);
+        $versionData = $this->pickHighestVersion($versionList, $currentVersion);
+        return $versionData->version;
+    }
 
-        return $result->data;
+
+    /**
+     * Pick highest version from version list and compared version.
+     *
+     * @param  int    $versionList
+     * @param  string $comparedVersion
+     * @access private
+     * @return mixed
+     */
+    private function pickHighestVersion($versionList, $comparedVersion = '0.0.0')
+    {
+        $highestVersion = new stdclass;
+        $highestVersion->version = $comparedVersion;
+        foreach($versionList as $version)
+        {
+            if(version_compare(str_replace('-', '.', $version->version), str_replace('-', '.', $highestVersion->version), '>')) $highestVersion = $version;
+        }
+
+        return $highestVersion;
     }
 
     /**
@@ -177,14 +220,14 @@ class cneModel extends model
     }
 
     /**
-     * Upgrade platform to latest version.
+     * Upgrade or degrade platform version.
      *
+     * @param  string $version
      * @access public
      * @return bool
      */
-    public function upgradePlatform()
+    public function setPlatformVersion($version)
     {
-        global $app;
         $instance = new stdclass;
         $instance->k8name = 'qucheng';
         $instance->chart  = 'qucheng';
@@ -192,7 +235,7 @@ class cneModel extends model
         $instance->spaceData = new stdclass;
         $instance->spaceData->k8space = 'cne-system';
 
-        return $this->upgradeToVersion($instance, $app->session->platformLatestVersion);
+        return $this->upgradeToVersion($instance, $version);
     }
 
     /**

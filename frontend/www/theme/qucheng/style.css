@@ -1362,7 +1362,7 @@ a.text-primary {
 }
 
 .btn-primary.disabled,.btn-primary.disabled.active,.btn-primary.disabled:active,.btn-primary.disabled:focus,.btn-primary.disabled:hover,.btn-primary[disabled],.btn-primary[disabled].active,.btn-primary[disabled]:active,.btn-primary[disabled]:focus,.btn-primary[disabled]:hover,fieldset[disabled] .btn-primary,fieldset[disabled] .btn-primary.active,fieldset[disabled] .btn-primary:active,fieldset[disabled] .btn-primary:focus,fieldset[disabled] .btn-primary:hover {
-    color: rgba(255,255,255,.3);
+    color: rgba(255,255,255,.7);
     background-color: #61be68;
     border-color: transparent
 }
@@ -1965,4 +1965,3 @@ td.c-actions .btn-link:hover {
     padding-top: 3px;
 }
 .q-metal a {color: #ffffff; font-size: 12px;}
-

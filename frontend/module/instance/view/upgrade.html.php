@@ -17,13 +17,12 @@
     <h2><?php echo $lang->instance->upgrade;?></h2>
   </div>
   <form method='post' action='<?php echo helper::createLink("instance", "upgrade", "id=$instance->id");?>' id='upgradeForm'>
-    <table class='table table-form'>
-      <tr>
-        <th class='w-60px'><?php echo $lang->instance->version;?></th>
-        <td><?php echo html::select('version', $versionList, "", "class='form-control'");?></td>
-      </tr>
-    </table>
-    <div class='text-center form-actions'><?php echo html::submitButton($lang->instance->upgrade) . html::backButton();?></div>
+    <p class='modal-message text-center'><?php echo sprintf($lang->instance->notices['confirmUpgrade'], $instance->version, $instance->latestVersion);?></p>
+    <?php echo html::hidden('confirm', 'yes');?>
+    <div class='text-center'>
+      <button type="button" class="btn btn-default btn-wide" data-dismiss="modal"><?php echo $lang->cancel;?></button>
+      <?php echo html::submitButton($lang->instance->upgrade);?>
+    </div>
   </form>
 </div>
 <?php include $this->app->getModuleRoot() . '/common/view/footer.html.php';?>

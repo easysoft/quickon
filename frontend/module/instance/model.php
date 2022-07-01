@@ -108,24 +108,25 @@ class InstanceModel extends model
      */
     public function updateStatus($id, $status)
     {
-        return $this->updateByID($id, array('status' => trim($status)));
+        $instanceData = new stdclass;
+        $instanceData->status = trim($status);
+        return $this->updateByID($id, $instanceData);
     }
 
     /**
      * Update instance by id.
      *
-     * @param  int          $id
-     * @param  object|array $newInstance
+     * @param  int    $id
+     * @param  object $newInstance
      * @access public
      * @return void
      */
     public function updateByID($id, $newInstance)
     {
-
         return $this->dao->update(TABLE_INSTANCE)->data($newInstance)
             ->autoCheck()
             ->checkIF(isset($newInstance->name), 'name', 'notempty')
-            ->checkIF(isset($newInstance->status), 'status', 'in', $this->lang->instance->statusList)
+            ->checkIF(isset($newInstance->status), 'status', 'in', array_keys($this->lang->instance->statusList))
             ->where('id')->eq($id)->exec();
     }
 
@@ -323,6 +324,26 @@ class InstanceModel extends model
         return $result;
     }
 
+    /**
+     * Upgrade app instnace to higher version.
+     *
+     * @param  object $instance
+     * @param  string $toVersion
+     * @access public
+     * @return bool
+     */
+    public function upgrade($instance, $toVersion)
+    {
+        $success = $this->cne->upgradeToVersion($instance, $toVersion);
+        if(!$success) return false;
+
+        $instanceData = new stdclass;
+        $instanceData->version = $toVersion;
+        $this->updateByID($instances->id, $instanceData);
+
+        return true;
+    }
+
     /*
      * Query and update instances status.
      *
@@ -448,18 +469,18 @@ class InstanceModel extends model
         $actionHtml = '';
 
         $disableStart = !$this->canDo('start', $instance);
-        $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'", "btn-start btn btn-lg btn-action " . ($disableStart ? 'disabled' : ''));
+        $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-lg btn-action");
 
         $disableStop = !$this->canDo('stop', $instance);
-        $actionHtml .= html::commonButton('<i class="icon-off"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'", 'btn-stop btn btn-lg btn-action ' . ($disableStop ? 'disabled' : '') . "'");
+        $actionHtml .= html::commonButton('<i class="icon-off"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn btn-lg btn-action');
 
         $disableUninstall = !$this->canDo('uninstall', $instance);
-        $actionHtml      .= html::commonButton('<i class="icon-trash"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'", 'btn-uninstall btn btn-lg btn-action ' . ($disableUninstall ? 'disabled' : '') . "'");
+        $actionHtml      .= html::commonButton('<i class="icon-trash"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn btn-lg btn-action');
 
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//'.$instance->domain, '<i class="icon icon-menu-my"></i>', '', "title='{$this->lang->instance->visit}' " . 'target="_blank"  class="btn btn-lg btn-action btn-link ' . ($disableVisit ? 'disabled' : '') . '"');
+            $actionHtml  .= html::a('//'.$instance->domain, '<i class="icon icon-menu-my"></i>', '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg btn-action btn-link'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;
@@ -488,7 +509,12 @@ class InstanceModel extends model
                 $newName  = zget($extra->data, 'newName', '');
                 $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName);
             }
-
+            if($log->action == 'upgrade' && isset($extra->data))
+            {
+                $oldVersion = zget($extra->data, 'oldVersion', '');
+                $newVersion = zget($extra->data, 'newVersion', '');
+                $logText .= ', ' . sprintf($this->lang->instance->versionChangeTo, $oldVersion, $newVersion);
+            }
         }
 
         echo $logText;

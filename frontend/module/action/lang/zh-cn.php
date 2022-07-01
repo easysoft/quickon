@@ -71,6 +71,7 @@ $lang->action->label->install       = '安装了';
 $lang->action->label->uninstall     = '卸载了';
 $lang->action->label->resetpassword = '重置了密码';
 $lang->action->label->editname      = '修改了服务名称';
+$lang->action->label->upgrade       = '升级了';
 
 /* 动态信息按照对象分组 */
 $lang->action->dynamicAction = new stdclass();

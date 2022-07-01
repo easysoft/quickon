@@ -69,6 +69,9 @@ class backup extends control
         }
         krsort($backups);
 
+        /* Fresh latest version of QuCheng platform in session.  */
+        $this->session->set('platformLatestVersion', $this->loadModel('cne')->platformLatestVersion());
+
         $this->view->title      = $this->lang->backup->common;
         $this->view->position[] = $this->lang->backup->common;
         $this->view->backups    = $backups;
@@ -397,19 +400,45 @@ class backup extends control
      */
     public function ajaxUpgradePlatform()
     {
-        if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<='))
-        {
-            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->beenLatestVersion));
-        }
+        //if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<='))
+        //{
+        //    $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->beenLatestVersion));
+        //}
 
-        $success = $this->loadModel('cne')->upgradePlatform();
+        set_time_limit(0);
+        /* Backup database. */
+        $fileName = date('YmdHis') . mt_rand(0, 9);
+        $backFileName = "{$this->backupPath}{$fileName}.sql";
+        $result = $this->backup->backSQL($backFileName);
+
+        $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
         if($success)
         {
+            session_destroy();
             $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade));
         }
-        else
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail));
+    }
+
+    /**
+     * Degrade platform version. Only for debug!!!
+     *
+     * @param  string $version
+     * @access public
+     * @return void
+     */
+    public function ajaxDegradePlatform($version = '')
+    {
+        if(empty($version)) $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->requireVersion));
+
+        $success = $this->loadModel('cne')->setPlatformVersion($version);
+        if($success)
         {
-            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail));
+            session_destroy();
+            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->degrade . $version, 'locate' => '/'));
         }
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->degradeFail . $version));
     }
 }

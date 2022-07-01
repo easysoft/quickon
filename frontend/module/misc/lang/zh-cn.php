@@ -19,4 +19,4 @@ $lang->misc->qucheng->labels['cowin']   = '帮助我们';
 $lang->misc->qucheng->labels['service'] = '服务列表';
 $lang->misc->qucheng->labels['others']  = '其他产品';
 
-$lang->misc->copyright   = "&copy; 2009 - 2022 <a href='https://www.qucheng.com' target='_blank'>北京渠成软件有限公司</a> 电话：4006-8899-23 Email：<a href='mailto:liubin@qucheng.com'>liubin@qucheng.com</a>  QQ：1492153927";
+$lang->misc->copyright   = "&copy; 2021 - 2022 <a href='https://www.qucheng.com' target='_blank'>北京渠成软件有限公司</a> 电话：4006-8899-23 Email：<a href='mailto:service@qucheng.com'>service@qucheng.com</a>  QQ群：768721743";

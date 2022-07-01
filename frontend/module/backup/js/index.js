@@ -7,18 +7,7 @@ $(function()
 
     $('#submitUpgrade').click(function()
     {
-        $.post(createLink('backup', 'ajaxUpgradePlatform'), function(response)
-        {
-            let res = JSON.parse(response);
-            if(res.result == 'success')
-            {
-                window.parent.location.href= '/upgrading.html';
-            }
-            else
-            {
-                alert(res.message);
-            }
-        });
+        window.parent.location.href= '/upgrading.html';
     });
 
     $('.backup').click(function()

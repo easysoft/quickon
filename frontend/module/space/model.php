@@ -79,7 +79,7 @@ class spaceModel extends model
         $this->loadModel('cne');
         foreach($instances as $instance)
         {
-            $higherVersionList = $this->cne->getUpgradableVersions($instance->appID, $instance->version);
+            $higherVersionList = $this->cne->getUpgradableVersions($instance->version, $instance->appID);
             $instance->higherVersionList = $higherVersionList;
         }
 
