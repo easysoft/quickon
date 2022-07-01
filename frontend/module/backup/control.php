@@ -397,10 +397,16 @@ class backup extends control
      */
     public function ajaxUpgradePlatform()
     {
-        if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<='))
-        {
-            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->beenLatestVersion));
-        }
+        //if(version_compare($this->session->platformLatestVersion, $this->config->platformVersion, '<='))
+        //{
+        //    $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->beenLatestVersion));
+        //}
+
+        set_time_limit(0);
+        /* Backup database. */
+        $fileName = date('YmdHis') . mt_rand(0, 9);
+        $backFileName = "{$this->backupPath}{$fileName}.sql";
+        $result = $this->backup->backSQL($backFileName);
 
         $success = $this->loadModel('cne')->upgradePlatform();
         if($success)
