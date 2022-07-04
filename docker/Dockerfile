@@ -16,8 +16,8 @@ COPY docker/prebuildfs /
 ENV TZ=Asia/Shanghai \
     DEBIAN_FRONTEND=noninteractive
 
-RUN sed -i -r 's/(deb|security).debian.org/mirrors.aliyun.com/g' /etc/apt/sources.list \
-    && install_packages curl wget tzdata zip unzip s6 pwgen cron apt-transport-https ca-certificates procps \
+RUN sed -i -r 's/(deb|security).debian.org/mirrors.cloud.tencent.com/g' /etc/apt/sources.list \
+    && install_packages curl wget tzdata zip unzip s6 pwgen cron apt-transport-https ca-certificates \
     && ln -fs /usr/share/zoneinfo/${TZ} /etc/localtime \
     && echo ${TZ} > /etc/timezone \
     && dpkg-reconfigure --frontend noninteractive tzdata
@@ -42,6 +42,9 @@ RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mysql-client" "
 
 # Install wait-for-port
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "wait-for-port" "1.01" -c 2ad97310f0ecfbfac13480cabf3691238fdb3759289380262eb95f8660ebb8d1
+
+# Install toolkit
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "toolkit" "20220630" -c cc920426e0c72e9bb6833807e0dddf9f27177bb2ed28f698c1e05eddee9c1069
 
 # Clear apahce vhost config
 RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/*
