@@ -411,13 +411,18 @@ class backup extends control
         $backFileName = "{$this->backupPath}{$fileName}.sql";
         $result = $this->backup->backSQL($backFileName);
 
+        $logExtra = array('result' => 'success', 'data' => array('oldVersion' => getenv('APP_VERSION'), 'newVersion' => $this->session->platformLatestVersion->version));
+
         $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
         if($success)
         {
+            $this->action->create('backup', 0, 'upgrade', '', json_encode($logExtra));
             session_destroy();
             $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade));
         }
 
+        $logExtra['result'] = 'fail';
+        $this->action->create('backup', 0, 'upgrade', '', json_encode($logExtra));
         $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeFail));
     }
 

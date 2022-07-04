@@ -114,11 +114,11 @@ class instance extends control
             if(!$success)
             {
                 $logExtra['result'] = 'fail';
-                $this->loadModel('action')->create('instance', $instance->id, 'upgrade', '', json_encode($logExtra));
+                $this->action->create('instance', $instance->id, 'upgrade', '', json_encode($logExtra));
                 $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['upgradeFail']));
             }
 
-            $this->loadModel('action')->create('instance', $instance->id, 'upgrade', '', json_encode($logExtra));
+            $this->action->create('instance', $instance->id, 'upgrade', '', json_encode($logExtra));
             $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['upgradeSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => '_self'));
         }
 
