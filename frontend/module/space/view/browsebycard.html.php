@@ -41,7 +41,7 @@
             </div>
             <div class="instance-actions">
               <?php $canVisit = $this->instance->canDo('visit', $instance);?>
-              <?php echo html::a('//' . $instance->domain, "<i class='icon-home'></i> " . $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled '));?>
+              <?php echo html::a('//' . $instance->domain, "<i class='icon-home'></i> " . $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
               <?php if(!empty($instance->higherVersionList)):?>
               <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>" . $lang->space->upgrade, '', "class='btn btn-link iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
               <?php endif;?>
