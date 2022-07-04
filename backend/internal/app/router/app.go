@@ -534,6 +534,21 @@ func AppPvcList(c *gin.Context) {
 	renderJson(c, http.StatusOK, data)
 }
 
+func AppAccountInfo(c *gin.Context) {
+	var (
+		query model.AppModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	data := i.GetAccountInfo()
+	renderJson(c, http.StatusOK, data)
+}
+
 func AppTest(c *gin.Context) {
 
 	ch, err := helm.GetChart("qucheng-test/demo", "0.1.1")
