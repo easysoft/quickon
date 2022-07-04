@@ -110,7 +110,7 @@ class instance extends control
 
             if($postData->confirm == 'yes') $success = $this->instance->upgrade($instance, $instance->latestVersion);
 
-            $logExtra = array('result' => 'success', 'data' => array('oldVersion' => $instance->version, 'newVersion' => $instance->latestVersion));
+            $logExtra = array('result' => 'success', 'data' => array('oldVersion' => $instance->appVersion, 'newVersion' => $instance->latestVersion->app_version));
             if(!$success)
             {
                 $logExtra['result'] = 'fail';

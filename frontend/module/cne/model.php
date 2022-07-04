@@ -148,13 +148,13 @@ class cneModel extends model
      * @param  int    $appID
      * @param  string $currentVersion
      * @access public
-     * @return string
+     * @return object
      */
     public function appLatestVersion($appID, $currentVersion)
     {
         $versionList = $this->getUpgradableVersions($currentVersion, $appID);
         $versionData = $this->pickHighestVersion($versionList, $currentVersion);
-        return $versionData->version;
+        return $versionData;
     }
 
 
