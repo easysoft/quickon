@@ -22,15 +22,15 @@ stages:
 build-tags:
   stage: build
   script:
-    - make build-tag
+    - make qucheng citag=${CI_COMMIT_TAG}
   only:
     - tags
 
 build-custom:
   stage: build
   script:
-    - make build && make push
-    - make build-api && make push-api
+    - make qucheng
+    - make api
   after_script:
     - echo "clean build"
 
