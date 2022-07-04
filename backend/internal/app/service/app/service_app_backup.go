@@ -71,7 +71,7 @@ func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
 	}
 
 	data := map[string]string{
-		"status": strings.ToLower(string(backup.Status.Phase)),
+		"status": string(backup.Status.Phase),
 		"reason": backup.Status.Reason,
 	}
 
@@ -110,7 +110,7 @@ func (i *Instance) GetRestoreStatus(restoreName string) (interface{}, error) {
 	}
 
 	data := map[string]string{
-		"status": strings.ToLower(string(restore.Status.Phase)),
+		"status": string(restore.Status.Phase),
 		"reason": restore.Status.Reason,
 	}
 
