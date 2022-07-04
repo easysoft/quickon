@@ -10,6 +10,8 @@ import (
 	"reflect"
 	"strings"
 
+	"github.com/imdario/mergo"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
@@ -330,6 +332,24 @@ func (i *Instance) GetPvcList() []model.AppRespPvc {
 	return result
 }
 
+func (i *Instance) GetAccountInfo() map[string]string {
+	data := map[string]string{
+		"username": "", "password": "",
+	}
+
+	values := i.release.Chart.Values
+	mergo.Merge(&values, i.release.Config, mergo.WithOverwriteWithEmptyValue)
+
+	if auth, ok := values["auth"]; ok {
+		username := lookupFields(auth.(map[string]interface{}), "username", "user")
+		password := lookupFields(auth.(map[string]interface{}), "password", "passwd")
+		data["username"] = username
+		data["password"] = password
+	}
+
+	return data
+}
+
 func (i *Instance) GetMetrics() *model.AppMetric {
 	metrics := i.ks.Metric.ListPodMetrics(i.ctx, i.namespace, i.selector)
 	pods, _ := i.ks.Store.ListPods(i.namespace, i.selector)
@@ -375,4 +395,16 @@ func sumPodLimit(dst *metric.Res, pods []*v1.Pod) {
 			dst.Memory.Add(*l.Memory())
 		}
 	}
+}
+
+func lookupFields(m map[string]interface{}, names ...string) string {
+	for _, name := range names {
+		if v, ok := m[name]; ok {
+			refv := reflect.ValueOf(v)
+			if refv.Kind() == reflect.String {
+				return v.(string)
+			}
+		}
+	}
+	return ""
 }
