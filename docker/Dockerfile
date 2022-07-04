@@ -62,7 +62,7 @@ COPY --from=qucheng-backend /go/src/_output/bin/cne-api /apps/qucheng/bin/backen
 COPY docker/rootfs /
 
 RUN chmod +x /usr/bin/entrypoint.sh /apps/qucheng/bin/backend \
-    && chmod 777 /apps/qucheng/tmp 
+    && chmod 777 /apps/qucheng/tmp
 
 EXPOSE 80
 
