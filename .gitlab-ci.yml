@@ -22,7 +22,7 @@ stages:
 build-tags:
   stage: build
   script:
-    - make build-tag
+    - make build citag=${CI_COMMIT_TAG}
   only:
     - tags
 

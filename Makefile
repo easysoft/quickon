@@ -1,5 +1,5 @@
 date_time := $(shell date +%Y%m%d)
-CI_COMMIT_TAG := $(shell git describe --tags --exact-match $(CI_COMMIT_SHA))
+ci_tag := $(citag)
 export commit_id := $(shell git rev-parse --short HEAD)
 export branch_name := $(shell git branch -r --contains | head -1 | sed -E -e "s%(HEAD ->|origin|upstream)/?%%g" | xargs )
 
@@ -7,8 +7,13 @@ ifeq ($(branch_name),test)
   export TAG=test
   export BUILD_VERSION=$(branch_name)-$(date_time)-$(commit_id)
 else
-  export TAG=$(branch_name)-$(date_time)-$(commit_id)
-  export BUILD_VERSION=$(TAG)
+  ifdef ci_tag
+    export TAG=$(ci_tag)
+    export BUILD_VERSION=$(ci_tag)-$(date_time)-$(commit_id)
+  else
+    export TAG=$(branch_name)-$(date_time)-$(commit_id)
+    export BUILD_VERSION=$(TAG)
+	endif
 endif
 
 help: ## this help
@@ -25,12 +30,6 @@ build: build-pubilc ## 构建镜像
 
 build-api: build-pubilc ## 构建api程序
 	docker build -t hub.qucheng.com/platform/cne-api:$(TAG) -f docker/Dockerfile.api .
-
-build-tag: build-pubilc ## 构建tag版本镜像
-	docker buildx build --pull --push --platform linux/amd64 \
-					--build-arg GIT_COMMIT=$(commit_id) \
-					--build-arg GIT_BRANCH=$(branch_name) \
-					-t hub.qucheng.com/platform/qucheng:${CI_COMMIT_TAG} -f docker/Dockerfile .
 
 build-all: build build-api # 构建所有镜像
 
