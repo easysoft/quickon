@@ -11,7 +11,7 @@ services:
     environment:
       - MYSQL_ROOT_PASSWORD=pass4Qucheng
       - MYSQL_DATABASE=qucheng
-  
+
   qucheng:
     image: hub.qucheng.com/platform/qucheng:${TAG}
     container_name: qucheng
