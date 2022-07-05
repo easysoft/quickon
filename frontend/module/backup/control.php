@@ -33,6 +33,7 @@ class backup extends control
         if(!is_writable($this->app->getTmpRoot())) $this->view->error = sprintf($this->lang->backup->error->noWritable, $this->app->getTmpRoot());
 
         $this->loadModel('action');
+        $this->loadModel('setting');
     }
 
     /**
@@ -393,6 +394,38 @@ class backup extends control
     }
 
     /**
+     * Get upgrading status by ajax.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxUpgradeStatus()
+    {
+        $chartVersion = $this->setting->getItem('owner=system&module=backup&section=global&key=chartVersion');
+
+        /* Upgrade success. */
+        if(getenv('CHART_VERSION') == $chartVersion)
+        {
+            session_destroy();
+            $this->setting->deleteItems('owner=system&module=backup&section=global&key=chartVersion');
+            $this->setting->deleteItems('owner=system&module=backup&section=global&key=upgradedAt');
+            return $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade, 'status' => 'success'));
+        }
+
+        $upgradedAt = $this->setting->getItem('owner=system&module=backup&section=global&key=upgradedAt');
+        /* Jump to login if upgrade overtime 5 miniutes. */
+        if(!$this->backup->isGradeOvertime())
+        {
+            session_destroy();
+            $this->setting->deleteItems('owner=system&module=backup&section=global&key=chartVersion');
+            $this->setting->deleteItems('owner=system&module=backup&section=global&key=upgradedAt');
+            $this->send(array('result' => 'fail', 'message' => $this->lang->backup->error->upgradeOvertime, 'status' => 'overtime'));
+        }
+
+        return $this->send(array('result' => 'fail', 'message' => $this->lang->backup->upgrading, 'status' => 'upgrading'));
+    }
+
+    /**
      * Upgrade platform by ajax.
      *
      * @access public
@@ -416,9 +449,10 @@ class backup extends control
         $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
         if($success)
         {
+            $this->setting->setItem('system.backup.global.chartVersion', $this->session->platformLatestVersion->version);
+            $this->setting->setItem('system.backup.global.upgradedAt', time());
             $this->action->create('backup', 0, 'upgrade', '', json_encode($logExtra));
-            session_destroy();
-            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade));
+            $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->upgrade, 'version' => $this->session->platformLatestVersion));
         }
 
         $logExtra['result'] = 'fail';

@@ -62,6 +62,7 @@ $config->openMethods[] = 'admin.ignore';
 $config->openMethods[] = 'admin.init';
 $config->openMethods[] = 'admin.resetpassword';
 $config->openMethods[] = 'instance.apidetail';
+$config->openMethods[] = 'backup.ajaxupgradestatus';
 
 $config->notIframeMethods = array();
 $config->notIframeMethods[] = 'admin.resetpassword';
@@ -75,6 +76,7 @@ $config->notIframeMethods[] = 'file.read';
 $config->notIframeMethods[] = 'file.uploadimages';
 $config->notIframeMethods[] = 'file.download';
 $config->notIframeMethods[] = 'misc.status';
+$config->notIframeMethods[] = 'backup.ajaxupgradestatus';
 
 /* Define the tables. */
 define('TABLE_USER',          '`' . $config->db->prefix . 'user`');

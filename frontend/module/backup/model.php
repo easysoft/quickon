@@ -430,4 +430,18 @@ class backupModel extends model
         if(file_put_contents($summaryFile, json_encode($summary))) return true;
         return false;
     }
+
+
+    /**
+     * Check upgrade process is overtime (5 miniutes) or not.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function isGradeOvertime()
+    {
+        $upgradedAt = $this->loadModel('setting')->getItem('owner=system&module=backup&section=global&key=upgradedAt');
+
+        return (time() - intval($upgradedAt)) > 300;
+    }
 }
