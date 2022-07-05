@@ -111,18 +111,20 @@ class cneModel extends model
      * Get the latest version of QuCheng platform.
      *
      * @access public
-     * @return object|null
+     * @return object
      */
     public function platformLatestVersion()
     {
         $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng', $this->config->cloud->api->channel);
 
         $latestVersion = $this->pickHighestVersion($versionList);
-        if(empty($latestVersion)) $latestVersion->app_version = getenv('APP_VERSION');
+        if(!empty($latestVersion)  && version_compare(str_replace('-', '.', $latestVersion->version), str_replace('-', '.', $this->config->platformVersion), '>')) return $latestVersion;
 
-        if(version_compare(str_replace('-', '.', $latestVersion->version), str_replace('-', '.', $this->config->platformVersion), '>')) return $latestVersion;
+        $latestVersion->app_version   = getenv('APP_VERSION');
+        $latestVersion->build_version = getenv('BUILD_VERSION');
+        $latestVersion->version       = $this->config->platformVersion;
 
-        return null;
+        return $latestVersion;
     }
 
     /**
