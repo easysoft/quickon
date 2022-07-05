@@ -61,25 +61,6 @@ class cneModel extends model
     }
 
     /**
-     * Get default username and password of app.
-     *
-     * @param  int $id
-     * @access public
-     * @return object|null
-     */
-    public function getDefaultAccount($id)
-    {
-        $apiUrl = '/api/market/app/account?channel='. $this->config->cloud->api->channel;
-        $result = $this->apiGet($apiUrl, array('id' => $id), $this->config->cloud->api->headers, $this->config->cloud->api->host);
-        if(!isset($result->code) || $result->code != 200) return null;
-
-        $account = $result->data;
-        if(isset($account->username) && $account->username && isset($account->password) && $account->password) return $account;
-
-        return null;
-    }
-
-    /**
      * Get app info from cloud market.
      *
      * @param  int $id
@@ -261,6 +242,25 @@ class cneModel extends model
         if($result && $result->code == 200) return true;
 
         return false;
+    }
+
+    /**
+     * Get default username and password of app.
+     *
+     * @param  int $id
+     * @access public
+     * @return object|null
+     */
+    public function getDefaultAccount($id)
+    {
+        $apiUrl = '/api/cne/app/account?channel='. $this->config->CNE->api->channel;
+        $result = $this->apiGet($apiUrl, array('id' => $id), $this->config->CNE->api->headers, $this->config->CNE->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        $account = $result->data;
+        if(isset($account->username) && $account->username && isset($account->password) && $account->password) return $account;
+
+        return null;
     }
 
     /**
