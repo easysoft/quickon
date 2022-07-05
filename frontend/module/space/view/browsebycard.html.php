@@ -27,7 +27,7 @@
               </a>
             </div>
             <?php if(!empty($instance->latestVersion->version)):?>
-            <div class="q-metal"><?php echo $instance->latestVersion->change_log_url ? html::a($instance->latestVersion->change_log_url, $lang->space->upgrade, '_blank') :  $lang->space->upgrade;?></div>
+            <div class="q-metal"><?php echo empty($instance->latestVersion->change_log_url) ? $lang->space->upgrade : html::a($instance->latestVersion->change_log_url, $lang->space->upgrade, '_blank');?></div>
             <?php endif;?>
           </div>
           <div class='panel-body'>
