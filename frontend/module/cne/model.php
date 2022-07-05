@@ -61,25 +61,6 @@ class cneModel extends model
     }
 
     /**
-     * Get default username and password of app.
-     *
-     * @param  int $id
-     * @access public
-     * @return object|null
-     */
-    public function getDefaultAccount($id)
-    {
-        $apiUrl = '/api/market/app/account?channel='. $this->config->cloud->api->channel;
-        $result = $this->apiGet($apiUrl, array('id' => $id), $this->config->cloud->api->headers, $this->config->cloud->api->host);
-        if(!isset($result->code) || $result->code != 200) return null;
-
-        $account = $result->data;
-        if(isset($account->username) && $account->username && isset($account->password) && $account->password) return $account;
-
-        return null;
-    }
-
-    /**
      * Get app info from cloud market.
      *
      * @param  int $id
@@ -130,16 +111,18 @@ class cneModel extends model
      * Get the latest version of QuCheng platform.
      *
      * @access public
-     * @return object
+     * @return object|null
      */
     public function platformLatestVersion()
     {
         $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng', $this->config->cloud->api->channel);
 
-        $latestVersion = $this->pickHighestVersion($versionList, $this->config->platformVersion);
-        if(empty($latestVersion->app_version)) $latestVersion->app_version = getenv('APP_VERSION');
+        $latestVersion = $this->pickHighestVersion($versionList);
+        if(empty($latestVersion)) $latestVersion->app_version = getenv('APP_VERSION');
 
-        return $latestVersion;
+        if(version_compare(str_replace('-', '.', $latestVersion->version), str_replace('-', '.', $this->config->platformVersion), '>')) return $latestVersion;
+
+        return null;
     }
 
     /**
@@ -148,28 +131,34 @@ class cneModel extends model
      * @param  int    $appID
      * @param  string $currentVersion
      * @access public
-     * @return object
+     * @return object|null
      */
     public function appLatestVersion($appID, $currentVersion)
     {
         $versionList = $this->getUpgradableVersions($currentVersion, $appID);
-        $versionData = $this->pickHighestVersion($versionList, $currentVersion);
-        return $versionData;
+
+        $latestVersion = $this->pickHighestVersion($versionList);
+        if(empty($latestVersion)) return null;
+
+        if(version_compare(str_replace('-', '.', $latestVersion->version), str_replace('-', '.', $currentVersion), '>')) return $latestVersion;
+
+        return null;
     }
 
 
     /**
      * Pick highest version from version list and compared version.
      *
-     * @param  int    $versionList
-     * @param  string $comparedVersion
+     * @param  array       $versionList
      * @access private
-     * @return mixed
+     * @return object|null
      */
-    private function pickHighestVersion($versionList, $comparedVersion = '0.0.0')
+    private function pickHighestVersion($versionList)
     {
+        if(empty($versionList)) return null;
+
         $highestVersion = new stdclass;
-        $highestVersion->version = $comparedVersion;
+        $highestVersion->version = '0.0.0';
         foreach($versionList as $version)
         {
             if(version_compare(str_replace('-', '.', $version->version), str_replace('-', '.', $highestVersion->version), '>')) $highestVersion = $version;
@@ -261,6 +250,26 @@ class cneModel extends model
         if($result && $result->code == 200) return true;
 
         return false;
+    }
+
+    /**
+     * Get default username and password of app.
+     *
+     * @param  object $instance
+     * @param  string $cluster
+     * @access public
+     * @return object|null
+     */
+    public function getDefaultAccount($instance, $cluster = '')
+    {
+        $apiUrl = '/api/cne/app/account?channel='. $this->config->CNE->api->channel;
+        $result = $this->apiGet($apiUrl, array('name' => $instance->k8name, 'namespace' => $instance->spaceData->k8space, 'cluster' => $cluster), $this->config->CNE->api->headers, $this->config->CNE->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        $account = $result->data;
+        if(isset($account->username) && $account->username && isset($account->password) && $account->password) return $account;
+
+        return null;
     }
 
     /**

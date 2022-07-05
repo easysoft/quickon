@@ -26,8 +26,8 @@
                 <?php echo $instance->name;?>&nbsp;
               </a>
             </div>
-            <?php if(!empty($instance->higherVersionList)):?>
-            <div class="q-metal"><?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), $lang->space->upgrade, '', "class='iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?></div>
+            <?php if(!empty($instance->latestVersion)):?>
+            <div class="q-metal"><?php echo empty($instance->latestVersion->change_log_url) ? $lang->space->upgrade : html::a($instance->latestVersion->change_log_url, $lang->space->upgrade, '_blank');?></div>
             <?php endif;?>
           </div>
           <div class='panel-body'>
@@ -42,7 +42,7 @@
             <div class="instance-actions">
               <?php $canVisit = $this->instance->canDo('visit', $instance);?>
               <?php echo html::a('//' . $instance->domain, "<i class='icon-home'></i> " . $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
-              <?php if(!empty($instance->higherVersionList)):?>
+              <?php if(!empty($instance->latestVersion)):?>
               <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>" . $lang->space->upgrade, '', "class='btn btn-link iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
               <?php endif;?>
             </div>
