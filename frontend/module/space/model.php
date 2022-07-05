@@ -77,11 +77,7 @@ class spaceModel extends model
             ->orderBy('id desc')->page($pager)->fetchAll('id');
 
         $this->loadModel('cne');
-        foreach($instances as $instance)
-        {
-            $higherVersionList = $this->cne->getUpgradableVersions($instance->version, $instance->appID);
-            $instance->higherVersionList = $higherVersionList;
-        }
+        foreach($instances as $instance) $instance->latestVersion = $this->cne->appLatestVersion($instance->appID, $instance->version);
 
         return $instances;
     }
