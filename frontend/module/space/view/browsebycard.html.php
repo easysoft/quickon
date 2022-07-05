@@ -26,7 +26,7 @@
                 <?php echo $instance->name;?>&nbsp;
               </a>
             </div>
-            <?php if(!empty($instance->latestVersion->version)):?>
+            <?php if(!empty($instance->latestVersion)):?>
             <div class="q-metal"><?php echo empty($instance->latestVersion->change_log_url) ? $lang->space->upgrade : html::a($instance->latestVersion->change_log_url, $lang->space->upgrade, '_blank');?></div>
             <?php endif;?>
           </div>
