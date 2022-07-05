@@ -50,15 +50,27 @@
   </div>
 </main>
 <script>
-$(document).ready(function(){
-    $.post('/backup-ajaxUpgradePlatform.html').done(function(response)
+  var timerID= 0;
+  function checkUpgradeStatus()
+  {
+      $.get('/backup-ajaxupgradestatus.html', function(response, status, xhr){
+          res = JSON.parse(response);
+          if((res.status == 'success' || res.status == 'overtime') && xhr.status == '200')
+          {
+              clearInterval(timerID);
+              window.location.href = '/';
+          }
+      });
+  }
+
+  $(document).ready(function(){
+      $.post('/backup-ajaxUpgradePlatform.html').done(function(response)
       {
           res = JSON.parse(response);
-          console.log(res);
           if(res.result == 'success')
           {
               $('.progress-message').text('等待系统重启...');
-              timer = setInterval("isRestartSuccess()", 5000);
+              timerID = setInterval("checkUpgradeStatus()", 5000);
 
           }
           else
@@ -67,16 +79,5 @@ $(document).ready(function(){
               window.location.href= '/backup-index.html';
           }
       });
-});
-
-function isRestartSuccess()
-{
-    $.get('/', function(response, status, xhr){
-        if(xhr.status == '200')
-        {
-            clearInterval(timer);
-            window.location.href = '/';
-        }
-    });
-}
+  });
 </script>

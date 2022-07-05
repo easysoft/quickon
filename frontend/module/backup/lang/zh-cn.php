@@ -48,6 +48,7 @@ $lang->backup->copiedFail      = '复制失败的文件：';
 $lang->backup->restoreTip      = '还原功能只还原数据库。';
 $lang->backup->versionInfo     = '点击查看新版本介绍';
 $lang->backup->confirmUpgrade  = '请确认是否升级渠成平台？';
+$lang->backup->upgrading       = '升级中';
 
 $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';
@@ -65,6 +66,7 @@ $lang->backup->error->backupFile  = "附件备份失败，错误：%s";
 $lang->backup->error->backupCode  = "代码备份失败，错误：%s";
 
 $lang->backup->error->upgradeFail       = "升级失败!";
+$lang->backup->error->upgradeOvertime   = "升级超时!";
 $lang->backup->error->degradeFail       = "降级失败!";
 $lang->backup->error->beenLatestVersion = "已经是最新版，无需升级!";
 $lang->backup->error->requireVersion    = "必须上传版本号!";
