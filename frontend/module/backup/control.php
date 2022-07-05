@@ -414,7 +414,7 @@ class backup extends control
 
         $upgradedAt = $this->setting->getItem('owner=system&module=backup&section=global&key=upgradedAt');
         /* Jump to login if upgrade overtime 5 miniutes. */
-        if(!$this->backup->isGradeOvertime())
+        if($this->backup->isGradeOvertime())
         {
             session_destroy();
             $this->setting->deleteItems('owner=system&module=backup&section=global&key=chartVersion');
