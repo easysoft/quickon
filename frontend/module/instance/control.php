@@ -53,7 +53,7 @@ class instance extends control
         $this->view->title          = $instance->appName;
         $this->view->instance       = $instance;
         $this->view->logs           = $this->action->getList('instance', $id, 'date desc', $pager);
-        $this->view->defaultAccount = $this->cne->getDefaultAccount($instance->appID);
+        $this->view->defaultAccount = $this->cne->getDefaultAccount($instance);
         $this->view->pager          = $pager;
 
         $this->display();

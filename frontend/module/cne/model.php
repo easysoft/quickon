@@ -247,14 +247,15 @@ class cneModel extends model
     /**
      * Get default username and password of app.
      *
-     * @param  int $id
+     * @param  object $instance
+     * @param  string $cluster
      * @access public
      * @return object|null
      */
-    public function getDefaultAccount($id)
+    public function getDefaultAccount($instance, $cluster = '')
     {
         $apiUrl = '/api/cne/app/account?channel='. $this->config->CNE->api->channel;
-        $result = $this->apiGet($apiUrl, array('id' => $id), $this->config->CNE->api->headers, $this->config->CNE->api->host);
+        $result = $this->apiGet($apiUrl, array('name' => $instance->k8name, 'namespace' => $instance->spaceData->k8space, 'cluster' => $cluster), $this->config->CNE->api->headers, $this->config->CNE->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
         $account = $result->data;
