@@ -201,4 +201,4 @@ CREATE TABLE `q_grouppriv` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 REPLACE INTO `q_company` ( `name`, `admins`) VALUES ('', '');
-REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.0.3');
+REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.1.0');
