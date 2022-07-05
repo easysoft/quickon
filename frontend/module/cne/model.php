@@ -164,7 +164,7 @@ class cneModel extends model
      * @param  int    $versionList
      * @param  string $comparedVersion
      * @access private
-     * @return mixed
+     * @return object
      */
     private function pickHighestVersion($versionList, $comparedVersion = '0.0.0')
     {

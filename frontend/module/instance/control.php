@@ -108,7 +108,7 @@ class instance extends control
         {
             $postData = fixer::input('post')->get();
 
-            if($postData->confirm == 'yes') $success = $this->instance->upgrade($instance, $instance->latestVersion);
+            if($postData->confirm == 'yes') $success = $this->instance->upgrade($instance, $instance->latestVersion->version);
 
             $logExtra = array('result' => 'success', 'data' => array('oldVersion' => $instance->appVersion, 'newVersion' => $instance->latestVersion->app_version));
             if(!$success)
