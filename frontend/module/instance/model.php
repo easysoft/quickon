@@ -329,16 +329,18 @@ class InstanceModel extends model
      *
      * @param  object $instance
      * @param  string $toVersion
+     * @param  string $appVersion
      * @access public
      * @return bool
      */
-    public function upgrade($instance, $toVersion)
+    public function upgrade($instance, $toVersion, $appVersion)
     {
         $success = $this->cne->upgradeToVersion($instance, $toVersion);
         if(!$success) return false;
 
         $instanceData = new stdclass;
-        $instanceData->version = $toVersion;
+        $instanceData->version    = $toVersion;
+        $instanceData->appVersion = $appVersion;
         $this->updateByID($instances->id, $instanceData);
 
         return true;
