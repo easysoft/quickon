@@ -341,7 +341,7 @@ class InstanceModel extends model
         $instanceData = new stdclass;
         $instanceData->version    = $toVersion;
         $instanceData->appVersion = $appVersion;
-        $this->updateByID($instances->id, $instanceData);
+        $this->updateByID($instance->id, $instanceData);
 
         return true;
     }
