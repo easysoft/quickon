@@ -500,7 +500,7 @@ class InstanceModel extends model
     {
         $action = zget($this->lang->instance->actionList, $log->action, $this->lang->actions);
 
-        $logText = $log->actorName  . ' ' . sprintf($action, $instance->appName);
+        $logText = $log->actorName  . ' ' . sprintf($action, $instance->name);
 
         $extra = json_decode($log->extra);
         if(!empty($extra))
