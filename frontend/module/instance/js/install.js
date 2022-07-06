@@ -7,7 +7,7 @@ $(function()
 
         var loadingDialog = bootbox.dialog(
         {
-            message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
+            message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.installing + '</div>',
         });
 
         $.post($('#installForm').attr('action'), $('#installForm').serializeArray()).done(function(response)

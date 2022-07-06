@@ -8,7 +8,7 @@ $(function()
 
             var loadingDialog = bootbox.dialog(
             {
-                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.uninstalling + '</div>',
             });
 
             let id  = $(event.target).closest('button').attr('instance-id');
@@ -42,7 +42,7 @@ $(function()
 
             var loadingDialog = bootbox.dialog(
             {
-                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.starting + '</div>',
             });
 
             let id  = $(event.target).closest('button').attr('instance-id');
@@ -76,7 +76,7 @@ $(function()
 
             var loadingDialog = bootbox.dialog(
             {
-                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.submiting + '</div>',
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.stopping + '</div>',
             });
 
             let id  = $(event.target).closest('button').attr('instance-id');
@@ -97,8 +97,7 @@ $(function()
                         title:   instanceNotices.fail,
                         message: res.message,
                     });
-                }
-            });
+                } });
         });
     });
 

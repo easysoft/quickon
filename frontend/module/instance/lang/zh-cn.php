@@ -93,10 +93,14 @@ $lang->instance->notices['uninstallFail']    = '卸载失败';
 $lang->instance->notices['installSuccess']   = '安装成功';
 $lang->instance->notices['installFail']      = '安装失败';
 $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
-$lang->instance->notices['submiting']        = '提交中，请稍候...';
 $lang->instance->notices['confirmUpgrade']   = '确定要升级 %s 到 %s 吗?';
 $lang->instance->notices['upgradeSuccess']   = '升级成功';
 $lang->instance->notices['upgradeFail']      = '升级失败';
+$lang->instance->notices['starting']         = '启动中，请稍候...';
+$lang->instance->notices['stoping']          = '关闭中，请稍候...';
+$lang->instance->notices['installing']       = '安装中，请稍候...';
+$lang->instance->notices['uninstalling']     = '卸载中，请稍候...';
+$lang->instance->notices['upgrading']        = '升级中，请稍候...';
 
 $lang->instance->nameChangeTo    = ' %s 修改为 %s  。';
 $lang->instance->versionChangeTo = ' %s 升级为 %s  。';
