@@ -385,6 +385,22 @@ class cneModel extends model
     }
 
     /**
+     * Print instance CPU usage.
+     *
+     * @param  object  $metrics
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function printInstanceCpuUsage($metrics)
+    {
+        $rate  = $metrics->rate;
+        $color = '#3CB371';
+        $tip   = $rate;
+        commonModel::printProgressPie($rate, $color, $tip);
+    }
+
+    /**
      * Print memory usage.
      *
      * @param  object    $metrics
@@ -402,6 +418,22 @@ class cneModel extends model
 
         $tip = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->capacity / 1024);
         commonModel::printProgress($rate, $color, $tip);
+    }
+
+    /**
+     * Print instance memory usage.
+     *
+     * @param  object  $metrics
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function printInstanceMemUsage($metrics)
+    {
+        $rate  = $metrics->rate;
+        $color = '#3CB371';
+        $tip   = $rate;
+        commonModel::printProgressPie($rate, $color, $tip);
     }
 
     /**
