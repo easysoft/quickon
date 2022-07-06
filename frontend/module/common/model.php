@@ -1502,6 +1502,25 @@ EOT;
     }
 
     /**
+     * Print progress pie.
+     *
+     * @param  int    $percent
+     * @param  string $color
+     * @param  string $tip
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function printProgressPie($percent, $color, $tip)
+    {
+        echo <<<EOT
+            <div class='progress-pie' data-doughnut-size='85' data-color='{$color}' data-value='{$percent}' data-width='120' data-height='120' data-back-color='#e8edf3'>
+              <div class='progress-info' style='top:5px;font-size:35px'>{$tip}</div>
+            </div>
+EOT;
+    }
+
+    /**
      * Create changes of one object.
      *
      * @param mixed  $old        the old object

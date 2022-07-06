@@ -43,6 +43,9 @@ class instance extends control
 
         $instance = $this->instance->freshStatus($instance);
 
+        $instanceMetric = $this->cne->instancesMetrics(array($instance));
+        $instanceMetric = $instanceMetric[$instance->id];
+
         $this->lang->switcherMenu = $this->instance->getSwitcher($instance);
 
         $this->app->loadClass('pager', true);
@@ -54,6 +57,7 @@ class instance extends control
         $this->view->instance       = $instance;
         $this->view->logs           = $this->action->getList('instance', $id, 'date desc', $pager);
         $this->view->defaultAccount = $this->cne->getDefaultAccount($instance->appID);
+        $this->view->instanceMetric = $instanceMetric;
         $this->view->pager          = $pager;
 
         $this->display();

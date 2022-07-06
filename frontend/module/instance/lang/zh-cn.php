@@ -19,6 +19,8 @@ $lang->instance->defaultPassword  = '默认密码';
 $lang->instance->operationLog     = '操作记录';
 $lang->instance->installedService = '已安装服务';
 $lang->instance->installApp       = '安装应用';
+$lang->instance->cpuUsage         = 'CPU（核）';
+$lang->instance->memUsage         = '内存（GB）';
 
 $lang->instance->log = new stdclass;
 $lang->instance->log->date    = '日期';
