@@ -19,7 +19,8 @@ $(function()
             if(res.result == 'success')
             {
                 config.onlybody = 'no';
-                window.parent.$.apps.reload('space',createLink('space', 'browse'), 'space');
+                window.parent.$.apps.reload('space', createLink('space', 'browse'), 'space');
+                window.parent.location.reload();
             }
             else
             {
