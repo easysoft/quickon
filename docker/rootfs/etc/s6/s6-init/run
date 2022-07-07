@@ -57,3 +57,6 @@ if [ ! -f "/data/.initdb" ];then
     # Import qucheng data
     mysql_import_to_db "$MYSQL_DB" "/apps/qucheng/db/data.sql" && touch /data/.initdb
 fi
+
+# Try upgrade
+php /apps/qucheng/www/upgrade-cli.php && chown -R www-data:www-data /apps/qucheng/tmp/log
