@@ -75,6 +75,7 @@ func (h *Action) Install(name, chart, version string, settings []string) (*relea
 
 	client.Namespace = h.namespace
 	client.ReleaseName = name
+	client.Atomic = true
 
 	rel, err := client.Run(chartRequested, vals)
 	if err != nil {
@@ -107,6 +108,7 @@ func (h *Action) Upgrade(name, chart, version string, chartValues map[string]int
 
 	client.Namespace = h.namespace
 	client.ChartPathOptions.Version = version
+	client.Atomic = true
 
 	cp, err := client.ChartPathOptions.LocateChart(chart, h.settings)
 	if err != nil {
