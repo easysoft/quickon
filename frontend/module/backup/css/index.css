@@ -4,3 +4,4 @@ div.main-header { border-bottom: 0;}
 .btn-wide {width: 100px; margin: 0 10px;}
 #upgradeModal .modal-content {padding-bottom: 20px;}
 #upgradeModal .confirm-text{font-weight: 700;}
+table.table a {vertical-align: baseline;}

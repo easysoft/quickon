@@ -1963,5 +1963,7 @@ td.c-actions .btn-link:hover {
     background-repeat: no-repeat;
     text-align: center;
     padding-top: 3px;
+    color: #ffffff;
+    font-size: 12px;
 }
 .q-metal a {color: #ffffff; font-size: 12px;}

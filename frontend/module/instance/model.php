@@ -329,17 +329,19 @@ class InstanceModel extends model
      *
      * @param  object $instance
      * @param  string $toVersion
+     * @param  string $appVersion
      * @access public
      * @return bool
      */
-    public function upgrade($instance, $toVersion)
+    public function upgrade($instance, $toVersion, $appVersion)
     {
         $success = $this->cne->upgradeToVersion($instance, $toVersion);
         if(!$success) return false;
 
         $instanceData = new stdclass;
-        $instanceData->version = $toVersion;
-        $this->updateByID($instances->id, $instanceData);
+        $instanceData->version    = $toVersion;
+        $instanceData->appVersion = $appVersion;
+        $this->updateByID($instance->id, $instanceData);
 
         return true;
     }
@@ -498,7 +500,7 @@ class InstanceModel extends model
     {
         $action = zget($this->lang->instance->actionList, $log->action, $this->lang->actions);
 
-        $logText = $log->actorName  . ' ' . sprintf($action, $instance->appName);
+        $logText = $log->actorName  . ' ' . sprintf($action, $instance->name);
 
         $extra = json_decode($log->extra);
         if(!empty($extra))
