@@ -34,7 +34,7 @@
       </div>
       <div class="panel-body">
         <div class="row">
-          <div class="col col-6">
+          <div class="col col-4">
             <table class="table table-data">
               <tbody>
                 <tr>
@@ -76,13 +76,15 @@
               </tbody>
             </table>
           </div>
-          <div class='col col-3'>
-            <div class="c-title"><?php echo $lang->instance->cpuUsage;?></div>
-            <?php $this->cne->printInstanceCpuUsage($instanceMetric->cpu);?>
-          </div>
-          <div class='col col-3'>
-            <div class="c-title"><?php echo $lang->instance->memUsage;?></div>
-            <?php $this->cne->printInstanceMemUsage($instanceMetric->memory);?>
+          <div class='col col-8 usage-box'>
+            <div class='col col-6'>
+              <div class="c-title"><?php echo $lang->instance->cpuUsage;?></div>
+              <?php $this->cne->printInstanceCpuUsage($instanceMetric->cpu);?>
+            </div>
+            <div class='col col-6'>
+              <div class="c-title"><?php echo $lang->instance->memUsage;?></div>
+              <?php $this->cne->printInstanceMemUsage($instanceMetric->memory);?>
+            </div>
           </div>
         </div>
       </div>
