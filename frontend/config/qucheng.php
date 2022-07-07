@@ -10,6 +10,8 @@
  * @version     $Id$
  * @link        https://www.qucheng.com
  */
+$config->officalWebsite = 'https://www.qucheng.com';
+
 $config->manualUrl['home']    = 'https://www.qucheng.com/book/quchenghelp.html?fullScreen=qucheng';
 $config->manualUrl['install'] = 'https://www.qucheng.com/book/qucheng/qucheng-installation-11.html?fullScreen=qucheng';
 

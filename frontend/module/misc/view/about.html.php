@@ -15,11 +15,12 @@
           </td>
           <td>
             <p style="font-size:16px; text-align:center;"> <?php echo $lang->quchengSummary;?></p>
+            <div class='text-center'><?php echo html::a($config->officalWebsite, $lang->misc->qucheng->officalWebsite, '_blank', "class='btn btn-link'");?></div>
           </td>
         </tr>
         <tr>
           <td><div class='text-center'><?php echo $lang->designedByAIUX;?></div></td>
-          <td colspan='2' class="copyright text-right text-middle">
+          <td class="copyright text-right text-middle">
             <?php echo $lang->misc->copyright;?>
           </td>
         </tr>
