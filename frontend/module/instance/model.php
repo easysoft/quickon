@@ -429,14 +429,10 @@ class InstanceModel extends model
      */
     public static function printCpuUsage($metrics)
     {
-        $rate  = $metrics->rate;
-        $color = 'red';
-        if($rate == 0) $color = 'gray';
-        elseif($rate < 60) $color = 'green';
-        elseif($rate < 80) $color = 'orange';
+        $rate = $metrics->rate;
+        $tip  = "{$rate}% = {$metrics->usage} / {$metrics->limit}";
 
-        $tip = "{$rate}% = {$metrics->usage} / {$metrics->limit}";
-        commonModel::printProgress($rate, $color, $tip);
+        commonModel::printProgressBar($rate, '', $tip);
     }
 
     /**
@@ -449,14 +445,10 @@ class InstanceModel extends model
      */
     public static function printMemUsage($metrics)
     {
-        $rate  = $metrics->rate;
-        $color = 'red';
-        if($rate == 0) $color = 'gray';
-        elseif($rate < 60) $color = 'green';
-        elseif($rate < 80) $color = 'orange';
+        $rate = $metrics->rate;
+        $tip  = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->limit / 1024);
 
-        $tip = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->limit / 1024);
-        commonModel::printProgress($rate, $color, $tip);
+        commonModel::printProgressBar($rate, '', $tip);
     }
 
     /*

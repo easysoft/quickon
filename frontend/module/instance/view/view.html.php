@@ -79,11 +79,11 @@
           <div class='col col-8 usage-box'>
             <div class='col col-6'>
               <div class="c-title"><?php echo $lang->instance->cpuUsage;?></div>
-              <?php $this->cne->printInstanceCpuUsage($instanceMetric->cpu);?>
+              <?php common::printProgressPie($instanceMetric->cpu->rate);?>
             </div>
             <div class='col col-6'>
               <div class="c-title"><?php echo $lang->instance->memUsage;?></div>
-              <?php $this->cne->printInstanceMemUsage($instanceMetric->memory);?>
+              <?php common::printProgressPie($instanceMetric->memory->rate);?>
             </div>
           </div>
         </div>

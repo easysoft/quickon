@@ -1313,17 +1313,22 @@ EOD;
     }
 
     /**
-     * Print progress
+     * Print progress bar.
      *
      * @param  int    $percent percent 0-100
      * @param  string $color color theme: gray, red, orange, green
-     * @param  sgring $tip
+     * @param  string $tip
      * @static
      * @access public
      * @return void
      */
-    public static function printProgress($percent, $color = 'gray', $tip = '')
+    public static function printProgressBar($percent, $color = '', $tip = '')
     {
+        if(empty($color) && $percent == 0)                  $color = 'gray';
+        if(empty($color) && $percent > 0 && $percent < 60)  $color = 'green';
+        if(empty($color) && $percent >= 0 && $percent < 80) $color = 'orange';
+        if(empty($color) && $percent >= 80)                 $color = 'red';
+
         $title = $tip ? $tip : $percent . '%';
         echo <<<EOT
             <div class='progress-group'>
@@ -1332,6 +1337,44 @@ EOD;
               </div>
             </div>
 EOT;
+    }
+
+    /**
+     * Print progress pie.
+     *
+     * @param  float  $percent
+     * @param  string $color  HEX value of color
+     * @static
+     * @access public
+     * @return void
+     */
+    public static function printProgressPie($percent, $color = '')
+    {
+        if(empty($color)) $color = self::getColorByLevel($percent);
+
+        echo <<<EOT
+            <div class='progress-pie' data-doughnut-size='85' data-color='{$color}' data-value='{$percent}' data-width='120' data-height='120' data-back-color='#e8edf3'>
+              <div class='progress-info' style='line-height: 120px; padding-top: 0; font-size:25px;'>{$percent}%</div>
+            </div>
+EOT;
+    }
+
+    /**
+     * Get color by level for percent that is in level range.
+     *
+     * @param  float $percent
+     * @static
+     * @access public
+     * @return string HEX value of color
+     */
+    public static function getColorByLevel($percent)
+    {
+        if($percent == 0)                    $color = '#999999'; // gray
+        if($percent > 0 and $percent < 60)   $color = '#009e0f'; // green
+        if($percent >= 60 and $percent < 80) $color = '#ff9900'; // orange
+        if($percent >= 80)                   $color = '#cf2a27'; // red
+
+        return $color;
     }
 
     /**
@@ -1499,25 +1542,6 @@ EOT;
         }
 
         return $duration;
-    }
-
-    /**
-     * Print progress pie.
-     *
-     * @param  int    $percent
-     * @param  string $color
-     * @param  string $tip
-     * @static
-     * @access public
-     * @return void
-     */
-    public static function printProgressPie($percent, $color, $tip)
-    {
-        echo <<<EOT
-            <div class='progress-pie' data-doughnut-size='85' data-color='{$color}' data-value='{$percent}' data-width='120' data-height='120' data-back-color='#e8edf3'>
-              <div class='progress-info' style='top:5px;font-size:35px'>{$tip}</div>
-            </div>
-EOT;
     }
 
     /**

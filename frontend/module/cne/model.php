@@ -386,29 +386,9 @@ class cneModel extends model
     public static function printCpuUsage($metrics)
     {
         $rate  = $metrics->rate;
-        $color = 'red';
-        if($rate == 0)     $color = 'gray';
-        elseif($rate < 60) $color = 'green';
-        elseif($rate < 80) $color = 'orange';
 
         $tip = "{$rate}% = {$metrics->usage} / {$metrics->capacity}";
-        commonModel::printProgress($rate, $color, $tip);
-    }
-
-    /**
-     * Print instance CPU usage.
-     *
-     * @param  object  $metrics
-     * @static
-     * @access public
-     * @return void
-     */
-    public static function printInstanceCpuUsage($metrics)
-    {
-        $rate  = $metrics->rate;
-        $color = '#3CB371';
-        $tip   = $rate;
-        commonModel::printProgressPie($rate, $color, $tip);
+        commonModel::printProgressBar($rate, '', $tip);
     }
 
     /**
@@ -422,29 +402,9 @@ class cneModel extends model
     public static function printMemUsage($metrics)
     {
         $rate  = $metrics->rate;
-        $color = 'red';
-        if($rate == 0)     $color = 'gray';
-        elseif($rate < 60) $color = 'green';
-        elseif($rate < 80) $color = 'orange';
 
         $tip = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->capacity / 1024);
-        commonModel::printProgress($rate, $color, $tip);
-    }
-
-    /**
-     * Print instance memory usage.
-     *
-     * @param  object  $metrics
-     * @static
-     * @access public
-     * @return void
-     */
-    public static function printInstanceMemUsage($metrics)
-    {
-        $rate  = $metrics->rate;
-        $color = '#3CB371';
-        $tip   = $rate;
-        commonModel::printProgressPie($rate, $color, $tip);
+        commonModel::printProgressBar($rate, '', $tip);
     }
 
     /**
