@@ -21,4 +21,5 @@ $lang->misc->qucheng->labels['others']  = '其他产品';
 
 $lang->misc->qucheng->officalWebsite = '访问官网';
 
+global $config;
 $lang->misc->copyright   = "&copy; 2021 - 2022 <a href='{$config->officalWebsite}' target='_blank'>北京渠成软件有限公司</a> 电话：4006-8899-23 Email：<a href='mailto:service@qucheng.com'>service@qucheng.com</a>  QQ群：768721743";
