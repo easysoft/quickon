@@ -5,4 +5,4 @@
 [ -n "${DEBUG:+1}" ] && set -x
 
 # Start backend
-exec /apps/qucheng/bin/backend serve
+exec /apps/backend/bin/cne-api serve

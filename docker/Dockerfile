@@ -84,12 +84,12 @@ WORKDIR /apps/qucheng
 COPY --chown=www-data frontend .
 
 # Copy qucheng backend
-COPY --from=builder /go/src/_output/bin/cne-api /apps/qucheng/bin/backend
+COPY --from=builder /go/src/_output/bin/cne-api /apps/backend/bin/cne-api
 
 # Copy apache,php and qucheng config files
 COPY docker/rootfs /
 
-RUN chmod +x /usr/bin/entrypoint.sh /apps/qucheng/bin/backend \
+RUN chmod +x /usr/bin/entrypoint.sh /apps/backend/bin/cne-api \
     && chmod 777 /apps/qucheng/tmp
 
 EXPOSE 80
