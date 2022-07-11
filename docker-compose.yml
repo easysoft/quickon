@@ -40,9 +40,10 @@ services:
     ports:
       - '4081:80'
     volumes:
-      - 'qucheng-dev_data:/data'
-      - .:/apps/qucheng
-      - ./docker/alpine/rootfs/apps/qucheng/config/my.php:/apps/qucheng/config/my.php
+      - ./frontend:/apps/qucheng
+      - ./docker/rootfs/apps/qucheng/config/my.php:/apps/qucheng/config/my.php
+      - /root/.kube/config:/root/.kube/config
+      - /root/.config/helm/repositories.yaml:/root/.config/helm/repositories.yaml
     depends_on:
       - mysql
     environment:
@@ -53,16 +54,16 @@ services:
       - MYSQL_PORT=3306
       - MYSQL_USER=root
       - MYSQL_PASSWORD=pass4Qucheng
-      - MYSQL_DB=qucheng_dev
-      - CNE_API_TOKEN=gwaN4KynqNqQoPD7eN8s
-      - CNE_API_HOST=http://cne.internal-pre.chandao.net
-      - CLOUD_API_HOST=http://cne-market.internal-pre.chandao.net
+      - MYSQL_DB=qucheng
+      - CNE_API_TOKEN=MhydA89vKNWuUd6vbTTWymWxwuPSt5V8
+      - CNE_API_HOST=http://10.43.113.108:8087
+      - CLOUD_API_HOST=https://api.qucheng.com
       - CLOUD_DEFAULT_CHANNEL=test
+      - APP_DOMAIN=qc.yunop.com
+      - CLOUD_SWITCH_CHANNEL=true
 
 volumes:
   db:
     driver: local
   qucheng_data:
-    driver: local
-  qucheng-dev_data:
     driver: local

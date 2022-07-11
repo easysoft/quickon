@@ -51,7 +51,6 @@ run: ## 运行
 
 run-dev: ## 运行开发环境
 	chown 33:33 . -R
-	[ ! -d frontend/www/data ] && mkdir -pv frontend/www/data  && chown 33.33 frontend/www/data 
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
 ps: run ## 运行状态
