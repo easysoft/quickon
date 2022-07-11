@@ -1,7 +1,11 @@
 .errorFiles {text-align: left; padding: 5px;}
-div.main-header { border-bottom: 0;}
-.main-col table { margin-bottom: 60px;}
+.main-col table {margin-bottom: 30px;}
+div.main-header {border-bottom: 0;}
 .btn-wide {width: 100px; margin: 0 10px;}
 #upgradeModal .modal-content {padding-bottom: 20px;}
 #upgradeModal .confirm-text{font-weight: 700;}
 table.table a {vertical-align: baseline;}
+.info-header {height: 50px;}
+.history-header {height: 50px;}
+.info-row {height: 50px;}
+.history-row {height: 50px;}

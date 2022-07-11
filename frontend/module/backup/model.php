@@ -18,10 +18,12 @@ class backupModel extends model
      * @access public
      * @return object
      */
-    public function backSQL($backupFile)
+    public function backSQL($backupFile, $backupType = 'manual')
     {
         $zdb = $this->app->loadClass('zdb');
-        return $zdb->dump($backupFile);
+        $dumpStatus = $zdb->dump($backupFile);
+        if($dumpStatus->result === true) $this->processSQLSummary($backupFile, $backupType);
+        return $dumpStatus;
     }
 
     /**
@@ -303,6 +305,20 @@ class backupModel extends model
     }
 
     /**
+     * Get backup account and backup type.
+     *
+     * @param  string  $file
+     * @access public
+     * @return array
+     */
+    public function getSQLSummary($file)
+    {
+        $summaryFile = $this->getBackupPath() . DS . 'summary';
+        $sqlSummary = json_decode(file_get_contents($summaryFile), true);
+        return isset($sqlSummary[basename($file)]) ? $sqlSummary[basename($file)] : array();
+    }
+
+    /**
      * Get backup path.
      *
      * @access public
@@ -431,6 +447,39 @@ class backupModel extends model
         return false;
     }
 
+    /**
+     * Save backup account and backup type.
+     *
+     * @param  string $file
+     * @param  string $type
+     * @param  string $action
+     * @access public
+     * @return bool
+     */
+    public function processSQLSummary($file, $type = 'manual', $action = 'add')
+    {
+        $backupPath = dirname($file);
+        $fileName   = basename($file);
+
+        $summaryFile = $backupPath . DS . 'summary';
+        if(!file_exists($summaryFile) and !touch($summaryFile)) return false;
+
+        $summary = json_decode(file_get_contents($summaryFile), true);
+        if(empty($summary)) $summary = array();
+
+        if($action == 'add')
+        {
+            $summary[$fileName]['account']    = $this->app->user->account;
+            $summary[$fileName]['backupType'] = $type;
+        }
+        else
+        {
+            unset($summary[$fileName]);
+        }
+
+        if(file_put_contents($summaryFile, json_encode($summary))) return true;
+        return false;
+    }
 
     /**
      * Check upgrade process is overtime (5 miniutes) or not.

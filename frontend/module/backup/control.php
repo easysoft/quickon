@@ -56,6 +56,7 @@ class backup extends control
                     $backupFile = new stdclass();
                     $backupFile->time  = filemtime($file);
                     $backupFile->name  = substr($fileName, 0, strpos($fileName, '.'));
+                    $backupFile->sqlSummary   = $this->backup->getSQLSummary($file);
                     $backupFile->files[$file] = $this->backup->getBackupSummary($file);
 
                     $fileBackup = $this->backup->getBackupFile($backupFile->name, 'file');
@@ -265,13 +266,31 @@ class backup extends control
         if($confirm == 'no') return print(js::confirm($this->lang->backup->confirmDelete, inlink('delete', "fileName=$fileName&confirm=yes")));
 
         /* Delete database file. */
-        if(file_exists($this->backupPath . $fileName . '.sql.php') and !unlink($this->backupPath . $fileName . '.sql.php'))
+        $dbFilePHP = $this->backupPath . $fileName . '.sql.php';
+        $dbFile    = $this->backupPath . $fileName . '.sql';
+        if(file_exists($dbFilePHP))
         {
-            return print(js::alert(sprintf($this->lang->backup->error->noDelete, $this->backupPath . $fileName . '.sql.php')));
+            $isDelete = unlink($dbFilePHP);
+            if($isDelete)
+            {
+                $this->backup->processSQLSummary($dbFilePHP, '', 'delete');
+            }
+            else
+            {
+                return print(js::alert(sprintf($this->lang->backup->error->noDelete, $dbFilePHP)));
+            }
         }
-        if(file_exists($this->backupPath . $fileName . '.sql') and !unlink($this->backupPath . $fileName . '.sql'))
+        elseif(file_exists($dbFile))
         {
-            return print(js::alert(sprintf($this->lang->backup->error->noDelete, $this->backupPath . $fileName . '.sql')));
+            $isDelete = unlink($dbFile);
+            if($isDelete)
+            {
+                $this->backup->processSQLSummary($dbFile, '', 'delete');
+            }
+            else
+            {
+                return print(js::alert(sprintf($this->lang->backup->error->noDelete, $dbFile)));
+            }
         }
 
         /* Delete attatchments file. */
@@ -442,7 +461,7 @@ class backup extends control
         /* Backup database. */
         $fileName = date('YmdHis') . mt_rand(0, 9);
         $backFileName = "{$this->backupPath}{$fileName}.sql";
-        $result = $this->backup->backSQL($backFileName);
+        $result = $this->backup->backSQL($backFileName, 'auto');
 
         $logExtra = array('result' => 'success', 'data' => array('oldVersion' => getenv('APP_VERSION'), 'newVersion' => $this->session->platformLatestVersion->version));
 

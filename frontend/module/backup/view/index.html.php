@@ -19,22 +19,24 @@
 <div id='mainContent' class="main-row">
   <div class="main-col main-content">
     <div class='main-header'>
-      <h2>
+      <h2 style="font-size:20px;">
         <?php echo $lang->backup->systemInfo;?>
       </h2>
     </div>
     <table class='table table-condensed table-bordered active-disabled table-fixed'>
       <thead class="text-center">
-        <tr>
+        <tr class='info-header'>
           <th class='w-150px'><?php echo $lang->backup->name;?></th>
+          <th class='w-150px'><?php echo $lang->backup->status;?></th>
           <th class='w-100px'><?php echo $lang->backup->currentVersion;?></th>
           <th class='w-100px'><?php echo $lang->backup->latestVersion;?></th>
           <th class='actionWidth'><?php echo $lang->actions?></th>
         </tr>
       </thead>
       <tbody class='text-center'>
-        <tr>
+        <tr class='info-row'>
           <td><?php echo $lang->quchengPlatform;?></td>
+          <td><?php echo $lang->backup->running;?></td>
           <td><?php echo getenv('APP_VERSION');?></td>
           <td>
             <span><?php echo $this->session->platformLatestVersion->app_version;?></span>
@@ -42,6 +44,7 @@
           </td>
           <td>
             <?php echo version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>') ?  html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload') : '';?>
+            <?php echo html::a(inlink('backup', "reload=yes"), "<i class='icon icon-refresh'></i> " . $lang->backup->backup, 'hiddenwin', "class='backup'");?>
             <?php //echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
             <?php //echo html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
             <?php //echo html::commonButton($lang->backup->restart, '', 'btn btn-link', 'off');?>
@@ -49,75 +52,40 @@
         </tr>
       </tbody>
     </table>
-
     <div class='main-header'>
-      <h2>
+      <h2 style="font-size:20px;">
         <?php echo $lang->backup->history;?>
       </h2>
       <div class='pull-right'>
         <?php common::printLink('backup', 'setting', '', "<i class='icon icon-cog'></i> " . $lang->backup->setting, '', "data-width='500' class='iframe btn btn-primary'");?>
-        <?php common::printLink('backup', 'backup', 'reload=yes', "<i class='icon icon-copy'></i> " . $lang->backup->backup, 'hiddenwin', "class='btn btn-primary backup'");?>
       </div>
     </div>
     <table class='table table-condensed table-bordered active-disabled table-fixed'>
       <thead class="text-center">
-        <tr>
+        <tr class='history-header'>
           <th class='w-150px'><?php echo $lang->backup->time?></th>
-          <th><?php echo $lang->backup->files?></th>
-          <th class='w-100px'><?php echo $lang->backup->allCount?></th>
-          <th class='w-100px'><?php echo $lang->backup->count?></th>
-          <th class='w-100px'><?php echo $lang->backup->size?></th>
-          <th class='w-60px'><?php echo $lang->backup->status?></th>
+          <th class='w-100px'><?php echo $lang->backup->backupPerson?></th>
+          <th class='w-100px'><?php echo $lang->backup->type?></th>
           <th class='w-140px'><?php echo $lang->actions?></th>
         </tr>
       </thead>
       <tbody class='text-center'>
       <?php foreach($backups as $backupFile):?>
-        <?php $rowspan = count($backupFile->files);?>
-        <?php $i = 0;?>
-        <?php $isPHP = false;?>
-        <?php foreach($backupFile->files as $file => $summary):?>
-        <?php if(!$isPHP) $isPHP = strpos($file, '.php') !== false;?>
-        <tr>
-          <?php if($i == 0):?>
-          <td <?php if($rowspan > 1) echo "rowspan='$rowspan'"?>><?php echo date(DT_DATETIME1, $backupFile->time);?></td>
-          <?php endif;?>
-          <td title=<?php echo $file;?> class='text-left' style='padding-left:5px;'><?php echo $file;?></td>
-          <td><?php echo zget($summary, 'allCount', '');?></td>
-          <td><?php echo zget($summary, 'count', '');?></td>
+        <tr class='history-row'>
+          <td><?php echo date(DT_DATETIME1, $backupFile->time);?></td>
           <td>
-            <?php
-            $size = zget($summary, 'size', 0);
-            if(!empty($size)) echo $this->backup->processFileSize($size);
-            ?>
+            <?php echo $backupFile->sqlSummary['account'];?>
           </td>
           <td style='overflow:visible'>
-            <?php
-            $status = zget($summary, 'count', 0) == zget($summary, 'allCount', 0) ? 'success' : 'fail';
-            if(!empty($summary['errorFiles'])) $status = 'fail';
-            if(!empty($summary['errorFiles'])):
-            ?>
-            <div class="dropdown dropdown-hover"><?php echo $lang->backup->statusList[$status];?> <span class="caret"></span><div class="dropdown-menu pull-right errorFiles"><?php echo $lang->backup->copiedFail . '<br />' . join('<br />', $summary['errorFiles']);?></div></div>
-            <?php else:?>
-            <?php echo $lang->backup->statusList[$status];?>
-            <?php endif;?>
+            <?php echo zget($lang->backup->typeList, $backupFile->sqlSummary['backupType']);?>
           </td>
-          <?php if($i == 0):?>
-          <td <?php if($rowspan > 1) echo "rowspan='$rowspan'"?>>
+          <td>
             <?php
-            if(common::hasPriv('backup', 'rmPHPHeader') and $isPHP)
-            {
-                echo html::a(inlink('rmPHPHeader', "file={$backupFile->name}"), $lang->backup->rmPHPHeader, 'hiddenwin', "class='rmPHPHeader'");
-                echo "<br />";
-            }
             if(common::hasPriv('backup', 'restore')) echo html::a(inlink('restore', "file={$backupFile->name}&confirm=yes"), "<i class='icon-history'></i> " . $lang->backup->restore, 'hiddenwin', "class='btn btn-link'");
             if(common::hasPriv('backup', 'delete')) echo html::a(inlink('delete', "file=$backupFile->name"),  "<i class='icon-trash'></i> " . $lang->delete, 'hiddenwin', "class='btn btn-link'");
             ?>
           </td>
-          <?php endif;?>
         </tr>
-        <?php $i++;?>
-        <?php endforeach;?>
       <?php endforeach;?>
       </tbody>
     </table>
