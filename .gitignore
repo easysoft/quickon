@@ -1,4 +1,7 @@
 frontend/www/data
+frontend/tmp/log/*.php
+frontend/config/my.php
+
 .DS_Store
 *.code-workspace
 .vscode
