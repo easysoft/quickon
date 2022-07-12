@@ -130,6 +130,19 @@ class InstanceModel extends model
             ->where('id')->eq($id)->exec();
     }
 
+
+    /**
+     * Soft delete instance by id.
+     *
+     * @param  int    $id
+     * @access public
+     * @return mixed
+     */
+    public function softDeleteByID($id)
+    {
+        return $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($id)->exec();
+    }
+
     /**
      * If actions are allowed to do.
      *
@@ -379,16 +392,11 @@ class InstanceModel extends model
      */
     public function freshStatus($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';
-        $params->name      = $instance->k8name;
-        $params->chart     = $instance->chart;
-        $params->namespace = $instance->spaceData->k8space;
-
         $instance->runDuration = 0;
-        $statusData = $this->cne->queryStatus($params);
-        if(empty($statusData)) return $instance;
+        $statusResponse = $this->cne->queryStatus($instance);
+        if($statusResponse->code != 200) return $instance;
 
+        $statusData = $statusResponse->data;
         $instance->runDuration = intval($statusData->age);
 
         if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
@@ -403,6 +411,28 @@ class InstanceModel extends model
         }
 
         return $instance;
+    }
+
+    /**
+     * Delete instances don't exist in CNE.
+     *
+     * @access public
+     * @return void
+     */
+    public function deleteNotExist()
+    {
+        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->fetchAll('id');
+
+        $spaces = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->in(array_column($instances, 'space'))->fetchAll('id');
+
+        foreach($instances as $instance)
+        {
+            $instance->spaceData = zget($spaces, $instance->space, new stdclass);
+
+            $statusResponse = $this->cne->queryStatus($instance);
+
+            if($statusResponse->code == 404) $this->softDeleteByID($instance->id);
+        }
     }
 
     /**

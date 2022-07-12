@@ -11,6 +11,8 @@
  */
 class cneModel extends model
 {
+    protected $error;
+
     /**
      * Construct function: set api headers.
      *
@@ -21,6 +23,8 @@ class cneModel extends model
     public function __construct($appName = '')
     {
         parent::__construct($appName);
+
+        $this->error = new stdclass;
 
         global $config, $app;
         $config->CNE->api->headers[]   = "{$config->CNE->api->auth}: {$config->CNE->api->token}";
@@ -512,12 +516,18 @@ class cneModel extends model
      */
     public function queryStatus($instance)
     {
-        $instance->channel = $this->config->CNE->api->channel;
-        $apiUrl = "/api/cne/app/status";
-        $result = $this->apiGet($apiUrl, $instance, $this->config->CNE->api->headers);
-        if($result && $result->code == 200) return $result->data;
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->name      = $instance->k8name;
+        $apiParams->chart     = $instance->chart;
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->channel   = $this->config->CNE->api->channel;
 
-        return null;
+        $apiUrl = "/api/cne/app/status";
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result;
+
+        return $result;
     }
 
     /**
@@ -536,8 +546,9 @@ class cneModel extends model
         $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data);
         $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
+        if($result && $result->code != 200) return $this->translateError($result);;
 
-        return $this->getError();
+        return $this->cneServerError();
     }
 
     /**
@@ -555,8 +566,9 @@ class cneModel extends model
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
         $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'POST'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
+        if($result && $result->code != 200) return $this->translateError($result);;
 
-        return $this->getError();
+        return $this->cneServerError();
     }
 
     /**
@@ -574,8 +586,9 @@ class cneModel extends model
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
         $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'PUT'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
+        if($result && $result->code != 200) return $this->translateError($result);;
 
-        return $this->getError();
+        return $this->cneServerError();
     }
 
     /**
@@ -593,23 +606,50 @@ class cneModel extends model
         $requestUri = ($host ? $host : $this->config->CNE->api->host) . $url;
         $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'DELETE'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
+        if($result && $result->code != 200) return $this->translateError($result);;
 
-        return $this->getError();
+        return $this->cneServerError();
     }
 
     /**
      * Return error object of api server.
      *
-     * @param int      $code error code
-     * @param string   $message error message
      * @access protected
      * @return object
      */
-    protected function getError($code = 600, $message = '')
+    protected function cneServerError()
     {
         $error = new stdclass;
-        $error->code    = $code;
+        $error->code    = 600;
         $error->message = $message ? $message : $this->lang->CNE->serverError;
         return $error;
+    }
+
+    /**
+     * Get error
+     *
+     * @access public
+     * @return object
+     */
+    public function getError()
+    {
+        return $this->error;
+    }
+
+    /**
+     * Translate error message for multi language.
+     *
+     * @param  object    $apiResult
+     * @access protected
+     * @return void
+     */
+    protected function translateError(&$apiResult)
+    {
+        $this->error->code    = $apiResult->code;
+        $this->error->message = zget($this->lang->CNE->errorList, $apiResult->code, $this->lang->CNE->serverError); // Translate CNE api error message to multi language.
+
+        $apiResult->message = $this->error->message;
+
+        return $this->error;
     }
 }

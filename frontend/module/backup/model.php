@@ -154,7 +154,11 @@ class backupModel extends model
             catch(PDOException $e){}
         }
 
-        return $zdb->import($backupFile);
+        $importResult = $zdb->import($backupFile);
+
+        if($importResult && $importResult->result) $this->loadModel('instance')->deleteNotExist();
+
+        return $importResult;
     }
 
     /**

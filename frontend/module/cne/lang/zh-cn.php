@@ -17,3 +17,4 @@ $lang->CNE->statusIcons['unknown']  = "<i class='icon icon-5x icon-alert-sign st
 
 $lang->CNE->errorList = array();
 $lang->CNE->errorList[400] = '不能包含特殊字符';
+$lang->CNE->errorList[404] = '服务不存在';
