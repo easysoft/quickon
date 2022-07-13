@@ -48,7 +48,8 @@
             </div>
           </div>
           <div class='panel-footer instance-footer'>
-            <div class="pull-left"><?php echo $instance->appVersion;?></div>
+            <?php $channel = zget($lang->instance->channelList, $instance->channel, '');?>
+            <div class="pull-left"><?php echo $instance->appVersion . ($config->cloud->api->switchChannel && $channel ? " ($channel)" : '');?></div>
             <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
               <?php $this->instance->printStatus($instance);?>
             </div>

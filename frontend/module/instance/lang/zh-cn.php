@@ -38,6 +38,10 @@ $lang->instance->sourceList = array();
 $lang->instance->sourceList['cloud'] = '渠成公共市场';
 $lang->instance->sourceList['local'] = '本地市场';
 
+$lang->instance->channelList = array();
+$lang->instance->channelList['test']   = '测试版';
+$lang->instance->channelList['stable'] = '稳定版';
+
 $lang->instance->statusList = array();
 $lang->instance->statusList['installationFail'] = '安装失败';
 $lang->instance->statusList['creating']         = '创建中';
