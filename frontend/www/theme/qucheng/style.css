@@ -16,7 +16,6 @@ a:focus,a:hover {
     color: #3c4353;
     background-color: #fff;
     border-color: #d6dae3;
-    border-radius: 4px
 }
 
 .btn.active,.btn:active,.btn:focus,.btn:hover,.open .dropdown-toggle.btn {
@@ -322,10 +321,6 @@ a:focus,a:hover {
 
 .popover,.tooltip-inner {
     border-radius: 4px
-}
-
-.label {
-    border-radius: 3px
 }
 
 .label-badge {
@@ -1269,12 +1264,6 @@ table.tablesorter thead tr .headerSortDown:after,table.tablesorter thead tr .hea
     border-radius: 6px
 }
 
-.card {
-    border-radius: 4px;
-    -webkit-box-shadow: none;
-    box-shadow: none
-}
-
 pre {
     border-radius: 4px
 }
@@ -1935,17 +1924,7 @@ td.c-actions .btn-link:hover {
 }
 
 .q-card-title {
-    border-left: solid #33BC59 4px;
-    padding-left: 20px;
-    margin-top: 8px;
-    margin-left: -21px;
-    line-height:18px;
-    font-size: 18px;
-    font-weight: 700;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    vertical-align: middle;
+    border-left-color: #33BC59;
 }
 
 .q-metal {

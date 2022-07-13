@@ -57,11 +57,11 @@ $lang->instance->statusList['abnormal']         = '异常';
 $lang->instance->statusList['unknown']          = '未知';
 
 $lang->instance->htmlStatuses = array();
-$lang->instance->htmlStatuses['running']          = "<span><i class='icon icon-check-circle status-green'></i></span>";
-$lang->instance->htmlStatuses['stopped']          = "<span><i class='icon icon-off status-gray'></i></span>";
-$lang->instance->htmlStatuses['abnormal']         = "<span><i class='icon icon-close-circle status-red'></i></span>";
+$lang->instance->htmlStatuses['running']          = "<span class='label label-info label-outline'>%s</span>";
+$lang->instance->htmlStatuses['stopped']          = "<span class='label label-default label-outline'>%s</span>";
+$lang->instance->htmlStatuses['abnormal']         = "<span class='label label-danger label-outline'>%s</span>";
 $lang->instance->htmlStatuses['installationFail'] = $lang->instance->htmlStatuses['abnormal'];
-$lang->instance->htmlStatuses['busy']             = "<span><i class='icon icon-spinner-indicator icon-spin'></i></span>";
+$lang->instance->htmlStatuses['busy']             = "<span class='label label-warning label-success label-outline'>%s</span>";
 
 $lang->instance->componentFields = array();
 $lang->instance->componentFields['replicas']  = '副本数';

@@ -34,7 +34,7 @@
           <td><?php echo html::a($this->createLink('store', 'appview', "id=$instance->appID"), $instance->appName);?></td>
           <td><?php echo $instance->appVersion;?></td>
           <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
-            <?php echo zget($lang->instance->statusList, $instance->status, '');?>
+            <?php $this->instance->printStatus($instance);?>
           </td>
           <td><?php $this->instance->printActions($instance);?></td>
         </tr>

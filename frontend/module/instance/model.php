@@ -248,21 +248,25 @@ class InstanceModel extends model
         if($result->code != 200) return false;
 
         $instanceData = new stdclass;
-        $instanceData->appId      = $app->id;
-        $instanceData->appName    = $app->alias;
-        $instanceData->name       = !empty($customData->customName)   ? $customData->customName : $app->alias;
-        $instanceData->domain     = !empty($customData->customDomain) ? $this->fullDomain($customData->customDomain) : '';
-        $instanceData->logo       = $app->logo;
-        $instanceData->desc       = $app->desc;
-        $instanceData->source     = 'cloud';
-        $instanceData->chart      = $app->chart;
-        $instanceData->appVersion = $app->app_version;
-        $instanceData->version    = $app->version;
-        $instanceData->space      = $space->id;
-        $instanceData->k8name     = $appData->name;
-        $instanceData->status     = 'creating';
-        $instanceData->createdBy  = $this->app->user->account;
-        $instanceData->createdAt  = date('Y-m-d H:i:s');
+        $instanceData->appId        = $app->id;
+        $instanceData->appName      = $app->alias;
+        $instanceData->name         = !empty($customData->customName)   ? $customData->customName : $app->alias;
+        $instanceData->domain       = !empty($customData->customDomain) ? $this->fullDomain($customData->customDomain) : '';
+        $instanceData->logo         = $app->logo;
+        $instanceData->desc         = $app->desc;
+        $instanceData->introduction = isset($app->introduction) ? $app->introduction : $app->desc;
+        $instanceData->source       = 'cloud';
+        $instanceData->channel      = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $instanceData->cpu          = $app->cpu;
+        $instanceData->mem          = $app->memory;
+        $instanceData->chart        = $app->chart;
+        $instanceData->appVersion   = $app->app_version;
+        $instanceData->version      = $app->version;
+        $instanceData->space        = $space->id;
+        $instanceData->k8name       = $appData->name;
+        $instanceData->status       = 'creating';
+        $instanceData->createdBy    = $this->app->user->account;
+        $instanceData->createdAt    = date('Y-m-d H:i:s');
 
         $instance = $this->createInstance($instanceData);
         if(dao::isError()) return false;
@@ -446,7 +450,8 @@ class InstanceModel extends model
     public function printStatus($instance, $showText = true)
     {
         $html = zget($this->lang->instance->htmlStatuses, $instance->status, $this->lang->instance->htmlStatuses['busy']);
-        echo $showText ? $html . "<span>" . zget($this->lang->instance->statusList, $instance->status, '') . "</span>" : $html;
+        $statusText = zget($this->lang->instance->statusList, $instance->status, '');
+        printf($html, $statusText);
     }
 
     /**

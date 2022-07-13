@@ -23,7 +23,9 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   `logo` varchar(255),
   `version` char(50) NOT NULL,
   `desc` text,
+  `introduction` varchar(500),
   `source` char(20) NOT NULL,
+  `channel` char(20),
   `k8name` char(64) NOT NULL,
   `status` char(20) NOT NULL,
   `domain` char(255) NOT NULL,
@@ -36,7 +38,6 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   KEY `k8name` (`k8name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
--- zentao
 DROP TABLE IF EXISTS `q_action`;
 CREATE TABLE `q_action` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
@@ -201,4 +202,4 @@ CREATE TABLE `q_grouppriv` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 REPLACE INTO `q_company` ( `name`, `admins`) VALUES ('', '');
-REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.1.0');
+REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.1.1');
