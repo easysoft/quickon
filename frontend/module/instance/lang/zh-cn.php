@@ -118,3 +118,4 @@ $lang->instance->errors->domainLength         = '域名长度必须介于2-20字
 $lang->instance->errors->domainExists         = '域名已被占用，请使用其它域名。';
 $lang->instance->errors->wrongDomainCharacter = '域名只能是英文字母和数字';
 $lang->instance->errors->noAppInfo            = '获取应用数据失败，请稍候重试。';
+$lang->instance->errors->notEnoughMemory      = '集群资源不足！';

@@ -22,11 +22,7 @@ $(function()
             }
             else
             {
-                bootbox.alert(
-                {
-                    title:   instanceNotices.fail,
-                    message: res.message,
-                });
+                alert(res.message);
             }
         });
     });
