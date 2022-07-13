@@ -74,9 +74,10 @@
         <tr class='history-row'>
           <td><?php echo date(DT_DATETIME1, $backupFile->time);?></td>
           <td>
-            <?php echo $backupFile->sqlSummary['account'];?>
+            <?php echo isset($backupFile->sqlSummary['account']) ? $backupFile->sqlSummary['account'] : '';?>
           </td>
           <td style='overflow:visible'>
+            <?php if(empty($backupFile->sqlSummary['backupType'])) $backupFile->sqlSummary['backupType'] = '';?>
             <?php echo zget($lang->backup->typeList, $backupFile->sqlSummary['backupType']);?>
           </td>
           <td>
