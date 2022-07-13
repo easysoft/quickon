@@ -1344,16 +1344,19 @@ EOT;
      *
      * @param  float  $percent
      * @param  string $color  HEX value of color
+     * @param  string $tip
      * @static
      * @access public
      * @return void
      */
-    public static function printProgressPie($percent, $color = '')
+    public static function printProgressPie($percent, $color = '', $tip = '')
     {
         if(empty($color)) $color = self::getColorByLevel($percent);
 
+        $title = $tip ? $tip : $percent . '%';
+
         echo <<<EOT
-            <div class='progress-pie' data-doughnut-size='85' data-color='{$color}' data-value='{$percent}' data-width='120' data-height='120' data-back-color='#e8edf3'>
+            <div   title='{$title}' data-toggle='tooltip' class='progress-pie' data-doughnut-size='85' data-color='{$color}' data-value='{$percent}' data-width='120' data-height='120' data-back-color='#e8edf3'>
               <div class='progress-info' style='line-height: 120px; padding-top: 0; font-size:25px;'>{$percent}%</div>
             </div>
 EOT;

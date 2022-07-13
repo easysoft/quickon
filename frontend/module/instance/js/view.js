@@ -126,4 +126,6 @@ $(function()
             if(res.locate) window.parent.location.href = res.locate;
         });
     }, 1000 * 5);
+
+    $('[data-toggle="tooltip"]').tooltip();
 })

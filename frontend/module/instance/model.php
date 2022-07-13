@@ -458,32 +458,44 @@ class InstanceModel extends model
      * Print CPU usage.
      *
      * @param  object $metrics
+     * @param  string $type    'bar' is progress bar, 'pie' is progress pie.
      * @static
      * @access public
      * @return viod
      */
-    public static function printCpuUsage($metrics)
+    public static function printCpuUsage($metrics, $type = 'bar')
     {
         $rate = $metrics->rate;
         $tip  = "{$rate}% = {$metrics->usage} / {$metrics->limit}";
 
-        commonModel::printProgressBar($rate, '', $tip);
+        if(strtolower($type) == 'pie')
+        {
+            return commonModel::printProgressPie($rate, '', $tip);
+        }
+
+        return commonModel::printProgressBar($rate, '', $tip);
     }
 
     /**
      * Print memory usage.
      *
      * @param  object $metrics
+     * @param  string $type    'bar' is progress bar, 'pie' is progress pie.
      * @static
      * @access public
      * @return viod
      */
-    public static function printMemUsage($metrics)
+    public static function printMemUsage($metrics, $type = 'bar')
     {
         $rate = $metrics->rate;
         $tip  = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->limit / 1024);
 
-        commonModel::printProgressBar($rate, '', $tip);
+        if(strtolower($type) == 'pie')
+        {
+            return commonModel::printProgressPie($rate, '', $tip);
+        }
+
+        return commonModel::printProgressBar($rate, '', $tip);
     }
 
     /*
