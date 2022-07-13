@@ -25,6 +25,7 @@ class space extends control
      */
     public function browse($spaceID = null, $browseType = 'bycard', $recTotal = 0, $recPerPage = 20, $pageID = 1)
     {
+        $this->app->loadLang('instance');
         $this->loadModel('instance');
         $this->loadModel('store');
 
