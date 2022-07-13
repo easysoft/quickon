@@ -257,8 +257,6 @@ class InstanceModel extends model
         $instanceData->introduction = isset($app->introduction) ? $app->introduction : $app->desc;
         $instanceData->source       = 'cloud';
         $instanceData->channel      = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
-        $instanceData->cpu          = $app->cpu;
-        $instanceData->mem          = $app->memory;
         $instanceData->chart        = $app->chart;
         $instanceData->appVersion   = $app->app_version;
         $instanceData->version      = $app->version;
