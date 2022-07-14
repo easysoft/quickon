@@ -12,13 +12,14 @@ $(function()
 
     $('.backup').click(function()
     {
-        $('#waitting .modal-body #backupType').html(backup);
         $('#waitting').modal('show');
         setInterval(function()
         {
             $.get(createLink('backup', 'ajaxGetProgress'), function(data)
             {
-                $('#waitting .modal-content #message').html(data);
+                data = JSON.parse(data);
+                $('.progressSQL').text(data.sql);
+                $('.progressFile').text(data.file);
             });
         }, 1000);
     })
