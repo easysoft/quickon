@@ -416,6 +416,175 @@ class InstanceModel extends model
     }
 
     /**
+     * Query and save backup status, if backup is running, return true.
+     *
+     * @param  int    $instance
+     * @access public
+     * @return bool
+     */
+    public function backupRunning($instance)
+    {
+        $backups = $this->dao->select('id')->from(TABLE_BACKUP)->where('deleted')->eq(0)
+            ->andWhere('instance')->eq($instance->id)
+            ->andWhere('backupStatus')->in(array('Pending', 'Processing', 'Uploading'))
+            ->fetchAll();
+
+        foreach($backups as $backup)
+        {
+            $backup = $this->queryBackupStatus($backup);
+            if(in_array($backup->backupStatus, array('Pending', 'Processing', 'Uploading'))) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Query and save restore status, if restore is running, return true.
+     *
+     * @param  int    $instance
+     * @access public
+     * @return bool
+     */
+    public function restoreRunning($instance)
+    {
+        $backups = $this->dao->select('id')->from(TABLE_BACKUP)->where('deleted')->eq(0)
+            ->andWhere('instance')->eq($instance->id)
+            ->andWhere('restoreStatus')->in(array('Pending', 'Processing', 'Downloading'))
+            ->fetchAll();
+
+        foreach($backups as $backup)
+        {
+            $backup = $this->queryBackupStatus($backup);
+            if(in_array($backup->backupStatus, array('Pending', 'Processing', 'Downloading'))) return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Query backup status.
+     *
+     * @param  object $backup
+     * @access public
+     * @return object
+     */
+    public function queryBackupStatus($backup)
+    {
+        $instance = $this->getByID($backup->instance);
+        if(empty($instance)) return;
+
+        $result = $this->cne->backupStatus($instance, $backup);
+        if($result->code != 200) return;
+
+        $this->dao->update(TABLE_BACKUP)->set('backupStatus')->eq($result->data->status)->where('id')->eq($backup->id)->exec();
+
+        $backup->backupStatus = $result->data->status;
+        return $backup;
+    }
+
+    /**
+     * Query restore status.
+     *
+     * @param  object $backup
+     * @access public
+     * @return object
+     */
+    public function queryRestoreStatus($backup)
+    {
+        $instance = $this->getByID($backup->instance);
+        if(empty($instance)) return;
+
+        $result = $this->cne->restoreStatus($instance, $backup);
+        if($result->code != 200) return;
+
+        $this->dao->update(TABLE_BACKUP)->set('restoreStatus')->eq($result->data->status)->where('id')->eq($backup->id)->exec();
+
+        $backup->backupStatus = $result->data->status;
+        return $backup;
+    }
+
+    /**
+     * Batch query backup status and save new status to database.
+     *
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function batchFreshBackupStatus($instance)
+    {
+        $backups = $this->dao->select('id')->from(TABLE_BACKUP)->where('deleted')->eq(0)
+            ->andWhere('instance')->eq($instance->id)
+            ->andWhere('restoreStatus')->nq('Complete')
+            ->fetchAll();
+
+        foreach($backups as $backup)
+        {
+            $backup = $this->queryBackupStatus($backup);
+            if(in_array($backup->backupStatus, array('Pending', 'Processing', 'Downloading'))) return true;
+        }
+    }
+
+    /**
+     * Batch query restore status and save new status to database.
+     *
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function batchFreshRestoreStatus($instance)
+    {
+        $backups = $this->dao->select('id')->from(TABLE_BACKUP)->where('deleted')->eq(0)
+            ->andWhere('instance')->eq($instance->id)
+            ->andWhere('restoreStatus')->nq('Complete')
+            ->fetch();
+
+        foreach($backups as $backup)
+        {
+            $backup = $this->queryBackupStatus($backup);
+            if(in_array($backup->backupStatus, array('Pending', 'Processing', 'Downloading'))) return true;
+        }
+    }
+
+    /**
+     * Backup instance.
+     *
+     * @param  object $instance
+     * @access public
+     * @return bool
+     */
+    public function backup($instance)
+    {
+        $result = $this->cne->backup($instance);
+        if($result->code != 200) return false;
+
+        $backup = new stdclass;
+        $backup->backupName = $result->data->backup_name;
+        $backup->backupAt   = $result->data->create_time;
+
+        $this->dao->insert(TABLE_BACKUP)->data($backup)->exec();
+
+        return $this->dao->lastInsertID();
+    }
+
+    /**
+     * Restore instance.
+     *
+     * @param  object $backup
+     * @access public
+     * @return bool
+     */
+    public function restore($backup)
+    {
+        $result = $this->cne->restore($instance, $backup);
+        if($result->code != 200) return false;
+
+        $restore = new stdclass;
+        $restore->restoreName = $result->data->restore_name;
+        $restore->restoreAt   = $result->data->create_time;
+        return $this->dao->updaet(TABLE_BACKUP)->data($restore)->where('id')->eq($backup->id)->exec();
+    }
+
+    /**
      * Delete instances don't exist in CNE.
      *
      * @access public

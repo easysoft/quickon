@@ -459,7 +459,7 @@ class cneModel extends model
         $apiParams->cluster     = '';
         $apiParams->namespace   = $instance->spaceData->k8space;
         $apiParams->name        = $instance->k8name;
-        $apiParams->backup_name = $backup->name;
+        $apiParams->backup_name = $backup->backupName;
         $apiParams->channel     = $this->config->CNE->api->channel;
 
         $apiUrl = "/api/cne/app/backup/status";
@@ -499,7 +499,7 @@ class cneModel extends model
         $apiParams->cluster     = '';
         $apiParams->namespace   = $instance->spaceData->k8space;
         $apiParams->name        = $instance->k8name;
-        $apiParams->backup_name = $backup->name;
+        $apiParams->backup_name = $backup->backupName;
         $apiParams->channel     = $this->config->CNE->api->channel;
 
         $apiUrl = "/api/cne/app/restore";
@@ -520,7 +520,7 @@ class cneModel extends model
         $apiParams->cluster      = '';
         $apiParams->namespace    = $instance->spaceData->k8space;
         $apiParams->name         = $instance->k8name;
-        $apiParams->restore_name = $restore->name;
+        $apiParams->restore_name = $restore->restoreName;
         $apiParams->channel      = $this->config->CNE->api->channel;
 
         $apiUrl = "/api/cne/app/restore/status";
