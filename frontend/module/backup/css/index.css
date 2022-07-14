@@ -9,3 +9,4 @@ table.table a {vertical-align: baseline;}
 .history-header {height: 50px;}
 .info-row {height: 50px;}
 .history-row {height: 50px;}
+table.table-backup > tbody > tr > th {font-weight: normal;}

@@ -43,7 +43,7 @@
             <?php echo html::a($config->backup->versionURL, "<i class='icon icon-info-sign' style='color: #4E83F0;'></i>", '_blank', "title='{$lang->backup->versionInfo}'");?>
           </td>
           <td>
-            <?php echo version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>') ?  html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload') : '';?>
+            <?php echo version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>') ? html::commonButton($lang->backup->upgrade, '', 'btn btn-link upgrade', 'upload') : '';?>
             <?php echo html::a(inlink('backup', "reload=yes"), "<i class='icon icon-refresh'></i> " . $lang->backup->backup, 'hiddenwin', "class='backup'");?>
             <?php //echo html::commonButton($lang->backup->shortCommon, '', 'btn btn-link', 'sync');?>
             <?php //echo html::commonButton($lang->backup->rollback, '', 'btn btn-link', 'history');?>
@@ -99,11 +99,31 @@
   </div>
 </div>
 <div class="modal fade" id="waitting" tabindex="-1" role="dialog" aria-hidden="true">
-  <div class="modal-dialog w-400px">
+  <div class="modal-dialog w-500px">
     <div class="modal-content">
       <div class="modal-body">
-        <p><?php echo $lang->backup->waitting?></p>
-        <div id='message'><?php echo sprintf($lang->backup->progressSQL, 0);?></div>
+        <div class='main-header'>
+          <h2><?php echo $lang->backup->backupTitle;?></h2>
+        </div>
+        <div class="table-row">
+          <table class='table table-form table-backup'>
+            <tr>
+              <th class='text-left'><?php echo $lang->backup->backupName?></th>
+              <td><?php echo date('Y年m月d日H点i分') . '-' . $app->user->account . '-' . $lang->backup->typeList['manual'];?></td>
+            </tr>
+            <tr>
+              <th class='text-left'><?php echo $lang->backup->backupSql?></th>
+              <td class='progressSQL'><?php echo $lang->backup->backingUp;?></td>
+            </tr>
+            <tr>
+              <th class='text-left'><?php echo $lang->backup->backupFile?></th>
+              <td class='progressFile'><?php echo $lang->backup->backingUp;?></td>
+            </tr>
+          </table>
+        </div>
+        <div class="text-center form-action" class="text-center" style="margin-top:20px">
+          <?php echo html::commonButton($lang->goback, 'data-dismiss="modal"', 'btn btn-primary btn-wide');?>
+        </div>
       </div>
     </div>
   </div>
