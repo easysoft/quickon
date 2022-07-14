@@ -636,7 +636,7 @@ class cneModel extends model
     {
         $error = new stdclass;
         $error->code    = 600;
-        $error->message = $message ? $message : $this->lang->CNE->serverError;
+        $error->message = $this->lang->CNE->serverError;
         return $error;
     }
 
