@@ -20,10 +20,9 @@ package externalversions
 import (
 	"fmt"
 
+	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
-
-	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
 )
 
 // GenericInformer is type of SharedIndexInformer which will locate and delegate to other
@@ -57,8 +56,14 @@ func (f *sharedInformerFactory) ForResource(resource schema.GroupVersionResource
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().Backups().Informer()}, nil
 	case v1beta1.SchemeGroupVersion.WithResource("dbs"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().Dbs().Informer()}, nil
+	case v1beta1.SchemeGroupVersion.WithResource("dbbackups"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().DbBackups().Informer()}, nil
+	case v1beta1.SchemeGroupVersion.WithResource("dbrestores"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().DbRestores().Informer()}, nil
 	case v1beta1.SchemeGroupVersion.WithResource("dbservices"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().DbServices().Informer()}, nil
+	case v1beta1.SchemeGroupVersion.WithResource("globaldbs"):
+		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().GlobalDBs().Informer()}, nil
 	case v1beta1.SchemeGroupVersion.WithResource("restores"):
 		return &genericInformer{resource: resource.GroupResource(), informer: f.Qucheng().V1beta1().Restores().Informer()}, nil
 

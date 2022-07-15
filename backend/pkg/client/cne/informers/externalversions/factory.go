@@ -22,14 +22,13 @@ import (
 	sync "sync"
 	time "time"
 
+	versioned "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
+	internalinterfaces "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions/internalinterfaces"
+	qucheng "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions/qucheng"
 	v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	runtime "k8s.io/apimachinery/pkg/runtime"
 	schema "k8s.io/apimachinery/pkg/runtime/schema"
 	cache "k8s.io/client-go/tools/cache"
-
-	versioned "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
-	internalinterfaces "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions/internalinterfaces"
-	qucheng "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions/qucheng"
 )
 
 // SharedInformerOption defines the functional option type for SharedInformerFactory.

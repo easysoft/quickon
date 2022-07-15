@@ -34,11 +34,20 @@ type DbSpec struct {
 type DbStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Address string `json:"address,omitempty" yaml:"address,omitempty"`
+	Network bool   `json:"network" yaml:"network"`
+	Auth    bool   `json:"auth" yaml:"auth"`
+	Ready   bool   `json:"ready" yaml:"ready"`
 }
 
 //+genclient
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="Network",type=boolean,JSONPath=`.status.network`
+//+kubebuilder:printcolumn:name="Auth",type=boolean,JSONPath=`.status.auth`
+//+kubebuilder:printcolumn:name="Ready",type=boolean,JSONPath=`.status.ready`
+//+kubebuilder:printcolumn:name="Address",type=string,JSONPath=`.status.address`
+//+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
 
 // Db is the Schema for the dbs API
 type Db struct {

@@ -6,8 +6,17 @@
 
 package v1beta1
 
-import "k8s.io/apimachinery/pkg/runtime/schema"
+const (
+	BackupNameLabel  = "easycorp.io/backup_name"
+	RestoreNameLabel = "easycorp.io/restore_name"
 
-func Resource(resource string) schema.GroupResource {
-	return GroupVersion.WithResource(resource).GroupResource()
-}
+	ApplicationNameLabel = "easycorp.io/app_release_name"
+)
+
+const (
+	SelectorReleaseKey = "release"
+)
+
+const (
+	PvcBackupExcludeAnnotation = "easycorp.io/pvc_backup_exclude"
+)

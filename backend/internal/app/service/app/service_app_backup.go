@@ -26,6 +26,7 @@ func (i *Instance) CreateBackup() (interface{}, error) {
 			Selector: map[string]string{
 				"release": i.release.Name,
 			},
+			Namespace: i.namespace,
 		},
 	}
 
@@ -34,13 +35,13 @@ func (i *Instance) CreateBackup() (interface{}, error) {
 		CreateTime int64  `json:"create_time"`
 	}{backupName, currTime.Unix()}
 
-	_, err := i.ks.Clients.Cne.QuchengV1beta1().Backups(i.namespace).Create(i.ctx, &backupReq, metav1.CreateOptions{})
+	_, err := i.ks.Clients.Cne.QuchengV1beta1().Backups("cne-system").Create(i.ctx, &backupReq, metav1.CreateOptions{})
 	return data, err
 }
 
 func (i *Instance) GetBackupList() ([]model.AppRespBackup, error) {
 	var result []model.AppRespBackup
-	backups, err := i.ks.Store.ListBackups(i.namespace, i.selector)
+	backups, err := i.ks.Store.ListBackups("cne-system", i.selector)
 	if err != nil {
 		return nil, err
 	}
@@ -65,7 +66,7 @@ func (i *Instance) GetBackupList() ([]model.AppRespBackup, error) {
 }
 
 func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
-	backup, err := i.ks.Store.GetBackup(i.namespace, backupName)
+	backup, err := i.ks.Store.GetBackup("cne-system", backupName)
 	if err != nil {
 		return nil, err
 	}
@@ -99,12 +100,12 @@ func (i *Instance) CreateRestore(backupName string) (interface{}, error) {
 		CreateTime  int64  `json:"create_time"`
 	}{backupName, currTime.Unix()}
 
-	_, err := i.ks.Clients.Cne.QuchengV1beta1().Restores(i.namespace).Create(i.ctx, &restore, metav1.CreateOptions{})
+	_, err := i.ks.Clients.Cne.QuchengV1beta1().Restores("cne-system").Create(i.ctx, &restore, metav1.CreateOptions{})
 	return data, err
 }
 
 func (i *Instance) GetRestoreStatus(restoreName string) (interface{}, error) {
-	restore, err := i.ks.Store.GetRestore(i.namespace, restoreName)
+	restore, err := i.ks.Store.GetRestore("cne-system", restoreName)
 	if err != nil {
 		return nil, err
 	}

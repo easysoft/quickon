@@ -31,59 +31,59 @@ import (
 	cache "k8s.io/client-go/tools/cache"
 )
 
-// DbInformer provides access to a shared informer and lister for
-// Dbs.
-type DbInformer interface {
+// DbBackupInformer provides access to a shared informer and lister for
+// DbBackups.
+type DbBackupInformer interface {
 	Informer() cache.SharedIndexInformer
-	Lister() v1beta1.DbLister
+	Lister() v1beta1.DbBackupLister
 }
 
-type dbInformer struct {
+type dbBackupInformer struct {
 	factory          internalinterfaces.SharedInformerFactory
 	tweakListOptions internalinterfaces.TweakListOptionsFunc
 	namespace        string
 }
 
-// NewDbInformer constructs a new informer for Db type.
+// NewDbBackupInformer constructs a new informer for DbBackup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewDbInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
-	return NewFilteredDbInformer(client, namespace, resyncPeriod, indexers, nil)
+func NewDbBackupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers) cache.SharedIndexInformer {
+	return NewFilteredDbBackupInformer(client, namespace, resyncPeriod, indexers, nil)
 }
 
-// NewFilteredDbInformer constructs a new informer for Db type.
+// NewFilteredDbBackupInformer constructs a new informer for DbBackup type.
 // Always prefer using an informer factory to get a shared informer instead of getting an independent
 // one. This reduces memory footprint and number of connections to the server.
-func NewFilteredDbInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
+func NewFilteredDbBackupInformer(client versioned.Interface, namespace string, resyncPeriod time.Duration, indexers cache.Indexers, tweakListOptions internalinterfaces.TweakListOptionsFunc) cache.SharedIndexInformer {
 	return cache.NewSharedIndexInformer(
 		&cache.ListWatch{
 			ListFunc: func(options v1.ListOptions) (runtime.Object, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.QuchengV1beta1().Dbs(namespace).List(context.TODO(), options)
+				return client.QuchengV1beta1().DbBackups(namespace).List(context.TODO(), options)
 			},
 			WatchFunc: func(options v1.ListOptions) (watch.Interface, error) {
 				if tweakListOptions != nil {
 					tweakListOptions(&options)
 				}
-				return client.QuchengV1beta1().Dbs(namespace).Watch(context.TODO(), options)
+				return client.QuchengV1beta1().DbBackups(namespace).Watch(context.TODO(), options)
 			},
 		},
-		&quchengv1beta1.Db{},
+		&quchengv1beta1.DbBackup{},
 		resyncPeriod,
 		indexers,
 	)
 }
 
-func (f *dbInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
-	return NewFilteredDbInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
+func (f *dbBackupInformer) defaultInformer(client versioned.Interface, resyncPeriod time.Duration) cache.SharedIndexInformer {
+	return NewFilteredDbBackupInformer(client, f.namespace, resyncPeriod, cache.Indexers{cache.NamespaceIndex: cache.MetaNamespaceIndexFunc}, f.tweakListOptions)
 }
 
-func (f *dbInformer) Informer() cache.SharedIndexInformer {
-	return f.factory.InformerFor(&quchengv1beta1.Db{}, f.defaultInformer)
+func (f *dbBackupInformer) Informer() cache.SharedIndexInformer {
+	return f.factory.InformerFor(&quchengv1beta1.DbBackup{}, f.defaultInformer)
 }
 
-func (f *dbInformer) Lister() v1beta1.DbLister {
-	return v1beta1.NewDbLister(f.Informer().GetIndexer())
+func (f *dbBackupInformer) Lister() v1beta1.DbBackupLister {
+	return v1beta1.NewDbBackupLister(f.Informer().GetIndexer())
 }
