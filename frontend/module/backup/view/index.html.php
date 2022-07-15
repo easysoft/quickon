@@ -82,7 +82,7 @@
           </td>
           <td>
             <?php
-            if(common::hasPriv('backup', 'restore')) echo html::a(inlink('restore', "file={$backupFile->name}&confirm=yes"), "<i class='icon-history'></i> " . $lang->backup->restore, 'hiddenwin', "class='btn btn-link'");
+            if(common::hasPriv('backup', 'restore')) echo html::commonButton("<i class='icon-history'></i> " . $lang->backup->restore, "id='restoreButton'", 'btn btn-link restoreButton');
             if(common::hasPriv('backup', 'delete')) echo html::a(inlink('delete', "file=$backupFile->name"),  "<i class='icon-trash'></i> " . $lang->delete, 'hiddenwin', "class='btn btn-link'");
             ?>
           </td>
@@ -128,6 +128,48 @@
     </div>
   </div>
 </div>
+<div class="modal fade" id="restoring" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog w-500px">
+    <div class="modal-content">
+      <div class="modal-body">
+        <div class='main-header'>
+          <h2><?php echo $lang->backup->restoreTitle;?></h2>
+        </div>
+        <div class="table-row">
+          <table class='table table-form table-backup'>
+            <tr>
+              <th class='text-left'><?php echo $lang->backup->restoreSQL?></th>
+              <td class='restoreSQL'><?php echo $lang->backup->restoring;?></td>
+            </tr>
+            <tr>
+              <th class='text-left'><?php echo $lang->backup->restoreFile?></th>
+              <td class='restoreFile'><?php echo $lang->backup->restoring;?></td>
+            </tr>
+          </table>
+        </div>
+        <div class="text-center form-action" class="text-center" style="margin-top:20px">
+          <?php echo html::commonButton($lang->goback, 'data-dismiss="modal"', 'btn btn-primary btn-wide');?>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="modal fade" id="confirmRollback" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog w-400px">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h2 class="text-center"><?php echo $lang->backup->restore;?></h2>
+        <div class="text-center confirm-text"><?php echo $lang->backup->confirmRollback;?></div>
+      </div>
+      <div class="text-center">
+        <?php echo html::commonButton($lang->cancel, "data-dismiss='modal'", 'btn btn-wide');?>
+        <?php echo html::a(inlink('restore', "file={$backupFile->name}&confirm=yes"), $lang->confirm, 'hiddenwin', "class='btn btn-primary btn-wide submitRestore'");?>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal fade" id="upgradeModal" tabindex="-1" role="dialog" aria-hidden="true">
   <div class="modal-dialog w-400px">
     <div class="modal-content">

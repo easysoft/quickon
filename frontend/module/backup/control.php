@@ -222,7 +222,9 @@ class backup extends control
             if(!$result->result) return $this->send(array('result' => 'fail', 'message' => sprintf($this->lang->backup->error->restoreFile, $result->error)));
         }
 
-        return $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->restore));
+        $this->backup->processRestoreSummary('', '', 'delete');
+
+        return print(js::reload('parent'));
     }
 
     /**
@@ -415,6 +417,27 @@ class backup extends control
         }
 
         return print(json_encode($progressMessage));
+    }
+
+    /**
+     * Ajax get restore progress.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxGetRestoreProgress()
+    {
+        $summaryFile = $this->backup->getBackupPath() . 'restoreSummary';
+        $progress = new stdclass();
+
+        $summary = json_decode(file_get_contents($summaryFile), 'true');
+        $progress->sql  = !empty($summary['sql']) ?  $summary['sql'] : 'doing';
+        $progress->file = !empty($summary['file']) ? $summary['file'] : 'doing';
+
+        $progress->sql  = zget($this->lang->backup->restoreProgress, $progress->sql);
+        $progress->file = zget($this->lang->backup->restoreProgress, $progress->file);
+
+        return print(json_encode($progress));
     }
 
     /**
