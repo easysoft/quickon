@@ -89,7 +89,7 @@ define('TABLE_USERGROUP',     '`' . $config->db->prefix . 'usergroup`');
 
 define('TABLE_SPACE',         '`' . $config->db->prefix . 'space`');
 define('TABLE_INSTANCE',      '`' . $config->db->prefix . 'instance`');
-define('TABLE_BACKUP',        '`' . $config->db->prefix . 'bakcup`');
+define('TABLE_BACKUP',        '`' . $config->db->prefix . 'backup`');
 
 define('TABLE_ACTION',        '`' . $config->db->prefix . 'action`');
 define('TABLE_FILE',          '`' . $config->db->prefix . 'file`');

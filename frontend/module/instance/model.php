@@ -471,10 +471,10 @@ class InstanceModel extends model
     public function queryBackupStatus($backup)
     {
         $instance = $this->getByID($backup->instance);
-        if(empty($instance)) return;
+        if(empty($instance)) return $backup;
 
         $result = $this->cne->backupStatus($instance, $backup);
-        if($result->code != 200) return;
+        if($result->code != 200) return $backup;
 
         $this->dao->update(TABLE_BACKUP)->set('backupStatus')->eq($result->data->status)->where('id')->eq($backup->id)->exec();
 
@@ -492,10 +492,10 @@ class InstanceModel extends model
     public function queryRestoreStatus($backup)
     {
         $instance = $this->getByID($backup->instance);
-        if(empty($instance)) return;
+        if(empty($instance)) return $backup;
 
         $result = $this->cne->restoreStatus($instance, $backup);
-        if($result->code != 200) return;
+        if($result->code != 200) return $backup;
 
         $this->dao->update(TABLE_BACKUP)->set('restoreStatus')->eq($result->data->status)->where('id')->eq($backup->id)->exec();
 
@@ -558,8 +558,10 @@ class InstanceModel extends model
         if($result->code != 200) return false;
 
         $backup = new stdclass;
-        $backup->backupName = $result->data->backup_name;
-        $backup->backupAt   = $result->data->create_time;
+        $backup->instance     = $instance->id;
+        $backup->backupName   = $result->data->backup_name;
+        $backup->backupAt     = date('Y-m-d H:i:s', $result->data->create_time);
+        $backup->backupStatus = 'Pending';
 
         $this->dao->insert(TABLE_BACKUP)->data($backup)->exec();
 
@@ -578,9 +580,16 @@ class InstanceModel extends model
         $result = $this->cne->restore($instance, $backup);
         if($result->code != 200) return false;
 
+        $restoreLogs = json_decode($bacup->restoreLogs, true);
+        $restoreLogs[] = $result->data;
+
         $restore = new stdclass;
-        $restore->restoreName = $result->data->restore_name;
-        $restore->restoreAt   = $result->data->create_time;
+        $restore->instance      = $instance->id;
+        $restore->restoreName   = $result->data->restore_name;
+        $restore->restoreAt     = (array) date('Y-m-d H:i:s', $result->data->create_time);
+        $restore->restoreStatus = 'Pending';
+        $restore->restoreLogs    = json_encode($restoreLogs);
+
         return $this->dao->updaet(TABLE_BACKUP)->data($restore)->where('id')->eq($backup->id)->exec();
     }
 
