@@ -102,6 +102,123 @@ $(function()
         });
     });
 
+    $('.btn-backup').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.confirmBackup, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.backuping + '</div>',
+            });
+
+            let id  = $(event.target).closest('button').attr('instance-id');
+            let url = createLink('instance', 'ajaxBackup', 'id=' + id, 'json');
+            $.post(url).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                let res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.success,
+                        message: res.message,
+                        callback: function(){window.location.reload();}
+                    });
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
+        });
+    });
+
+    $('.btn-restore').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.confirmRestore, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.restoring + '</div>',
+            });
+
+            let id  = $(event.target).closest('button').attr('backup-id');
+            let url = createLink('instance', 'ajaxRestore', 'id=' + id, 'json');
+            $.post(url).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                let res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.success,
+                        message: res.message,
+                        callback: function(){window.location.reload();}
+                    });
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
+        });
+    });
+
+    $('.btn-delete-backup').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.confirmDelete, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.deleting + '</div>',
+            });
+
+            let id  = $(event.target).closest('button').attr('backup-id');
+            let url = createLink('instance', 'ajaxDeleteBackup', 'id=' + id, 'json');
+            $.post(url).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                let res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.success,
+                        message: res.message,
+                        callback: function(){window.location.reload();}
+                    });
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
+        });
+    });
+
     var enableTimer = true;
     window.parent.$(window.parent.document).on('showapp', function(event, app)
     {

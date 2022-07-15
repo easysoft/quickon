@@ -1,4 +1,5 @@
-.instance-name h3 {display: inline-block; padding-left: 20px;}
+#mainContent .nav-tabs li>a::before {height: 0;}
+.instance-name h3 {display: inline-block; padding-left: 10px;}
 .instance-name span {font-size: 14px; font-weight: bolder; padding: 0 5px;}
 .instance-panel .btn-group .btn {margin: 10px 5px 0 5px; width: 30px;}
 .instance-panel .btn-group i {font-size: 24px;}
@@ -10,3 +11,8 @@
 .usage-box {border-radius: 3px;}
 .c-title {text-align: center; padding-top: 10px; font-size: 15px}
 .progress-pie {margin: 10px auto;}
+
+#backup .panel {padding: 10px;}
+#backup .panel .btn-toolbar{padding: 0 0 10px 0;}
+#backup table th.actions{padding-left: 15px;}
+#backup table td>.btn {padding-left: 5px; padding-right: 5px;}

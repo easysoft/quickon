@@ -8,6 +8,7 @@ $lang->instance->cpu        = 'CPU';
 $lang->instance->mem        = '内存';
 $lang->instance->space      = '空间';
 $lang->instance->domain     = '域名';
+$lang->instance->dbType     = '数据库';
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';
@@ -21,6 +22,37 @@ $lang->instance->installedService = '已安装服务';
 $lang->instance->installApp       = '安装应用';
 $lang->instance->cpuUsage         = 'CPU';
 $lang->instance->memUsage         = '内存';
+
+$lang->instance->backup = new stdclass;
+$lang->instance->backup->date          = '日期';
+$lang->instance->backup->operator      = '备份人';
+$lang->instance->backup->type          = '备份类型';
+$lang->instance->backup->backupStatus  = '备份状态';
+$lang->instance->backup->restoreStatus = '还原状态';
+$lang->instance->backup->action        = '操作';
+$lang->instance->backup->restore       = '还原';
+$lang->instance->backup->delete        = '删除';
+$lang->instance->backup->rebackup      = '重试备份';
+$lang->instance->backup->create        = '创建备份';
+
+$lang->instance->backup->statusList = array();
+$lang->instance->backup->statusList['Pending']        = '等待备份';
+$lang->instance->backup->statusList['Processing']     = '备份中';
+$lang->instance->backup->statusList['Completed']      = '完成备份';
+$lang->instance->backup->statusList['ExecutedFailed'] = '备份失败';
+$lang->instance->backup->statusList['Uploading']      = '上传中';
+$lang->instance->backup->statusList['UploadFailed']   = '上传失败';
+$lang->instance->backup->statusList['Downloading']    = '下载中';
+$lang->instance->backup->statusList['DownloadFailed'] = '下载失败';
+
+$lang->instance->restore = new stdclass;
+$lang->instance->restore->statusList = array();
+$lang->instance->restore->statusList['Pending']        = '等待还原';
+$lang->instance->restore->statusList['Processing']     = '还原中';
+$lang->instance->restore->statusList['Completed']       = '完成还原';
+$lang->instance->restore->statusList['ExecutedFailed'] = '还原失败';
+$lang->instance->restore->statusList['Downloading']    = '下载中';
+$lang->instance->restore->statusList['DownloadFailed'] = '下载失败';
 
 $lang->instance->log = new stdclass;
 $lang->instance->log->date    = '日期';
@@ -41,6 +73,10 @@ $lang->instance->sourceList['local'] = '本地市场';
 $lang->instance->channelList = array();
 $lang->instance->channelList['test']   = '测试版';
 $lang->instance->channelList['stable'] = '稳定版';
+
+$lang->instance->dbTypeList = array();
+$lang->instance->dbTypeList['share']     = '共享型';
+$lang->instance->dbTypeList['exclusive'] = '独占型';
 
 $lang->instance->statusList = array();
 $lang->instance->statusList['installationFail'] = '安装失败';
@@ -98,15 +134,28 @@ $lang->instance->notices['uninstallSuccess'] = '卸载成功';
 $lang->instance->notices['uninstallFail']    = '卸载失败';
 $lang->instance->notices['installSuccess']   = '安装成功';
 $lang->instance->notices['installFail']      = '安装失败';
-$lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
-$lang->instance->notices['confirmUpgrade']   = '确定要升级 %s 到 %s 吗?';
 $lang->instance->notices['upgradeSuccess']   = '升级成功';
 $lang->instance->notices['upgradeFail']      = '升级失败';
+$lang->instance->notices['backupSuccess']    = '备份成功';
+$lang->instance->notices['backupFail']       = '备份失败';
+$lang->instance->notices['restoreSuccess']   = '还原成功';
+$lang->instance->notices['restoreFail']      = '还原失败';
+$lang->instance->notices['deleteSuccess']    = '删除成功';
+$lang->instance->notices['deleteFail']       = '删除失败';
 $lang->instance->notices['starting']         = '启动中，请稍候...';
 $lang->instance->notices['stopping']         = '关闭中，请稍候...';
 $lang->instance->notices['installing']       = '安装中，请稍候...';
 $lang->instance->notices['uninstalling']     = '卸载中，请稍候...';
 $lang->instance->notices['upgrading']        = '升级中，请稍候...';
+$lang->instance->notices['backuping']        = '备份中，请稍候...';
+$lang->instance->notices['restoring']        = '还原中，请稍候...';
+$lang->instance->notices['deleting']         = '删除中，请稍候...';
+$lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
+$lang->instance->notices['confirmUpgrade']   = '确定要升级 %s 到 %s 吗?';
+$lang->instance->notices['confirmBackup']    = '确定要备份吗？';
+$lang->instance->notices['confirmRestore']   = '本操作将用备份的数据覆盖当前的数据，确定要还原吗？';
+$lang->instance->notices['confirmDelete']    = '确定要删除该备份数据吗？';
+
 
 $lang->instance->nameChangeTo    = ' %s 修改为 %s  。';
 $lang->instance->versionChangeTo = ' %s 升级为 %s  。';
@@ -123,3 +172,4 @@ $lang->instance->errors->domainExists         = '域名已被占用，请使用�
 $lang->instance->errors->wrongDomainCharacter = '域名只能是英文字母和数字';
 $lang->instance->errors->noAppInfo            = '获取应用数据失败，请稍候重试。';
 $lang->instance->errors->notEnoughMemory      = '集群资源不足！';
+$lang->instance->errors->restoreRunning       = '当前还原正在进行中，请等待当前还原完成。';

@@ -39,6 +39,15 @@
             </td>
             <td></td>
           </tr>
+          <tr class="hidden">
+            <th><?php echo $lang->instance->dbType;?></th>
+            <td class='w-300px'>
+              <div class='input-group'>
+                <?php echo html::radio('dbType', $lang->instance->dbTypeList, $dbType);?>
+              </div>
+            </td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
       <div class="text-center form-actions"><?php echo html::submitButton($lang->instance->install);?></div>

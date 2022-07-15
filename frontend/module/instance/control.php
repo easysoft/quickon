@@ -36,7 +36,7 @@ class instance extends control
      * @access public
      * @return void
      */
-    public function view($id, $recTotal = 0, $recPerPage = 20, $pageID = 1 )
+    public function view($id, $recTotal = 0, $recPerPage = 20, $pageID = 1, $tab ='baseinfo' )
     {
         $instance = $this->instance->getByID($id);
         if(empty($instance))return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
@@ -51,6 +51,14 @@ class instance extends control
         $this->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
 
+        $backups = array();
+        if($tab == 'backup')
+        {
+            $backups = $this->instance->getBackups($instance);
+            $this->instance->batchFreshBackupStatus($instance);
+            $this->instance->batchFreshRestoreStatus($instance);
+        }
+
         $this->view->position[] = $instance->appName;
 
         $this->view->title          = $instance->appName;
@@ -58,6 +66,8 @@ class instance extends control
         $this->view->logs           = $this->action->getList('instance', $id, 'date desc', $pager);
         $this->view->defaultAccount = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric = $instanceMetric;
+        $this->view->backups        = $backups;
+        $this->view->tab            = $tab;
         $this->view->pager          = $pager;
 
         $this->display();
@@ -137,7 +147,7 @@ class instance extends control
     }
 
     /**
-     * Install app by custom settings.
+     * (Not used at present.) Install app by custom settings.
      *
      * @param int $id
      * @access public
@@ -194,6 +204,7 @@ class instance extends control
             $customData = fixer::input('post')
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
+                ->trim('dbType')->setDefault('dbType', 'share')
                 ->get();
 
             if(isset($this->config->instance->keepDomainList[$customData->customDomain]) || $this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->errors->domainExists));
@@ -222,6 +233,7 @@ class instance extends control
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
         $this->view->thirdDomain = $this->instance->randThirdDomain();
+        $this->view->dbType      = $this->post->dbType ? $this->post->dbType : 'share';
 
         $this->display();
     }
@@ -326,5 +338,55 @@ class instance extends control
         unset($instance->spaceData);
 
         return print(json_encode(array('code' => 200, 'message' => '', 'data' => $instance)));
+    }
+
+    /**
+     * Backup instnacd by ajax.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function ajaxBackup($instanceID)
+    {
+        $instance = $this->instance->getByID($instanceID);
+        $success = $this->instance->backup($instance, $this->app->user);
+        if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'backupFail')));
+
+        return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'backupSuccess')));
+    }
+
+    /**
+     * Restore instance by ajax
+     *
+     * @param  int    $backupID
+     * @access public
+     * @return void
+     */
+    public function ajaxRestore($backupID)
+    {
+        $backup   = $this->dao->select('*')->from(TABLE_BACKUP)->where('id')->eq($backupID)->fetch();
+        $instance = $this->instance->getByID($backup->instance);
+        if($this->instance->restoreRunning($instance)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->restoreRunning));
+
+        $success = $this->instance->restore($backup, $this->app->user, $instance);
+        if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'restoreFail')));
+
+        return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'restoreSuccess')));
+    }
+
+    /**
+     * Delete backup by ajax.
+     *
+     * @param  int    $backupID
+     * @access public
+     * @return void
+     */
+    public function ajaxDeleteBackup($backupID)
+    {
+        $success = $this->instance->deleteBackup($backupID, $this->app->user);
+        if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'deleteFail')));
+
+        return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'deleteSuccess')));
     }
 }

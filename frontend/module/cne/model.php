@@ -426,6 +426,27 @@ class cneModel extends model
         commonModel::printProgressBar($rate, '', $tip);
     }
 
+   /**
+    ¦* Delete backup.
+    ¦*
+    ¦* @param  object $instance
+    ¦* @param  object $backup
+    ¦* @access public
+    ¦* @return mixed
+    ¦*/
+    public function deleteBackup($instance, $backup)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster     = '';
+        $apiParams->namespace   = $instance->spaceData->k8space;
+        $apiParams->name        = $instance->k8name;
+        $apiParams->backup_name = $backup->backupName;
+        $apiParams->channel     = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/backup/delete";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
     /**
      * Backup service in k8s cluster.
      *
@@ -512,7 +533,7 @@ class cneModel extends model
      * @param  object $instance
      * @param  object $restore
      * @access public
-     * @return mixed
+     * @return object
      */
     public function restoreStatus($instance, $restore)
     {
