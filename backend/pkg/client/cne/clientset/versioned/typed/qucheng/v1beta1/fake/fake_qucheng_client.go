@@ -18,10 +18,9 @@ limitations under the License.
 package fake
 
 import (
+	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
 	rest "k8s.io/client-go/rest"
 	testing "k8s.io/client-go/testing"
-
-	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
 )
 
 type FakeQuchengV1beta1 struct {
@@ -36,8 +35,20 @@ func (c *FakeQuchengV1beta1) Dbs(namespace string) v1beta1.DbInterface {
 	return &FakeDbs{c, namespace}
 }
 
+func (c *FakeQuchengV1beta1) DbBackups(namespace string) v1beta1.DbBackupInterface {
+	return &FakeDbBackups{c, namespace}
+}
+
+func (c *FakeQuchengV1beta1) DbRestores(namespace string) v1beta1.DbRestoreInterface {
+	return &FakeDbRestores{c, namespace}
+}
+
 func (c *FakeQuchengV1beta1) DbServices(namespace string) v1beta1.DbServiceInterface {
 	return &FakeDbServices{c, namespace}
+}
+
+func (c *FakeQuchengV1beta1) GlobalDBs(namespace string) v1beta1.GlobalDBInterface {
+	return &FakeGlobalDBs{c, namespace}
 }
 
 func (c *FakeQuchengV1beta1) Restores(namespace string) v1beta1.RestoreInterface {
