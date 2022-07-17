@@ -46,7 +46,7 @@ if($config->version != $config->installedVersion)
     <div>
       <div style='margin: 20px auto;'>
         <p>系统已更新，请登录后台运行升级指令:<code style='padding: 5px; border-radius: 4px; background-color: #ddd;'>q manage upgrade</code></p>
-        <p>The systemc has been updated, Please run command in console:<code style='padding: 5px; border-radius: 4px; background-color: #ddd;'>q manage upgrade</code></p>
+        <p>The system has been updated, Please run command in console:<code style='padding: 5px; border-radius: 4px; background-color: #ddd;'>q manage upgrade</code></p>
       <div>
     </div>
   </body>
