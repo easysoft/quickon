@@ -35,7 +35,7 @@ services:
       - ENABLE_BACKEND=true
 
   qucheng-dev:
-    image: hub.qucheng.com/platform/qucheng:${TAG}
+    image: hub.qucheng.com/platform/qucheng:${branch_name}
     container_name: qucheng-dev
     ports:
       - '4081:80'
@@ -55,8 +55,8 @@ services:
       - MYSQL_USER=root
       - MYSQL_PASSWORD=pass4Qucheng
       - MYSQL_DB=qucheng
-      - CNE_API_TOKEN=MhydA89vKNWuUd6vbTTWymWxwuPSt5V8
-      - CNE_API_HOST=http://10.43.113.108:8087
+      - CNE_API_TOKEN=gwaN4KynqNqQoPD7eN8s
+      - CNE_API_HOST=http://127.0.0.1:8087
       - CLOUD_API_HOST=https://api.qucheng.com
       - CLOUD_DEFAULT_CHANNEL=test
       - APP_DOMAIN=qc.yunop.com

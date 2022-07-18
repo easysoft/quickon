@@ -36,6 +36,10 @@ build-all: build-api build-qucheng # 构建所有镜像
 
 push-qucheng: ## push qucheng 镜像
 	docker push hub.qucheng.com/platform/qucheng:$(TAG)
+ifneq (,$(findstring sprint, $(TAG)))
+	docker tag hub.qucheng.com/platform/qucheng:$(TAG) hub.qucheng.com/platform/qucheng:$(branch_name)
+	docker push hub.qucheng.com/platform/qucheng:$(branch_name)
+endif
 
 push-api: ## push api镜像
 	docker push hub.qucheng.com/platform/cne-api:$(TAG)
@@ -49,7 +53,7 @@ api: build-api push-api ## api构建并推送
 run: ## 运行
 	docker-compose -f docker-compose.yml up -d mysql qucheng
 
-run-dev: ## 运行开发环境
+run-dev: pull ## 运行开发环境
 	chown 33:33 . -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
@@ -67,3 +71,6 @@ clean: stop ## 停服务
 
 logs: ## 查看运行日志
 	docker-compose -f docker-compose.yml logs
+
+pull: ## 拉取最新镜像
+	docker-compose -f docker-compose.yml pull
