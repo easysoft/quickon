@@ -30,9 +30,18 @@ build-custom:
   stage: build
   script:
     - make qucheng
+  after_script:
+    - echo "clean build"
+
+build-api:
+  stage: build
+  script:
     - make api
   after_script:
     - echo "clean build"
+  only:
+    - test
+    - master
 
 deploy:
   stage: deploy
