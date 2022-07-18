@@ -141,7 +141,7 @@ class backupModel extends model
         $backFileName = "{$backupDir}/{$fileName}.sql";
         if(!$nosafe) $backFileName .= '.php';
 
-        $result = $this->backSQL($backFileName);
+        $result = $this->backSQL($backFileName, 'restore');
         if($result->result and !$nosafe) $this->addFileHeader($backFileName);
 
         $allTables = $zdb->getAllTables();
@@ -509,7 +509,7 @@ class backupModel extends model
 
         if($action == 'add')
         {
-            $summary[$fileName]['account']    = $this->app->user->account;
+            $summary[$fileName]['account']    = $this->app->user->account == 'guest' ? '' : $this->app->user->account;
             $summary[$fileName]['backupType'] = $type;
         }
         else

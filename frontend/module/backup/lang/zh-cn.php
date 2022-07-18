@@ -48,8 +48,9 @@ $lang->backup->statusList['fail']    = '失败';
 $lang->backup->restoreProgress['doing'] = '进行中';
 $lang->backup->restoreProgress['done']  = '完成';
 
-$lang->backup->typeList['manual']    = '手动备份';
-$lang->backup->typeList['auto']      = '升级前自动备份';
+$lang->backup->typeList['manual']  = '手动备份';
+$lang->backup->typeList['upgrade'] = '升级前自动备份';
+$lang->backup->typeList['restore'] = '回滚前自动备份';
 
 $lang->backup->settingDir = '备份目录';
 $lang->backup->settingList['nofile'] = '不备份附件和代码';

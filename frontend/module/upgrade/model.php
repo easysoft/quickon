@@ -56,7 +56,7 @@ class upgradeModel extends model
     {
         $fileName   = date('YmdHis') . mt_rand(0, 9);
         $backupPath = $this->loadModel('backup')->getBackupPath();
-        $result     = $this->loadModel('backup')->backSQL("{$backupPath}{$fileName}.sql");
+        $result     = $this->loadModel('backup')->backSQL("{$backupPath}{$fileName}.sql", 'upgrade');
     }
 
     /**

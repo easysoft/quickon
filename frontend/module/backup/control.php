@@ -489,7 +489,7 @@ class backup extends control
         /* Backup database. */
         $fileName = date('YmdHis') . mt_rand(0, 9);
         $backFileName = "{$this->backupPath}{$fileName}.sql";
-        $result = $this->backup->backSQL($backFileName, 'auto');
+        $result = $this->backup->backSQL($backFileName, 'upgrade');
 
         $logExtra = array('result' => 'success', 'data' => array('oldVersion' => getenv('APP_VERSION'), 'newVersion' => $this->session->platformLatestVersion->version));
 
