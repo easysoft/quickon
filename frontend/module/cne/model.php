@@ -670,6 +670,35 @@ class cneModel extends model
         return $result;
     }
 
+
+    /**
+     * Get shared database List.
+     *
+     * @access public
+     * @return array
+     */
+    public function dbList()
+    {
+        $apiUrl = "/api/cne/component/gdb";
+        $result = $this->apiGet($apiUrl, array(), $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200) return array();
+
+        $dbList = array();
+        foreach($result->data as $database)
+        {
+            //$db = new stdclass;
+            //$db->name = $database->source->name;
+            //$db->host = $database->spec->service->name;
+            //$db->port = $database->spec->service->port;
+            //$db->user = $database->account->user->value;
+            //$db->password = $database->account->valueFrom->secretKeyRef->name;
+            //
+            $dbList[$database->source->name] = $database->source->name;
+        }
+
+        return $dbList;
+    }
+
     /**
      * Get method of API.
      *

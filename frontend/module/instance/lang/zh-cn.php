@@ -23,6 +23,9 @@ $lang->instance->installApp       = '安装应用';
 $lang->instance->cpuUsage         = 'CPU';
 $lang->instance->memUsage         = '内存';
 
+$lang->instance->cneDB = '平台数据库';
+$lang->instance->newDB = '新建数据库';
+
 $lang->instance->backup = new stdclass;
 $lang->instance->backup->date          = '日期';
 $lang->instance->backup->operator      = '备份人';
@@ -73,10 +76,6 @@ $lang->instance->sourceList['local'] = '本地市场';
 $lang->instance->channelList = array();
 $lang->instance->channelList['test']   = '测试版';
 $lang->instance->channelList['stable'] = '稳定版';
-
-$lang->instance->dbTypeList = array();
-$lang->instance->dbTypeList['share']     = '共享型';
-$lang->instance->dbTypeList['exclusive'] = '独占型';
 
 $lang->instance->statusList = array();
 $lang->instance->statusList['installationFail'] = '安装失败';

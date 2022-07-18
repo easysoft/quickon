@@ -608,6 +608,23 @@ class InstanceModel extends model
         $html .= html::commonButton($lang->instance->backup->restore, "backup-id='{$backup->id}'", "btn-restore btn btn-link");
         $html .= html::commonButton($lang->instance->backup->restore, "backup-id='{$backup->id}'", "btn-restore-delete btn btn-link");
 
+        echo $html;
+    }
+
+    /**
+     * Get database list in CNE system.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function dbList()
+    {
+        $dbList = $this->cne->dbList();
+        $k8names = array_keys($dbList);
+
+        $instances = $this->dao->select('name,k8name')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('k8name')->in($k8names)->fetchPairs('k8name', 'name');
+        $instances = array_merge(array('' => $this->lang->instance->newDB, 'qucheng-mysql' => $this->lang->instance->cneDB), $instances);
+        return $instances;
     }
 
     /**

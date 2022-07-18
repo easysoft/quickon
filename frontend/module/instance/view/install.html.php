@@ -39,11 +39,11 @@
             </td>
             <td></td>
           </tr>
-          <tr class="hidden">
+          <tr>
             <th><?php echo $lang->instance->dbType;?></th>
             <td>
               <div class='input-group'>
-                <?php echo html::radio('dbType', $lang->instance->dbTypeList, $dbType);?>
+                <?php echo html::select('dbName', $dbList, '', "class='form-control'");?>
               </div>
             </td>
             <td></td>

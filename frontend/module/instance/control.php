@@ -193,13 +193,14 @@ class instance extends control
         $cloudApp = $this->cne->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
+
         $customData = new stdclass;
         if(!empty($_POST))
         {
             $customData = fixer::input('post')
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
-                ->trim('dbType')->setDefault('dbType', 'share')
+                ->trim('dbName')->setDefault('dbName', '')
                 ->get();
 
             if(isset($this->config->instance->keepDomainList[$customData->customDomain]) || $this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->errors->domainExists));
@@ -228,7 +229,7 @@ class instance extends control
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
         $this->view->thirdDomain = $this->instance->randThirdDomain();
-        $this->view->dbType      = $this->post->dbType ? $this->post->dbType : 'share';
+        $this->view->dbList      = $this->instance->dbList();
 
         $this->display();
     }
