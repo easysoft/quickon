@@ -152,8 +152,9 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.restoring + '</div>',
             });
 
-            let id  = $(event.target).closest('button').attr('backup-id');
-            let url = createLink('instance', 'ajaxRestore', 'id=' + id, 'json');
+            let instanceID = $(event.target).closest('button').attr('instance-id');
+            let backupName = $(event.target).closest('button').attr('backup-name');
+            let url = createLink('instance', 'ajaxRestore', 'instanceID=' + instanceID + '&backupName=' + backupName, 'json');
             $.post(url).done(function(response)
             {
                 loadingDialog.modal('hide');
