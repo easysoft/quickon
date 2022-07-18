@@ -9,9 +9,10 @@ const (
 )
 
 const (
-	errGetAppFailed       = "get app failed"
-	errStartAppFailed     = "start app failed"
-	errStopAppFailed      = "stop app failed"
-	errPatchAppFailed     = "patch app settings failed"
-	errGetAppStatusFailed = "get app status failed"
+	errGetAppFailed        = "get app failed"
+	errStartAppFailed      = "start app failed"
+	errStopAppFailed       = "stop app failed"
+	errPatchAppFailed      = "patch app settings failed"
+	errGetAppStatusFailed  = "get app status failed"
+	errListDbServiceFailed = "list db service failed"
 )
