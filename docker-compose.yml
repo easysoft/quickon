@@ -42,7 +42,7 @@ services:
     volumes:
       - ./frontend:/apps/qucheng
       - ./docker/rootfs/apps/qucheng/config/my.php:/apps/qucheng/config/my.php
-      - /root/.kube/config:/root/.kube/config
+      - /root/.kube/config.outside:/root/.kube/config
       - /root/.config/helm/repositories.yaml:/root/.config/helm/repositories.yaml
     depends_on:
       - mysql
