@@ -1,3 +1,7 @@
+// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
+// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
+// license that can be found in the LICENSE file.
+
 package app
 
 import (
@@ -7,7 +11,8 @@ import (
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
-	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
+	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 )
 
