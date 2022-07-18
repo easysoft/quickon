@@ -222,7 +222,9 @@ class backup extends control
             if(!$result->result) return $this->send(array('result' => 'fail', 'message' => sprintf($this->lang->backup->error->restoreFile, $result->error)));
         }
 
-        return $this->send(array('result' => 'success', 'message' => $this->lang->backup->success->restore));
+        $this->backup->processRestoreSummary('', '', 'delete');
+
+        return print(js::reload('parent'));
     }
 
     /**
@@ -380,6 +382,8 @@ class backup extends control
     {
         session_write_close();
 
+        $progressMessage = new stdclass();
+
         $files = glob($this->backupPath . '/*.*');
         rsort($files);
 
@@ -392,24 +396,48 @@ class backup extends control
         if($sqlFileName)
         {
             $summary = $this->backup->getBackupSummary($sqlFileName);
-            $message = sprintf($this->lang->backup->progressSQL, $this->backup->processFileSize($summary['size']));
+            $progressMessage->sql = sprintf($this->lang->backup->progressSQL, $this->backup->processFileSize($summary['size']));
         }
 
         $attachFileName = $this->backup->getBackupFile($fileName, 'file');
         if($attachFileName)
         {
             $log = $this->backup->getBackupDirProgress($attachFileName);
-            $message = sprintf($this->lang->backup->progressAttach, zget($log, 'allCount', 0), zget($log, 'count', 0));
+            $progressMessage->sql  = $this->lang->backup->done;
+            $progressMessage->file = sprintf($this->lang->backup->progressAttach, zget($log, 'allCount', 0), zget($log, 'count', 0));
         }
 
         $codeFileName = $this->backup->getBackupFile($fileName, 'code');
         if($codeFileName)
         {
             $log = $this->backup->getBackupDirProgress($codeFileName);
-            $message = sprintf($this->lang->backup->progressCode, zget($log, 'allCount', 0), zget($log, 'count', 0));
+            $progressMessage->sql  = $this->lang->backup->done;
+            $progressMessage->file = $this->lang->backup->done;
+            $progressMessage->code = sprintf($this->lang->backup->progressCode, zget($log, 'allCount', 0), zget($log, 'count', 0));
         }
 
-        return print($message);
+        return print(json_encode($progressMessage));
+    }
+
+    /**
+     * Ajax get restore progress.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxGetRestoreProgress()
+    {
+        $summaryFile = $this->backup->getBackupPath() . 'restoreSummary';
+        $progress = new stdclass();
+
+        $summary = json_decode(file_get_contents($summaryFile), 'true');
+        $progress->sql  = !empty($summary['sql']) ?  $summary['sql'] : 'doing';
+        $progress->file = !empty($summary['file']) ? $summary['file'] : 'doing';
+
+        $progress->sql  = zget($this->lang->backup->restoreProgress, $progress->sql);
+        $progress->file = zget($this->lang->backup->restoreProgress, $progress->file);
+
+        return print(json_encode($progress));
     }
 
     /**

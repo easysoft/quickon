@@ -426,6 +426,128 @@ class cneModel extends model
         commonModel::printProgressBar($rate, '', $tip);
     }
 
+   /**
+    ¦* Delete backup.
+    ¦*
+    ¦* @param  object $instance
+    ¦* @param  object $backup
+    ¦* @access public
+    ¦* @return mixed
+    ¦*/
+    public function deleteBackup($instance, $backup)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster     = '';
+        $apiParams->namespace   = $instance->spaceData->k8space;
+        $apiParams->name        = $instance->k8name;
+        $apiParams->backup_name = $backup->backupName;
+        $apiParams->channel     = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/backup/delete";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Backup service in k8s cluster.
+     *
+     * @param  object $instance
+     * @access public
+     * @return object
+     */
+    public function backup($instance)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->name      = $instance->k8name;
+        $apiParams->channel   = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/backup";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Stauts of backup progress.
+     *
+     * @param  object $instance
+     * @param  object $backup
+     * @access public
+     * @return mixed
+     */
+    public function backupStatus($instance, $backup)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster     = '';
+        $apiParams->namespace   = $instance->spaceData->k8space;
+        $apiParams->name        = $instance->k8name;
+        $apiParams->backup_name = $backup->backupName;
+        $apiParams->channel     = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/backup/status";
+        return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Backup list.
+     *
+     * @param  object $instance
+     * @access public
+     * @return mixed
+     */
+    public function backupList($instance)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->name      = $instance->k8name;
+        $apiParams->channel   = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/backups";
+        return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Backup service in k8s cluster.
+     *
+     * @param  object $instance
+     * @param  object $backup
+     * @access public
+     * @return mixed
+     */
+    public function restore($instance, $backup)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster     = '';
+        $apiParams->namespace   = $instance->spaceData->k8space;
+        $apiParams->name        = $instance->k8name;
+        $apiParams->backup_name = $backup->backupName;
+        $apiParams->channel     = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/restore";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Stauts of restore progress.
+     *
+     * @param  object $instance
+     * @param  object $restore
+     * @access public
+     * @return object
+     */
+    public function restoreStatus($instance, $restore)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster      = '';
+        $apiParams->namespace    = $instance->spaceData->k8space;
+        $apiParams->name         = $instance->k8name;
+        $apiParams->restore_name = $restore->restoreName;
+        $apiParams->channel      = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/restore/status";
+        return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
     /**
      * Start an app instance.
      *

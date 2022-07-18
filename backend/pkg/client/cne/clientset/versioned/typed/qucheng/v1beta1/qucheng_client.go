@@ -20,17 +20,19 @@ package v1beta1
 import (
 	"net/http"
 
-	rest "k8s.io/client-go/rest"
-
 	v1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/scheme"
+	rest "k8s.io/client-go/rest"
 )
 
 type QuchengV1beta1Interface interface {
 	RESTClient() rest.Interface
 	BackupsGetter
 	DbsGetter
+	DbBackupsGetter
+	DbRestoresGetter
 	DbServicesGetter
+	GlobalDBsGetter
 	RestoresGetter
 }
 
@@ -47,8 +49,20 @@ func (c *QuchengV1beta1Client) Dbs(namespace string) DbInterface {
 	return newDbs(c, namespace)
 }
 
+func (c *QuchengV1beta1Client) DbBackups(namespace string) DbBackupInterface {
+	return newDbBackups(c, namespace)
+}
+
+func (c *QuchengV1beta1Client) DbRestores(namespace string) DbRestoreInterface {
+	return newDbRestores(c, namespace)
+}
+
 func (c *QuchengV1beta1Client) DbServices(namespace string) DbServiceInterface {
 	return newDbServices(c, namespace)
+}
+
+func (c *QuchengV1beta1Client) GlobalDBs(namespace string) GlobalDBInterface {
+	return newGlobalDBs(c, namespace)
 }
 
 func (c *QuchengV1beta1Client) Restores(namespace string) RestoreInterface {

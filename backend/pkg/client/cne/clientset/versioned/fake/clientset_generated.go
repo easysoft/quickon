@@ -18,15 +18,14 @@ limitations under the License.
 package fake
 
 import (
+	clientset "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
+	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
+	fakequchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1/fake"
 	"k8s.io/apimachinery/pkg/runtime"
 	"k8s.io/apimachinery/pkg/watch"
 	"k8s.io/client-go/discovery"
 	fakediscovery "k8s.io/client-go/discovery/fake"
 	"k8s.io/client-go/testing"
-
-	clientset "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
-	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1"
-	fakequchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned/typed/qucheng/v1beta1/fake"
 )
 
 // NewSimpleClientset returns a clientset that will respond with the provided objects.

@@ -27,8 +27,14 @@ type Interface interface {
 	Backups() BackupInformer
 	// Dbs returns a DbInformer.
 	Dbs() DbInformer
+	// DbBackups returns a DbBackupInformer.
+	DbBackups() DbBackupInformer
+	// DbRestores returns a DbRestoreInformer.
+	DbRestores() DbRestoreInformer
 	// DbServices returns a DbServiceInformer.
 	DbServices() DbServiceInformer
+	// GlobalDBs returns a GlobalDBInformer.
+	GlobalDBs() GlobalDBInformer
 	// Restores returns a RestoreInformer.
 	Restores() RestoreInformer
 }
@@ -54,9 +60,24 @@ func (v *version) Dbs() DbInformer {
 	return &dbInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
+// DbBackups returns a DbBackupInformer.
+func (v *version) DbBackups() DbBackupInformer {
+	return &dbBackupInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// DbRestores returns a DbRestoreInformer.
+func (v *version) DbRestores() DbRestoreInformer {
+	return &dbRestoreInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
 // DbServices returns a DbServiceInformer.
 func (v *version) DbServices() DbServiceInformer {
 	return &dbServiceInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
+}
+
+// GlobalDBs returns a GlobalDBInformer.
+func (v *version) GlobalDBs() GlobalDBInformer {
+	return &globalDBInformer{factory: v.factory, namespace: v.namespace, tweakListOptions: v.tweakListOptions}
 }
 
 // Restores returns a RestoreInformer.

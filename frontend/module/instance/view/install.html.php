@@ -30,11 +30,20 @@
             <td></td>
           </tr>
           <tr>
-            <th class='w-150px'><?php echo $lang->instance->domain;?></th>
+            <th><?php echo $lang->instance->domain;?></th>
             <td class='w-300px'>
               <div class='input-group'>
                 <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='20'");?>
                 <span class='input-group-addon'><?php echo $config->CNE->app->domain;?></span>
+              </div>
+            </td>
+            <td></td>
+          </tr>
+          <tr class="hidden">
+            <th><?php echo $lang->instance->dbType;?></th>
+            <td class='w-300px'>
+              <div class='input-group'>
+                <?php echo html::radio('dbType', $lang->instance->dbTypeList, $dbType);?>
               </div>
             </td>
             <td></td>

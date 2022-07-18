@@ -28,20 +28,31 @@ const (
 
 // DbServiceSpec defines the desired state of DbService
 type DbServiceSpec struct {
-	Type    DbType  `json:"type"`
-	Service Service `json:"service,omitempty"`
-	Account Account `json:"account"`
+	Type    DbType  `json:"type" yaml:"type"`
+	Service Service `json:"service" yaml:"service"`
+	Account Account `json:"account,omitempty" yaml:"account,omitempty"`
 }
 
 // DbServiceStatus defines the observed state of DbService
 type DbServiceStatus struct {
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "make" to regenerate code after modifying this file
+	Address string `json:"address,omitempty" yaml:"address,omitempty"`
+	Network bool   `json:"network" yaml:"network"`
+	Auth    bool   `json:"auth" yaml:"auth"`
+	Ready   bool   `json:"ready" yaml:"ready"`
+	ChildDB int64  `json:"child,omitempty" yaml:"child,omitempty"`
 }
 
 //+genclient
 //+kubebuilder:object:root=true
 //+kubebuilder:subresource:status
+//+kubebuilder:printcolumn:name="Network",type=boolean,JSONPath=`.status.network`
+//+kubebuilder:printcolumn:name="Auth",type=boolean,JSONPath=`.status.auth`
+//+kubebuilder:printcolumn:name="Ready",type=boolean,JSONPath=`.status.ready`
+//+kubebuilder:printcolumn:name="Address",type=string,JSONPath=`.status.address`
+//+kubebuilder:printcolumn:name="Age",type="date",JSONPath=".metadata.creationTimestamp"
+//+kubebuilder:resource:path=dbservices,shortName=dbsvc
 
 // DbService is the Schema for the dbservices API
 type DbService struct {
