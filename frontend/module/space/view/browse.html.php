@@ -15,27 +15,32 @@
 <?php js::set('instanceIdList',   array_column($instances, 'id'));?>
 <div id='mainMenu' class='clearfix'>
   <form id="spaceSearchForm" method="post" class="not-watch load-indicator">
-    <div class="hidden btn-toolbar pull-left">
-        <div class="input-control search-box has-icon-left has-icon-right search-example" id="searchboxExample">
-          <?php echo html::input('search', '', "type='search' placeholder='{$lang->space->searchInstance}' autocomplete='off' class='form-control search-input text-left'");?>
-        </div>
-        <span class="input-group-btn">
-          <?php echo html::submitButton('<i class="icon icon-search"></i>', 'type="submit"', 'btn btn-secondary');?>
-        </span>
-    </div>
+    <div class="btn-toolbar pull-left">
+      <?php foreach($lang->space->featureBar as $key => $label):?>
+      <?php $active = $browseType == $key ? 'btn-active-text' : '';?>
+      <?php $label = "<span class='text'>$label</span>";?>
+      <?php if($browseType == $key) $label .= " <span class='label label-light label-badge'>{$pager->recTotal}</span>";?>
+      <?php echo html::a(inlink('browse', "spaceID=&browseType=$key"), $label, '', "class='btn btn-link $active'");?>
+      <?php endforeach;?>
+      <div class="input-control search-box has-icon-left has-icon-right search-example" id="searchboxExample">
+        <?php echo html::input('search', $searchName, "type='search' placeholder='{$lang->space->searchInstance}' autocomplete='off' class='form-control search-input text-left'");?>
+      </div>
+      <span class="input-group-btn">
+        <?php echo html::submitButton('<i class="icon icon-search"></i>', 'type="submit"', 'btn btn-secondary');?>
+      </span>
+      </div>
     <div class="btn-toolbar pull-right">
       <div class="btn-group">
-      <?php $listUrl= $this->inLink('browse', "spaceID={$currentSpace->id}&browseType=bylist"); ?>
-      <?php $cardUrl= $this->inLink('browse', "spaceID={$currentSpace->id}&browseType=bycard"); ?>
-      <?php echo html::a($listUrl, "<i class='icon-list'></i>", '', "class='btn btn-icon " . ($browseType != 'bycard' ? 'text-primary':'') . "' title='{$lang->space->byList}'");?>
-      <?php echo html::a($cardUrl, "<i class='icon-cards-view'></i>", '', "class='btn btn-icon " . ($browseType == 'bycard' ? 'text-primary':'') . "' title='{$lang->space->byCard}'");?>
+      <?php $url= $this->inLink('browse', "spaceID={$currentSpace->id}"); ?>
+      <?php echo html::a($url, "<i class='icon-list'></i>", '', "class='btn btn-icon switchButton " . ($spaceType != 'bylist' ? 'text-primary' : '') . "' title='{$lang->space->byList}' data-type='bylist'");?>
+      <?php echo html::a($url, "<i class='icon-cards-view'></i>", '', "class='btn btn-icon switchButton " . ($spaceType == 'bylist' ? 'text-primary' : '') . "' title='{$lang->space->byCard}' data-type='bycard'");?>
       </div>
     </div>
   </form>
 </div>
 <div id='mainContent' class='main-row'>
 <?php
-if($browseType == 'bycard')
+if($spaceType == 'bycard')
 {
     include 'browsebycard.html.php';
 }

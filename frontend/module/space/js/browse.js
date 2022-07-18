@@ -1,5 +1,10 @@
 $(function()
 {
+    $(".switchButton").on('click', function()
+    {
+        var spaceType = $(this).attr('data-type');
+        $.cookie('spaceType', spaceType, {expires:config.cookieLife, path:config.webRoot});
+    });
     $('.btn-uninstall').on('click', function(event)
     {
         bootbox.confirm(instanceNotices.confirmUninstall, function(result)

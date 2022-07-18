@@ -12,3 +12,4 @@
 #cardsContainer .instance-footer {height: 50px; padding: 14px; font-size: 13px; font-weight: 600;}
 #cardsContainer .instance-footer span {display: inline-block;}
 .input-group-btn {float: left;}
+#spaceSearchForm > div.btn-toolbar.pull-left > a {padding: 3px;}
