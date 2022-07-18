@@ -35,14 +35,14 @@ services:
       - ENABLE_BACKEND=true
 
   qucheng-dev:
-    image: hub.qucheng.com/platform/qucheng:${branch_name}
+    image: hub.qucheng.com/platform/qucheng:${TAG}
     container_name: qucheng-dev
     ports:
       - '4081:80'
     volumes:
       - ./frontend:/apps/qucheng
       - ./docker/rootfs/apps/qucheng/config/my.php:/apps/qucheng/config/my.php
-      - /root/.kube/config:/root/.kube/config
+      - /root/.kube/config.outside:/root/.kube/config
       - /root/.config/helm/repositories.yaml:/root/.config/helm/repositories.yaml
     depends_on:
       - mysql
