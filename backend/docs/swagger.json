@@ -49,7 +49,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AppCreateModel"
+                            "$ref": "#/definitions/model.AppCreateOrUpdateModel"
                         }
                     }
                 ],
@@ -106,7 +106,7 @@
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.AppCreateModel"
+                            "$ref": "#/definitions/model.AppCreateOrUpdateModel"
                         }
                     }
                 ],
@@ -344,6 +344,54 @@
                         "schema": {
                             "$ref": "#/definitions/model.AppModel"
                         }
+                    }
+                ],
+                "responses": {
+                    "201": {
+                        "description": "Created",
+                        "schema": {
+                            "$ref": "#/definitions/router.response2xx"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/router.response5xx"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/cne/component/gdb": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "全局数据库列表",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "全局数据库列表"
+                ],
+                "summary": "全局数据库列表",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "jwtToken",
+                        "name": "Authorization",
+                        "in": "header"
+                    },
+                    {
+                        "type": "string",
+                        "description": "staticToken",
+                        "name": "X-Auth-Token",
+                        "in": "header"
                     }
                 ],
                 "responses": {
@@ -651,7 +699,7 @@
         }
     },
     "definitions": {
-        "model.AppCreateModel": {
+        "model.AppCreateOrUpdateModel": {
             "type": "object",
             "required": [
                 "chart",
@@ -659,6 +707,9 @@
                 "namespace"
             ],
             "properties": {
+                "channel": {
+                    "type": "string"
+                },
                 "chart": {
                     "type": "string"
                 },
@@ -676,6 +727,9 @@
                     "items": {
                         "$ref": "#/definitions/model.stringSetting"
                     }
+                },
+                "version": {
+                    "type": "string"
                 }
             }
         },
@@ -687,6 +741,9 @@
                 "namespace"
             ],
             "properties": {
+                "channel": {
+                    "type": "string"
+                },
                 "chart": {
                     "type": "string"
                 },
@@ -723,7 +780,6 @@
             "type": "object",
             "required": [
                 "name",
-                "namespace",
                 "type"
             ],
             "properties": {
