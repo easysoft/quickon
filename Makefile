@@ -35,10 +35,11 @@ build-api: ## 构建api程序
 build-all: build-api build-qucheng # 构建所有镜像
 
 push-qucheng: ## push qucheng 镜像
-	docker push hub.qucheng.com/platform/qucheng:$(TAG)
 ifneq (,$(findstring sprint, $(TAG)))
 	docker tag hub.qucheng.com/platform/qucheng:$(TAG) hub.qucheng.com/platform/qucheng:$(branch_name)
 	docker push hub.qucheng.com/platform/qucheng:$(branch_name)
+else
+	docker push hub.qucheng.com/platform/qucheng:$(TAG)
 endif
 
 push-api: ## push api镜像
