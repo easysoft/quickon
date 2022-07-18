@@ -51,13 +51,8 @@ class instance extends control
         $this->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
 
-        $backups = array();
-        if($tab == 'backup')
-        {
-            $backups = $this->instance->getBackups($instance);
-            $this->instance->batchFreshBackupStatus($instance);
-            $this->instance->batchFreshRestoreStatus($instance);
-        }
+        $backupList = array();
+        if($tab == 'backup') $backupList = $this->instance->backupList($instance);
 
         $this->view->position[] = $instance->appName;
 
@@ -66,7 +61,7 @@ class instance extends control
         $this->view->logs           = $this->action->getList('instance', $id, 'date desc', $pager);
         $this->view->defaultAccount = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric = $instanceMetric;
-        $this->view->backups        = $backups;
+        $this->view->backupList     = $backupList;
         $this->view->tab            = $tab;
         $this->view->pager          = $pager;
 
@@ -359,17 +354,16 @@ class instance extends control
     /**
      * Restore instance by ajax
      *
-     * @param  int    $backupID
+     * @param  int    $instanceID
+     * @param  string $backupName
      * @access public
      * @return void
      */
-    public function ajaxRestore($backupID)
+    public function ajaxRestore($instanceID, $backupName)
     {
-        $backup   = $this->dao->select('*')->from(TABLE_BACKUP)->where('id')->eq($backupID)->fetch();
-        $instance = $this->instance->getByID($backup->instance);
-        if($this->instance->restoreRunning($instance)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->restoreRunning));
+        $instance = $this->instance->getByID($instanceID);
 
-        $success = $this->instance->restore($backup, $this->app->user, $instance);
+        $success = $this->instance->restore($instance, $this->app->user, $backupName);
         if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'restoreFail')));
 
         return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'restoreSuccess')));
