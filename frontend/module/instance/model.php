@@ -237,14 +237,15 @@ class InstanceModel extends model
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
-        $appData            = new stdclass;
-        $appData->cluser    = '';
-        $appData->namespace = $space->k8space;
-        $appData->name      = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
-        $appData->chart     = $app->chart;
-        $appData->settings  = $settings;
+        $apiParams = new stdclass;
+        $apiParams->userame = $this->app->user->account;
+        $apiParams->cluser       = '';
+        $apiParams->namespace    = $space->k8space;
+        $apiParams->name         = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
+        $apiParams->chart        = $app->chart;
+        $apiParams->settings     = $settings;
 
-        $result = $this->cne->installApp($appData);
+        $result = $this->cne->installApp($apiParams);
         if($result->code != 200) return false;
 
         $instanceData = new stdclass;
@@ -261,7 +262,7 @@ class InstanceModel extends model
         $instanceData->appVersion   = $app->app_version;
         $instanceData->version      = $app->version;
         $instanceData->space        = $space->id;
-        $instanceData->k8name       = $appData->name;
+        $instanceData->k8name       = $apiParams->name;
         $instanceData->status       = 'creating';
         $instanceData->createdBy    = $this->app->user->account;
         $instanceData->createdAt    = date('Y-m-d H:i:s');
@@ -563,48 +564,27 @@ class InstanceModel extends model
      */
     public function backup($instance, $user)
     {
-        $result = $this->cne->backup($instance);
+        $result = $this->cne->backup($instance, $user->account);
         if($result->code != 200) return false;
 
-        $backup = new stdclass;
-        $backup->instance      = $instance->id;
-        $backup->backupName    = $result->data->backup_name;
-        $backup->backupAt      = date('Y-m-d H:i:s', $result->data->create_time);
-        $backup->backupStatus  = 'Pending';
-        $backup->backupAccount = $user->account;
-        $backup->createdAt     = $backup->backupAt;
-
-        $this->dao->insert(TABLE_BACKUP)->data($backup)->exec();
-
-        return $this->dao->lastInsertID();
+        return true;
     }
 
     /**
      * Restore instance.
      *
-     * @param  object $backup
-     * @param  object $user
      * @param  object $instance
+     * @param  object $user
+     * @param  string $backupName
      * @access public
      * @return bool
      */
-    public function restore($backup, $user, $instance)
+    public function restore($instance, $user, $backupName)
     {
-        $result = $this->cne->restore($instance, $backup);
+        $result = $this->cne->restore($instance, $backupName, $user->account);
         if($result->code != 200) return false;
 
-        $restoreLogs   = (array)json_decode($backup->restoreLogs, true);
-        $restoreLogs[] = $result->data;
-
-        $restore = new stdclass;
-        $restore->instance       = $instance->id;
-        $restore->restoreName    = $result->data->restore_name;
-        $restore->restoreAt      = date('Y-m-d H:i:s', $result->data->create_time);
-        $restore->restoreStatus  = 'Pending';
-        $restore->restoreLogs    = json_encode($restoreLogs);
-        $restore->restoreAccount = $user->account;
-
-        return $this->dao->update(TABLE_BACKUP)->data($restore)->where('id')->eq($backup->id)->exec();
+        return true;
     }
 
     /**
@@ -614,9 +594,12 @@ class InstanceModel extends model
      * @access public
      * @return array
      */
-    public function getBackups($instance)
+    public function backupList($instance)
     {
-        return $this->dao->select('*')->from(TABLE_BACKUP)->where('deleted')->eq(0)->andWhere('instance')->eq($instance->id)->orderBy('id desc')->fetchAll();
+        $result = $this->cne->backupList($instance);
+        if($result->code == 200 && !empty($result->data) ) return $result->data;
+
+        return array();
     }
 
     public function printBackupAction($backup)

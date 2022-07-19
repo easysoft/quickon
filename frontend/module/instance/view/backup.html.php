@@ -2,6 +2,11 @@
   <div class='btn-toolbar pull-right'>
   <?php echo html::commonButton($lang->instance->backup->create, "instance-id='{$instance->id}'", "btn-backup btn btn-primary");?>
   </div>
+  <?php if(empty($backupList)):?>
+    <div class="table-empty-tip">
+      <p><?php echo $lang->instance->errors->noBackup . html::commonButton($lang->instance->backup->create, "instance-id='{$instance->id}'", "btn-backup btn btn-primary");?></p>
+    </div>
+  <?php else:?>
   <table class="table">
     <thead>
       <tr>
@@ -13,18 +18,19 @@
       </tr>
     </thead>
     <tbody>
-    <?php foreach($backups as $backup):?>
+    <?php foreach($backupList as $backup):?>
     <tr>
-      <td><?php echo $backup->backupAt;?></td>
-      <td><?php echo $backup->backupAccount;?></td>
-      <td><?php echo zget($lang->instance->backup->statusList, $backup->backupStatus);?></td>
-      <td><?php echo zget($lang->instance->restore->statusList, $backup->restoreStatus);?></td>
+      <td><?php echo date('Y-m-d H:i:s', $backup->create_time);?></td>
+      <td><?php //echo $backup->username;?></td>
+      <td><?php echo zget($lang->instance->backup->statusList, strtolower($backup->status));?></td>
+      <td></td>
       <td>
-        <?php echo html::commonButton($lang->instance->backup->restore, "backup-id='{$backup->id}'", "btn-restore btn btn-link");?>
-        <?php echo html::commonButton($lang->instance->backup->delete,  "backup-id='{$backup->id}'", "btn-delete-backup btn btn-link");?>
+        <?php echo html::commonButton($lang->instance->backup->restore, "instance-id='{$instance->id}' backup-name='{$backup->name}'", "btn-restore btn btn-link");?>
+        <?php //echo html::commonButton($lang->instance->backup->delete,  "backup-id='{$backup->id}'", "btn-delete-backup btn btn-link");?>
       </td>
     </tr>
     <?php endforeach;?>
     </tbody>
   </table>
+  <?php endif;?>
 </div>

@@ -427,7 +427,7 @@ class cneModel extends model
     }
 
    /**
-    ¦* Delete backup.
+    ¦* (Not availiable at present) Delete backup.
     ¦*
     ¦* @param  object $instance
     ¦* @param  object $backup
@@ -454,9 +454,10 @@ class cneModel extends model
      * @access public
      * @return object
      */
-    public function backup($instance)
+    public function backup($instance, $account)
     {
         $apiParams = new stdclass;
+        $apiParams->username  = $account;
         $apiParams->cluster   = '';
         $apiParams->namespace = $instance->spaceData->k8space;
         $apiParams->name      = $instance->k8name;
@@ -510,17 +511,19 @@ class cneModel extends model
      * Backup service in k8s cluster.
      *
      * @param  object $instance
-     * @param  object $backup
+     * @param  object $backupName
+     * @param  string $account
      * @access public
      * @return mixed
      */
-    public function restore($instance, $backup)
+    public function restore($instance, $backupName, $account)
     {
         $apiParams = new stdclass;
+        $apiParams->username    = $account;
         $apiParams->cluster     = '';
         $apiParams->namespace   = $instance->spaceData->k8space;
         $apiParams->name        = $instance->k8name;
-        $apiParams->backup_name = $backup->backupName;
+        $apiParams->backup_name = $backupName;
         $apiParams->channel     = $this->config->CNE->api->channel;
 
         $apiUrl = "/api/cne/app/restore";
@@ -579,18 +582,18 @@ class cneModel extends model
     /**
      * Install app.
      *
-     * @param  object $appData
+     * @param  object $apiParams
      * @access public
      * @return object
      */
-    public function installApp($appData)
+    public function installApp($apiParams)
     {
-        $appData->settings = $this->trasformSettings($appData->settings);
+        $apiParams->settings = $this->trasformSettings($apiParams->settings);
 
-        $appData->channel = $this->config->CNE->api->channel;
+        $apiParams->channel = $this->config->CNE->api->channel;
 
         $apiUrl = "/api/cne/app/install";
-        return $this->apiPost($apiUrl, $appData, $this->config->CNE->api->headers);
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
     }
 
     /**
@@ -758,7 +761,7 @@ class cneModel extends model
     {
         $error = new stdclass;
         $error->code    = 600;
-        $error->message = $message ? $message : $this->lang->CNE->serverError;
+        $error->message = $this->lang->CNE->serverError;
         return $error;
     }
 

@@ -48,7 +48,7 @@
         </td>
       </tr>
       <?php endif;?>
-      <tr><td><?php echo html::submitButton('', '', 'btn btn-primary');?></td></tr>
+      <tr><td class="text-center"><?php echo html::submitButton('', '', 'btn btn-primary btn-wide');?></td></tr>
     </table>
   </form>
   <?php endif;?>

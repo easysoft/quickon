@@ -8,6 +8,7 @@ import (
 	"context"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/component"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/middleware"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/namespace"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/node"
@@ -27,4 +28,8 @@ func Namespaces(ctx context.Context, clusterName string) *namespace.Manager {
 
 func Middlewares(ctx context.Context) *middleware.Manager {
 	return middleware.New(ctx)
+}
+
+func Components(ctx context.Context, clusterName string) *component.Manager {
+	return component.NewComponents(ctx, "primary")
 }

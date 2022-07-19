@@ -73,6 +73,8 @@ func Config(r *gin.Engine) {
 		api.GET("/app/restore")
 		api.GET("/app/restore/status", AppRestoreStatus)
 
+		api.GET("/component/gdb", GDBList)
+
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)

@@ -22,7 +22,7 @@
         <tbody>
           <tr>
             <th class='w-70px'><?php echo $lang->instance->name;?></th>
-            <td class='w-200px'>
+            <td class='w-230px'>
               <div class='input-group'>
                 <?php echo html::input('customName', $cloudApp->alias, "class='form-control' maxlength='20'");?>
               </div>
@@ -31,7 +31,7 @@
           </tr>
           <tr>
             <th><?php echo $lang->instance->domain;?></th>
-            <td class='w-300px'>
+            <td>
               <div class='input-group'>
                 <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='20'");?>
                 <span class='input-group-addon'><?php echo $config->CNE->app->domain;?></span>
@@ -41,7 +41,7 @@
           </tr>
           <tr class="hidden">
             <th><?php echo $lang->instance->dbType;?></th>
-            <td class='w-300px'>
+            <td>
               <div class='input-group'>
                 <?php echo html::radio('dbType', $lang->instance->dbTypeList, $dbType);?>
               </div>

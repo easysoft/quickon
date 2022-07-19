@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"time"
 
-	quchengv1beta1 "gitlab.zcorp.cc/pangu/cne-api/apis/qucheng/v1beta1"
-	quchenginf "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/informers/externalversions"
-	quchenglister "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/listers/qucheng/v1beta1"
+	quchenginf "github.com/easysoft/quikon-api/client/informers/externalversions"
+	quchenglister "github.com/easysoft/quikon-api/client/listers/qucheng/v1beta1"
+	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 
 	metaappsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/api/core/v1"
@@ -26,7 +26,7 @@ import (
 	"k8s.io/client-go/tools/cache"
 	"k8s.io/klog/v2"
 
-	quchengclientset "gitlab.zcorp.cc/pangu/cne-api/pkg/client/cne/clientset/versioned"
+	quchengclientset "github.com/easysoft/quikon-api/client/clientset/versioned"
 )
 
 const (
@@ -46,6 +46,9 @@ type Informer struct {
 
 	Backups  cache.SharedIndexInformer
 	Restores cache.SharedIndexInformer
+
+	DbService cache.SharedIndexInformer
+	Db        cache.SharedIndexInformer
 }
 
 func (i *Informer) Run(stopCh chan struct{}) {
@@ -60,6 +63,8 @@ func (i *Informer) Run(stopCh chan struct{}) {
 	go i.StatefulSets.Run(stopCh)
 	go i.Backups.Run(stopCh)
 	go i.Restores.Run(stopCh)
+	go i.DbService.Run(stopCh)
+	go i.Db.Run(stopCh)
 
 	if !cache.WaitForCacheSync(stopCh,
 		i.Nodes.HasSynced,
@@ -73,6 +78,8 @@ func (i *Informer) Run(stopCh chan struct{}) {
 		i.StatefulSets.HasSynced,
 		i.Backups.HasSynced,
 		i.Restores.HasSynced,
+		i.DbService.HasSynced,
+		i.Db.HasSynced,
 	) {
 		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
 	}
@@ -89,8 +96,10 @@ type Lister struct {
 	Deployments  appsv1.DeploymentLister
 	StatefulSets appsv1.StatefulSetLister
 
-	Backups  quchenglister.BackupLister
-	Restores quchenglister.RestoreLister
+	Backups   quchenglister.BackupLister
+	Restores  quchenglister.RestoreLister
+	DbService quchenglister.DbServiceLister
+	Db        quchenglister.DbLister
 }
 
 type Clients struct {
@@ -156,6 +165,12 @@ func NewStorer(config rest.Config) *Storer {
 
 		s.informers.Restores = factory.Qucheng().V1beta1().Restores().Informer()
 		s.listers.Restores = factory.Qucheng().V1beta1().Restores().Lister()
+
+		s.informers.DbService = factory.Qucheng().V1beta1().DbServices().Informer()
+		s.listers.DbService = factory.Qucheng().V1beta1().DbServices().Lister()
+
+		s.informers.Db = factory.Qucheng().V1beta1().Dbs().Informer()
+		s.listers.Db = factory.Qucheng().V1beta1().Dbs().Lister()
 	}
 
 	return s
@@ -251,4 +266,20 @@ func (s *Storer) GetRestore(namespace string, name string) (*quchengv1beta1.Rest
 
 func (s *Storer) ListRestores(namespace string, selector labels.Selector) ([]*quchengv1beta1.Restore, error) {
 	return s.listers.Restores.Restores(namespace).List(selector)
+}
+
+func (s *Storer) GetDbService(namespace string, name string) (*quchengv1beta1.DbService, error) {
+	return s.listers.DbService.DbServices(namespace).Get(name)
+}
+
+func (s *Storer) ListDbService(namespace string, selector labels.Selector) ([]*quchengv1beta1.DbService, error) {
+	return s.listers.DbService.DbServices(namespace).List(selector)
+}
+
+func (s *Storer) GetDb(namespace string, name string) (*quchengv1beta1.Db, error) {
+	return s.listers.Db.Dbs(namespace).Get(name)
+}
+
+func (s *Storer) ListDb(namespace string, selector labels.Selector) ([]*quchengv1beta1.Db, error) {
+	return s.listers.Db.Dbs(namespace).List(selector)
 }
