@@ -1,6 +1,6 @@
 date_time := $(shell date +%Y%m%d)
 ci_tag := $(citag)
-export host_name=$(shell hostname)
+export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
 export commit_id := $(shell git rev-parse --short HEAD)
 export branch_name := $(shell git branch -r --contains | head -1 | sed -E -e "s%(HEAD ->|origin|upstream)/?%%g" | xargs | tr '/' '-' )
 export _branch_prefix := $(shell echo $(branch_name) | sed 's/-.*//')
@@ -74,4 +74,4 @@ pull: ## 拉取最新镜像
 	docker-compose -f docker-compose.yml pull
 
 kubeconfig:
-	sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(host_name)\2%" ~/.kube/config > /root/.kube/config.outside
+	sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.outside
