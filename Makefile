@@ -51,7 +51,7 @@ api: build-api push-api ## api构建并推送
 run: ## 运行
 	docker-compose -f docker-compose.yml up -d mysql qucheng
 
-run-dev: pull kubeconfig ## 运行开发环境
+run-dev: pull mountFiles ## 运行开发环境
 	chown 33:33 . -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
@@ -73,5 +73,7 @@ logs: ## 查看运行日志
 pull: ## 拉取最新镜像
 	docker-compose -f docker-compose.yml pull
 
-kubeconfig:
-	sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.outside
+mountFiles:
+	mkdir -p /root/.config/helm
+	kubectl get cm -n cne-system qucheng-files -o jsonpath='{.data.repositories\.yaml}' > /root/.config/helm/repositories.yaml.dev
+	sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.dev
