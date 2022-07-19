@@ -49,6 +49,7 @@ services:
     environment:
       - RUN_MODE="dev"
       - DEBUG=true
+      - PHP_DEBUG=2
       - PAUSE=0
       - MYSQL_HOST=mysql
       - MYSQL_PORT=3306
