@@ -318,13 +318,15 @@ class commonModel extends model
                 echo "<li class='divider'></li>";
             }
 
-            echo "<li class='dropdown-submenu top'>";
-            echo "<a href='javascript:;'>" . "<i class='icon icon-theme'></i> " . $lang->theme . "</a><ul class='dropdown-menu pull-left'>";
-            foreach($app->lang->themes as $key => $value)
-            {
-                echo "<li " . ($app->clientTheme == $key ? "class='selected'" : '') . "><a href='javascript:changeTheme(\"$key\");' data-value='" . $key . "'>" . $value . "</a></li>";
-            }
-            echo '</ul></li>';
+            echo '<li>' . html::a($app->config->githubUrl, "GitHub", '_blak', "class=''") . '</li>';
+
+            //echo "<li class='dropdown-submenu top'>";
+            //echo "<a href='javascript:;'>" . "<i class='icon icon-theme'></i> " . $lang->theme . "</a><ul class='dropdown-menu pull-left'>";
+            //foreach($app->lang->themes as $key => $value)
+            //{
+            //    echo "<li " . ($app->clientTheme == $key ? "class='selected'" : '') . "><a href='javascript:changeTheme(\"$key\");' data-value='" . $key . "'>" . $value . "</a></li>";
+            //}
+            //echo '</ul></li>';
 
             //echo "<li class='dropdown-submenu top'>";
             //echo "<a href='javascript:;'>" . "<i class='icon icon-lang'></i> " . $lang->lang . "</a><ul class='dropdown-menu pull-left'>";
