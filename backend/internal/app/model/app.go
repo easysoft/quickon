@@ -48,6 +48,16 @@ type AppSchemaModel struct {
 	Category string `json:"category" form:"category" binding:"required"`
 }
 
+type AppWithUserModel struct {
+	AppModel
+	UserName string `form:"username" json:"username"`
+}
+
+type AppRestoreCreateModel struct {
+	AppWithUserModel
+	BackupName string `json:"backup_name" form:"backup_name" binding:"required"`
+}
+
 type AppBackupModel struct {
 	AppModel
 	BackupName string `json:"backup_name" form:"backup_name" binding:"required"`

@@ -41,3 +41,11 @@ var ClusterStatusMap = map[ClusterStatusType]string{
 	ClusterStatusNormal:   "normal",
 	ClusterStatusAbnormal: "abnormal",
 }
+
+const (
+	AnnotationResourceOwner = "easycorp.io/resource_owner"
+)
+
+const (
+	LabelBackupName = "easycorp.io/backup_name"
+)

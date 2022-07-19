@@ -6,6 +6,8 @@ package app
 
 import (
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	"k8s.io/apimachinery/pkg/labels"
 	"strings"
 	"time"
 
@@ -16,7 +18,7 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 )
 
-func (i *Instance) CreateBackup() (interface{}, error) {
+func (i *Instance) CreateBackup(username string) (interface{}, error) {
 	currTime := time.Now()
 	backupName := fmt.Sprintf("%s-backup-%d", i.name, currTime.Unix())
 	backupReq := quchengv1beta1.Backup{
@@ -33,6 +35,9 @@ func (i *Instance) CreateBackup() (interface{}, error) {
 			},
 			Namespace: i.namespace,
 		},
+	}
+	if username != "" {
+		backupReq.Annotations[constant.AnnotationResourceOwner] = username
 	}
 
 	data := struct {
@@ -53,15 +58,29 @@ func (i *Instance) GetBackupList() ([]model.AppRespBackup, error) {
 
 	for _, b := range backups {
 		item := model.AppRespBackup{
-			Name: b.Name, CreateTime: b.CreationTimestamp.Unix(),
-			StorageName: b.Spec.StorageName, Status: strings.ToLower(string(b.Status.Phase)),
-			Archives: make([]model.AppRespBackupArchive, 0),
+			Name:       b.Name,
+			Creator:    b.Annotations[constant.AnnotationResourceOwner],
+			CreateTime: b.CreationTimestamp.Unix(),
+			Status:     strings.ToLower(string(b.Status.Phase)),
+			Message:    b.Status.Message,
+			Restores:   make([]model.AppRespRestore, 0),
 		}
 
-		for _, arch := range b.Status.Archives {
-			item.Archives = append(item.Archives, model.AppRespBackupArchive{
-				Path: arch.Path,
-			})
+		bkLabel, _ := labels.NewRequirement(constant.LabelBackupName, "==", []string{b.Name})
+		restores, err := i.ks.Store.ListRestores("cne-system", i.selector.Add(*bkLabel))
+		if err != nil {
+			return result, err
+		}
+
+		for _, restore := range restores {
+			r := model.AppRespRestore{
+				Name:       restore.Name,
+				Creator:    restore.Annotations[constant.AnnotationResourceOwner],
+				CreateTime: restore.CreationTimestamp.Unix(),
+				Status:     strings.ToLower(string(restore.Status.Phase)),
+				Message:    restore.Status.Message,
+			}
+			item.Restores = append(item.Restores, r)
 		}
 
 		result = append(result, item)
@@ -84,20 +103,27 @@ func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
 	return data, nil
 }
 
-func (i *Instance) CreateRestore(backupName string) (interface{}, error) {
+func (i *Instance) CreateRestore(backupName string, username string) (interface{}, error) {
 	currTime := time.Now()
-	restoreName := fmt.Sprintf("%s-backup-%d", i.name, currTime.Unix())
-	restore := quchengv1beta1.Restore{
+	restoreName := fmt.Sprintf("%s-restore-%d", i.name, currTime.Unix())
+	restoreReq := quchengv1beta1.Restore{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: restoreName,
 			Labels: map[string]string{
-				"app":     i.ChartName,
-				"release": i.release.Name,
+				"app":                    i.ChartName,
+				"release":                i.release.Name,
+				constant.LabelBackupName: backupName,
+			},
+			Annotations: map[string]string{
+				constant.AnnotationResourceOwner: username,
 			},
 		},
 		Spec: quchengv1beta1.RestoreSpec{
 			BackupName: backupName,
 		},
+	}
+	if username != "" {
+		restoreReq.Annotations[constant.AnnotationResourceOwner] = username
 	}
 
 	data := struct {
@@ -105,7 +131,7 @@ func (i *Instance) CreateRestore(backupName string) (interface{}, error) {
 		CreateTime  int64  `json:"create_time"`
 	}{backupName, currTime.Unix()}
 
-	_, err := i.ks.Clients.Cne.QuchengV1beta1().Restores("cne-system").Create(i.ctx, &restore, metav1.CreateOptions{})
+	_, err := i.ks.Clients.Cne.QuchengV1beta1().Restores("cne-system").Create(i.ctx, &restoreReq, metav1.CreateOptions{})
 	return data, err
 }
 
