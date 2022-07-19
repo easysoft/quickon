@@ -28,6 +28,7 @@ func (i *Instance) CreateBackup(username string) (interface{}, error) {
 				"app":     i.ChartName,
 				"release": i.release.Name,
 			},
+			Annotations: map[string]string{},
 		},
 		Spec: quchengv1beta1.BackupSpec{
 			Selector: map[string]string{
@@ -114,9 +115,7 @@ func (i *Instance) CreateRestore(backupName string, username string) (interface{
 				"release":                i.release.Name,
 				constant.LabelBackupName: backupName,
 			},
-			Annotations: map[string]string{
-				constant.AnnotationResourceOwner: username,
-			},
+			Annotations: map[string]string{},
 		},
 		Spec: quchengv1beta1.RestoreSpec{
 			BackupName: backupName,
