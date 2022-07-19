@@ -154,8 +154,8 @@ $(function()
 
             let instanceID = $(event.target).closest('button').attr('instance-id');
             let backupName = $(event.target).closest('button').attr('backup-name');
-            let url = createLink('instance', 'ajaxRestore', 'instanceID=' + instanceID + '&backupName=' + backupName, 'json');
-            $.post(url).done(function(response)
+            let url = createLink('instance', 'ajaxRestore', '', 'json');
+            $.post(url, { instanceID, backupName }).done(function(response)
             {
                 loadingDialog.modal('hide');
 

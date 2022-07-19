@@ -355,16 +355,20 @@ class instance extends control
     /**
      * Restore instance by ajax
      *
-     * @param  int    $instanceID
-     * @param  string $backupName
      * @access public
      * @return void
      */
-    public function ajaxRestore($instanceID, $backupName)
+    public function ajaxRestore()
     {
-        $instance = $this->instance->getByID($instanceID);
+        $postData = fixer::input('post')
+            ->trim('instanceID')
+            ->trim('backupName')->get();
 
-        $success = $this->instance->restore($instance, $this->app->user, $backupName);
+        if(empty($postData->instanceID) || empty($postData->backupName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->wrongRequestData));
+
+        $instance = $this->instance->getByID($postData->instanceID);
+
+        $success = $this->instance->restore($instance, $this->app->user, $postData->backupName);
         if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'restoreFail')));
 
         return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'restoreSuccess')));
