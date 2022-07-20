@@ -40,6 +40,8 @@ $lang->instance->backup->rebackup      = '重试备份';
 $lang->instance->backup->create        = '创建备份';
 
 $lang->instance->backup->statusList = array();
+$lang->instance->backup->statusList['success']        = '失败';
+$lang->instance->backup->statusList['failed']         = '失败';
 $lang->instance->backup->statusList['pending']        = '等待备份';
 $lang->instance->backup->statusList['processing']     = '备份中';
 $lang->instance->backup->statusList['completed']      = '完成备份';
@@ -51,6 +53,8 @@ $lang->instance->backup->statusList['downloadFailed'] = '下载失败';
 
 $lang->instance->restore = new stdclass;
 $lang->instance->restore->statusList = array();
+$lang->instance->restore->statusList['success']        = '失败';
+$lang->instance->restore->statusList['failed']         = '失败';
 $lang->instance->restore->statusList['pending']        = '等待还原';
 $lang->instance->restore->statusList['processing']     = '还原中';
 $lang->instance->restore->statusList['completed']      = '完成还原';

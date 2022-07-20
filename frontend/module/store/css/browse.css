@@ -1,4 +1,5 @@
 #appSearchForm input[type=text] {padding: 5px 10px;}
+#appSearchForm button[type=submit] {height: 32px;}
 #appContainer .row {min-height: calc(100vh - 130px);}
 #appContainer .card a:hover {color: #0b89b2;}
 #appContainer .card.panel {border-radius: 2px;}
