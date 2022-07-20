@@ -5,6 +5,7 @@
 package router
 
 import (
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -29,8 +30,15 @@ import (
 // @Router /api/cne/component/gdb [get]
 func GDBList(c *gin.Context) {
 	ctx := c.Request.Context()
+	var op model.CompDbServiceListModel
+	var err error
 
-	i, err := service.Components(ctx, "").ListDbsComponents()
+	if err = c.ShouldBindQuery(&op); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	i, err := service.Components(ctx, "").ListDbsComponents(op.Kind, op.Namespace)
 	if err != nil {
 		tlog.WithCtx(ctx).ErrorS(err, errListDbServiceFailed)
 		if errors.Is(err, app.ErrAppNotFound) {
