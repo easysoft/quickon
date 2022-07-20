@@ -6,6 +6,10 @@ package component
 
 import (
 	"context"
+	"encoding/base64"
+	"fmt"
+	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 
 	"k8s.io/apimachinery/pkg/labels"
 
@@ -28,20 +32,26 @@ func NewComponents(ctx context.Context, clusterName string) *Manager {
 	}
 }
 
-func (m *Manager) ListDbsComponents() ([]model.ComponentDbServiceModel, error) {
+func (m *Manager) ListDbsComponents(kind, namespace string) ([]model.ComponentDbServiceModel, error) {
 	var components []model.ComponentDbServiceModel
-	dbsvcs, err := m.ks.Store.ListDbService("", labels.Everything())
+	selector := labels.SelectorFromSet(map[string]string{
+		constant.LabelGlobalDatabase: "true",
+	})
+	dbsvcs, err := m.ks.Store.ListDbService(namespace, selector)
 	if err != nil {
 		return nil, err
 	}
 
 	for _, dbsvc := range dbsvcs {
+		if string(dbsvc.Spec.Type) != kind {
+			continue
+		}
 		base := model.ComponentBase{
 			Name:      dbsvc.Name,
 			NameSpace: dbsvc.Namespace,
 		}
 		cm := model.ComponentDbServiceModel{
-			Spec:       dbsvc.Spec,
+			Alias:      decodeDbSvcAlias(dbsvc),
 			Status:     dbsvc.Status,
 			CreateTime: dbsvc.CreationTimestamp.Unix(),
 			Source: model.ComponentBase{
@@ -60,4 +70,18 @@ func getSourceFromAnnotations(annotations map[string]string, key, value string) 
 		return source
 	}
 	return value
+}
+
+func decodeDbSvcAlias(dbsvc *quchengv1beta1.DbService) string {
+	alias := dbsvc.Annotations[constant.AnnotationResourceAlias]
+	if alias == "" {
+		return fmt.Sprintf("%s/%s", dbsvc.Namespace, dbsvc.Name)
+	}
+
+	bs, err := base64.StdEncoding.DecodeString(alias)
+	if err != nil {
+		return alias
+	}
+
+	return string(bs)
 }

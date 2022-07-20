@@ -8,9 +8,14 @@ import (
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 )
 
+type CompDbServiceListModel struct {
+	Kind      string `form:"kind" json:"kind" binding:"required"`
+	Namespace string `form:"namespace" json:"namespace"`
+}
+
 type ComponentDbServiceModel struct {
 	ComponentBase
-	Spec       quchengv1beta1.DbServiceSpec   `json:"spec,omitempty"`
+	Alias      string                         `json:"alias"`
 	Status     quchengv1beta1.DbServiceStatus `json:"status,omitempty"`
 	CreateTime int64                          `json:"create_time"`
 	Source     ComponentBase                  `json:"source"`
