@@ -12,7 +12,6 @@ import (
 	"github.com/pkg/errors"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
 )
 
@@ -41,11 +40,27 @@ func GDBList(c *gin.Context) {
 	i, err := service.Components(ctx, "").ListDbsComponents(op.Kind, op.Namespace)
 	if err != nil {
 		tlog.WithCtx(ctx).ErrorS(err, errListDbServiceFailed)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
 		renderError(c, http.StatusInternalServerError, errors.New(errListDbServiceFailed))
+		return
+	}
+
+	renderJson(c, http.StatusOK, i)
+}
+
+func GDBValidation(c *gin.Context) {
+	ctx := c.Request.Context()
+	var op model.CompDbServiceValidationModel
+	var err error
+
+	if err = c.ShouldBindQuery(&op); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	i, err := service.Components(ctx, "").ValidDbService(op.Name, op.Namespace, op.Database, op.User)
+	if err != nil {
+		tlog.WithCtx(ctx).ErrorS(err, errValidDbSvcFailed)
+		renderError(c, http.StatusInternalServerError, errors.New(errValidDbSvcFailed))
 		return
 	}
 

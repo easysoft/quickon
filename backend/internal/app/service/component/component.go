@@ -10,6 +10,7 @@ import (
 	"fmt"
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"k8s.io/apimachinery/pkg/labels"
 
@@ -63,6 +64,70 @@ func (m *Manager) ListDbsComponents(kind, namespace string) ([]model.ComponentDb
 		components = append(components, cm)
 	}
 	return components, nil
+}
+
+func (m *Manager) ValidDbService(name, namespace, dbname, username string) (interface{}, error) {
+	result := &model.ComponentDbServiceValidResult{
+		Validation: model.DbValidation{},
+	}
+	dbsvc, err := m.ks.Store.GetDbService(namespace, name)
+	if err != nil {
+		return nil, err
+	}
+
+	dbValid := model.DbValidation{User: true, Database: true}
+	allDbs, err := m.ks.Store.ListDb("", labels.Everything())
+	for _, db := range allDbs {
+		dbNs := db.Spec.TargetService.Namespace
+		if dbNs == "" {
+			dbNs = db.Namespace
+		}
+		if dbNs != dbsvc.Namespace || db.Spec.TargetService.Name != dbsvc.Name {
+			continue
+		}
+
+		if dbValid.Database && db.Spec.DbName == dbname {
+			dbValid.Database = false
+		}
+
+		if dbValid.User && db.Spec.Account.User.Value == username {
+			dbValid.User = false
+		}
+
+		if !dbValid.Database && !dbValid.User {
+			break
+		}
+	}
+	result.Validation = dbValid
+
+	svc := dbsvc.Spec.Service
+	svcNs := svc.Namespace
+	if svcNs == "" {
+		svcNs = dbsvc.Namespace
+	}
+	result.Host = fmt.Sprintf("%s.%s.svc", svc.Name, svcNs)
+
+	var port int32
+	if svc.Port.Type == intstr.Int {
+		port = svc.Port.IntVal
+	} else {
+		s, err := m.ks.Store.GetService(svcNs, svc.Name)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range s.Spec.Ports {
+			if p.Name == svc.Port.StrVal {
+				port = p.Port
+				break
+			}
+		}
+		if port == 0 {
+			return nil, fmt.Errorf("parse service port '%s' failed", svc.Port.StrVal)
+		}
+	}
+
+	result.Port = port
+	return result, nil
 }
 
 func getSourceFromAnnotations(annotations map[string]string, key, value string) string {

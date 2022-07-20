@@ -15,4 +15,5 @@ const (
 	errPatchAppFailed      = "patch app settings failed"
 	errGetAppStatusFailed  = "get app status failed"
 	errListDbServiceFailed = "list db service failed"
+	errValidDbSvcFailed    = "Validate db service failed"
 )
