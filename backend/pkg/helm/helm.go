@@ -65,7 +65,7 @@ func (h *Action) Install(name, chart, version string, settings []string) (*relea
 		return nil, err
 	}
 
-	valueOpts := &values.Options{StringValues: settings}
+	valueOpts := &values.Options{Values: settings}
 
 	p := getter.All(h.settings)
 	vals, err := valueOpts.MergeValues(p)
