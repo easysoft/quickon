@@ -74,6 +74,7 @@ func Config(r *gin.Engine) {
 		api.GET("/app/restore/status", AppRestoreStatus)
 
 		api.GET("/component/gdb", GDBList)
+		api.GET("/component/gdb/validation", GDBValidation)
 
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)

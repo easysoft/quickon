@@ -44,8 +44,10 @@ var ClusterStatusMap = map[ClusterStatusType]string{
 
 const (
 	AnnotationResourceOwner = "easycorp.io/resource_owner"
+	AnnotationResourceAlias = "easycorp.io/resource_alias"
 )
 
 const (
-	LabelBackupName = "easycorp.io/backup_name"
+	LabelBackupName     = "easycorp.io/backup_name"
+	LabelGlobalDatabase = "easycorp.io/global_database"
 )
