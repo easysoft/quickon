@@ -459,7 +459,7 @@ class InstanceModel extends model
     public function backupList($instance)
     {
         $result = $this->cne->backupList($instance);
-        if(empty($result) || $result->code != 200) return array();
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
 
         $backupList = $result->data;
         usort($backupList, function($backup1, $backup2){ return $backup1->create_time < $backup2->create_time; });
@@ -475,11 +475,15 @@ class InstanceModel extends model
     public function dbList()
     {
         $dbList = $this->cne->dbList();
-        $k8names = array_keys($dbList);
+        return array_merge(array('' => $this->lang->instance->newDB,), $dbList);
 
-        $instances = $this->dao->select('name,k8name')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('k8name')->in($k8names)->fetchPairs('k8name', 'name');
-        $instances = array_merge(array('' => $this->lang->instance->newDB, 'qucheng-mysql' => $this->lang->instance->cneDB), $instances);
-        return $instances;
+        //$k8names = array_keys($dbList);
+        //$instances = $this->dao->select('name,k8name')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('k8name')->in($k8names)->fetchPairs('k8name', 'name');
+
+        //$databases = array();
+        //foreach($dbList as $dbName => $dbAlias) $databases[$dbName] = empty($dbAlias) ? zget($instances, $dbName, $dbName) : $dbName;
+
+        //return $databases;
     }
 
     /**
@@ -590,6 +594,23 @@ class InstanceModel extends model
         }
 
         echo $actionHtml;
+    }
+
+
+    /**
+     * Print backup button of instance.
+     *
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function printBackupBtn($instance)
+    {
+        $disabled = $instance->status == 'running' ? '' : 'disabled';
+        $title    = empty($disabled) ? $this->lang->instance->backup->create : $this->lang->instance->backupOnlyRunning;
+        $btn      = html::commonButton($this->lang->instance->backup->create, "instance-id='{$instance->id}' title='{$title}' {$disabled}", "btn-backup btn btn-primary");
+
+        echo $btn;
     }
 
     /**

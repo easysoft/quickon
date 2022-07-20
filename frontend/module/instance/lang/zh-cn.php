@@ -169,6 +169,7 @@ $lang->instance->caplicasTooSmall  = '副本数不能小于1';
 $lang->instance->empty             = '暂无服务';
 $lang->instance->noComponent       = '无组件，点击';
 $lang->instance->noHigherVersion   = '未找到更高版本！';
+$lang->instance->backupOnlyRunning = '运行状态才能备份';
 
 $lang->instance->errors = new stdclass;
 $lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';

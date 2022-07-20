@@ -672,7 +672,7 @@ class cneModel extends model
             //$db->user = $database->account->user->value;
             //$db->password = $database->account->valueFrom->secretKeyRef->name;
             //
-            $dbList[$database->source->name] = $database->source->name;
+            $dbList[$database->name] = zget($database, 'alias', $database->name);
         }
 
         return $dbList;

@@ -193,7 +193,6 @@ class instance extends control
         $cloudApp = $this->cne->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
-
         $customData = new stdclass;
         if(!empty($_POST))
         {
