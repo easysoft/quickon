@@ -213,16 +213,90 @@ class InstanceModel extends model
     }
 
     /**
+     * Mount installation settings by custom data.
+     *
+     * @param  object  $customData
+     * @param  array   $dbList
+     * @param  object  $app
+     * @access private
+     * @return object
+     */
+    private function installationSettingsMap($customData, $dbList, $app)
+    {
+        $settingsMap = new stdclass;
+        if($customData->customDomain)
+        {
+            $settingsMap->ingress = new stdclass;
+            $settingsMap->ingress->enabled = 'true';
+            $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
+        }
+
+        if($customData->dbType == 'usharedDB') return $settings;
+
+        $selectedDB = zget($dbList, $customData->dbService, '');
+        $account    = $this->app->user->account;
+
+        $dbSettings = new stdclass;
+        $dbSettings->service    = $customData->dbService;
+        $dbSettings->namespace = $selectedDB->namespace;
+        $dbSettings->host       = $selectedDB->host;
+        $dbSettings->port       = $selectedDB->port;
+        $dbSettings->name      = "{$app->dependencies->mysql->database}-{$account}";
+        $dbSettings->user      = "{$app->dependencies->mysql->user}-{$account}";
+
+        $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user, $dbSettings->name);
+
+        $settingsMap->mysql = new stdclass;
+        $settingsMap->mysql->enable = 'true';
+
+        $settingsMap->mysql->auth = new stdclass;
+        $settingsMap->mysql->auth->user     = $dbSettings->user;
+        $settingsMap->mysql->auth->password = helper::randStr(12);
+        $settingsMap->mysql->auth->host     = $dbSettings->host;
+        $settingsMap->mysql->auth->port     = $dbSettings->port;
+        $settingsMap->mysql->auth->database = $dbSettings->name;
+
+        $settingsMap->mysql->dbservice = new stdclass;
+        $settingsMap->mysql->dbservice->name = $dbSettings->service;
+        $settingsMap->mysql->dbservice->namespace = $dbSettings->namespace;
+
+        return $settingsMap;
+    }
+
+    /**
+     * Return valid DBSettings.
+     *
+     * @param  object  $dbSettings
+     * @param  string  $defaultUser
+     * @param  string  $defaultDBName
+     * @param  int     $times
+     * @access private
+     * @return null|object
+     */
+    private function getValidDBSettings($dbSettings, $defaultUser, $defaultDBName, $times = 1)
+    {
+        if($times >10) return;
+
+        $validatedResult = $this->cne->validateDB($dbSettings->service, $dbSettings->name, $dbSettings->user, $dbSettings->namespace);
+        if($validatedResult->user && $validatedResult->database) return $dbSettings;
+
+        if(!$validatedResult->user)     $dbSettings->user = $defaultUser. '-' . help::randStr(4);
+        if(!$validatedResult->database) $dbSettings->database = $defaultDBName . '-' . help::randStr(4);
+
+        return $this->solveDBSettings($dbSettings, $defaultUser, $defaultDBName, $times++);
+    }
+
+    /**
      * Install app.
      *
      * @param  object $app
-     * @param  array  $settings settings of app, for example: cup, memory.
+     * @param  array  $dbList
      * @param  object $customData
      * @param  int    $spaceID
      * @access public
      * @return false|object Failure: return false, Success: return instance
      */
-    public function install($app, $settings = array(), $customData = null, $spaceID = null)
+    public function install($app, $dbList, $customData, $spaceID = null)
     {
         $this->loadModel('store');
         $this->app->loadLang('store');
@@ -238,12 +312,12 @@ class InstanceModel extends model
         }
 
         $apiParams = new stdclass;
-        $apiParams->userame = $this->app->user->account;
+        $apiParams->userame      = $this->app->user->account;
         $apiParams->cluser       = '';
         $apiParams->namespace    = $space->k8space;
         $apiParams->name         = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
         $apiParams->chart        = $app->chart;
-        $apiParams->settings     = $settings;
+        $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app);
 
         $result = $this->cne->installApp($apiParams);
         if($result->code != 200) return false;
@@ -263,6 +337,7 @@ class InstanceModel extends model
         $instanceData->version      = $app->version;
         $instanceData->space        = $space->id;
         $instanceData->k8name       = $apiParams->name;
+        $instanceData->dbSettings   = json_encode($apiParams->settings_map);
         $instanceData->status       = 'creating';
         $instanceData->createdBy    = $this->app->user->account;
         $instanceData->createdAt    = date('Y-m-d H:i:s');
@@ -467,23 +542,18 @@ class InstanceModel extends model
     }
 
     /**
-     * Get database list in CNE system.
+     * Mount DB name and alias to array for select options.
      *
+     * @param  array  $databases
      * @access public
-     * @return mixed
+     * @return array
      */
-    public function dbList()
+    public function dbListToOptions($databases)
     {
-        $dbList = $this->cne->dbList();
-        return array_merge(array('' => $this->lang->instance->newDB,), $dbList);
+        $dbList = array();
+        foreach($databases as $database) $dbList[$database->name] = zget($database, 'alias', $database->name);
 
-        //$k8names = array_keys($dbList);
-        //$instances = $this->dao->select('name,k8name')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('k8name')->in($k8names)->fetchPairs('k8name', 'name');
-
-        //$databases = array();
-        //foreach($dbList as $dbName => $dbAlias) $databases[$dbName] = empty($dbAlias) ? zget($instances, $dbName, $dbName) : $dbName;
-
-        //return $databases;
+        return $dbList;
     }
 
     /**
