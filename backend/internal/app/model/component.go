@@ -4,10 +4,6 @@
 
 package model
 
-import (
-	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
-)
-
 type CompDbServiceListModel struct {
 	Kind      string `form:"kind" json:"kind" binding:"required"`
 	Namespace string `form:"namespace" json:"namespace"`
@@ -22,10 +18,9 @@ type CompDbServiceValidationModel struct {
 
 type ComponentDbServiceModel struct {
 	ComponentBase
-	Alias      string                         `json:"alias"`
-	Status     quchengv1beta1.DbServiceStatus `json:"status,omitempty"`
-	CreateTime int64                          `json:"create_time"`
-	Source     ComponentBase                  `json:"source"`
+	Alias string `json:"alias"`
+	Host  string `json:"host"`
+	Port  int32  `json:"port"`
 }
 
 type ComponentBase struct {
