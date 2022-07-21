@@ -257,8 +257,8 @@ class InstanceModel extends model
         $settingsMap->mysql->auth->database = $dbSettings->name;
 
         $settingsMap->mysql->auth->dbservice = new stdclass;
-        $settingsMap->mysql->auth->dbservice->name       = $dbSettings->service;
-        $settingsMap->mysql->auth->ddbservice->namespace = $dbSettings->namespace;
+        $settingsMap->mysql->auth->dbservice->name      = $dbSettings->service;
+        $settingsMap->mysql->auth->dbservice->namespace = $dbSettings->namespace;
 
         return $settingsMap;
     }
