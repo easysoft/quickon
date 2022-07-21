@@ -227,7 +227,7 @@ class InstanceModel extends model
         if($customData->customDomain)
         {
             $settingsMap->ingress = new stdclass;
-            $settingsMap->ingress->enabled = 'true';
+            $settingsMap->ingress->enabled = true;
             $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
         }
 
@@ -247,7 +247,7 @@ class InstanceModel extends model
         $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user, $dbSettings->name);
 
         $settingsMap->mysql = new stdclass;
-        $settingsMap->mysql->enable = 'true';
+        $settingsMap->mysql->enabled = false;
 
         $settingsMap->mysql->auth = new stdclass;
         $settingsMap->mysql->auth->user     = $dbSettings->user;
