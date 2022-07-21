@@ -237,10 +237,10 @@ class InstanceModel extends model
         $account    = $this->app->user->account;
 
         $dbSettings = new stdclass;
-        $dbSettings->service    = $customData->dbService;
+        $dbSettings->service   = $customData->dbService;
         $dbSettings->namespace = $selectedDB->namespace;
-        $dbSettings->host       = $selectedDB->host;
-        $dbSettings->port       = $selectedDB->port;
+        $dbSettings->host      = $selectedDB->host;
+        $dbSettings->port      = $selectedDB->port;
         $dbSettings->name      = "{$app->dependencies->mysql->database}-{$account}";
         $dbSettings->user      = "{$app->dependencies->mysql->user}-{$account}";
 
@@ -256,9 +256,9 @@ class InstanceModel extends model
         $settingsMap->mysql->auth->port     = $dbSettings->port;
         $settingsMap->mysql->auth->database = $dbSettings->name;
 
-        $settingsMap->mysql->dbservice = new stdclass;
-        $settingsMap->mysql->dbservice->name = $dbSettings->service;
-        $settingsMap->mysql->dbservice->namespace = $dbSettings->namespace;
+        $settingsMap->mysql->auth->dbservice = new stdclass;
+        $settingsMap->mysql->auth->dbservice->name       = $dbSettings->service;
+        $settingsMap->mysql->auth->ddbservice->namespace = $dbSettings->namespace;
 
         return $settingsMap;
     }
