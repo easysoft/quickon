@@ -21,7 +21,7 @@
   </div>
   <div class='btn-toolbar pull-right instance-panel'>
     <div class="btn-group">
-      <?php $this->instance->printActions($instance);?>
+      <?php $this->instance->printTextActions($instance);?>
     </div>
   </div>
 </div>

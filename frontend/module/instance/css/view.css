@@ -1,7 +1,7 @@
 #mainContent .nav-tabs li>a::before {height: 0;}
 .instance-name h3 {display: inline-block; padding-left: 10px;}
 .instance-name span {font-size: 14px; font-weight: bolder; padding: 0 5px;}
-.instance-panel .btn-group .btn {margin: 10px 5px 0 5px; width: 30px;}
+.instance-panel .btn-group .btn {width: 60px;}
 .instance-panel .btn-group i {font-size: 24px;}
 .instance-status span {display: inline-block; margin-right: 10px; padding-bottom: 1px;}
 .instance-status i {font-size: 18px;}

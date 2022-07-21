@@ -241,10 +241,10 @@ class InstanceModel extends model
         $dbSettings->namespace = $selectedDB->namespace;
         $dbSettings->host      = $selectedDB->host;
         $dbSettings->port      = $selectedDB->port;
-        $dbSettings->name      = "{$app->dependencies->mysql->database}-{$account}";
-        $dbSettings->user      = "{$app->dependencies->mysql->user}-{$account}";
+        $dbSettings->name      = $app->dependencies->mysql->database;
+        $dbSettings->user      = $app->dependencies->mysql->user;
 
-        $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user, $dbSettings->name);
+        $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user . $account, $dbSettings->name . $account);
 
         $settingsMap->mysql = new stdclass;
         $settingsMap->mysql->enabled = false;
@@ -280,8 +280,8 @@ class InstanceModel extends model
         $validatedResult = $this->cne->validateDB($dbSettings->service, $dbSettings->name, $dbSettings->user, $dbSettings->namespace);
         if($validatedResult->user && $validatedResult->database) return $dbSettings;
 
-        if(!$validatedResult->user)     $dbSettings->user = $defaultUser. '-' . help::randStr(4);
-        if(!$validatedResult->database) $dbSettings->database = $defaultDBName . '-' . help::randStr(4);
+        if(!$validatedResult->user)     $dbSettings->user = $defaultUser . help::randStr(4);
+        if(!$validatedResult->database) $dbSettings->database = $defaultDBName . help::randStr(4);
 
         return $this->solveDBSettings($dbSettings, $defaultUser, $defaultDBName, $times++);
     }
@@ -638,17 +638,17 @@ class InstanceModel extends model
     }
 
     /*
-     * Print action buttons.
+     * Print action buttons with icon.
      *
      * @param  object $instance
      * @access public
      * @return void
      */
-    public function printActions($instance)
+    public function printIconActions($instance)
     {
         $actionHtml = '';
 
-        $disableStart = !$this->canDo('start', $instance);
+            $disableStart = !$this->canDo('start', $instance);
         $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-lg btn-action");
 
         $disableStop = !$this->canDo('stop', $instance);
@@ -666,6 +666,34 @@ class InstanceModel extends model
         echo $actionHtml;
     }
 
+    /*
+     * Print action buttons with text.
+     *
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function printTextActions($instance)
+    {
+        $actionHtml = '';
+
+        $disableStart = !$this->canDo('start', $instance);
+        $actionHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-primary btn-lg");
+
+        $disableStop = !$this->canDo('stop', $instance);
+        $actionHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn btn-warning btn-lg');
+
+        $disableUninstall = !$this->canDo('uninstall', $instance);
+        $actionHtml      .= html::commonButton($this->lang->instance->uninstall, "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn btn-danger btn-lg');
+
+        if($instance->domain)
+        {
+            $disableVisit = !$this->canDo('visit', $instance);
+            $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+        }
+
+        echo $actionHtml;
+    }
 
     /**
      * Print backup button of instance.
