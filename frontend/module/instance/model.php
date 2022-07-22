@@ -543,6 +543,20 @@ class InstanceModel extends model
 
         $backupList = $result->data;
         usort($backupList, function($backup1, $backup2){ return $backup1->create_time < $backup2->create_time; });
+
+        $accounts = array_column($backupList, 'creator');
+        foreach($backupList as $backup) $accounts = array_merge($accounts, array_column($backup->restores, 'creator'));
+
+        $accounts = array_unique($accounts);
+
+        $users = $this->dao->select('account,realname')->from(TABLE_USER)->where('account')->in($accounts)->fetchPairs('account', 'realname');
+
+        foreach($backupList as &$backup)
+        {
+            $backup->username = zget($users, $backup->creator);
+            foreach($backup->restores as &$restore) $restore->username = zget($users, $restore->creator);
+        }
+
         return $backupList;
     }
 

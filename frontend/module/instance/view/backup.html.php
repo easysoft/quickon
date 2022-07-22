@@ -21,7 +21,7 @@
     <?php foreach($backupList as $backup):?>
     <tr>
       <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo date('Y-m-d H:i:s', $backup->create_time);?></td>
-      <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo $backup->creator;?></td>
+      <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo $backup->username;?></td>
       <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo zget($lang->instance->backup->statusList, strtolower($backup->status));?></td>
       <td rowspan="<?php echo max(count($backup->restores), 1);?>">
         <?php $this->instance->printRestoreBtn($instance, $backup);?>
@@ -29,7 +29,7 @@
       <?php if(count($backup->restores)):?>
       <?php $restore = array_shift($backup->restores);?>
       <td><?php echo date('Y-m-d H:i:s', $restore->create_time);?>
-      <td><?php echo $restore->creator;?></td>
+      <td><?php echo $restore->username;?></td>
       <td><?php echo zget($lang->instance->restore->statusList, strtolower($backup->status));?></td>
       <?php else:?>
       <td colspan="3"></td>
@@ -39,7 +39,7 @@
     <?php foreach($backup->restores as $restore):?>
     <tr>
       <td><?php echo date('Y-m-d H:i:s', $restore->create_time);?>
-      <td><?php echo $restore->creator;?></td>
+      <td><?php echo $restore->username;?></td>
       <td><?php echo zget($lang->instance->restore->statusList, strtolower($backup->status));?></td>
     </tr>
     <?php endforeach;?>
