@@ -200,8 +200,8 @@ class instance extends control
             $customData = fixer::input('post')
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
-                ->trim('dbType')->setDefault('dbType', 'sharedDB')
-                ->trim('dbID')->setDefault('dbID', '')
+                ->trim('dbType')
+                ->trim('dbService')
                 ->get();
 
             if(isset($this->config->instance->keepDomainList[$customData->customDomain]) || $this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->errors->domainExists));

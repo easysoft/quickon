@@ -109,5 +109,10 @@ a.showMoreImage:hover {opacity: 1;}
 .btn {border-radius: 2px; padding: 3px 16px;}
 .btn-lg{padding: 11px 16px;}
 .label {padding: 3px 8px; border-radius: 2px;}
-
+.label-lg {padding: 11px 20px; font-size: 14px; line-height: 18px; border-radius: 3px;}
+.label-lg:focus, .label-lg:hover {font-weight: bolder;}
+.label-outline.label-primary:focus, .label-outline.label-primary:hover {background-color: #e5fbf3!important;}
+.label-outline.label-warning:focus, .label-outline.label-warning:hover {background-color: #f7ebe1!important;}
+.label-outline.label-danger:focus, .label-outline.label-danger:hover {background-color: #fae7e7!important;}
+.label-outline.label-default:focus, .label-outline.label-default:hover {background-color: #b4b6bb!important;}
 .card {border-radius: 2px; -webkit-box-shadow: none; box-shadow: none;}

@@ -39,6 +39,7 @@
             </td>
             <td></td>
           </tr>
+          <?php if(isset($cloudApp->dependencies->mysql)):?>
           <tr>
             <th><?php echo $lang->instance->dbType;?></th>
             <td>
@@ -57,6 +58,7 @@
             </td>
             <td></td>
           </tr>
+          <?php endif;?>
         </tbody>
       </table>
       <div class="text-center form-actions"><?php echo html::submitButton($lang->instance->install);?></div>

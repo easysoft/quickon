@@ -20,7 +20,7 @@
     <?php echo html::a($this->createLink('instance', 'editname', "id=$instance->id", '', true), '<i class="icon-edit"></i>', '', "class='iframe' title='$lang->edit' data-width='600' data-app='space'");?>
   </div>
   <div class='btn-toolbar pull-right instance-panel'>
-    <div class="btn-group">
+    <div class="">
       <?php $this->instance->printTextActions($instance);?>
     </div>
   </div>

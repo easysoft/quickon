@@ -218,10 +218,11 @@ class InstanceModel extends model
      * @param  object  $customData
      * @param  array   $dbList
      * @param  object  $app
+     * @param  object  $instance
      * @access private
      * @return object
      */
-    private function installationSettingsMap($customData, $dbList, $app)
+    private function installationSettingsMap($customData, $dbList, $app, $instance)
     {
         $settingsMap = new stdclass;
         if($customData->customDomain)
@@ -231,20 +232,19 @@ class InstanceModel extends model
             $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
         }
 
-        if($customData->dbType == 'usharedDB') return $settings;
+        if(empty($customData->dbType) || $customData->dbType == 'usharedDB') return $settingsMap;
 
         $selectedDB = zget($dbList, $customData->dbService, '');
-        $account    = $this->app->user->account;
 
         $dbSettings = new stdclass;
         $dbSettings->service   = $customData->dbService;
         $dbSettings->namespace = $selectedDB->namespace;
         $dbSettings->host      = $selectedDB->host;
         $dbSettings->port      = $selectedDB->port;
-        $dbSettings->name      = $app->dependencies->mysql->database;
-        $dbSettings->user      = $app->dependencies->mysql->user;
+        $dbSettings->name      = $app->dependencies->mysql->database . '_' . $instance->id;
+        $dbSettings->user      = $app->dependencies->mysql->user . '_' . $instance->id;
 
-        $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user . $account, $dbSettings->name . $account);
+        $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user, $dbSettings->name);
 
         $settingsMap->mysql = new stdclass;
         $settingsMap->mysql->enabled = false;
@@ -280,8 +280,8 @@ class InstanceModel extends model
         $validatedResult = $this->cne->validateDB($dbSettings->service, $dbSettings->name, $dbSettings->user, $dbSettings->namespace);
         if($validatedResult->user && $validatedResult->database) return $dbSettings;
 
-        if(!$validatedResult->user)     $dbSettings->user = $defaultUser . help::randStr(4);
-        if(!$validatedResult->database) $dbSettings->database = $defaultDBName . help::randStr(4);
+        if(!$validatedResult->user)     $dbSettings->user = $defaultUser . '_' . help::randStr(4);
+        if(!$validatedResult->database) $dbSettings->database = $defaultDBName  . '_' . help::randStr(4);
 
         return $this->solveDBSettings($dbSettings, $defaultUser, $defaultDBName, $times++);
     }
@@ -311,16 +311,7 @@ class InstanceModel extends model
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
-        $apiParams = new stdclass;
-        $apiParams->userame      = $this->app->user->account;
-        $apiParams->cluser       = '';
-        $apiParams->namespace    = $space->k8space;
-        $apiParams->name         = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
-        $apiParams->chart        = $app->chart;
-        $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app);
-
-        $result = $this->cne->installApp($apiParams);
-        if($result->code != 200) return false;
+        $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
 
         $instanceData = new stdclass;
         $instanceData->appId        = $app->id;
@@ -336,8 +327,7 @@ class InstanceModel extends model
         $instanceData->appVersion   = $app->app_version;
         $instanceData->version      = $app->version;
         $instanceData->space        = $space->id;
-        $instanceData->k8name       = $apiParams->name;
-        $instanceData->dbSettings   = json_encode($apiParams->settings_map);
+        $instanceData->k8name       = $k8name;
         $instanceData->status       = 'creating';
         $instanceData->createdBy    = $this->app->user->account;
         $instanceData->createdAt    = date('Y-m-d H:i:s');
@@ -345,10 +335,25 @@ class InstanceModel extends model
         $instance = $this->createInstance($instanceData);
         if(dao::isError()) return false;
 
+        $apiParams = new stdclass;
+        $apiParams->userame      = $this->app->user->account;
+        $apiParams->cluser       = '';
+        $apiParams->namespace    = $space->k8space;
+        $apiParams->name         = $k8name;
+        $apiParams->chart        = $app->chart;
+        $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+
+        $result = $this->cne->installApp($apiParams);
+        if($result->code != 200)
+        {
+            $this->dao->delete(TABLE_INSTANCE)->where('id')->eq($instance->id)->exec();
+            return false;
+        }
+
         $this->loadModel('action')->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'app' => $app)));
 
         $status = $result->code == 200 ? 'initializing' : 'installationFail';
-        $this->updateStatus($instance->id, $status);
+        $this->updateByID($instance->id, array('status' => $status, 'dbSettings' => json_encode($apiParams->settings_map)));
 
         return  $instance;
     }
@@ -678,18 +683,18 @@ class InstanceModel extends model
         $actionHtml = '';
 
         $disableStart = !$this->canDo('start', $instance);
-        $actionHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-primary btn-lg");
+        $actionHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn label label-outline label-primary label-lg");
 
         $disableStop = !$this->canDo('stop', $instance);
-        $actionHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn btn-warning btn-lg');
+        $actionHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-warning label-lg');
 
         $disableUninstall = !$this->canDo('uninstall', $instance);
-        $actionHtml      .= html::commonButton($this->lang->instance->uninstall, "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn btn-danger btn-lg');
+        $actionHtml      .= html::commonButton($this->lang->instance->uninstall, "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn label  label-outline label-danger label-lg');
 
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+            $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn label label-outline label-default label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;
