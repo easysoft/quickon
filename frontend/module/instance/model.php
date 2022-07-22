@@ -694,7 +694,7 @@ class InstanceModel extends model
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn label label-outline label-default label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+            $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-primary label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;

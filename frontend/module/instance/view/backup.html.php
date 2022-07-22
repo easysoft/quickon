@@ -4,7 +4,7 @@
   </div>
   <?php if(empty($backupList)):?>
     <div class="table-empty-tip">
-      Restore<p><?php echo $lang->instance->errors->noBackup; $this->instance->printBackupBtn($instance);?></p>
+      <p><?php echo $lang->instance->errors->noBackup; $this->instance->printBackupBtn($instance);?></p>
     </div>
   <?php else:?>
   <table class="table">
