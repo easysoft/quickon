@@ -16,11 +16,11 @@
 <div id='mainMenu' class='clearfix'>
   <form id="spaceSearchForm" method="post" class="not-watch load-indicator">
     <div class="btn-toolbar pull-left">
-      <?php foreach($lang->space->featureBar as $key => $label):?>
-      <?php $active = $browseType == $key ? 'btn-active-text' : '';?>
+      <?php foreach($lang->space->filterList as $type => $label):?>
+      <?php $active = $browseType == $type ? 'btn-active-text' : '';?>
       <?php $label = "<span class='text'>$label</span>";?>
-      <?php if($browseType == $key) $label .= " <span class='label label-light label-badge'>{$pager->recTotal}</span>";?>
-      <?php echo html::a(inlink('browse', "spaceID=&browseType=$key"), $label, '', "class='btn btn-link $active'");?>
+      <?php if($browseType == $type) $label .= " <span class='label label-light label-badge'>{$pager->recTotal}</span>";?>
+      <?php echo html::a(inlink('browse', "spaceID=&browseType=$type"), $label, '', "class='btn btn-link $active'");?>
       <?php endforeach;?>
       <div class="input-control search-box has-icon-left has-icon-right search-example" id="searchboxExample">
         <?php echo html::input('search', $searchName, "type='search' placeholder='{$lang->space->searchInstance}' autocomplete='off' class='form-control search-input text-left'");?>
@@ -28,7 +28,7 @@
       <span class="input-group-btn">
         <?php echo html::submitButton('<i class="icon icon-search"></i>', 'type="submit"', 'btn btn-secondary');?>
       </span>
-      </div>
+    </div>
     <div class="btn-toolbar pull-right">
       <div class="btn-group">
       <?php $url= $this->inLink('browse', "spaceID={$currentSpace->id}"); ?>

@@ -1422,11 +1422,11 @@ a.text-primary {
 }
 
 .btn-active-text .text {
-    color: #0b89b2;
+    color: #61be68;
 }
 
 .btn-active-text .text:after {
-    border-bottom-color: #0b89b2;
+    border-bottom-color: #61be68;
 }
 
 .btn.btn-action, .c-actions .btn{
