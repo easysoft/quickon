@@ -326,13 +326,16 @@ class cneModel extends model
 
         $statistics = $result->data;
 
-        $statistics->metrics->cpu->rate        = $statistics->metrics->cpu->capacity > 0 ? round( $statistics->metrics->cpu->usage / $statistics->metrics->cpu->capacity * 100, 2) : 0;
-        $statistics->metrics->cpu->usage       = round($statistics->metrics->cpu->usage, 4);
-        $statistics->metrics->cpu->capacity    = round($statistics->metrics->cpu->capacity, 4);
+        $statistics->metrics->cpu->usage       = max(round($statistics->metrics->cpu->usage, 4), 0);
+        $statistics->metrics->cpu->capacity    = max(round($statistics->metrics->cpu->capacity, 4), $statistics->metrics->cpu->usage);
         $statistics->metrics->cpu->allocatable = round($statistics->metrics->cpu->allocatable, 4);
+        $statistics->metrics->cpu->rate        = $statistics->metrics->cpu->capacity > 0 ? round( $statistics->metrics->cpu->usage / $statistics->metrics->cpu->capacity * 100, 2) : 0;
+        $statistics->metrics->cpu->rate        = min($statistics->metrics->cpu->rate, 100);
 
-        $statistics->metrics->memory->rate = $statistics->metrics->memory->capacity > 0 ? round( $statistics->metrics->memory->usage / $statistics->metrics->memory->capacity * 100, 2) : 0;
-
+        $statistics->metrics->memory->usage    = max(round($statistics->metrics->memory->usage, 4), 0);
+        $statistics->metrics->memory->capacity = max($statistics->metrics->memory->capacity, $statistics->metrics->memory->usage);
+        $statistics->metrics->memory->rate     = $statistics->metrics->memory->capacity > 0 ? round($statistics->metrics->memory->usage / $statistics->metrics->memory->capacity * 100, 2) : 0;
+        $statistics->metrics->memory->rate     = min($statistics->metrics->memory->rate, 100);
         return $statistics;
     }
 
@@ -382,13 +385,17 @@ class cneModel extends model
         {
             if(!isset($k8sMetric->metrics)) continue;
 
-            $instancesMetrics[$k8sMetric->name]->cpu->limit = isset($k8sMetric->metrics->cpu) && isset($k8sMetric->metrics->cpu->limit) ? round($k8sMetric->metrics->cpu->limit, 4) : 0;
             $instancesMetrics[$k8sMetric->name]->cpu->usage = isset($k8sMetric->metrics->cpu) && isset($k8sMetric->metrics->cpu->usage) ? round($k8sMetric->metrics->cpu->usage, 4) : 0;
-            $instancesMetrics[$k8sMetric->name]->cpu->rate  = $k8sMetric->metrics->cpu->limit > 0 ? round($k8sMetric->metrics->cpu->usage / $k8sMetric->metrics->cpu->limit * 100, 2) : 0;
+            $instancesMetrics[$k8sMetric->name]->cpu->usage = max($instancesMetrics[$k8sMetric->name]->cpu->usage, 0);
+            $instancesMetrics[$k8sMetric->name]->cpu->limit = isset($k8sMetric->metrics->cpu) && isset($k8sMetric->metrics->cpu->limit) ? round($k8sMetric->metrics->cpu->limit, 4) : 0;
+            $instancesMetrics[$k8sMetric->name]->cpu->limit = max($instancesMetrics[$k8sMetric->name]->cpu->limit, $instancesMetrics[$k8sMetric->name]->cpu->usage);
+            $instancesMetrics[$k8sMetric->name]->cpu->rate  = $instancesMetrics[$k8sMetric->name]->cpu->limit > 0 ? round($instancesMetrics[$k8sMetric->name]->cpu->usage / $instancesMetrics[$k8sMetric->name]->cpu->limit * 100, 2) : 0;
 
-            $instancesMetrics[$k8sMetric->name]->memory->limit = isset($k8sMetric->metrics->memory) && isset($k8sMetric->metrics->memory->limit) ? $k8sMetric->metrics->memory->limit : 0;
             $instancesMetrics[$k8sMetric->name]->memory->usage = isset($k8sMetric->metrics->memory) && isset($k8sMetric->metrics->memory->usage) ? $k8sMetric->metrics->memory->usage : 0;
-            $instancesMetrics[$k8sMetric->name]->memory->rate  = $k8sMetric->metrics->memory->limit > 0 ? round($k8sMetric->metrics->memory->usage / $k8sMetric->metrics->memory->limit * 100, 2) : 0;
+            $instancesMetrics[$k8sMetric->name]->memory->usage = max($instancesMetrics[$k8sMetric->name]->memory->usage, 0);
+            $instancesMetrics[$k8sMetric->name]->memory->limit = isset($k8sMetric->metrics->memory) && isset($k8sMetric->metrics->memory->limit) ? $k8sMetric->metrics->memory->limit : 0;
+            $instancesMetrics[$k8sMetric->name]->memory->limit = max( $instancesMetrics[$k8sMetric->name]->memory->limit, $instancesMetrics[$k8sMetric->name]->memory->usage);
+            $instancesMetrics[$k8sMetric->name]->memory->rate  = $instancesMetrics[$k8sMetric->name]->memory->limit > 0 ? round($instancesMetrics[$k8sMetric->name]->memory->usage / $instancesMetrics[$k8sMetric->name]->memory->limit * 100, 2) : 0;
         }
 
         return array_combine(array_column($instancesMetrics, 'id'), $instancesMetrics);
