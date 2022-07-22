@@ -1,4 +1,3 @@
-
 $(function()
 {
     $('#installForm').on('submit', function(event)
@@ -25,5 +24,17 @@ $(function()
                 alert(res.message);
             }
         });
+    });
+
+    $("input[type=radio][name='dbType']").on('change', function(event)
+    {
+        if(event.target.value == 'sharedDB')
+        {
+            $("select[name=dbService]").closest('td').show();
+        }
+        else
+        {
+            $("select[name=dbService]").closest('td').hide();
+        }
     });
 });

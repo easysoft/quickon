@@ -193,14 +193,15 @@ class instance extends control
         $cloudApp = $this->cne->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
-
+        $dbList = $this->cne->dbList();
         $customData = new stdclass;
         if(!empty($_POST))
         {
             $customData = fixer::input('post')
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
-                ->trim('dbName')->setDefault('dbName', '')
+                ->trim('dbType')
+                ->trim('dbService')
                 ->get();
 
             if(isset($this->config->instance->keepDomainList[$customData->customDomain]) || $this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->errors->domainExists));
@@ -209,14 +210,7 @@ class instance extends control
             if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
             if(!$this->cne->enoughMemory($cloudApp->memory))                   return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notEnoughMemory));
 
-            $settings = array();
-            if($customData->customDomain)
-            {
-                $settings['ingress_host']    = $this->instance->fullDomain($customData->customDomain);
-                $settings['ingress_enabled'] = 'true';
-            }
-
-            $result = $this->instance->install($cloudApp, $settings, $customData);
+            $result = $this->instance->install($cloudApp, $dbList, $customData);
             if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => 'parent'));
@@ -229,7 +223,7 @@ class instance extends control
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
         $this->view->thirdDomain = $this->instance->randThirdDomain();
-        $this->view->dbList      = $this->instance->dbList();
+        $this->view->dbList      = $this->instance->dbListToOptions($dbList);
 
         $this->display();
     }

@@ -47,23 +47,57 @@ func (m *Manager) ListDbsComponents(kind, namespace string) ([]model.ComponentDb
 		if string(dbsvc.Spec.Type) != kind {
 			continue
 		}
-		base := model.ComponentBase{
-			Name:      dbsvc.Name,
-			NameSpace: dbsvc.Namespace,
+		hp, err := m.parseDbSvcDetail(dbsvc)
+		if err != nil {
+			continue
 		}
 		cm := model.ComponentDbServiceModel{
-			Alias:      decodeDbSvcAlias(dbsvc),
-			Status:     dbsvc.Status,
-			CreateTime: dbsvc.CreationTimestamp.Unix(),
-			Source: model.ComponentBase{
-				Name:      getSourceFromAnnotations(dbsvc.Annotations, "meta.helm.sh/release-name", "unknow"),
-				NameSpace: getSourceFromAnnotations(dbsvc.Annotations, "meta.helm.sh/release-namespace", "default"),
+			ComponentBase: model.ComponentBase{
+				Name: dbsvc.Name, NameSpace: dbsvc.Namespace,
 			},
+			Alias: decodeDbSvcAlias(dbsvc),
+			Host:  hp.Host,
+			Port:  hp.Port,
 		}
-		cm.ComponentBase = base
 		components = append(components, cm)
 	}
 	return components, nil
+}
+
+func (m *Manager) parseDbSvcDetail(dbsvc *quchengv1beta1.DbService) (*hostPort, error) {
+	svc := dbsvc.Spec.Service
+	svcNs := svc.Namespace
+	if svcNs == "" {
+		svcNs = dbsvc.Namespace
+	}
+	host := fmt.Sprintf("%s.%s.svc", svc.Name, svcNs)
+
+	var port int32
+	if svc.Port.Type == intstr.Int {
+		port = svc.Port.IntVal
+	} else {
+		s, err := m.ks.Store.GetService(svcNs, svc.Name)
+		if err != nil {
+			return nil, err
+		}
+		for _, p := range s.Spec.Ports {
+			if p.Name == svc.Port.StrVal {
+				port = p.Port
+				break
+			}
+		}
+		if port == 0 {
+			return nil, fmt.Errorf("parse service port '%s' failed", svc.Port.StrVal)
+		}
+	}
+	return &hostPort{
+		Host: host, Port: port,
+	}, nil
+}
+
+type hostPort struct {
+	Host string
+	Port int32
 }
 
 func (m *Manager) ValidDbService(name, namespace, dbname, username string) (interface{}, error) {

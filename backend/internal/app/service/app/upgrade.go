@@ -5,7 +5,9 @@
 package app
 
 import (
-	"github.com/imdario/mergo"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
+	"helm.sh/helm/v3/pkg/cli/values"
+	"os"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
@@ -13,36 +15,36 @@ import (
 
 func (i *Instance) Stop(chart, channel string) error {
 
-	vars := i.release.Config
+	vals := i.release.Config
 
-	updateMap := map[string]interface{}{
-		"global": map[string]interface{}{
-			"stopped": true,
-		},
-	}
+	lastValFile, err := writeValuesFile(vals)
+	defer os.Remove(lastValFile)
 
-	if err := mergo.Merge(&vars, updateMap, mergo.WithOverwriteWithEmptyValue); err != nil {
-		return err
+	stopSettings := []string{"global.stopped=true"}
+	options := &values.Options{
+		Values:     stopSettings,
+		ValueFiles: []string{lastValFile},
 	}
 
 	h, _ := helm.NamespaceScope(i.namespace)
-	_, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, vars)
+	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
 	return err
 }
 
 func (i *Instance) Start(chart, channel string) error {
 	h, _ := helm.NamespaceScope(i.namespace)
-	vars := i.release.Config
+	vals := i.release.Config
 
-	globalVars, ok := vars["global"]
-	if ok {
-		globalVals := globalVars.(map[string]interface{})
-		delete(globalVals, "stoped")
-		delete(globalVals, "stopped")
-		vars["global"] = globalVals
+	lastValFile, err := writeValuesFile(vals)
+	defer os.Remove(lastValFile)
+
+	startSettings := []string{"global.stopped=null"}
+	options := &values.Options{
+		Values:     startSettings,
+		ValueFiles: []string{lastValFile},
 	}
 
-	_, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, vars)
+	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
 	return err
 }
 
@@ -59,13 +61,27 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 		return err
 	}
 
-	if vals == nil {
-		vals = make(map[string]interface{})
-	}
+	lastValFile, err := writeValuesFile(vals)
+	defer os.Remove(lastValFile)
 
 	var settings = make([]string, len(body.Settings))
 	for _, s := range body.Settings {
 		settings = append(settings, s.Key+"="+s.Val)
+	}
+
+	options := &values.Options{
+		Values:     settings,
+		ValueFiles: []string{lastValFile},
+	}
+
+	if len(body.SettingsMap) > 0 {
+		tlog.WithCtx(i.ctx).InfoS("build install settings", "namespace", i.namespace, "name", i.name, "settings_map", body.SettingsMap)
+		f, err := writeValuesFile(body.SettingsMap)
+		if err != nil {
+			tlog.WithCtx(i.ctx).ErrorS(err, "write values file failed")
+		}
+		defer os.Remove(f)
+		options.ValueFiles = append(options.ValueFiles, f)
 	}
 
 	if err = h.PatchValues(vals, settings); err != nil {
@@ -75,7 +91,7 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	if body.Version != "" {
 		version = body.Version
 	}
-	_, err = h.Upgrade(i.name, genChart(body.Channel, chart), version, vals)
+	_, err = h.Upgrade(i.name, genChart(body.Channel, chart), version, options)
 	return err
 }
 

@@ -567,7 +567,7 @@ class cneModel extends model
      */
     public function installApp($apiParams)
     {
-        $apiParams->settings = $this->trasformSettings($apiParams->settings);
+        if(!empty($apiParams->settings)) $apiParams->settings = $this->trasformSettings($apiParams->settings);
 
         $apiParams->channel = $this->config->CNE->api->channel;
 
@@ -653,29 +653,48 @@ class cneModel extends model
     /**
      * Get shared database List.
      *
+     * @param  string $dbType    database type.
+     * @param  string $namespace
      * @access public
      * @return array
      */
-    public function dbList()
+    public function dbList($dbType = 'mysql', $namespace = '')
     {
         $apiUrl = "/api/cne/component/gdb";
-        $result = $this->apiGet($apiUrl, array(), $this->config->CNE->api->headers);
-        if(empty($result) || $result->code != 200) return array();
+        $result = $this->apiGet($apiUrl, array('kind' => $dbType, 'namespace' => $namespace), $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
 
-        $dbList = array();
-        foreach($result->data as $database)
-        {
-            //$db = new stdclass;
-            //$db->name = $database->source->name;
-            //$db->host = $database->spec->service->name;
-            //$db->port = $database->spec->service->port;
-            //$db->user = $database->account->user->value;
-            //$db->password = $database->account->valueFrom->secretKeyRef->name;
-            //
-            $dbList[$database->source->name] = $database->source->name;
-        }
+        $dbList = $result->data;
+        return array_combine(array_column($dbList, 'name'), $dbList);
+    }
 
-        return $dbList;
+    /**
+     * Validate database name and user.
+     *
+     * @param  string $dbService
+     * @param  string $dbUser
+     * @param  string $dbName
+     * @param  string $namespace
+     * @access public
+     * @return object
+     */
+    public function validateDB($dbService, $dbUser, $dbName, $namespace)
+    {
+        $apiParams = array();
+        $apiParams['name']      = $dbService;
+        $apiParams['user']      = $dbUser;
+        $apiParams['database']  = $dbName;
+        $apiParams['namespace'] = $namespace;
+
+        $apiUrl = "/api/cne/component/gdb/validation";
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result->data->validation;
+
+        $validation = new stdclass;
+        $validation->user     = true;
+        $validation->database = true;
+
+        return $validation;
     }
 
     /**

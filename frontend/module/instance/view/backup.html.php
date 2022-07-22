@@ -1,10 +1,10 @@
 <div class="panel">
   <div class='btn-toolbar pull-right'>
-  <?php echo html::commonButton($lang->instance->backup->create, "instance-id='{$instance->id}'", "btn-backup btn btn-primary");?>
+  <?php $this->instance->printBackupBtn($instance);?>
   </div>
   <?php if(empty($backupList)):?>
     <div class="table-empty-tip">
-      <p><?php echo $lang->instance->errors->noBackup . html::commonButton($lang->instance->backup->create, "instance-id='{$instance->id}'", "btn-backup btn btn-primary");?></p>
+      <p><?php echo $lang->instance->errors->noBackup; $this->instance->printBackupBtn($instance);?></p>
     </div>
   <?php else:?>
   <table class="table">
@@ -25,7 +25,6 @@
       <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo zget($lang->instance->backup->statusList, strtolower($backup->status));?></td>
       <td rowspan="<?php echo max(count($backup->restores), 1);?>">
         <?php echo html::commonButton($lang->instance->backup->restore, "instance-id='{$instance->id}' backup-name='{$backup->name}'", "btn-restore btn btn-link");?>
-        <?php //echo html::commonButton($lang->instance->backup->delete,  "backup-id='{$backup->id}'", "btn-delete-backup btn btn-link");?>
       </td>
       <?php if(count($backup->restores)):?>
       <?php $restore = array_shift($backup->restores);?>

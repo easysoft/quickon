@@ -39,15 +39,26 @@
             </td>
             <td></td>
           </tr>
+          <?php if(isset($cloudApp->dependencies->mysql)):?>
           <tr>
             <th><?php echo $lang->instance->dbType;?></th>
             <td>
               <div class='input-group'>
-                <?php echo html::select('dbName', $dbList, '', "class='form-control'");?>
+                <?php echo html::radio('dbType', $lang->instance->dbTypes, 'sharedDB');?>
+              </div>
+            </td>
+            <td><?php echo html::a('https://www.qucheng.com/book/Installation-manual/app-market-17.html',$lang->instance->howToSelectDB, '_blank');?></td>
+          </tr>
+          <tr>
+            <th></th>
+            <td>
+              <div class='input-group'>
+                <?php echo html::select('dbService', $dbList, '', "class='form-control'");?>
               </div>
             </td>
             <td></td>
           </tr>
+          <?php endif;?>
         </tbody>
       </table>
       <div class="text-center form-actions"><?php echo html::submitButton($lang->instance->install);?></div>
