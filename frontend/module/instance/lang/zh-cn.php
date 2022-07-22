@@ -164,13 +164,14 @@ $lang->instance->notices['confirmDelete']    = '确定要删除该备份数据�
 $lang->instance->nameChangeTo    = ' %s 修改为 %s  。';
 $lang->instance->versionChangeTo = ' %s 升级为 %s  。';
 
-$lang->instance->instanceNotExists = '服务不存在';
-$lang->instance->caplicasTooSmall  = '副本数不能小于1';
-$lang->instance->empty             = '暂无服务';
-$lang->instance->noComponent       = '无组件，点击';
-$lang->instance->noHigherVersion   = '未找到更高版本！';
-$lang->instance->backupOnlyRunning = '运行状态才能备份';
-$lang->instance->howToSelectDB     = '如何选择?';
+$lang->instance->instanceNotExists  = '服务不存在';
+$lang->instance->caplicasTooSmall   = '副本数不能小于1';
+$lang->instance->empty              = '暂无服务';
+$lang->instance->noComponent        = '无组件，点击';
+$lang->instance->noHigherVersion    = '未找到更高版本！';
+$lang->instance->backupOnlyRunning  = '运行状态才能备份';
+$lang->instance->restoreOnlyRunning = '运行状态才能还原';
+$lang->instance->howToSelectDB      = '如何选择?';
 
 $lang->instance->errors = new stdclass;
 $lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';

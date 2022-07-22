@@ -717,6 +717,23 @@ class InstanceModel extends model
     }
 
     /**
+     * Print restore button of instance.
+     *
+     * @param  object $instance
+     * @param  object $backup
+     * @access public
+     * @return void
+     */
+    public function printRestoreBtn($instance, $backup)
+    {
+        $disabled = $instance->status == 'running' ? '' : 'disabled';
+        $title    = empty($disabled) ? $this->lang->instance->backup->restore : $this->lang->instance->restoreOnlyRunning;
+        $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-link");
+
+        echo $btn;
+    }
+
+    /**
      * Print message of action log of instance.
      *
      * @param  object $instance

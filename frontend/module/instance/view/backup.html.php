@@ -4,7 +4,7 @@
   </div>
   <?php if(empty($backupList)):?>
     <div class="table-empty-tip">
-      <p><?php echo $lang->instance->errors->noBackup; $this->instance->printBackupBtn($instance);?></p>
+      Restore<p><?php echo $lang->instance->errors->noBackup; $this->instance->printBackupBtn($instance);?></p>
     </div>
   <?php else:?>
   <table class="table">
@@ -24,7 +24,7 @@
       <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo $backup->creator;?></td>
       <td rowspan="<?php echo max(count($backup->restores), 1);?>"><?php echo zget($lang->instance->backup->statusList, strtolower($backup->status));?></td>
       <td rowspan="<?php echo max(count($backup->restores), 1);?>">
-        <?php echo html::commonButton($lang->instance->backup->restore, "instance-id='{$instance->id}' backup-name='{$backup->name}'", "btn-restore btn btn-link");?>
+        <?php $this->instance->printRestoreBtn($instance, $backup);?>
       </td>
       <?php if(count($backup->restores)):?>
       <?php $restore = array_shift($backup->restores);?>
