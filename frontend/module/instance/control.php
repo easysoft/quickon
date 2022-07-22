@@ -341,8 +341,13 @@ class instance extends control
     {
         $instance = $this->instance->getByID($instanceID);
         $success = $this->instance->backup($instance, $this->app->user);
-        if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'backupFail')));
+        if(!$success)
+        {
+            $this->action->create('instance', $instance->id, 'backup', '', json_encode(array('result' => array('result' => 'fail'))));
+            return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'backupFail')));
+        }
 
+        $this->action->create('instance', $instance->id, 'backup', '', json_encode(array('result' => array('result' => 'success'))));
         return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'backupSuccess')));
     }
 
@@ -363,8 +368,13 @@ class instance extends control
         $instance = $this->instance->getByID($postData->instanceID);
 
         $success = $this->instance->restore($instance, $this->app->user, $postData->backupName);
-        if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'restoreFail')));
+        if(!$success)
+        {
+            $this->action->create('instance', $instance->id, 'restore', '', json_encode(array('result' => array('result' => 'fail'))));
+            return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'restoreFail')));
+        }
 
+        $this->action->create('instance', $instance->id, 'restore', '', json_encode(array('result' => array('result' => 'success'))));
         return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'restoreSuccess')));
     }
 
