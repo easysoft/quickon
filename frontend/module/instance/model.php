@@ -373,7 +373,7 @@ class InstanceModel extends model
         $params->namespace = $instance->spaceData->k8space;
 
         $result = $this->cne->uninstallApp($params);
-        if($result->code == 200) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
+        if($result->code == 200 || $result->code == 404) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
 
         return $result;
     }
