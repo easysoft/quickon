@@ -1,14 +1,15 @@
 <?php
 $lang->instance = new stdclass;
-$lang->instance->name       = '名称';
-$lang->instance->appName    = '应用模板';
-$lang->instance->version    = '版本';
-$lang->instance->status     = '状态';
-$lang->instance->cpu        = 'CPU';
-$lang->instance->mem        = '内存';
-$lang->instance->space      = '空间';
-$lang->instance->domain     = '域名';
-$lang->instance->dbType     = '数据库';
+$lang->instance->name            = '名称';
+$lang->instance->appName         = '应用模板';
+$lang->instance->version         = '版本';
+$lang->instance->status          = '状态';
+$lang->instance->cpu             = 'CPU';
+$lang->instance->mem             = '内存';
+$lang->instance->space           = '空间';
+$lang->instance->domain          = '域名';
+$lang->instance->dbType          = '数据库';
+$lang->instance->advantageOption = '高级选项';
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';

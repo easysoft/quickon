@@ -37,4 +37,12 @@ $(function()
             $("select[name=dbService]").closest('td').hide();
         }
     });
+
+    $(".advanced a").on('click', function(event)
+    {
+        let downArrow = $(".advanced a .icon-chevron-double-down");
+        let upArrow   = $(".advanced a .icon-chevron-double-up");
+        if(downArrow.length >0 ) downArrow.removeClass('icon-chevron-double-down').addClass('icon-chevron-double-up');
+        if(upArrow.length >0 ) upArrow.removeClass('icon-chevron-double-up').addClass('icon-chevron-double-down');
+    });
 });

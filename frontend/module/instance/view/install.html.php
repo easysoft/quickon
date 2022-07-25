@@ -39,10 +39,15 @@
             </td>
             <td></td>
           </tr>
-          <?php if(isset($cloudApp->dependencies->mysql)):?>
+        </tbody>
+      </table>
+      <?php if(isset($cloudApp->dependencies->mysql)):?>
+      <div class='advanced'><?php echo html::a("#advanced-settings", $lang->instance->advantageOption . "<i class='icon icon-chevron-double-down'></i>", '', "data-toggle='collapse'");?></div>
+      <table class="collapse table table-form" id="advanced-settings">
+        <tbody>
           <tr>
-            <th><?php echo $lang->instance->dbType;?></th>
-            <td>
+            <th class='w-70px'><?php echo $lang->instance->dbType;?></th>
+            <td class='w-230px'>
               <div class='input-group'>
                 <?php echo html::radio('dbType', $lang->instance->dbTypes, 'sharedDB');?>
               </div>
@@ -58,9 +63,9 @@
             </td>
             <td></td>
           </tr>
-          <?php endif;?>
         </tbody>
       </table>
+      <?php endif;?>
       <div class="text-center form-actions"><?php echo html::submitButton($lang->instance->install);?></div>
     </form>
   </div>
