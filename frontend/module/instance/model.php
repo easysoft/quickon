@@ -346,7 +346,7 @@ class InstanceModel extends model
         $result = $this->cne->installApp($apiParams);
         if($result->code != 200)
         {
-            $this->dao->delete(TABLE_INSTANCE)->where('id')->eq($instance->id)->exec();
+            $this->dao->delete()->from(TABLE_INSTANCE)->where('id')->eq($instance->id)->exec();
             return false;
         }
 
