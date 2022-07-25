@@ -51,3 +51,5 @@ const (
 	LabelBackupName     = "easycorp.io/backup_name"
 	LabelGlobalDatabase = "easycorp.io/global_database"
 )
+
+const DEFAULT_RUNTIME_NAMESPACE = "cne-system"
