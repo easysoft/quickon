@@ -1422,11 +1422,11 @@ a.text-primary {
 }
 
 .btn-active-text .text {
-    color: #0b89b2;
+    color: #61be68;
 }
 
 .btn-active-text .text:after {
-    border-bottom-color: #0b89b2;
+    border-bottom-color: #61be68;
 }
 
 .btn.btn-action, .c-actions .btn{
@@ -1452,7 +1452,6 @@ a.text-primary {
 }
 
 .label-outline.label-primary {
-    background: #e5fbf3!important;
     border-color: rgba(0,183,145,.25)!important
 }
 
@@ -1914,7 +1913,7 @@ td.c-actions .btn-link:hover {
     border-bottom: 2px solid #61be68!important;
 }
 
-.body-modal .main-header h2 {
+.main-header h2 {
     font-size: 16px;
     font-weight: 700;
     line-height: 18px;

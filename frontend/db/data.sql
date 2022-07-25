@@ -29,6 +29,7 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   `k8name` char(64) NOT NULL,
   `status` char(20) NOT NULL,
   `domain` char(255) NOT NULL,
+  `dbSettings` text,
   `env` text,
   `createdBy` char(30) NOT NULL,
   `createdAt` datetime NOT NULL,

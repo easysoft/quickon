@@ -17,7 +17,7 @@ if(!function_exists('getWebRoot')){function getWebRoot(){}}
 
 /* 基本设置。Basic settings. */
 $config->platformVersion = getenv('CHART_VERSION');// 渠成平台版本。The version of Qucheng platform.
-$config->version         = '1.1.1';              // 渠成Web版本。 The version of Web Service of Qucheng. Don't change it.
+$config->version         = '1.1.3';              // 渠成Web版本。 The version of Web Service of Qucheng. Don't change it.
 $config->charset         = 'UTF-8';              // 编码。 The encoding of Qucheng.
 $config->cookieLife      = time() + 2592000;     // Cookie的生存时间。The cookie life time.
 $config->timezone        = 'Asia/Shanghai';      // 时区设置。        The time zone setting, for more see http://www.php.net/manual/en/timezones.php.

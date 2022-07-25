@@ -1,3 +1,7 @@
+// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
+// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
+// license that can be found in the LICENSE file.
+
 package router
 
 import (
@@ -10,7 +14,7 @@ import (
 
 func AppBackupCreate(c *gin.Context) {
 	var (
-		op model.AppModel
+		op model.AppWithUserModel
 	)
 
 	_, i, code, err := LookupApp(c, &op)
@@ -19,7 +23,7 @@ func AppBackupCreate(c *gin.Context) {
 		return
 	}
 
-	data, err := i.CreateBackup()
+	data, err := i.CreateBackup(op.UserName)
 	if err != nil {
 		renderError(c, http.StatusInternalServerError, err)
 		return
@@ -30,7 +34,7 @@ func AppBackupCreate(c *gin.Context) {
 
 func AppRestoreCreate(c *gin.Context) {
 	var (
-		op model.AppBackupModel
+		op model.AppRestoreCreateModel
 	)
 
 	_, i, code, err := LookupApp(c, &op)
@@ -39,7 +43,7 @@ func AppRestoreCreate(c *gin.Context) {
 		return
 	}
 
-	data, err := i.CreateRestore(op.BackupName)
+	data, err := i.CreateRestore(op.BackupName, op.UserName)
 	if err != nil {
 		renderError(c, http.StatusInternalServerError, err)
 		return

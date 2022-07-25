@@ -45,7 +45,7 @@ func AppInstall(c *gin.Context) {
 		return
 	}
 
-	i, err = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
+	i, _ = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
 	if i != nil {
 		tlog.WithCtx(ctx).ErrorS(nil, "app already exists, install can't continue",
 			"cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name, "chart", body.Chart)

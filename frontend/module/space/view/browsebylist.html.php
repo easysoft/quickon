@@ -36,7 +36,7 @@
           <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
             <?php $this->instance->printStatus($instance);?>
           </td>
-          <td><?php $this->instance->printActions($instance);?></td>
+          <td><?php $this->instance->printIconActions($instance);?></td>
         </tr>
       <?php endforeach;?>
       </tbody>

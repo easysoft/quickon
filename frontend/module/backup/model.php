@@ -141,7 +141,7 @@ class backupModel extends model
         $backFileName = "{$backupDir}/{$fileName}.sql";
         if(!$nosafe) $backFileName .= '.php';
 
-        $result = $this->backSQL($backFileName);
+        $result = $this->backSQL($backFileName, 'restore');
         if($result->result and !$nosafe) $this->addFileHeader($backFileName);
 
         $allTables = $zdb->getAllTables();
@@ -156,7 +156,11 @@ class backupModel extends model
 
         $importResult = $zdb->import($backupFile);
 
-        if($importResult && $importResult->result) $this->loadModel('instance')->deleteNotExist();
+        if($importResult && $importResult->result)
+        {
+            $this->loadModel('instance')->deleteNotExist();
+            $this->processRestoreSummary('sql', 'done');
+        }
 
         return $importResult;
     }
@@ -192,6 +196,8 @@ class backupModel extends model
             $zfile = $this->app->loadClass('zfile');
             $zfile->copyDir($backupFile, $this->app->getAppRoot() . 'www/data/', $showDetails = false);
         }
+
+        $this->processRestoreSummary('file', 'done');
 
         return $return;
     }
@@ -452,6 +458,36 @@ class backupModel extends model
     }
 
     /**
+     * Process restore summay.
+     *
+     * @param  string $restoreType
+     * @param  string $status
+     * @param  string $action
+     * @access public
+     * @return bool
+     */
+    public function processRestoreSummary($restoreType = 'sql', $status = 'done', $action = 'add')
+    {
+        $summaryFile = $this->getBackupPath() . DS . 'restoreSummary';
+        if(!file_exists($summaryFile) and !touch($summaryFile)) return false;
+
+        $summary = json_decode(file_get_contents($summaryFile), true);
+        if(empty($summary)) $summary = array();
+
+        if($action == 'add')
+        {
+            $summary[$restoreType] = $status;
+        }
+        else
+        {
+            $summary = array();
+        }
+        if(file_put_contents($summaryFile, json_encode($summary))) return true;
+        return false;
+
+    }
+
+    /**
      * Save backup account and backup type.
      *
      * @param  string $file
@@ -473,7 +509,7 @@ class backupModel extends model
 
         if($action == 'add')
         {
-            $summary[$fileName]['account']    = $this->app->user->account;
+            $summary[$fileName]['account']    = $this->app->user->account == 'guest' ? '' : $this->app->user->account;
             $summary[$fileName]['backupType'] = $type;
         }
         else

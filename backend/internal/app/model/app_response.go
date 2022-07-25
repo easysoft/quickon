@@ -87,13 +87,18 @@ type AppRespPvc struct {
 }
 
 type AppRespBackup struct {
-	Name        string                 `json:"name"`
-	CreateTime  int64                  `json:"create_time"`
-	StorageName string                 `json:"storage_name"`
-	Status      string                 `json:"status"`
-	Archives    []AppRespBackupArchive `json:"archives"`
+	Name       string           `json:"name"`
+	Creator    string           `json:"creator"`
+	CreateTime int64            `json:"create_time"`
+	Status     string           `json:"status"`
+	Message    string           `json:"message"`
+	Restores   []AppRespRestore `json:"restores"`
 }
 
-type AppRespBackupArchive struct {
-	Path string `json:"path"`
+type AppRespRestore struct {
+	Name       string `json:"name"`
+	Creator    string `json:"creator"`
+	CreateTime int64  `json:"create_time"`
+	Status     string `json:"status"`
+	Message    string `json:"message"`
 }

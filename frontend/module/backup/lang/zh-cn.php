@@ -27,6 +27,15 @@ $lang->backup->count    = '备份文件数';
 $lang->backup->size     = '大小';
 $lang->backup->status   = '状态';
 $lang->backup->running  = '运行中';
+$lang->backup->done     = '完成';
+
+$lang->backup->backupName   = '备份名称：';
+$lang->backup->backupSql    = '备份数据库：';
+$lang->backup->backupFile   = '备份附件：';
+$lang->backup->restoreImage = '回滚平台镜像：';
+$lang->backup->restoreSQL   = '回滚数据库：';
+$lang->backup->restoreFile  = '回滚附件：';
+$lang->backup->checkService = '检查服务：';
 
 $lang->backup->upgrade  = '升级';
 $lang->backup->rollback = '回滚';
@@ -36,17 +45,21 @@ $lang->backup->delete   = '删除';
 $lang->backup->statusList['success'] = '成功';
 $lang->backup->statusList['fail']    = '失败';
 
-$lang->backup->typeList['manual']    = '手动备份';
-$lang->backup->typeList['auto']      = '升级前自动备份';
+$lang->backup->restoreProgress['doing'] = '进行中';
+$lang->backup->restoreProgress['done']  = '完成';
+
+$lang->backup->typeList['manual']  = '手动备份';
+$lang->backup->typeList['upgrade'] = '升级前自动备份';
+$lang->backup->typeList['restore'] = '回滚前自动备份';
 
 $lang->backup->settingDir = '备份目录';
 $lang->backup->settingList['nofile'] = '不备份附件和代码';
 $lang->backup->settingList['nosafe'] = '不需要防下载PHP文件头';
 
 $lang->backup->waitting        = '<span id="backupType"></span>正在进行中，请稍候...';
-$lang->backup->progressSQL     = '<p>SQL备份中，已备份%s</p>';
-$lang->backup->progressAttach  = '<p>SQL备份完成</p><p>附件备份中，共有%s个文件，已经备份%s个</p>';
-$lang->backup->progressCode    = '<p>SQL备份完成</p><p>附件备份完成</p><p>代码备份中，共有%s个文件，已经备份%s个</p>';
+$lang->backup->progressSQL     = '备份中，已备份%s';
+$lang->backup->progressAttach  = '备份中，共有%s个文件，已经备份%s个';
+$lang->backup->progressCode    = '代码备份中，共有%s个文件，已经备份%s个';
 $lang->backup->confirmDelete   = '是否删除备份？';
 $lang->backup->confirmRestore  = '是否还原该备份？';
 $lang->backup->holdDays        = '备份保留最近 %s 天';
@@ -55,6 +68,11 @@ $lang->backup->restoreTip      = '还原功能只还原数据库。';
 $lang->backup->versionInfo     = '点击查看新版本介绍';
 $lang->backup->confirmUpgrade  = '请确认是否升级渠成平台？';
 $lang->backup->upgrading       = '升级中';
+$lang->backup->backupTitle     = '正在备份 渠成平台...';
+$lang->backup->restoreTitle    = '正在回滚 渠成平台...';
+$lang->backup->backingUp       = '进行中';
+$lang->backup->restoring       = '进行中';
+$lang->backup->confirmRollback = '请确认是否回滚渠成平台？';
 
 $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';

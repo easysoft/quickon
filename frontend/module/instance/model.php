@@ -213,16 +213,90 @@ class InstanceModel extends model
     }
 
     /**
+     * Mount installation settings by custom data.
+     *
+     * @param  object  $customData
+     * @param  array   $dbList
+     * @param  object  $app
+     * @param  object  $instance
+     * @access private
+     * @return object
+     */
+    private function installationSettingsMap($customData, $dbList, $app, $instance)
+    {
+        $settingsMap = new stdclass;
+        if($customData->customDomain)
+        {
+            $settingsMap->ingress = new stdclass;
+            $settingsMap->ingress->enabled = true;
+            $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
+        }
+
+        if(empty($customData->dbType) || $customData->dbType == 'unsharedDB') return $settingsMap;
+
+        $selectedDB = zget($dbList, $customData->dbService, '');
+
+        $dbSettings = new stdclass;
+        $dbSettings->service   = $customData->dbService;
+        $dbSettings->namespace = $selectedDB->namespace;
+        $dbSettings->host      = $selectedDB->host;
+        $dbSettings->port      = $selectedDB->port;
+        $dbSettings->name      = $app->dependencies->mysql->database . '_' . $instance->id;
+        $dbSettings->user      = $app->dependencies->mysql->user . '_' . $instance->id;
+
+        $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user, $dbSettings->name);
+
+        $settingsMap->mysql = new stdclass;
+        $settingsMap->mysql->enabled = false;
+
+        $settingsMap->mysql->auth = new stdclass;
+        $settingsMap->mysql->auth->user     = $dbSettings->user;
+        $settingsMap->mysql->auth->password = helper::randStr(12);
+        $settingsMap->mysql->auth->host     = $dbSettings->host;
+        $settingsMap->mysql->auth->port     = $dbSettings->port;
+        $settingsMap->mysql->auth->database = $dbSettings->name;
+
+        $settingsMap->mysql->auth->dbservice = new stdclass;
+        $settingsMap->mysql->auth->dbservice->name      = $dbSettings->service;
+        $settingsMap->mysql->auth->dbservice->namespace = $dbSettings->namespace;
+
+        return $settingsMap;
+    }
+
+    /**
+     * Return valid DBSettings.
+     *
+     * @param  object  $dbSettings
+     * @param  string  $defaultUser
+     * @param  string  $defaultDBName
+     * @param  int     $times
+     * @access private
+     * @return null|object
+     */
+    private function getValidDBSettings($dbSettings, $defaultUser, $defaultDBName, $times = 1)
+    {
+        if($times >10) return;
+
+        $validatedResult = $this->cne->validateDB($dbSettings->service, $dbSettings->name, $dbSettings->user, $dbSettings->namespace);
+        if($validatedResult->user && $validatedResult->database) return $dbSettings;
+
+        if(!$validatedResult->user)     $dbSettings->user = $defaultUser . '_' . help::randStr(4);
+        if(!$validatedResult->database) $dbSettings->database = $defaultDBName  . '_' . help::randStr(4);
+
+        return $this->solveDBSettings($dbSettings, $defaultUser, $defaultDBName, $times++);
+    }
+
+    /**
      * Install app.
      *
      * @param  object $app
-     * @param  array  $settings settings of app, for example: cup, memory.
+     * @param  array  $dbList
      * @param  object $customData
      * @param  int    $spaceID
      * @access public
      * @return false|object Failure: return false, Success: return instance
      */
-    public function install($app, $settings = array(), $customData = null, $spaceID = null)
+    public function install($app, $dbList, $customData, $spaceID = null)
     {
         $this->loadModel('store');
         $this->app->loadLang('store');
@@ -237,15 +311,7 @@ class InstanceModel extends model
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
-        $appData            = new stdclass;
-        $appData->cluser    = '';
-        $appData->namespace = $space->k8space;
-        $appData->name      = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
-        $appData->chart     = $app->chart;
-        $appData->settings  = $settings;
-
-        $result = $this->cne->installApp($appData);
-        if($result->code != 200) return false;
+        $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
 
         $instanceData = new stdclass;
         $instanceData->appId        = $app->id;
@@ -261,7 +327,7 @@ class InstanceModel extends model
         $instanceData->appVersion   = $app->app_version;
         $instanceData->version      = $app->version;
         $instanceData->space        = $space->id;
-        $instanceData->k8name       = $appData->name;
+        $instanceData->k8name       = $k8name;
         $instanceData->status       = 'creating';
         $instanceData->createdBy    = $this->app->user->account;
         $instanceData->createdAt    = date('Y-m-d H:i:s');
@@ -269,10 +335,25 @@ class InstanceModel extends model
         $instance = $this->createInstance($instanceData);
         if(dao::isError()) return false;
 
+        $apiParams = new stdclass;
+        $apiParams->userame      = $this->app->user->account;
+        $apiParams->cluser       = '';
+        $apiParams->namespace    = $space->k8space;
+        $apiParams->name         = $k8name;
+        $apiParams->chart        = $app->chart;
+        $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+
+        $result = $this->cne->installApp($apiParams);
+        if($result->code != 200)
+        {
+            $this->dao->delete()->from(TABLE_INSTANCE)->where('id')->eq($instance->id)->exec();
+            return false;
+        }
+
         $this->loadModel('action')->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'app' => $app)));
 
         $status = $result->code == 200 ? 'initializing' : 'installationFail';
-        $this->updateStatus($instance->id, $status);
+        $this->updateByID($instance->id, array('status' => $status, 'dbSettings' => json_encode($apiParams->settings_map)));
 
         return  $instance;
     }
@@ -292,7 +373,7 @@ class InstanceModel extends model
         $params->namespace = $instance->spaceData->k8space;
 
         $result = $this->cne->uninstallApp($params);
-        if($result->code == 200) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
+        if($result->code == 200 || $result->code == 404) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
 
         return $result;
     }
@@ -416,6 +497,85 @@ class InstanceModel extends model
     }
 
     /**
+     * Backup instance.
+     *
+     * @param  object $instance
+     * @param  object $user
+     * @access public
+     * @return bool
+     */
+    public function backup($instance, $user)
+    {
+        $result = $this->cne->backup($instance, $user->account);
+        if($result->code != 200) return false;
+
+        return true;
+    }
+
+    /**
+     * Restore instance.
+     *
+     * @param  object $instance
+     * @param  object $user
+     * @param  string $backupName
+     * @access public
+     * @return bool
+     */
+    public function restore($instance, $user, $backupName)
+    {
+        $result = $this->cne->restore($instance, $backupName, $user->account);
+        if($result->code != 200) return false;
+
+        return true;
+    }
+
+    /**
+     * Get backup list of instance.
+     *
+     * @param  object $instance
+     * @access public
+     * @return array
+     */
+    public function backupList($instance)
+    {
+        $result = $this->cne->backupList($instance);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
+
+        $backupList = $result->data;
+        usort($backupList, function($backup1, $backup2){ return $backup1->create_time < $backup2->create_time; });
+
+        $accounts = array_column($backupList, 'creator');
+        foreach($backupList as $backup) $accounts = array_merge($accounts, array_column($backup->restores, 'creator'));
+
+        $accounts = array_unique($accounts);
+
+        $users = $this->dao->select('account,realname')->from(TABLE_USER)->where('account')->in($accounts)->fetchPairs('account', 'realname');
+
+        foreach($backupList as &$backup)
+        {
+            $backup->username = zget($users, $backup->creator);
+            foreach($backup->restores as &$restore) $restore->username = zget($users, $restore->creator);
+        }
+
+        return $backupList;
+    }
+
+    /**
+     * Mount DB name and alias to array for select options.
+     *
+     * @param  array  $databases
+     * @access public
+     * @return array
+     */
+    public function dbListToOptions($databases)
+    {
+        $dbList = array();
+        foreach($databases as $database) $dbList[$database->name] = zget($database, 'alias', $database->name);
+
+        return $dbList;
+    }
+
+    /**
      * Delete instances don't exist in CNE.
      *
      * @access public
@@ -497,17 +657,17 @@ class InstanceModel extends model
     }
 
     /*
-     * Print action buttons.
+     * Print action buttons with icon.
      *
      * @param  object $instance
      * @access public
      * @return void
      */
-    public function printActions($instance)
+    public function printIconActions($instance)
     {
         $actionHtml = '';
 
-        $disableStart = !$this->canDo('start', $instance);
+            $disableStart = !$this->canDo('start', $instance);
         $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-lg btn-action");
 
         $disableStop = !$this->canDo('stop', $instance);
@@ -523,6 +683,68 @@ class InstanceModel extends model
         }
 
         echo $actionHtml;
+    }
+
+    /*
+     * Print action buttons with text.
+     *
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function printTextActions($instance)
+    {
+        $actionHtml = '';
+
+        $disableStart = !$this->canDo('start', $instance);
+        $actionHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn label label-outline label-primary label-lg");
+
+        $disableStop = !$this->canDo('stop', $instance);
+        $actionHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-warning label-lg');
+
+        $disableUninstall = !$this->canDo('uninstall', $instance);
+        $actionHtml      .= html::commonButton($this->lang->instance->uninstall, "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn label  label-outline label-danger label-lg');
+
+        if($instance->domain)
+        {
+            $disableVisit = !$this->canDo('visit', $instance);
+             $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-primary label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+        }
+
+        echo $actionHtml;
+    }
+
+    /**
+     * Print backup button of instance.
+     *
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function printBackupBtn($instance)
+    {
+        $disabled = $instance->status == 'running' ? '' : 'disabled';
+        $title    = empty($disabled) ? $this->lang->instance->backup->create : $this->lang->instance->backupOnlyRunning;
+        $btn      = html::commonButton($this->lang->instance->backup->create, "instance-id='{$instance->id}' title='{$title}' {$disabled}", "btn-backup btn btn-primary");
+
+        echo $btn;
+    }
+
+    /**
+     * Print restore button of instance.
+     *
+     * @param  object $instance
+     * @param  object $backup
+     * @access public
+     * @return void
+     */
+    public function printRestoreBtn($instance, $backup)
+    {
+        $disabled = $instance->status == 'running' ? '' : 'disabled';
+        $title    = empty($disabled) ? $this->lang->instance->backup->restore : $this->lang->instance->restoreOnlyRunning;
+        $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-link");
+
+        echo $btn;
     }
 
     /**

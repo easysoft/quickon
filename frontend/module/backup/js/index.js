@@ -12,16 +12,35 @@ $(function()
 
     $('.backup').click(function()
     {
-        $('#waitting .modal-body #backupType').html(backup);
         $('#waitting').modal('show');
         setInterval(function()
         {
             $.get(createLink('backup', 'ajaxGetProgress'), function(data)
             {
-                $('#waitting .modal-content #message').html(data);
+                data = JSON.parse(data);
+                $('.progressSQL').text(data.sql);
+                $('.progressFile').text(data.file);
             });
         }, 1000);
     })
+    $(".restoreButton").click(function()
+    {
+        $('#confirmRollback').modal('show');
+    });
+    $('.submitRestore').click(function()
+    {
+        $('#confirmRollback').modal('hide');
+        $('#restoring').modal('show');
+        setInterval(function()
+        {
+            $.get(createLink('backup', 'ajaxGetRestoreProgress'), function(data)
+            {
+                data = JSON.parse(data);
+                $('.restoreSQL').text(data.sql);
+                $('.restoreFile').text(data.file);
+            });
+        }, 1000);
+    });
     $('.rmPHPHeader').click(function()
     {
         $('#waitting .modal-body #backupType').html(rmPHPHeader);

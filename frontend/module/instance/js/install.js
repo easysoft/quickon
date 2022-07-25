@@ -1,4 +1,3 @@
-
 $(function()
 {
     $('#installForm').on('submit', function(event)
@@ -25,5 +24,25 @@ $(function()
                 alert(res.message);
             }
         });
+    });
+
+    $("input[type=radio][name='dbType']").on('change', function(event)
+    {
+        if(event.target.value == 'sharedDB')
+        {
+            $("select[name=dbService]").closest('td').show();
+        }
+        else
+        {
+            $("select[name=dbService]").closest('td').hide();
+        }
+    });
+
+    $(".advanced a").on('click', function(event)
+    {
+        let downArrow = $(".advanced a .icon-chevron-double-down");
+        let upArrow   = $(".advanced a .icon-chevron-double-up");
+        if(downArrow.length >0 ) downArrow.removeClass('icon-chevron-double-down').addClass('icon-chevron-double-up');
+        if(upArrow.length >0 ) upArrow.removeClass('icon-chevron-double-up').addClass('icon-chevron-double-down');
     });
 });

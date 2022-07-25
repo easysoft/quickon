@@ -6,6 +6,10 @@ package app
 
 import (
 	"context"
+	"gopkg.in/yaml.v3"
+	"helm.sh/helm/v3/pkg/cli/values"
+	"io/ioutil"
+	"os"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
@@ -39,8 +43,20 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 	for _, s := range body.Settings {
 		settings = append(settings, s.Key+"="+s.Val)
 	}
+	options := &values.Options{Values: settings}
 	tlog.WithCtx(m.ctx).InfoS("build install settings", "namespace", m.namespace, "name", name, "settings", settings)
-	_, err = h.Install(name, genChart(body.Channel, body.Chart), body.Version, settings)
+
+	if len(body.SettingsMap) > 0 {
+		tlog.WithCtx(m.ctx).InfoS("build install settings", "namespace", m.namespace, "name", name, "settings_map", body.SettingsMap)
+		f, err := writeValuesFile(body.SettingsMap)
+		if err != nil {
+			tlog.WithCtx(m.ctx).ErrorS(err, "write values file failed")
+		}
+		defer os.Remove(f)
+		options.ValueFiles = []string{f}
+	}
+
+	_, err = h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
 	if err != nil {
 		tlog.WithCtx(m.ctx).ErrorS(err, "helm install failed", "namespace", m.namespace, "name", name)
 		if _, e := h.GetRelease(name); e == nil {
@@ -69,4 +85,21 @@ func (m *Manager) GetApp(name string) (*Instance, error) {
 
 	app.prepare()
 	return app, nil
+}
+
+func writeValuesFile(data map[string]interface{}) (string, error) {
+	f, err := ioutil.TempFile("/tmp", "values.******.yaml")
+	if err != nil {
+		return "", err
+	}
+	vars, err := yaml.Marshal(data)
+	if err != nil {
+		return "nil", err
+	}
+	_, err = f.Write(vars)
+	if err != nil {
+		return "nil", err
+	}
+	_ = f.Close()
+	return f.Name(), nil
 }

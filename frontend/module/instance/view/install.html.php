@@ -22,7 +22,7 @@
         <tbody>
           <tr>
             <th class='w-70px'><?php echo $lang->instance->name;?></th>
-            <td class='w-200px'>
+            <td class='w-230px'>
               <div class='input-group'>
                 <?php echo html::input('customName', $cloudApp->alias, "class='form-control' maxlength='20'");?>
               </div>
@@ -30,8 +30,8 @@
             <td></td>
           </tr>
           <tr>
-            <th class='w-150px'><?php echo $lang->instance->domain;?></th>
-            <td class='w-300px'>
+            <th><?php echo $lang->instance->domain;?></th>
+            <td>
               <div class='input-group'>
                 <?php echo html::input('customDomain', $thirdDomain, "class='form-control' maxlength='20'");?>
                 <span class='input-group-addon'><?php echo $config->CNE->app->domain;?></span>
@@ -41,6 +41,31 @@
           </tr>
         </tbody>
       </table>
+      <?php if(isset($cloudApp->dependencies->mysql)):?>
+      <div class='advanced'><?php echo html::a("#advanced-settings", $lang->instance->advantageOption . "<i class='icon icon-chevron-double-down'></i>", '', "data-toggle='collapse'");?></div>
+      <table class="collapse table table-form" id="advanced-settings">
+        <tbody>
+          <tr>
+            <th class='w-70px'><?php echo $lang->instance->dbType;?></th>
+            <td class='w-230px'>
+              <div class='input-group'>
+                <?php echo html::radio('dbType', $lang->instance->dbTypes, 'sharedDB');?>
+              </div>
+            </td>
+            <td><?php echo html::a('https://www.qucheng.com/book/Installation-manual/app-market-17.html',$lang->instance->howToSelectDB, '_blank');?></td>
+          </tr>
+          <tr>
+            <th></th>
+            <td>
+              <div class='input-group'>
+                <?php echo html::select('dbService', $dbList, '', "class='form-control'");?>
+              </div>
+            </td>
+            <td></td>
+          </tr>
+        </tbody>
+      </table>
+      <?php endif;?>
       <div class="text-center form-actions"><?php echo html::submitButton($lang->instance->install);?></div>
     </form>
   </div>

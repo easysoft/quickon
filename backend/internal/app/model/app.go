@@ -11,10 +11,11 @@ type AppModel struct {
 
 type AppCreateOrUpdateModel struct {
 	AppModel
-	Channel  string          `json:"channel"`
-	Chart    string          `json:"chart" binding:"required"`
-	Version  string          `json:"version" binding:"version_format"`
-	Settings []stringSetting `json:"settings"`
+	Channel     string                 `json:"channel"`
+	Chart       string                 `json:"chart" binding:"required"`
+	Version     string                 `json:"version" binding:"version_format"`
+	Settings    []stringSetting        `json:"settings"`
+	SettingsMap map[string]interface{} `json:"settings_map"`
 }
 
 type stringSetting struct {
@@ -46,6 +47,16 @@ type AppComponentModel struct {
 type AppSchemaModel struct {
 	AppComponentModel
 	Category string `json:"category" form:"category" binding:"required"`
+}
+
+type AppWithUserModel struct {
+	AppModel
+	UserName string `form:"username" json:"username"`
+}
+
+type AppRestoreCreateModel struct {
+	AppWithUserModel
+	BackupName string `json:"backup_name" form:"backup_name" binding:"required"`
 }
 
 type AppBackupModel struct {

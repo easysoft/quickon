@@ -73,6 +73,9 @@ func Config(r *gin.Engine) {
 		api.GET("/app/restore")
 		api.GET("/app/restore/status", AppRestoreStatus)
 
+		api.GET("/component/gdb", GDBList)
+		api.GET("/component/gdb/validation", GDBValidation)
+
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)
@@ -82,6 +85,8 @@ func Config(r *gin.Engine) {
 
 		api.POST("/statistics/app", AppListStatistics)
 		api.GET("/statistics/cluster", ClusterStatistics)
+
+		api.POST("/system/update", SystemUpdate)
 	}
 
 	r.NoMethod(func(c *gin.Context) {

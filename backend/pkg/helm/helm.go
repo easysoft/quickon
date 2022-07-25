@@ -10,7 +10,6 @@ import (
 	"log"
 	"os"
 
-	"github.com/imdario/mergo"
 	"github.com/pkg/errors"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
@@ -51,7 +50,7 @@ func NamespaceScope(namespace string) (*Action, error) {
 	return h, nil
 }
 
-func (h *Action) Install(name, chart, version string, settings []string) (*release.Release, error) {
+func (h *Action) Install(name, chart, version string, valueOpts *values.Options) (*release.Release, error) {
 	client := action.NewInstall(h.actionConfig)
 
 	client.ChartPathOptions.Version = version
@@ -64,8 +63,6 @@ func (h *Action) Install(name, chart, version string, settings []string) (*relea
 	if err != nil {
 		return nil, err
 	}
-
-	valueOpts := &values.Options{StringValues: settings}
 
 	p := getter.All(h.settings)
 	vals, err := valueOpts.MergeValues(p)
@@ -102,12 +99,13 @@ func (h *Action) GetRelease(name string) (*release.Release, error) {
 	return rel, err
 }
 
-func (h *Action) Upgrade(name, chart, version string, chartValues map[string]interface{}) (interface{}, error) {
+func (h *Action) Upgrade(name, chart, version string, valueOpts *values.Options) (interface{}, error) {
 	client := action.NewUpgrade(h.actionConfig)
-	valueOpts := &values.Options{}
 
 	client.Namespace = h.namespace
-	client.ChartPathOptions.Version = version
+	if version != "latest" {
+		client.ChartPathOptions.Version = version
+	}
 	//client.Atomic = true
 
 	cp, err := client.ChartPathOptions.LocateChart(chart, h.settings)
@@ -123,10 +121,6 @@ func (h *Action) Upgrade(name, chart, version string, chartValues map[string]int
 	p := getter.All(h.settings)
 	vars, err := valueOpts.MergeValues(p)
 	if err != nil {
-		return nil, err
-	}
-
-	if err := mergo.Merge(&vars, chartValues, mergo.WithOverwriteWithEmptyValue); err != nil {
 		return nil, err
 	}
 

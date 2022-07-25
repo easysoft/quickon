@@ -37,6 +37,7 @@ $filter->user         = new stdclass();
 $filter->block        = new stdclass();
 $filter->search       = new stdclass();
 $filter->tree         = new stdclass();
+$filter->space        = new stdclass();
 
 $filter->block->default           = new stdclass();
 $filter->block->main              = new stdclass();
@@ -50,6 +51,7 @@ $filter->user->edit               = new stdclass();
 $filter->user->ajaxgetmore        = new stdclass();
 $filter->search->index            = new stdclass();
 $filter->tree->browse             = new stdclass();
+$filter->space->browse            = new stdclass();
 
 $filter->api->index->get['libID']                   = 'int';
 $filter->api->index->get['module']                  = 'int';
@@ -63,6 +65,7 @@ $filter->api->edit->get['module']                   = 'int';
 $filter->api->edit->get['apiID']                    = 'int';
 
 $filter->user->login->cookie['keepLogin'] = 'equal::on';
+$filter->space->browse->cookie['spaceType'] = 'code';
 
 $filter->block->default->get['hash']    = 'reg::md5';
 $filter->block->main->get['blockid']    = 'code';

@@ -12,3 +12,6 @@
 #cardsContainer .instance-footer {height: 50px; padding: 14px; font-size: 13px; font-weight: 600;}
 #cardsContainer .instance-footer span {display: inline-block;}
 .input-group-btn {float: left;}
+#spaceSearchForm > div.btn-toolbar.pull-left > a {padding: 3px;}
+#spaceSearchForm button[type=submit] {height: 32px;}
+#spaceSearchForm a.btn {margin-top: 3px;}
