@@ -14,7 +14,9 @@
         <th><?php echo $lang->instance->backup->operator;?></th>
         <th><?php echo $lang->instance->backup->backupStatus;?></th>
         <th class="actions"><?php echo $lang->instance->backup->action;?></th>
-        <th colspan="3"><?php echo $lang->instance->backup->restoreInfo;?></th>
+        <th><?php echo $lang->instance->backup->restoreTime;?></th>
+        <th><?php echo $lang->instance->backup->restoreOperator;?></th>
+        <th><?php echo $lang->instance->backup->restoreStatus;?></th>
       </tr>
     </thead>
     <tbody>
