@@ -208,7 +208,7 @@ class instance extends control
 
             if(!validater::checkLength($customData->customDomain, 20, 2))      return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
             if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
-            if(!$this->cne->enoughMemory($cloudApp->memory))                   return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notEnoughMemory));
+            if(!$this->cne->enoughMemory($cloudApp->memory))                   return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notEnoughResource));
 
             $result = $this->instance->install($cloudApp, $dbList, $customData);
             if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
