@@ -232,7 +232,7 @@ class InstanceModel extends model
             $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
         }
 
-        if(empty($customData->dbType) || $customData->dbType == 'unsharedDB') return $settingsMap;
+        if(empty($customData->dbType) || $customData->dbType == 'unsharedDB' || empty($customData->dbService)) return $settingsMap;
 
         $selectedDB = zget($dbList, $customData->dbService, '');
 
