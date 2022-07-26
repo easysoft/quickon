@@ -19,7 +19,7 @@ $lang->admin->days    = '日志保存天数';
 
 $lang->admin->initAdmin = '初始化管理员账号';
 $lang->admin->password2 = '确认密码';
-$lang->admin->submit    = '提交';
+$lang->admin->submit    = '初始化';
 $lang->admin->account   = '管理员帐号';
 $lang->admin->password  = '管理员密码';
 $lang->admin->password2 = '确认密码';
