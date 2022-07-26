@@ -94,6 +94,11 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	if body.Version != "" {
 		version = body.Version
 	}
+	if version != i.CurrentChartVersion {
+		if err = helm.RepoUpdate(); err != nil {
+			return err
+		}
+	}
 	_, err = h.Upgrade(i.name, genChart(body.Channel, chart), version, options)
 	return err
 }
