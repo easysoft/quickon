@@ -279,21 +279,6 @@ class cneModel extends model
     }
 
     /**
-     * Check free memory size is more then the value.
-     *
-     * @param  int    $memoryByte Memory size by byte.
-     * @access public
-     * @return bool
-     */
-    public function enoughMemory($memoryByte)
-    {
-        $statistics = $this->cneMetrics();
-        $allocatable = intval($statistics->metrics->memory->allocatable * 0.9); // Remain 10% memory for system.
-
-        return $allocatable >= $memoryByte;
-    }
-
-    /**
      * Get cluster metrics of CNE platform.
      *
      * @param  string $cluster
