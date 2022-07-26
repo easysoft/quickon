@@ -193,6 +193,18 @@ class instance extends control
         $cloudApp = $this->cne->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
+        $clusterResource = $this->cne->cneMetrics();
+        $freeMemory = intval($clusterResource->metrics->memory->allocatable * 0.9); // Remain 10% memory for system.
+        if($cloudApp->memory > $freeMemory)
+        {
+            $this->view->cloudApp       = $cloudApp;
+            $this->view->gapMemory      = helper::formatKB(intval(($cloudApp->memory - $freeMemory) / 1024));
+            $this->view->requiredMemory = helper::formatKB(intval($cloudApp->memory / 1024));
+            $this->view->freeMemory     = helper::formatKB(intval($freeMemory / 1024));
+
+            return $this->display('instance','resourceerror');
+        }
+
         $dbList = $this->cne->dbList();
         $customData = new stdclass;
         if(!empty($_POST))
@@ -208,7 +220,6 @@ class instance extends control
 
             if(!validater::checkLength($customData->customDomain, 20, 2))      return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
             if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
-            if(!$this->cne->enoughMemory($cloudApp->memory))                   return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notEnoughResource));
 
             $result = $this->instance->install($cloudApp, $dbList, $customData);
             if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
