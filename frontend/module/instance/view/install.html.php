@@ -52,7 +52,7 @@
                 <?php echo html::radio('dbType', $lang->instance->dbTypes, 'sharedDB');?>
               </div>
             </td>
-            <td><?php echo html::a('https://www.qucheng.com/book/Installation-manual/app-market-17.html',$lang->instance->howToSelectDB, '_blank');?></td>
+            <td><?php echo html::a('https://www.qucheng.com/book/Installation-manual/app-install-33.html',$lang->instance->howToSelectDB, '_blank');?></td>
           </tr>
           <tr>
             <th></th>
