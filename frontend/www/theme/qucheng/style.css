@@ -51,8 +51,8 @@ a:focus,a:hover {
     background-color: #d9d9d9;
     background-image: none;
     border-color: #b8bfce;
-    -webkit-box-shadow: inset 0 4px 6px rgba(0,0,0,.15);
-    box-shadow: inset 0 4px 6px rgba(0,0,0,.15)
+    /* -webkit-box-shadow: inset 0 4px 6px rgba(0,0,0,.15); */
+    /* box-shadow: inset 0 4px 6px rgba(0,0,0,.15); */
 }
 
 .btn.disabled,.btn.disabled.active,.btn.disabled:active,.btn.disabled:focus,.btn.disabled:hover,.btn[disabled],.btn[disabled].active,.btn[disabled]:active,.btn[disabled]:focus,.btn[disabled]:hover,fieldset[disabled] .btn,fieldset[disabled] .btn.active,fieldset[disabled] .btn:active,fieldset[disabled] .btn:focus,fieldset[disabled] .btn:hover {
