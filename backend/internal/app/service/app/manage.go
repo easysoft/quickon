@@ -56,6 +56,11 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		options.ValueFiles = []string{f}
 	}
 
+	if err = helm.RepoUpdate(); err != nil {
+		tlog.WithCtx(m.ctx).ErrorS(err, "helm update repo failed", "namespace", m.namespace, "name", name)
+		return err
+	}
+
 	_, err = h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
 	if err != nil {
 		tlog.WithCtx(m.ctx).ErrorS(err, "helm install failed", "namespace", m.namespace, "name", name)

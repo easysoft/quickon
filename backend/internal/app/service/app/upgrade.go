@@ -44,6 +44,9 @@ func (i *Instance) Start(chart, channel string) error {
 		ValueFiles: []string{lastValFile},
 	}
 
+	if err = helm.RepoUpdate(); err != nil {
+		return err
+	}
 	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
 	return err
 }

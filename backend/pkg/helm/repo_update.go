@@ -14,6 +14,12 @@ import (
 	"helm.sh/helm/v3/pkg/repo"
 )
 
+var repoLocker *sync.Mutex
+
+func init() {
+	repoLocker = &sync.Mutex{}
+}
+
 type repoUpdateOptions struct {
 	update               func([]*repo.ChartRepository, bool) error
 	repoFile             string
@@ -23,6 +29,7 @@ type repoUpdateOptions struct {
 }
 
 func RepoUpdate() error {
+	fmt.Println("update repo")
 	settings := cli.New()
 	o := &repoUpdateOptions{update: updateCharts}
 	o.repoFile = settings.RepositoryConfig
@@ -31,6 +38,9 @@ func RepoUpdate() error {
 }
 
 func (o *repoUpdateOptions) run(settings *cli.EnvSettings) error {
+	repoLocker.Lock()
+	defer repoLocker.Unlock()
+
 	f, err := repo.LoadFile(o.repoFile)
 	if err != nil {
 		return err
