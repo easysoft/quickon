@@ -742,7 +742,7 @@ class InstanceModel extends model
     {
         $disabled = $instance->status == 'running' && strtolower($backup->status) == 'completed' ? '' : 'disabled';
         $title    = empty($disabled) ? $this->lang->instance->backup->restore : $this->lang->instance->restoreOnlyRunning;
-        $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-primary");
+        $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-info");
 
         echo $btn;
     }
