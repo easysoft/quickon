@@ -232,7 +232,7 @@ class InstanceModel extends model
             $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
         }
 
-        if(empty($customData->dbType) || $customData->dbType == 'unsharedDB') return $settingsMap;
+        if(empty($customData->dbType) || $customData->dbType == 'unsharedDB' || empty($customData->dbService)) return $settingsMap;
 
         $selectedDB = zget($dbList, $customData->dbService, '');
 
@@ -740,9 +740,9 @@ class InstanceModel extends model
      */
     public function printRestoreBtn($instance, $backup)
     {
-        $disabled = $instance->status == 'running' ? '' : 'disabled';
+        $disabled = $instance->status == 'running' && strtolower($backup->status) == 'completed' ? '' : 'disabled';
         $title    = empty($disabled) ? $this->lang->instance->backup->restore : $this->lang->instance->restoreOnlyRunning;
-        $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-link");
+        $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-info");
 
         echo $btn;
     }

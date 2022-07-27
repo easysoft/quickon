@@ -17,3 +17,4 @@
 #backup .panel .btn-toolbar{padding: 0 0 10px 0;}
 #backup table th.actions{padding-left: 15px;}
 #backup table td>.btn {padding-left: 5px; padding-right: 5px;}
+#backup .btn.btn-info[disabled] { color: rgba(255,255,255,.7); background-color: #61be68;}
