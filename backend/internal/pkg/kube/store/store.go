@@ -6,12 +6,14 @@ package store
 
 import (
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"time"
 
 	quchenginf "github.com/easysoft/quikon-api/client/informers/externalversions"
 	quchenglister "github.com/easysoft/quikon-api/client/listers/qucheng/v1beta1"
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 
+	quchengclientset "github.com/easysoft/quikon-api/client/clientset/versioned"
 	metaappsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/api/core/v1"
 	metanetworkv1 "k8s.io/api/networking/v1"
@@ -24,9 +26,6 @@ import (
 	networkv1 "k8s.io/client-go/listers/networking/v1"
 	"k8s.io/client-go/rest"
 	"k8s.io/client-go/tools/cache"
-	"k8s.io/klog/v2"
-
-	quchengclientset "github.com/easysoft/quikon-api/client/clientset/versioned"
 )
 
 const (
@@ -120,8 +119,10 @@ func NewStorer(config rest.Config) *Storer {
 		Clients:   &Clients{},
 	}
 
+	logger := logging.DefaultLogger()
+
 	if cs, err := kubernetes.NewForConfig(&config); err != nil {
-		klog.ErrorS(err, "failed to prepare kubeclient")
+		logger.WithError(err).Error("failed to prepare kubeclient")
 	} else {
 		s.Clients.Base = cs
 		factory := informers.NewSharedInformerFactoryWithOptions(cs, resyncPeriod)
@@ -155,7 +156,7 @@ func NewStorer(config rest.Config) *Storer {
 	}
 
 	if cs, err := quchengclientset.NewForConfig(&config); err != nil {
-		klog.ErrorS(err, "failed to prepare kubeclient")
+		logger.WithError(err).Error("failed to prepare kubeclient")
 	} else {
 		s.Clients.Cne = cs
 		factory := quchenginf.NewSharedInformerFactory(cs, resyncPeriod)

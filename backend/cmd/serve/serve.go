@@ -6,8 +6,6 @@ package serve
 
 import (
 	"context"
-	"flag"
-	"k8s.io/klog/v2"
 	"os/signal"
 	"syscall"
 
@@ -26,8 +24,7 @@ func NewCmdServe() *cobra.Command {
 }
 
 func serve(cmd *cobra.Command, args []string) {
-	logger := logging.NewLogger()
-	initKubeLogs()
+	logger := logging.DefaultLogger().WithField("action", "initialize")
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		<-ctx.Done()
@@ -35,13 +32,7 @@ func serve(cmd *cobra.Command, args []string) {
 	}()
 
 	logger.Info("start server")
-	if err := gins.Serve(ctx); err != nil {
-		klog.Fatal("run serve: %v", err)
+	if err := gins.Serve(ctx, logger); err != nil {
+		logger.Fatal("run serve: %v", err)
 	}
-}
-
-func initKubeLogs() {
-	gofs := flag.NewFlagSet("klog", flag.ExitOnError)
-	_ = gofs.Set("add_dir_header", "true")
-	klog.InitFlags(gofs)
 }

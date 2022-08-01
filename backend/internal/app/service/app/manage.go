@@ -6,6 +6,8 @@ package app
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/cli/values"
 	"io/ioutil"
@@ -14,7 +16,6 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
 )
 
 type Manager struct {
@@ -23,17 +24,23 @@ type Manager struct {
 	clusterName string
 	ks          *cluster.Cluster
 	namespace   string
+
+	logger logrus.FieldLogger
 }
 
 func NewApps(ctx context.Context, clusterName, namespace string) *Manager {
 	return &Manager{
 		ctx:         ctx,
 		clusterName: clusterName, namespace: namespace,
-		ks: cluster.Get(clusterName),
+		ks:     cluster.Get(clusterName),
+		logger: logging.DefaultLogger().WithContext(ctx),
 	}
 }
 
 func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error {
+	logger := m.logger.WithFields(logrus.Fields{
+		"name": name, "namespace": body.Namespace,
+	})
 	h, err := helm.NamespaceScope(m.namespace)
 	if err != nil {
 		return err
@@ -44,28 +51,28 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		settings = append(settings, s.Key+"="+s.Val)
 	}
 	options := &values.Options{Values: settings}
-	tlog.WithCtx(m.ctx).InfoS("build install settings", "namespace", m.namespace, "name", name, "settings", settings)
+	logger.Infof("user custom settings is %+v", settings)
 
 	if len(body.SettingsMap) > 0 {
-		tlog.WithCtx(m.ctx).InfoS("build install settings", "namespace", m.namespace, "name", name, "settings_map", body.SettingsMap)
+		logger.Infof("user custom settingsMap is %+v", body.SettingsMap)
 		f, err := writeValuesFile(body.SettingsMap)
 		if err != nil {
-			tlog.WithCtx(m.ctx).ErrorS(err, "write values file failed")
+			logger.WithError(err).Error("write values file failed")
 		}
 		defer os.Remove(f)
 		options.ValueFiles = []string{f}
 	}
 
 	if err = helm.RepoUpdate(); err != nil {
-		tlog.WithCtx(m.ctx).ErrorS(err, "helm update repo failed", "namespace", m.namespace, "name", name)
+		logger.WithError(err).Error("helm update repo failed")
 		return err
 	}
 
 	_, err = h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
 	if err != nil {
-		tlog.WithCtx(m.ctx).ErrorS(err, "helm install failed", "namespace", m.namespace, "name", name)
+		logger.WithError(err).Error("helm install failed")
 		if _, e := h.GetRelease(name); e == nil {
-			tlog.WithCtx(m.ctx).InfoS("recycle incomplete release")
+			logger.Info("recycle incomplete release")
 			_ = h.Uninstall(name)
 		}
 	}

@@ -7,11 +7,11 @@ package app
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"reflect"
 	"strings"
 
 	"github.com/imdario/mergo"
+	"github.com/sirupsen/logrus"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -23,8 +23,6 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
-
 	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
@@ -79,7 +77,7 @@ func (i *Instance) fetchRelease() *release.Release {
 	}
 	rel, err := getter.Last(i.name)
 	if err != nil {
-		tlog.WithCtx(i.ctx).ErrorS(err, "parse release failed")
+		i.logger.WithError(err).Error("parse release failed")
 	}
 	return rel
 }
@@ -297,9 +295,9 @@ func (i *Instance) GetSchema(component, category string) string {
 
 	if component == i.ChartName {
 		jbody, err := helm.ReadSchemaFromChart(i.release.Chart, category, "test")
-		tlog.WithCtx(i.ctx).InfoS("get schema content", "data", string(jbody))
+		i.logger.Debugf("get schema content: %s", string(jbody))
 		if err != nil {
-			tlog.WithCtx(i.ctx).ErrorS(err, "get schema failed")
+			i.logger.WithError(err).Error("get schema failed")
 			return ""
 		}
 		data = string(jbody)
@@ -325,7 +323,7 @@ func (i *Instance) GetPvcList() []model.AppRespPvc {
 	var result []model.AppRespPvc
 	pvcList, err := i.ks.Clients.Base.CoreV1().PersistentVolumeClaims(i.namespace).List(i.ctx, metav1.ListOptions{LabelSelector: i.selector.String()})
 	if err != nil {
-		tlog.WithCtx(i.ctx).ErrorS(err, "list pvc failed")
+		i.logger.WithError(err).Error("list pvc failed")
 		return result
 	}
 	for _, pvc := range pvcList.Items {
