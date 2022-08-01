@@ -19,6 +19,7 @@ include 'chosen.html.php';
       <div id='toolbar'>
         <div id='userMenu'>
           <ul id="userNav" class="nav nav-default">
+            <li><?php echo html::a(helper::createLink('navigation', 'index'), '<i class="icon icon-start"></i>', "target='_blank'");?></li>
             <li class='dropdown dropdown-hover has-avatar'><?php common::printUserBar();?></li>
           </ul>
         </div>
