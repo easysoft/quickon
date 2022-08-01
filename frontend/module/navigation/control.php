@@ -11,7 +11,7 @@
  */
 class navigation extends control
 {
-    public function index()
+    public function browse()
     {
         $this->loadModel('instance');
         $account = $this->app->user->account;
