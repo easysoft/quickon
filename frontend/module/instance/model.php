@@ -96,7 +96,7 @@ class InstanceModel extends model
     {
         $instance = $this->getByID($instanceID);
         $pinned = $instance->pinned == '0' ? '1' : '0';
-        $this->dao->update(TABLE_INSTANCE)->set('pinned')->eq($pinned)->where('id')-eq($instanceID)->exec();
+        $this->dao->update(TABLE_INSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($instanceID)->exec();
     }
 
     /**
