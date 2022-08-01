@@ -6,6 +6,8 @@ package router
 
 import (
 	"context"
+	"github.com/sirupsen/logrus"
+
 	"net/http"
 	"strings"
 
@@ -14,7 +16,7 @@ import (
 	"github.com/google/uuid"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 //Cors cors middleware
@@ -78,7 +80,7 @@ func Trace() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		traceId := uuid.NewString()
 		ctx := context.Background()
-		ctx = tlog.NewContext(ctx, "traceId", traceId)
+		ctx = logging.NewContext(ctx, logrus.Fields{"traceId": traceId})
 		c.Request = c.Request.WithContext(ctx)
 		c.Request.Header.Set(HeaderTraceId, traceId)
 		c.Header(HeaderTraceId, traceId)

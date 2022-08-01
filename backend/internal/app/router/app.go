@@ -272,31 +272,23 @@ func AppPatchSettings(c *gin.Context) {
 // @Router /api/cne/app/status [get]
 func AppStatus(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
-		query model.AppModel
-		i     *app.Instance
-		data  *model.AppRespStatus
+		ctx  = c.Request.Context()
+		data *model.AppRespStatus
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
+	var (
+		query model.AppModel
+	)
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
 	data = i.ParseStatus()
+	logger := i.GetLogger()
 
+	logger.Info("parse status success")
 	/*
 		parse App Uri
 	*/

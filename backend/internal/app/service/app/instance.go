@@ -7,6 +7,7 @@ package app
 import (
 	"context"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"reflect"
 	"strings"
 
@@ -21,6 +22,7 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
 
 	"helm.sh/helm/v3/pkg/release"
@@ -44,6 +46,8 @@ type Instance struct {
 
 	ChartName           string
 	CurrentChartVersion string
+
+	logger logrus.FieldLogger
 }
 
 func newApp(ctx context.Context, am *Manager, name string) *Instance {
@@ -52,6 +56,9 @@ func newApp(ctx context.Context, am *Manager, name string) *Instance {
 		ctx:         ctx,
 		clusterName: am.clusterName, namespace: am.namespace, name: name,
 		ks: am.ks,
+		logger: logging.DefaultLogger().WithContext(ctx).WithFields(logrus.Fields{
+			"name": name, "namespace": am.namespace,
+		}),
 	}
 
 	i.release = i.fetchRelease()
@@ -75,6 +82,10 @@ func (i *Instance) fetchRelease() *release.Release {
 		tlog.WithCtx(i.ctx).ErrorS(err, "parse release failed")
 	}
 	return rel
+}
+
+func (i *Instance) GetLogger() logrus.FieldLogger {
+	return i.logger
 }
 
 func (i *Instance) getServices() ([]*v1.Service, error) {
