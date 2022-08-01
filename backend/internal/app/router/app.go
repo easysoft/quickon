@@ -6,18 +6,17 @@ package router
 
 import (
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"net/http"
 	"sync"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
-
-	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
 )
 
 // AppInstall 安装接口
@@ -45,25 +44,26 @@ func AppInstall(c *gin.Context) {
 		return
 	}
 
+	logger := getLogger(ctx).WithFields(logrus.Fields{
+		"name": body.Name, "namespace": body.Namespace,
+	})
+
+	logger.Infof("start app install with chart %s in channel %s, version %s", body.Chart, body.Channel, body.Version)
+
 	i, _ = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
 	if i != nil {
-		tlog.WithCtx(ctx).ErrorS(nil, "app already exists, install can't continue",
-			"cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name, "chart", body.Chart)
+		logger.WithError(err).Error("app already exists, install can't continue")
 		renderError(c, http.StatusInternalServerError, errors.New("app already installed"))
 		return
 	}
 
 	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body); err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, "install app failed",
-			"cluster", body.Cluster, "namespace", body.Namespace,
-			"name", body.Name, "chart", body.Chart)
+		logger.WithError(err).Error("install app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	tlog.WithCtx(ctx).InfoS("install app successful",
-		"cluster", body.Cluster, "namespace", body.Namespace,
-		"name", body.Name, "chart", body.Chart)
+	logger.Info("install app successful")
 	renderSuccess(c, http.StatusCreated)
 }
 
@@ -82,37 +82,24 @@ func AppInstall(c *gin.Context) {
 // @Router /api/cne/app/uninstall [post]
 func AppUnInstall(c *gin.Context) {
 	var (
-		ctx  = c.Request.Context()
-		err  error
 		body model.AppModel
 	)
-	if err = c.ShouldBindJSON(&body); err != nil {
-		renderError(c, http.StatusBadRequest, err)
+
+	ctx, i, code, err := LookupApp(c, &body)
+	if err != nil {
+		renderError(c, code, err)
 		return
 	}
 
-	_, err = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
-	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, err)
-		return
-	}
+	logger := i.GetLogger()
 
 	if err = service.Apps(ctx, body.Cluster, body.Namespace).UnInstall(body.Name); err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, "uninstall app failed",
-			"cluster", body.Cluster, "namespace", body.Namespace,
-			"app", body.Name)
+		logger.WithError(err).Error("uninstall app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	tlog.WithCtx(ctx).InfoS("uninstall app successful",
-		"cluster", body.Cluster, "namespace", body.Namespace,
-		"app", body.Name)
+	logger.Info("uninstall app successful")
 	renderSuccess(c, http.StatusOK)
 }
 
@@ -131,35 +118,24 @@ func AppUnInstall(c *gin.Context) {
 // @Router /api/cne/app/start [post]
 func AppStart(c *gin.Context) {
 	var (
-		ctx  = c.Request.Context()
-		err  error
 		body model.AppManageModel
-
-		i *app.Instance
 	)
 
-	if err = c.ShouldBindJSON(&body); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
-	i, err = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
+	_, i, code, err := LookupApp(c, &body)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errStartAppFailed))
+		renderError(c, code, err)
 		return
 	}
+
+	logger := i.GetLogger()
 
 	err = i.Start(body.Chart, body.Channel)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errStartAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
+		logger.WithError(err).Error(errStartAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errStartAppFailed))
 		return
 	}
-	tlog.WithCtx(ctx).InfoS("start app successful", "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
+	logger.Info("start app successful")
 	renderSuccess(c, http.StatusOK)
 }
 
@@ -178,35 +154,24 @@ func AppStart(c *gin.Context) {
 // @Router /api/cne/app/stop [post]
 func AppStop(c *gin.Context) {
 	var (
-		ctx  = c.Request.Context()
-		err  error
 		body model.AppManageModel
-
-		i *app.Instance
 	)
-	if err = c.ShouldBindJSON(&body); err != nil {
-		renderError(c, http.StatusBadRequest, err)
+
+	_, i, code, err := LookupApp(c, &body)
+	if err != nil {
+		renderError(c, code, err)
 		return
 	}
 
-	i, err = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
-	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errStopAppFailed))
-		return
-	}
+	logger := i.GetLogger()
 
 	err = i.Stop(body.Chart, body.Channel)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errStopAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
+		logger.WithError(err).Error(errStopAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errStopAppFailed))
 		return
 	}
-	tlog.WithCtx(ctx).InfoS("stop app successful", "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
+	logger.Info("stop app successful")
 	renderSuccess(c, http.StatusOK)
 }
 
@@ -225,35 +190,24 @@ func AppStop(c *gin.Context) {
 // @Router /api/cne/app/settings [post]
 func AppPatchSettings(c *gin.Context) {
 	var (
-		ctx  = c.Request.Context()
-		err  error
 		body model.AppCreateOrUpdateModel
-
-		i *app.Instance
 	)
-	if err = c.ShouldBindJSON(&body); err != nil {
-		renderError(c, http.StatusBadRequest, err)
+
+	_, i, code, err := LookupApp(c, &body)
+	if err != nil {
+		renderError(c, code, err)
 		return
 	}
 
-	i, err = service.Apps(ctx, body.Cluster, body.Namespace).GetApp(body.Name)
-	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errPatchAppFailed))
-		return
-	}
+	logger := i.GetLogger()
 
 	err = i.PatchSettings(body.Chart, body)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errPatchAppFailed, "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
+		logger.WithError(err).Error(errPatchAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errPatchAppFailed))
 		return
 	}
-	tlog.WithCtx(ctx).InfoS("patch app settings successful", "cluster", body.Cluster, "namespace", body.Namespace, "name", body.Name)
+	logger.Info("patch app settings successful")
 	renderSuccess(c, http.StatusOK)
 }
 
@@ -272,31 +226,19 @@ func AppPatchSettings(c *gin.Context) {
 // @Router /api/cne/app/status [get]
 func AppStatus(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppModel
-		i     *app.Instance
-		data  *model.AppRespStatus
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	ctx, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
-	data = i.ParseStatus()
+	data := i.ParseStatus()
+	logger := i.GetLogger()
 
+	logger.Info("parse status success")
 	/*
 		parse App Uri
 	*/
@@ -320,32 +262,20 @@ func AppStatus(c *gin.Context) {
 
 func AppSimpleSettings(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppSettingMode
-		i     *app.Instance
 	)
 
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
 		return
 	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
-	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, err)
-		return
-	}
+	logger := i.GetLogger()
 
 	settings, err := i.Settings().Simple().Mode(query.Mode).Parse()
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, "get simple settings failed", "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
+		logger.WithError(err).Error("get simple settings failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -354,25 +284,12 @@ func AppSimpleSettings(c *gin.Context) {
 
 func AppMetric(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -393,20 +310,20 @@ func AppListStatistics(c *gin.Context) {
 		return
 	}
 
+	logger := getLogger(ctx)
 	metricList := make([]model.NamespaceAppMetric, len(body.Apps))
 
 	for id, a := range body.Apps {
 		wg.Add(1)
 		go func(index int, na model.NamespacedApp) {
 			defer wg.Done()
-			tlog.WithCtx(ctx).InfoS("test", "index", index, "namespace", na.Namespace, "name", na.Name)
 
 			metricList[index].Name = na.Name
 			metricList[index].Namespace = na.Namespace
 
 			i, err := service.Apps(ctx, body.Cluster, na.Namespace).GetApp(na.Name)
 			if err != nil {
-				tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "namespace", na.Namespace, "name", na.Name)
+				logger.WithError(err).WithFields(logrus.Fields{"name": na.Name, "namespace": na.Namespace}).Error(errGetAppFailed)
 				return
 			}
 			m := i.GetMetrics()
@@ -424,25 +341,12 @@ func AppListStatistics(c *gin.Context) {
 
 func AppComponents(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -452,25 +356,12 @@ func AppComponents(c *gin.Context) {
 
 func AppComCategory(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppComponentModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -480,25 +371,12 @@ func AppComCategory(c *gin.Context) {
 
 func AppComSchema(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppSchemaModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 
@@ -508,25 +386,12 @@ func AppComSchema(c *gin.Context) {
 
 func AppPvcList(c *gin.Context) {
 	var (
-		ctx = c.Request.Context()
-
-		err   error
 		query model.AppModel
-		i     *app.Instance
 	)
-	if err = c.ShouldBindQuery(&query); err != nil {
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
 
-	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
+	_, i, code, err := LookupApp(c, &query)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
-		if errors.Is(err, app.ErrAppNotFound) {
-			renderError(c, http.StatusNotFound, err)
-			return
-		}
-		renderError(c, http.StatusInternalServerError, errors.New(errGetAppStatusFailed))
+		renderError(c, code, err)
 		return
 	}
 

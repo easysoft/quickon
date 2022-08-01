@@ -5,7 +5,6 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
 	"net/http"
 )
 
@@ -16,13 +15,16 @@ func SystemUpdate(c *gin.Context) {
 		body model.ReqSystemUpdate
 	)
 
+	logger := getLogger(ctx).WithField("op", "system-update")
 	if err = c.ShouldBindJSON(&body); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	qcApp, err := service.Apps(ctx, "", constant.DEFAULT_RUNTIME_NAMESPACE).GetApp("qucheng")
 	if err != nil {
+		logger.WithError(err).Error("get qucheng app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -30,15 +32,16 @@ func SystemUpdate(c *gin.Context) {
 	if err = qcApp.PatchSettings(qcApp.ChartName, model.AppCreateOrUpdateModel{
 		Version: body.Version, Channel: body.Channel,
 	}); err != nil {
-		tlog.WithCtx(ctx).InfoS("update qucheng chart failed", "version", body.Version, "channel", body.Channel)
+		logger.WithError(err).WithField("channel", body.Channel).Errorf("update qucheng chart to version %s failed", body.Version)
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	tlog.WithCtx(ctx).InfoS("update qucheng chart success", "version", body.Version, "channel", body.Channel)
+	logger.WithField("channel", body.Channel).Infof("update qucheng chart to version %s success", body.Version)
 
 	opApp, err := service.Apps(ctx, "", constant.DEFAULT_RUNTIME_NAMESPACE).GetApp("cne-operator")
 	if err != nil {
+		logger.WithError(err).Error("get cne-operator app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
@@ -46,11 +49,11 @@ func SystemUpdate(c *gin.Context) {
 	if err = opApp.PatchSettings(opApp.ChartName, model.AppCreateOrUpdateModel{
 		Version: "latest", Channel: body.Channel,
 	}); err != nil {
-		tlog.WithCtx(ctx).InfoS("update operator chart failed", "channel", body.Channel)
+		logger.WithError(err).WithField("channel", body.Channel).Info("update operator chart failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	tlog.WithCtx(ctx).InfoS("update operator chart success", "channel", body.Channel)
+	logger.WithField("channel", body.Channel).Info("update operator chart success")
 	renderSuccess(c, http.StatusOK)
 }

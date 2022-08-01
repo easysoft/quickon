@@ -8,8 +8,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
-
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 )
@@ -35,18 +33,20 @@ func MiddlewareInstall(c *gin.Context) {
 		res  interface{}
 	)
 
+	logger := getLogger(ctx)
 	if err = c.ShouldBindJSON(&body); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	if res, err = service.Middlewares(ctx).Mysql().CreateDB(&body); err != nil {
-		klog.ErrorS(err, "create mysql db failed", "name", body.Name)
+		logger.WithError(err).WithField("name", body.Name).Error("create mysql db failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	klog.InfoS("create mysql db successful", "name", body.Name)
+	logger.WithField("name", body.Name).Info("create mysql db successful")
 	renderJson(c, http.StatusOK, res)
 }
 
@@ -71,17 +71,19 @@ func MiddleWareUninstall(c *gin.Context) {
 		body model.Middleware
 	)
 
+	logger := getLogger(ctx)
 	if err = c.ShouldBindJSON(&body); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	if err = service.Middlewares(ctx).Mysql().RecycleDB(&body); err != nil {
-		klog.ErrorS(err, "recycle mysql db failed", "name", body.Name)
+		logger.WithError(err).WithField("name", body.Name).Error("recycle mysql db failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	klog.InfoS("recycle mysql db successful", "name", body.Name)
+	logger.WithField("name", body.Name).Info("recycle mysql db successful")
 	renderSuccess(c, http.StatusOK)
 }

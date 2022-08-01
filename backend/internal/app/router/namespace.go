@@ -9,8 +9,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
-	"k8s.io/klog/v2"
-
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 )
@@ -35,18 +33,21 @@ func NamespaceCreate(c *gin.Context) {
 		body model.NamespaceCreate
 	)
 
+	logger := getLogger(ctx)
 	if err = c.ShouldBindJSON(&body); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
+	logger = logger.WithField("namespace", body.Name)
 	if err = service.Namespaces(ctx, body.Cluster).Create(body.Name); err != nil {
-		klog.ErrorS(err, "create namespace failed", "name", body.Name)
+		logger.WithError(err).Error("create namespace failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	klog.InfoS("create namespace successful", "name", body.Name)
+	logger.Info("create namespace successful")
 	renderSuccess(c, http.StatusOK)
 }
 
@@ -70,18 +71,21 @@ func NamespaceRecycle(c *gin.Context) {
 		body model.NamespaceBase
 	)
 
+	logger := getLogger(ctx)
 	if err = c.ShouldBindJSON(&body); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
+	logger = logger.WithField("namespace", body.Name)
 	if err = service.Namespaces(ctx, body.Cluster).Recycle(body.Name); err != nil {
-		klog.ErrorS(err, "recycle namespace failed", "name", body.Name)
+		logger.WithError(err).Error("recycle namespace failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	klog.InfoS("recycle namespace successful", "name", body.Name)
+	logger.Info("recycle namespace successful")
 	renderSuccess(c, http.StatusOK)
 }
 
