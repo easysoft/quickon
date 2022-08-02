@@ -6,9 +6,11 @@ package app
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 
 	"github.com/sirupsen/logrus"
+	"helm.sh/helm/v3/pkg/releaseutil"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
@@ -88,7 +90,18 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 			_ = h.Uninstall(name)
 		}
 	}
-	err = completeAppLabels(m.ctx, rel, m.ks, logger)
+	secretMeta := metav1.ObjectMeta{
+		Labels: map[string]string{
+			constant.LabelApplication: "true",
+		},
+		Annotations: map[string]string{
+			constant.AnnotationAppChannel: body.Channel,
+		},
+	}
+	if body.Username != "" {
+		secretMeta.Annotations[constant.AnnotationAppCreator] = body.Username
+	}
+	err = completeAppLabels(m.ctx, rel, m.ks, logger, secretMeta)
 	return err
 }
 
@@ -108,8 +121,8 @@ func (m *Manager) GetApp(name string) (*Instance, error) {
 		return nil, ErrAppNotFound
 	}
 
-	app.prepare()
-	return app, nil
+	err := app.prepare()
+	return app, err
 }
 
 func (m *Manager) Upgrade() error {
@@ -138,6 +151,53 @@ func (m *Manager) Upgrade() error {
 	return nil
 }
 
+func (m *Manager) ListAllApplications() (interface{}, error) {
+	lbs := labels.Set{"owner": "helm", constant.LabelApplication: "true"}.AsSelector()
+	secrets, err := m.ks.Store.ListSecrets("", lbs)
+	if err != nil {
+		return nil, err
+	}
+
+	groupedRevisions := make(map[string][]*release.Release)
+	for _, secret := range secrets {
+		rls, err := decodeRelease(string(secret.Data["release"]))
+		if err != nil {
+			continue
+		}
+		namespacedName := fmt.Sprintf("%s/%s", secret.Namespace, secret.Labels["name"])
+		if _, ok := groupedRevisions[namespacedName]; !ok {
+			groupedRevisions[namespacedName] = make([]*release.Release, 0)
+		}
+
+		groupedRevisions[namespacedName] = append(groupedRevisions[namespacedName], rls)
+	}
+
+	var result []*model.AppRespAppDetail
+
+	for _, revisions := range groupedRevisions {
+		releaseutil.Reverse(revisions, releaseutil.SortByRevision)
+		last := revisions[0]
+
+		secret, err := loadAppSecret(m.ctx, last.Name, last.Namespace, last.Version, m.ks)
+		if err != nil {
+			continue
+		}
+
+		info := &model.AppRespAppDetail{
+			Name:      last.Name,
+			Namespace: last.Namespace,
+			Chart:     last.Chart.Metadata.Name,
+			Version:   last.Chart.Metadata.Version,
+			Channel:   secret.Annotations[constant.AnnotationAppChannel],
+			Username:  secret.Annotations[constant.AnnotationAppCreator],
+			Values:    last.Config,
+		}
+		result = append(result, info)
+	}
+
+	return result, nil
+}
+
 func writeValuesFile(data map[string]interface{}) (string, error) {
 	f, err := ioutil.TempFile("/tmp", "values.******.yaml")
 	if err != nil {
@@ -155,39 +215,47 @@ func writeValuesFile(data map[string]interface{}) (string, error) {
 	return f.Name(), nil
 }
 
-func completeAppLabels(ctx context.Context, rel *release.Release, ks *cluster.Cluster, logger logrus.FieldLogger) error {
-	var targetSecret *v1.Secret
-
+func completeAppLabels(ctx context.Context, rel *release.Release, ks *cluster.Cluster, logger logrus.FieldLogger, meta metav1.ObjectMeta) error {
 	logger.Info("start complete app labels")
-
-	selector := labels.Set{"name": rel.Name, "owner": "helm", "version": strconv.Itoa(rel.Version)}.AsSelector()
-	secrets, err := ks.Store.ListSecrets(rel.Namespace, selector)
+	latestSecret, err := loadAppSecret(ctx, rel.Name, rel.Namespace, rel.Version, ks)
 	if err != nil {
 		return err
+	}
+
+	t := struct {
+		Metadata metav1.ObjectMeta `json:"metadata"`
+	}{meta}
+	patchContent, _ := json.Marshal(&t)
+	_, err = ks.Clients.Base.CoreV1().Secrets(latestSecret.Namespace).Patch(ctx, latestSecret.Name, types.MergePatchType, patchContent, metav1.PatchOptions{})
+	return err
+}
+
+func loadAppSecret(ctx context.Context, name, namespace string, revision int, ks *cluster.Cluster) (*v1.Secret, error) {
+	var targetSecret *v1.Secret
+
+	selector := labels.Set{"name": name, "owner": "helm", "version": strconv.Itoa(revision)}.AsSelector()
+	secrets, err := ks.Store.ListSecrets(namespace, selector)
+	if err != nil {
+		return nil, err
 	}
 
 	count := len(secrets)
 	if count == 1 {
 		targetSecret = secrets[0]
-		logger.Info("find release secret from informer cache")
 	}
 
 	if targetSecret == nil {
-		secretList, err := ks.Clients.Base.CoreV1().Secrets(rel.Namespace).List(ctx, metav1.ListOptions{LabelSelector: selector.String()})
+		secretList, err := ks.Clients.Base.CoreV1().Secrets(namespace).List(ctx, metav1.ListOptions{LabelSelector: selector.String()})
 		if err != nil {
-			return err
+			return nil, err
 		}
 		count = len(secretList.Items)
 		if count != 1 {
 			e := fmt.Errorf("get release secret failed, expect 1 got %d", count)
-			return e
+			return nil, e
 		}
 		targetSecret = &secretList.Items[0]
-		logger.Info("find release secret from apiserver")
 	}
 
-	patchContent := fmt.Sprintf(`{"metadata":{"labels":{"%s":"true"}}}`, constant.LabelApplication)
-	logger.Infof("patch content is %s", patchContent)
-	_, err = ks.Clients.Base.CoreV1().Secrets(targetSecret.Namespace).Patch(ctx, targetSecret.Name, types.MergePatchType, []byte(patchContent), metav1.PatchOptions{})
-	return err
+	return targetSecret, nil
 }

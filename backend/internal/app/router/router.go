@@ -87,6 +87,7 @@ func Config(r *gin.Engine) {
 		api.GET("/statistics/cluster", ClusterStatistics)
 
 		api.POST("/system/update", SystemUpdate)
+		api.GET("/system/app-full-list", FindAllApps)
 	}
 
 	r.NoMethod(func(c *gin.Context) {

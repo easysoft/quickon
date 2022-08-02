@@ -17,7 +17,7 @@ func SystemUpdate(c *gin.Context) {
 		body model.ReqSystemUpdate
 	)
 
-	logger := getLogger(ctx).WithField("op", "system-update")
+	logger := getLogger(ctx).WithField("action", "system-update")
 	if err = c.ShouldBindJSON(&body); err != nil {
 		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
@@ -58,4 +58,22 @@ func SystemUpdate(c *gin.Context) {
 
 	logger.WithField("channel", body.Channel).Info("update operator chart success")
 	renderSuccess(c, http.StatusOK)
+}
+
+func FindAllApps(c *gin.Context) {
+	var (
+		err error
+		ctx = c.Request.Context()
+	)
+
+	logger := getLogger(ctx)
+
+	data, err := service.Apps(ctx, "", "").ListAllApplications()
+	if err != nil {
+		logger.WithError(err).Error("list all application failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, data)
 }

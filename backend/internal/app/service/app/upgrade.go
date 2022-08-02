@@ -7,6 +7,11 @@ package app
 import (
 	"os"
 
+	"helm.sh/helm/v3/pkg/release"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+
 	"helm.sh/helm/v3/pkg/cli/values"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
@@ -33,12 +38,29 @@ func (i *Instance) Stop(chart, channel string) error {
 	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
-		if !i.isApp() {
-			return nil
-		}
-		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
-		return err
+		return i.updateSecretMeta(rel)
 	}
+}
+
+func (i *Instance) updateSecretMeta(rel *release.Release) error {
+	if !i.isApp() {
+		return nil
+	}
+	secretMeta := metav1.ObjectMeta{
+		Labels: map[string]string{
+			constant.LabelApplication: "true",
+		},
+		Annotations: make(map[string]string),
+	}
+	if creator, ok := i.secret.Annotations[constant.AnnotationAppCreator]; ok {
+		secretMeta.Annotations[constant.AnnotationAppCreator] = creator
+	}
+	if channel, ok := i.secret.Annotations[constant.AnnotationAppChannel]; ok {
+		secretMeta.Annotations[constant.AnnotationAppChannel] = channel
+	}
+
+	err := completeAppLabels(i.ctx, rel, i.ks, i.logger, secretMeta)
+	return err
 }
 
 func (i *Instance) Start(chart, channel string) error {
@@ -64,11 +86,7 @@ func (i *Instance) Start(chart, channel string) error {
 		return err
 	} else {
 		// add easyfost label for last secret
-		if !i.isApp() {
-			return nil
-		}
-		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
-		return err
+		return i.updateSecretMeta(rel)
 	}
 }
 
@@ -126,11 +144,7 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	if rel, err := h.Upgrade(i.name, genChart(body.Channel, chart), version, options); err != nil {
 		return err
 	} else {
-		if !i.isApp() {
-			return nil
-		}
-		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
-		return err
+		return i.updateSecretMeta(rel)
 	}
 }
 

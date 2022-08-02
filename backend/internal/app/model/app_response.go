@@ -102,3 +102,13 @@ type AppRespRestore struct {
 	Status     string `json:"status"`
 	Message    string `json:"message"`
 }
+
+type AppRespAppDetail struct {
+	Name      string                 `json:"name"`
+	Namespace string                 `json:"namespace"`
+	Chart     string                 `json:"chart"`
+	Version   string                 `json:"version"`
+	Channel   string                 `json:"channel"`
+	Username  string                 `json:"username"`
+	Values    map[string]interface{} `json:"values"`
+}

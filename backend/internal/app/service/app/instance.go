@@ -42,6 +42,7 @@ type Instance struct {
 	ks *cluster.Cluster
 
 	release *release.Release
+	secret  *v1.Secret
 
 	ChartName           string
 	CurrentChartVersion string
@@ -64,11 +65,18 @@ func newApp(ctx context.Context, am *Manager, name string) *Instance {
 	return i
 }
 
-func (i *Instance) prepare() {
+func (i *Instance) prepare() error {
 	i.ChartName = i.release.Chart.Metadata.Name
 	i.CurrentChartVersion = i.release.Chart.Metadata.Version
 
 	i.selector = labels.Set{"release": i.name}.AsSelector()
+	secret, err := loadAppSecret(i.ctx, i.name, i.namespace, i.release.Version, i.ks)
+	if err != nil {
+		i.logger.WithError(err).Errorf("got release secret failed with resivion %d", i.release.Version)
+		return err
+	}
+	i.secret = secret
+	return nil
 }
 
 func (i *Instance) fetchRelease() *release.Release {
@@ -84,7 +92,7 @@ func (i *Instance) fetchRelease() *release.Release {
 }
 
 func (i *Instance) isApp() bool {
-	v, ok := i.release.Labels[constant.LabelApplication]
+	v, ok := i.secret.Labels[constant.LabelApplication]
 	if ok && v == "true" {
 		return true
 	}
