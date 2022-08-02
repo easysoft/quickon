@@ -82,6 +82,14 @@ func (i *Instance) fetchRelease() *release.Release {
 	return rel
 }
 
+func (i *Instance) isApp() bool {
+	v, ok := i.release.Labels[constant.LabelApplication]
+	if ok && v == "true" {
+		return true
+	}
+	return false
+}
+
 func (i *Instance) GetLogger() logrus.FieldLogger {
 	return i.logger
 }

@@ -32,6 +32,9 @@ func (i *Instance) Stop(chart, channel string) error {
 	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
+		if !i.isApp() {
+			return nil
+		}
 		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
 		return err
 	}
@@ -59,6 +62,10 @@ func (i *Instance) Start(chart, channel string) error {
 	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
+		// add easyfost label for last secret
+		if !i.isApp() {
+			return nil
+		}
 		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
 		return err
 	}
@@ -118,6 +125,9 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	if rel, err := h.Upgrade(i.name, genChart(body.Channel, chart), version, options); err != nil {
 		return err
 	} else {
+		if !i.isApp() {
+			return nil
+		}
 		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
 		return err
 	}
