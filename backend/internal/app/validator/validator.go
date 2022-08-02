@@ -6,6 +6,7 @@ package validator
 
 import (
 	"fmt"
+
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
 	"github.com/gin-gonic/gin/binding"
@@ -13,6 +14,7 @@ import (
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/validator/field"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/validator/translation"
 )

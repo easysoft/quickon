@@ -7,12 +7,16 @@ package serve
 import (
 	"context"
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
+
 	"github.com/gin-gonic/gin"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/router"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/cron"
@@ -43,6 +47,8 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 		}
 	})
 	cron.Cron.Start()
+
+	service.Apps(ctx, "", "").Upgrade()
 
 	logger.Info("Starting cne-api...")
 

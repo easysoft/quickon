@@ -6,10 +6,12 @@ package app
 
 import (
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-	"k8s.io/apimachinery/pkg/labels"
 	"strings"
 	"time"
+
+	"k8s.io/apimachinery/pkg/labels"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 

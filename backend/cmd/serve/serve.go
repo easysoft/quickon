@@ -10,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/spf13/cobra"
+
 	gins "gitlab.zcorp.cc/pangu/cne-api/internal/app/serve"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )

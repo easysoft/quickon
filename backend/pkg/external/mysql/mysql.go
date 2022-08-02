@@ -7,10 +7,12 @@ package mysql
 import (
 	"database/sql"
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
 	"github.com/ergoapi/util/exstr"
 	_ "github.com/go-sql-driver/mysql"

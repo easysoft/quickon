@@ -1,11 +1,13 @@
 package router
 
 import (
+	"net/http"
+
 	"github.com/gin-gonic/gin"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-	"net/http"
 )
 
 func SystemUpdate(c *gin.Context) {

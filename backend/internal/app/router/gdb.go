@@ -5,8 +5,9 @@
 package router
 
 import (
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"net/http"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"

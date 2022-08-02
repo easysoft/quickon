@@ -2,12 +2,13 @@ package logging
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
 	"path"
 	"runtime"
 	"runtime/debug"
 	"strings"
 	"time"
+
+	"github.com/sirupsen/logrus"
 )
 
 var (

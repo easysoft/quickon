@@ -7,6 +7,7 @@ package cron
 import (
 	"github.com/robfig/cron/v3"
 	"github.com/sirupsen/logrus"
+
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 

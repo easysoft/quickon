@@ -6,8 +6,9 @@ package translation
 
 import (
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"strings"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"

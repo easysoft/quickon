@@ -6,22 +6,24 @@ package app
 
 import (
 	"context"
-
 	"fmt"
+
 	"github.com/sirupsen/logrus"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
+
+	"io/ioutil"
+	"os"
+	"strconv"
 
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/cli/values"
 	"helm.sh/helm/v3/pkg/release"
-	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
-	"os"
-	"strconv"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
@@ -108,6 +110,32 @@ func (m *Manager) GetApp(name string) (*Instance, error) {
 
 	app.prepare()
 	return app, nil
+}
+
+func (m *Manager) Upgrade() error {
+	// todo release on 1.3 and remove in 1.4
+	// set all exists helm secret as quickon-apps
+	// this label will add to every new-installed app
+	l, err := m.ks.Clients.Base.CoreV1().Secrets("default").List(m.ctx, metav1.ListOptions{FieldSelector: "type=helm.sh/release.v1"})
+	if err != nil {
+		return err
+	}
+
+	if len(l.Items) > 0 {
+		m.logger.Infof("%d secret of helm release will be check and upgrade", len(l.Items))
+	}
+	for _, s := range l.Items {
+		if v, ok := s.Labels[constant.LabelApplication]; ok && v == "true" {
+			continue
+		}
+		patchContent := fmt.Sprintf(`{"metadata":{"labels":{"%s":"true"}}}`, constant.LabelApplication)
+		m.logger.Infof("patch app label for secret %s", s.Name)
+		_, err = m.ks.Clients.Base.CoreV1().Secrets(s.Namespace).Patch(m.ctx, s.Name, types.MergePatchType, []byte(patchContent), metav1.PatchOptions{})
+		if err != nil {
+			m.logger.WithError(err).Error("patch app label failed, secret is %s", s.Name)
+		}
+	}
+	return nil
 }
 
 func writeValuesFile(data map[string]interface{}) (string, error) {

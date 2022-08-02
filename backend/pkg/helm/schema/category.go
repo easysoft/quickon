@@ -6,8 +6,9 @@ package schema
 
 import (
 	"github.com/imdario/mergo"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"helm.sh/helm/v3/pkg/chart"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 func LoadCategories(currCh, parentCh *chart.Chart) Schemas {
