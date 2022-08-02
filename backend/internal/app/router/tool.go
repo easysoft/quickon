@@ -8,6 +8,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"github.com/sirupsen/logrus"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -15,7 +16,7 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 func LookupApp(c *gin.Context, q interface{}) (context.Context, *app.Instance, int, error) {
@@ -24,6 +25,7 @@ func LookupApp(c *gin.Context, q interface{}) (context.Context, *app.Instance, i
 		err error
 		i   *app.Instance
 	)
+
 	if c.Request.Method == "POST" {
 		if err = c.ShouldBindJSON(q); err != nil {
 			return ctx, nil, http.StatusBadRequest, err
@@ -35,10 +37,13 @@ func LookupApp(c *gin.Context, q interface{}) (context.Context, *app.Instance, i
 	}
 
 	query := parseAppModel(q)
+	logger := getLogger(ctx)
 
 	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errGetAppFailed, "cluster", query.Cluster, "namespace", query.Namespace, "name", query.Name)
+		logger.WithError(err).WithFields(logrus.Fields{
+			"name": query.Name, "namespace": query.Namespace,
+		}).Error(errGetAppFailed)
 		if errors.Is(err, app.ErrAppNotFound) {
 			return ctx, i, http.StatusNotFound, err
 		}
@@ -54,4 +59,8 @@ func parseAppModel(v interface{}) *model.AppModel {
 	bytes, _ := json.Marshal(v)
 	json.Unmarshal(bytes, &app)
 	return &app
+}
+
+func getLogger(ctx context.Context) logrus.FieldLogger {
+	return logging.DefaultLogger().WithContext(ctx)
 }

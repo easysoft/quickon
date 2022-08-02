@@ -6,11 +6,11 @@ package translation
 
 import (
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"strings"
 
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
-	"k8s.io/klog/v2"
 )
 
 func RegisterCustomENTranslations(v *validator.Validate, trans ut.Translator) (err error) {
@@ -124,7 +124,7 @@ func translateFunc(ut ut.Translator, fe validator.FieldError) string {
 
 	t, err := ut.T(fe.Tag(), fe.Field())
 	if err != nil {
-		klog.Errorf("warning: error translating FieldError: %#v", fe)
+		logging.DefaultLogger().Errorf("warning: error translating FieldError: %#v", fe)
 		return fe.(error).Error()
 	}
 

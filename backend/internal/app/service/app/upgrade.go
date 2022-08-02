@@ -5,7 +5,6 @@
 package app
 
 import (
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
 	"helm.sh/helm/v3/pkg/cli/values"
 	"os"
 
@@ -95,10 +94,10 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	}
 
 	if len(body.SettingsMap) > 0 {
-		tlog.WithCtx(i.ctx).InfoS("build install settings", "namespace", i.namespace, "name", i.name, "settings_map", body.SettingsMap)
+		i.logger.Infof("load patch settings map: %+v", body.SettingsMap)
 		f, err := writeValuesFile(body.SettingsMap)
 		if err != nil {
-			tlog.WithCtx(i.ctx).ErrorS(err, "write values file failed")
+			i.logger.WithError(err).Error("write values file failed")
 		}
 		defer os.Remove(f)
 		options.ValueFiles = append(options.ValueFiles, f)

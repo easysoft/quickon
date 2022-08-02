@@ -64,12 +64,13 @@ class InstanceModel extends model
      * @access public
      * @return array
      */
-    public function getByAccount($account = '', $pager = null)
+    public function getByAccount($account = '', $pager = null, $pinned = '')
     {
         $instances = $this->dao->select('instance.*')->from(TABLE_INSTANCE)->alias('instance')
             ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
             ->where('instance.deleted')->eq(0)
             ->beginIF($account)->andWhere('space.owner')->eq($account)->fi()
+            ->beginIF($pinned)->andWhere('instance.pinned')->eq((int)$pinned)->fi()
             ->orderBy('instance.id desc')
             ->beginIF($pager)->page($pager)->fi()
             ->fetchAll('id');
@@ -82,6 +83,20 @@ class InstanceModel extends model
         foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
 
         return $instances;
+    }
+
+    /**
+     * Pin instance to navigation page or Unpin instance.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function pinToggle($instanceID)
+    {
+        $instance = $this->getByID($instanceID);
+        $pinned = $instance->pinned == '0' ? '1' : '0';
+        $this->dao->update(TABLE_INSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($instanceID)->exec();
     }
 
     /**
