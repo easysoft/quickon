@@ -16,7 +16,7 @@
 .item .link {position: absolute; right: 0; top: 0; height: 100%; width: 100%; text-align: right; line-height: 90px; color: white; font-size: 24px; z-index: 1; padding-right: 10px;}
 .item .title {font-size: 16px;}
 .item .details {width: 100%;}
-.instance-logo {width: 40px; display: block; height: 40px;}
+.instance-logo {width: 40px; display: block; height: 40px; margin-right: 15px;}
 .sidenav {position: relative;}
 .sidenav .close-sidenav {position: absolute; top: 20px; right: 20px; font-size: 24px; color: #ccc;}
 .sidenav h2 {font-weight: 300; padding: 20px; margin: 0;}
@@ -34,14 +34,18 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
 <div id="sortable">
   <?php foreach($pinnedInstances as $pinnedInstance):?>
   <section class="item-container" data-id="<?php echo $pinnedInstance->id;?>">
-    <div class="item" style="background-color: #161b1f">
-      <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
+  <?php $isRunning = $pinnedInstance->status == 'running' ? true : false;?>
+  <?php $itemStyle = $isRunning === true ? "background-color: #161b1f" : "background-color: grey";?>
+    <div class="item" style="<?php echo $itemStyle;?>">
+    <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
       <div class="details">
         <div class="title white">
           <div class='title'><?php echo $pinnedInstance->name;?></div>
         </div>
       </div>
-      <a title="<?php echo $pinnedInstance->introduction;?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="fas fa-arrow-alt-to-right"></i></a>
+    <?php if($isRunning === true):?>
+    <a title="<?php echo $pinnedInstance->introduction;?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="fas fa-arrow-alt-to-right"></i></a>
+    <?php endif;?>
     </div>
   </section>
   <?php endforeach;?>
