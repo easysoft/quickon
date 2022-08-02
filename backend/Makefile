@@ -9,7 +9,7 @@ GOPROXY = https://goproxy.cn,direct
 GOPRIVATE = gitlab.zcorp.cc
 GOSUMDB = sum.golang.google.cn
 
-BUILD_RELEASE   ?= $(shell cat VERSION || echo "0.0.1")
+BUILD_RELEASE   ?= $(shell test -f VERSION && (cat VERSION) || (cat ../VERSION || echo "0.0.1"))
 BUILD_DATE := $(shell date "+%Y%m%d")
 APP_VERSION := $(BUILD_RELEASE)-${BUILD_DATE}-$(GIT_COMMIT)
 
