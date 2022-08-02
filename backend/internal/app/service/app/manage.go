@@ -6,10 +6,20 @@ package app
 
 import (
 	"context"
+
+	"fmt"
+	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/cli/values"
+	"helm.sh/helm/v3/pkg/release"
 	"io/ioutil"
+	v1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/labels"
+	"k8s.io/apimachinery/pkg/types"
 	"os"
+	"strconv"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
@@ -61,7 +71,7 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		return err
 	}
 
-	_, err = h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
+	rel, err := h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
 	if err != nil {
 		tlog.WithCtx(m.ctx).ErrorS(err, "helm install failed", "namespace", m.namespace, "name", name)
 		if _, e := h.GetRelease(name); e == nil {
@@ -69,6 +79,7 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 			_ = h.Uninstall(name)
 		}
 	}
+	err = completeAppLabels(m.ctx, rel, m.ks, logger)
 	return err
 }
 
@@ -107,4 +118,41 @@ func writeValuesFile(data map[string]interface{}) (string, error) {
 	}
 	_ = f.Close()
 	return f.Name(), nil
+}
+
+func completeAppLabels(ctx context.Context, rel *release.Release, ks *cluster.Cluster, logger logrus.FieldLogger) error {
+	var targetSecret *v1.Secret
+
+	logger.Info("start complete app labels")
+
+	selector := labels.Set{"name": rel.Name, "owner": "helm", "version": strconv.Itoa(rel.Version)}.AsSelector()
+	secrets, err := ks.Store.ListSecrets(rel.Namespace, selector)
+	if err != nil {
+		return err
+	}
+
+	count := len(secrets)
+	if count == 1 {
+		targetSecret = secrets[0]
+		logger.Info("find release secret from informer cache")
+	}
+
+	if targetSecret == nil {
+		secretList, err := ks.Clients.Base.CoreV1().Secrets(rel.Namespace).List(ctx, metav1.ListOptions{LabelSelector: selector.String()})
+		if err != nil {
+			return err
+		}
+		count = len(secretList.Items)
+		if count != 1 {
+			e := fmt.Errorf("get release secret failed, expect 1 got %d", count)
+			return e
+		}
+		targetSecret = &secretList.Items[0]
+		logger.Info("find release secret from apiserver")
+	}
+
+	patchContent := fmt.Sprintf(`{"metadata":{"labels":{"%s":"true"}}}`, constant.LabelApplication)
+	logger.Infof("patch content is %s", patchContent)
+	_, err = ks.Clients.Base.CoreV1().Secrets(targetSecret.Namespace).Patch(ctx, targetSecret.Name, types.MergePatchType, []byte(patchContent), metav1.PatchOptions{})
+	return err
 }

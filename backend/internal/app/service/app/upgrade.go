@@ -18,6 +18,9 @@ func (i *Instance) Stop(chart, channel string) error {
 	vals := i.release.Config
 
 	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
 	defer os.Remove(lastValFile)
 
 	stopSettings := []string{"global.stopped=true"}
@@ -27,8 +30,12 @@ func (i *Instance) Stop(chart, channel string) error {
 	}
 
 	h, _ := helm.NamespaceScope(i.namespace)
-	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
-	return err
+	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+		return err
+	} else {
+		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
+		return err
+	}
 }
 
 func (i *Instance) Start(chart, channel string) error {
@@ -36,6 +43,9 @@ func (i *Instance) Start(chart, channel string) error {
 	vals := i.release.Config
 
 	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
 	defer os.Remove(lastValFile)
 
 	startSettings := []string{"global.stopped=null"}
@@ -47,8 +57,12 @@ func (i *Instance) Start(chart, channel string) error {
 	if err = helm.RepoUpdate(); err != nil {
 		return err
 	}
-	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
-	return err
+	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+		return err
+	} else {
+		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
+		return err
+	}
 }
 
 func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel) error {
@@ -65,6 +79,9 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	}
 
 	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
 	defer os.Remove(lastValFile)
 
 	var settings = make([]string, len(body.Settings))
@@ -99,8 +116,12 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 			return err
 		}
 	}
-	_, err = h.Upgrade(i.name, genChart(body.Channel, chart), version, options)
-	return err
+	if rel, err := h.Upgrade(i.name, genChart(body.Channel, chart), version, options); err != nil {
+		return err
+	} else {
+		err = completeAppLabels(i.ctx, rel, i.ks, i.logger)
+		return err
+	}
 }
 
 func genRepo(channel string) string {

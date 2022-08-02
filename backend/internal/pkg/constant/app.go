@@ -48,8 +48,9 @@ const (
 )
 
 const (
+	LabelApplication    = "easycorp.io/application"
 	LabelBackupName     = "easycorp.io/backup_name"
 	LabelGlobalDatabase = "easycorp.io/global_database"
 )
 
-const DEFAULT_RUNTIME_NAMESPACE = "cne-system"
+const DefaultRuntimeNamespace = "cne-system"

@@ -21,7 +21,7 @@ func SystemUpdate(c *gin.Context) {
 		return
 	}
 
-	qcApp, err := service.Apps(ctx, "", constant.DEFAULT_RUNTIME_NAMESPACE).GetApp("qucheng")
+	qcApp, err := service.Apps(ctx, "", constant.DefaultRuntimeNamespace).GetApp("qucheng")
 	if err != nil {
 		renderError(c, http.StatusInternalServerError, err)
 		return
@@ -37,7 +37,7 @@ func SystemUpdate(c *gin.Context) {
 
 	tlog.WithCtx(ctx).InfoS("update qucheng chart success", "version", body.Version, "channel", body.Channel)
 
-	opApp, err := service.Apps(ctx, "", constant.DEFAULT_RUNTIME_NAMESPACE).GetApp("cne-operator")
+	opApp, err := service.Apps(ctx, "", constant.DefaultRuntimeNamespace).GetApp("cne-operator")
 	if err != nil {
 		renderError(c, http.StatusInternalServerError, err)
 		return

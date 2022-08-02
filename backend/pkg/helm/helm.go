@@ -99,7 +99,7 @@ func (h *Action) GetRelease(name string) (*release.Release, error) {
 	return rel, err
 }
 
-func (h *Action) Upgrade(name, chart, version string, valueOpts *values.Options) (interface{}, error) {
+func (h *Action) Upgrade(name, chart, version string, valueOpts *values.Options) (*release.Release, error) {
 	client := action.NewUpgrade(h.actionConfig)
 
 	client.Namespace = h.namespace
