@@ -6,19 +6,16 @@ package app
 
 import (
 	"fmt"
-	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
 	"strings"
 	"time"
 
+	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-
-	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
-
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 )
 
 func (i *Instance) CreateBackup(username string) (interface{}, error) {
