@@ -18,7 +18,7 @@
     <ul id="pinlist">
       <?php foreach($instances as $instance):?>
       <?php $active = ((bool)$instance->pinned) == true ? 'active' : '';?>
-        <li><?php echo $instance->name;?><a class="instance-item <?php echo $active;?>" data-id="<?php echo $instance->id;?>" ><i class="icon icon-off"></i></a></li>
+        <li><?php echo $instance->name;?><a class="instance-item <?php echo $active;?>" data-id="<?php echo $instance->id;?>" ><i class="icon icon-pushpin"></i></a></li>
       <?php endforeach;?>
     </ul>
   </nav>
@@ -27,14 +27,18 @@
       <div id="sortable">
       <?php foreach($pinnedInstances as $pinnedInstance):?>
         <section class="item-container" data-id="<?php echo $pinnedInstance->id;?>">
-          <div class="item" style="background-color: #161b1f">
-            <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
+        <?php $isRunning = $pinnedInstance->status == 'running' ? true : false;?>
+        <?php $itemStyle = $isRunning === true ? "background-color: #161b1f" : "background-color: grey";?>
+          <div class="item" style="<?php echo $itemStyle;?>">
+          <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
             <div class="details">
               <div class="title white">
                 <div class='title'><?php echo $pinnedInstance->name;?></div>
               </div>
             </div>
-            <a title="<?php echo $pinnedInstance->introduction;?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="fas fa-arrow-alt-to-right"></i></a>
+            <?php if($isRunning === true):?>
+            <a title="<?php echo $pinnedInstance->introduction;?>" style="<?php $isRunning === true ? 'pointer-events: none;' : '' ?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="icon icon-right-to-line"></i></a>
+            <?php endif;?>
           </div>
         </section>
       <?php endforeach;?>

@@ -356,6 +356,7 @@ class InstanceModel extends model
         $apiParams->namespace    = $space->k8space;
         $apiParams->name         = $k8name;
         $apiParams->chart        = $app->chart;
+        $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
 
         $result = $this->cne->installApp($apiParams);
@@ -382,12 +383,13 @@ class InstanceModel extends model
      */
     public function uninstall($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';// Multiple cluster should set this field.
-        $params->name      = $instance->k8name;
-        $params->namespace = $instance->spaceData->k8space;
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';// Multiple cluster should set this field.
+        $apiParams->name      = $instance->k8name;
+        $apiParams->channel   = $instance->channel;
+        $apiParams->namespace = $instance->spaceData->k8space;
 
-        $result = $this->cne->uninstallApp($params);
+        $result = $this->cne->uninstallApp($apiParams);
         if($result->code == 200 || $result->code == 404) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
 
         return $result;
@@ -402,13 +404,14 @@ class InstanceModel extends model
      */
     public function start($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';
-        $params->name      = $instance->k8name;
-        $params->chart     = $instance->chart;
-        $params->namespace = $instance->spaceData->k8space;
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->name      = $instance->k8name;
+        $apiParams->chart     = $instance->chart;
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->channel   = $instance->channel;
 
-        $result = $this->cne->startApp($params);
+        $result = $this->cne->startApp($apiParams);
         if($result->code == 200) $this->dao->update(TABLE_INSTANCE)->set('status')->eq('starting')->where('id')->eq($instance->id)->exec();
 
         return $result;
@@ -423,13 +426,14 @@ class InstanceModel extends model
      */
     public function stop($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';// Mulit cluster should set this field.
-        $params->name      = $instance->k8name;
-        $params->chart     = $instance->chart;
-        $params->namespace = $instance->spaceData->k8space;
+        $apiPrams = new stdclass;
+        $apiParams->cluster   = '';// Mulit cluster should set this field.
+        $apiParams->name      = $instance->k8name;
+        $apiParams->chart     = $instance->chart;
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->channel   = $instance->channel;
 
-        $result = $this->cne->stopApp($params);
+        $result = $this->cne->stopApp($apiParams);
         if($result->code == 200) $this->dao->update(TABLE_INSTANCE)->set('status')->eq('stopping')->where('id')->eq($instance->id)->exec();
 
         return $result;
