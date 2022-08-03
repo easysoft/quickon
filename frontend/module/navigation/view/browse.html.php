@@ -18,7 +18,7 @@
     <ul id="pinlist">
       <?php foreach($instances as $instance):?>
       <?php $active = ((bool)$instance->pinned) == true ? 'active' : '';?>
-        <li><?php echo $instance->name;?><a class="instance-item <?php echo $active;?>" data-id="<?php echo $instance->id;?>" ><i class="icon icon-off"></i></a></li>
+        <li><?php echo $instance->name;?><a class="instance-item <?php echo $active;?>" data-id="<?php echo $instance->id;?>" ><i class="icon icon-pushpin"></i></a></li>
       <?php endforeach;?>
     </ul>
   </nav>
@@ -37,7 +37,7 @@
               </div>
             </div>
             <?php if($isRunning === true):?>
-            <a title="<?php echo $pinnedInstance->introduction;?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="fas fa-arrow-alt-to-right"></i></a>
+            <a title="<?php echo $pinnedInstance->introduction;?>" style="<?php $isRunning === true ? 'pointer-events: none;' : '' ?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="icon icon-right-to-line"></i></a>
             <?php endif;?>
           </div>
         </section>

@@ -30,6 +30,7 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
 .white {color: #fff !important;}
 #app.header .item, #app.header .add-item {transform: scale(0.9); opacity: 0.8; margin: 20px 0;}
 .app-icon-container {width: 60px; height: 60px; display: flex; justify-content: center; align-items: center; margin-right: 15px; flex: 0 0 60px;}
+.icon-right-to-line {font-size: 25px;}
 </style>
 <div id="sortable">
   <?php foreach($pinnedInstances as $pinnedInstance):?>
@@ -44,7 +45,7 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
         </div>
       </div>
     <?php if($isRunning === true):?>
-    <a title="<?php echo $pinnedInstance->introduction;?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="fas fa-arrow-alt-to-right"></i></a>
+    <a title="<?php echo $pinnedInstance->introduction;?>" style="<?php $isRunning === true ? 'pointer-events: none;' : '' ?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="icon icon-right-to-line"></i></a>
     <?php endif;?>
     </div>
   </section>
