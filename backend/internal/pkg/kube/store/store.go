@@ -10,11 +10,16 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
+	quchengclientset "github.com/easysoft/quikon-api/client/clientset/versioned"
 	quchenginf "github.com/easysoft/quikon-api/client/informers/externalversions"
 	quchenglister "github.com/easysoft/quikon-api/client/listers/qucheng/v1beta1"
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 
-	quchengclientset "github.com/easysoft/quikon-api/client/clientset/versioned"
+	_ "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
+	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
+	veleroclientset "github.com/vmware-tanzu/velero/pkg/generated/clientset/versioned"
+	veleroinformers "github.com/vmware-tanzu/velero/pkg/generated/informers/externalversions"
+	velerolister "github.com/vmware-tanzu/velero/pkg/generated/listers/velero/v1"
 	metaappsv1 "k8s.io/api/apps/v1"
 	metav1 "k8s.io/api/core/v1"
 	metanetworkv1 "k8s.io/api/networking/v1"
@@ -44,11 +49,13 @@ type Informer struct {
 	Deployments  cache.SharedIndexInformer
 	StatefulSets cache.SharedIndexInformer
 
-	Backups  cache.SharedIndexInformer
-	Restores cache.SharedIndexInformer
-
 	DbService cache.SharedIndexInformer
 	Db        cache.SharedIndexInformer
+
+	Backups       cache.SharedIndexInformer
+	Restores      cache.SharedIndexInformer
+	DbBackups     cache.SharedIndexInformer
+	VolumeBackups cache.SharedIndexInformer
 }
 
 func (i *Informer) Run(stopCh chan struct{}) {
@@ -65,6 +72,8 @@ func (i *Informer) Run(stopCh chan struct{}) {
 	go i.Restores.Run(stopCh)
 	go i.DbService.Run(stopCh)
 	go i.Db.Run(stopCh)
+	go i.DbBackups.Run(stopCh)
+	go i.VolumeBackups.Run(stopCh)
 
 	if !cache.WaitForCacheSync(stopCh,
 		i.Nodes.HasSynced,
@@ -80,6 +89,8 @@ func (i *Informer) Run(stopCh chan struct{}) {
 		i.Restores.HasSynced,
 		i.DbService.HasSynced,
 		i.Db.HasSynced,
+		i.DbBackups.HasSynced,
+		i.VolumeBackups.HasSynced,
 	) {
 		runtime.HandleError(fmt.Errorf("timed out waiting for caches to sync"))
 	}
@@ -96,15 +107,18 @@ type Lister struct {
 	Deployments  appsv1.DeploymentLister
 	StatefulSets appsv1.StatefulSetLister
 
-	Backups   quchenglister.BackupLister
-	Restores  quchenglister.RestoreLister
-	DbService quchenglister.DbServiceLister
-	Db        quchenglister.DbLister
+	DbService     quchenglister.DbServiceLister
+	Db            quchenglister.DbLister
+	Backups       quchenglister.BackupLister
+	Restores      quchenglister.RestoreLister
+	DbBackups     quchenglister.DbBackupLister
+	VolumeBackups velerolister.PodVolumeBackupLister
 }
 
 type Clients struct {
-	Base *kubernetes.Clientset
-	Cne  *quchengclientset.Clientset
+	Base   *kubernetes.Clientset
+	Cne    *quchengclientset.Clientset
+	Velero *veleroclientset.Clientset
 }
 
 type Storer struct {
@@ -173,6 +187,20 @@ func NewStorer(config rest.Config) *Storer {
 
 		s.informers.Db = factory.Qucheng().V1beta1().Dbs().Informer()
 		s.listers.Db = factory.Qucheng().V1beta1().Dbs().Lister()
+
+		s.informers.DbBackups = factory.Qucheng().V1beta1().DbBackups().Informer()
+		s.listers.DbBackups = factory.Qucheng().V1beta1().DbBackups().Lister()
+	}
+
+	if cs, err := veleroclientset.NewForConfig(&config); err != nil {
+		logger.WithError(err).Error("failed to prepare kubeclient")
+	} else {
+		s.Clients.Velero = cs
+
+		factory := veleroinformers.NewSharedInformerFactory(cs, resyncPeriod)
+
+		s.informers.VolumeBackups = factory.Velero().V1().PodVolumeBackups().Informer()
+		s.listers.VolumeBackups = factory.Velero().V1().PodVolumeBackups().Lister()
 	}
 
 	return s
@@ -284,4 +312,12 @@ func (s *Storer) GetDb(namespace string, name string) (*quchengv1beta1.Db, error
 
 func (s *Storer) ListDb(namespace string, selector labels.Selector) ([]*quchengv1beta1.Db, error) {
 	return s.listers.Db.Dbs(namespace).List(selector)
+}
+
+func (s *Storer) ListDbBackups(namespace string, selector labels.Selector) ([]*quchengv1beta1.DbBackup, error) {
+	return s.listers.DbBackups.DbBackups(namespace).List(selector)
+}
+
+func (s *Storer) ListVolumeBackups(namespace string, selector labels.Selector) ([]*velerov1.PodVolumeBackup, error) {
+	return s.listers.VolumeBackups.PodVolumeBackups(namespace).List(selector)
 }

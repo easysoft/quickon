@@ -55,4 +55,8 @@ const (
 	LabelGlobalDatabase = "easycorp.io/global_database"
 )
 
+const (
+	LableVeleroPvcUID = "velero.io/pvc-uid"
+)
+
 const DefaultRuntimeNamespace = "cne-system"
