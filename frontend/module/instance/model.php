@@ -64,13 +64,14 @@ class InstanceModel extends model
      * @access public
      * @return array
      */
-    public function getByAccount($account = '', $pager = null, $pinned = '')
+    public function getByAccount($account = '', $pager = null, $pinned = '', $searchParam = '')
     {
         $instances = $this->dao->select('instance.*')->from(TABLE_INSTANCE)->alias('instance')
             ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
             ->where('instance.deleted')->eq(0)
             ->beginIF($account)->andWhere('space.owner')->eq($account)->fi()
             ->beginIF($pinned)->andWhere('instance.pinned')->eq((int)$pinned)->fi()
+            ->beginIF($searchParam)->andWhere('instance.name')->like("%{$searchParam}%")->fi()
             ->orderBy('instance.id desc')
             ->beginIF($pager)->page($pager)->fi()
             ->fetchAll('id');

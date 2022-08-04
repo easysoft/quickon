@@ -34,6 +34,17 @@ class navigation extends control
 
         $this->view->pinnedInstances = $this->instance->getByAccount($account, '', true);
 
+        $this->view->showAddItem = true;
         $this->display();
+    }
+
+    public function ajaxSearchPinnedInstance($name = '')
+    {
+        $this->loadModel('instance');
+        $account = $this->app->user->account;
+        $this->view->pinnedInstances = $this->instance->getByAccount($account, '', true, trim($name));
+
+        $this->view->showAddItem = false;
+        $this->display('navigation', 'ajaxGetPinnedInstance');
     }
 }

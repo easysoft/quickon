@@ -40,6 +40,7 @@ $lang->misc        = new stdclass();
 $lang->acl         = new stdclass();
 $lang->curd        = new stdclass();
 $lang->sonarqube   = new stdclass();
+$lang->navigation  = new stdclass();
 
 /* Common action icons. */
 $lang->icons['todo']      = 'check';

@@ -33,11 +33,12 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
 .icon-right-to-line {font-size: 25px;}
 </style>
 <div id="sortable">
+  <?php if(!empty($pinnedInstances)):?>
   <?php foreach($pinnedInstances as $pinnedInstance):?>
   <section class="item-container" data-id="<?php echo $pinnedInstance->id;?>">
   <?php $isRunning = $pinnedInstance->status == 'running' ? true : false;?>
   <?php $itemStyle = $isRunning === true ? "background-color: #161b1f" : "background-color: grey";?>
-    <div class="item" style="<?php echo $itemStyle;?>">
+    <div class="item" title='<?php echo zget($this->lang->instance->statusList, $pinnedInstance->status);?>' style="<?php echo $itemStyle;?>">
     <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
       <div class="details">
         <div class="title white">
@@ -50,7 +51,9 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
     </div>
   </section>
   <?php endforeach;?>
-  <section class="add-item active">
+  <?php endif;?>
+  <?php $isActive = (isset($showAddItem) and $showAddItem === true) ? 'active' : ''; ?>
+  <section class="add-item <?php echo $isActive;?>">
     <a id="add-item" href=""><?php echo $this->lang->navigation->pinInstance;?></a>
   </section>
 </div>

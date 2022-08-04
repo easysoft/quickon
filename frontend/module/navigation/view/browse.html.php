@@ -24,12 +24,18 @@
   </nav>
   <div class="content">
     <main>
+      <div class='searchform'>
+          <div id='search-container' class='input-container'>
+            <input class="homesearch" autofocus="autofocus" placeholder="<?php echo $this->lang->navigation->search;?>" name="instance" type="text">
+            <button type='submit' class='searchbutton'><?php echo $this->lang->navigation->search;?></button>
+          </div>
+      </div>
       <div id="sortable">
       <?php foreach($pinnedInstances as $pinnedInstance):?>
         <section class="item-container" data-id="<?php echo $pinnedInstance->id;?>">
         <?php $isRunning = $pinnedInstance->status == 'running' ? true : false;?>
         <?php $itemStyle = $isRunning === true ? "background-color: #161b1f" : "background-color: grey";?>
-          <div class="item" style="<?php echo $itemStyle;?>">
+          <div class="item" title='<?php echo zget($this->lang->instance->statusList, $pinnedInstance->status);?>' style="<?php echo $itemStyle;?>">
           <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
             <div class="details">
               <div class="title white">

@@ -19,7 +19,7 @@ include 'chosen.html.php';
       <div id='toolbar'>
         <div id='userMenu'>
           <ul id="userNav" class="nav nav-default">
-            <li><?php echo html::a($this->createLink('navigation', 'browse'), '<i class="icon icon-navigation" style="font-size:25px;"></i>', "_blank");?></li>
+            <div style="position:absolute;right:55px;top:13px;height:25px;" title="<?php echo $lang->navigation->common;?>"><?php echo html::a($this->createLink('navigation', 'browse'), '<i class="icon icon-navigation" style="font-size:25px;"></i>', "_blank");?></div>
             <li class='dropdown dropdown-hover has-avatar'><?php common::printUserBar();?></li>
           </ul>
         </div>

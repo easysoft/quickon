@@ -1,7 +1,6 @@
 $('.sidenav').hide();
 
-$('#app').on('click', '#config-button', function(e)
-{
+$('#app').on('click', '#config-button', function(e) {
     e.preventDefault();
     var app = $('#app');
     var active = app.hasClass('header');
@@ -46,9 +45,28 @@ $('.instance-item').click(function()
         $(this).addClass('active');
     }
     instanceID = $(this).attr('data-id');
-    link = '/navigation-ajaxGetPinnedInstance-' + instanceID + '.html';
+    link = createLink('navigation', 'ajaxGetPinnedInstance', 'instanceID=' + instanceID);
     $.get(link, function(result)
     {
         $('#sortable').replaceWith(result);
     });
+});
+
+$('.searchbutton').click(function()
+{
+    var searchName = $('.homesearch').val().trim();
+    link = createLink('navigation', 'ajaxSearchPinnedInstance', 'name=' + searchName);
+    $.get(link, function(result)
+    {
+        $('#sortable').replaceWith(result);
+    });
+
+    if(searchName == '')
+    {
+        $('#config-button').fadeIn();
+    }
+    else
+    {
+        $('#config-button').hide();
+    }
 });
