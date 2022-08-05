@@ -44,6 +44,16 @@ $lang->instance->backup->restoreInfo     = '回滚信息';
 $lang->instance->backup->delete          = '删除';
 $lang->instance->backup->rebackup        = '重试备份';
 $lang->instance->backup->create          = '创建备份';
+$lang->instance->backup->dbType          = '数据库类型';
+$lang->instance->backup->dbName          = '数据库名称';
+$lang->instance->backup->dbStatus        = '数据库状态';
+$lang->instance->backup->dbSpentSeconds  = '备份数据库用时(秒)';
+$lang->instance->backup->dbSize          = '文件大小';
+$lang->instance->backup->volName         = '数据卷名称';
+$lang->instance->backup->volMountName    = '挂载名称';
+$lang->instance->backup->volStatus       = '卷状态';
+$lang->instance->backup->volSpentSeconds = '备份数据库用时(秒)';
+$lang->instance->backup->volSize         = '卷大小';
 
 $lang->instance->backup->statusList = array();
 $lang->instance->backup->statusList['success']        = '失败';
