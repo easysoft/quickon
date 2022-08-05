@@ -26,8 +26,8 @@
     <main>
       <div class='searchform'>
           <div id='search-container' class='input-container'>
-            <input class="homesearch" autofocus="autofocus" placeholder="<?php echo $this->lang->navigation->search;?>" name="instance" type="text">
-            <button type='submit' class='searchbutton'><?php echo $this->lang->navigation->search;?></button>
+            <input class="homesearch" autofocus="autofocus" oninput='searchInstance()' placeholder="<?php echo $this->lang->navigation->search;?>" name="instance" type="text">
+            <button type='submit' class='searchbutton' onclick='searchInstance()'><?php echo $this->lang->navigation->search;?></button>
           </div>
       </div>
       <div id="sortable">

@@ -1,3 +1,29 @@
+/**
+ * Search pinned instance in navigation.
+ *
+ * @access public
+ * @return void
+ */
+function searchInstance()
+{
+    var searchName = $('.homesearch').val().trim();
+    var searchName = btoa(searchName);
+    var link = createLink('navigation', 'ajaxSearchPinnedInstance', 'name=' + searchName);
+    $.get(link, function(result)
+    {
+        $('#sortable').replaceWith(result);
+    });
+
+    if(searchName == '')
+    {
+        $('#config-button').fadeIn();
+    }
+    else
+    {
+        $('#config-button').hide();
+    }
+}
+
 $('.sidenav').hide();
 
 $('#app').on('click', '#config-button', function(e) {
@@ -50,23 +76,4 @@ $('.instance-item').click(function()
     {
         $('#sortable').replaceWith(result);
     });
-});
-
-$('.searchbutton').click(function()
-{
-    var searchName = $('.homesearch').val().trim();
-    link = createLink('navigation', 'ajaxSearchPinnedInstance', 'name=' + searchName);
-    $.get(link, function(result)
-    {
-        $('#sortable').replaceWith(result);
-    });
-
-    if(searchName == '')
-    {
-        $('#config-button').fadeIn();
-    }
-    else
-    {
-        $('#config-button').hide();
-    }
 });

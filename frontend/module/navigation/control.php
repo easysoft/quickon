@@ -40,9 +40,10 @@ class navigation extends control
 
     public function ajaxSearchPinnedInstance($name = '')
     {
+        $name = base64_decode(trim($name));
         $this->loadModel('instance');
         $account = $this->app->user->account;
-        $this->view->pinnedInstances = $this->instance->getByAccount($account, '', true, trim($name));
+        $this->view->pinnedInstances = $this->instance->getByAccount($account, '', true, $name);
 
         $this->view->showAddItem = false;
         $this->display('navigation', 'ajaxGetPinnedInstance');
