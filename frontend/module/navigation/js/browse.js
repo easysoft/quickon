@@ -7,7 +7,7 @@
 function searchInstance()
 {
     var searchName = $('.homesearch').val().trim();
-    var searchName = btoa(searchName);
+    var searchName = window.btoa(unescape(encodeURIComponent(searchName)));
     var link = createLink('navigation', 'ajaxSearchPinnedInstance', 'name=' + searchName);
     $.get(link, function(result)
     {
