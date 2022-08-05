@@ -6,7 +6,6 @@ $lang->space       = new stdclass();
 $lang->instance    = new stdclass();
 $lang->CNE         = new stdclass();
 $lang->my          = new stdclass();
-$lang->release     = new stdclass();
 $lang->measurement = new stdclass();
 $lang->review      = new stdclass();
 $lang->milestone   = new stdclass();

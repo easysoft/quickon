@@ -164,6 +164,7 @@ $lang->space->common      = '服务管理';
 $lang->store->common      = '应用市场';
 $lang->navigation->common = '导航';
 $lang->admin->common      = '后台管理';
+$lang->system->common     = '后台管理';
 $lang->user->common       = '用户';
 $lang->custom->common     = '自定义';
 $lang->company->common    = '公司';
