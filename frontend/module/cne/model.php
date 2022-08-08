@@ -247,7 +247,7 @@ class cneModel extends model
         $setting['cluster']   = '';
         $setting['namespace'] = $instance->spaceData->k8space;
         $setting['name']      = $instance->k8name;
-        $setting['channel']   = $this->config->CNE->api->channel;
+        $setting['channel']   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
         $setting['chart']     = $instance->chart;
         $setting['version']   = $toVersion;
 
@@ -268,7 +268,7 @@ class cneModel extends model
      */
     public function getDefaultAccount($instance, $cluster = '')
     {
-        $apiUrl = '/api/cne/app/account?channel='. $this->config->CNE->api->channel;
+        $apiUrl = '/api/cne/app/account?channel='. (empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel);
         $result = $this->apiGet($apiUrl, array('name' => $instance->k8name, 'namespace' => $instance->spaceData->k8space, 'cluster' => $cluster), $this->config->CNE->api->headers, $this->config->CNE->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
@@ -432,7 +432,7 @@ class cneModel extends model
         $apiParams->cluster   = '';
         $apiParams->namespace = $instance->spaceData->k8space;
         $apiParams->name      = $instance->k8name;
-        $apiParams->channel   = $this->config->CNE->api->channel;
+        $apiParams->channel   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
         $apiUrl = "/api/cne/app/backup";
         return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -453,7 +453,7 @@ class cneModel extends model
         $apiParams->namespace   = $instance->spaceData->k8space;
         $apiParams->name        = $instance->k8name;
         $apiParams->backup_name = $backup->backupName;
-        $apiParams->channel     = $this->config->CNE->api->channel;
+        $apiParams->channel     = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
         $apiUrl = "/api/cne/app/backup/status";
         return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -472,7 +472,7 @@ class cneModel extends model
         $apiParams->cluster   = '';
         $apiParams->namespace = $instance->spaceData->k8space;
         $apiParams->name      = $instance->k8name;
-        $apiParams->channel   = $this->config->CNE->api->channel;
+        $apiParams->channel   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
         $apiUrl = "/api/cne/app/backups";
         return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -495,7 +495,7 @@ class cneModel extends model
         $apiParams->namespace   = $instance->spaceData->k8space;
         $apiParams->name        = $instance->k8name;
         $apiParams->backup_name = $backupName;
-        $apiParams->channel     = $this->config->CNE->api->channel;
+        $apiParams->channel     = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
         $apiUrl = "/api/cne/app/restore";
         return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -516,7 +516,7 @@ class cneModel extends model
         $apiParams->namespace    = $instance->spaceData->k8space;
         $apiParams->name         = $instance->k8name;
         $apiParams->restore_name = $restore->restoreName;
-        $apiParams->channel      = $this->config->CNE->api->channel;
+        $apiParams->channel      = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
         $apiUrl = "/api/cne/app/restore/status";
         return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -525,29 +525,31 @@ class cneModel extends model
     /**
      * Start an app instance.
      *
-     * @param  object $instance
+     * @param  object $apiParams
      * @access public
      * @return object
      */
-    public function startApp($instance)
+    public function startApp($apiParams)
     {
-        $instance->channel = $this->config->CNE->api->channel;
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
         $apiUrl = "/api/cne/app/start";
-        return $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
     }
 
     /**
      * Stop an app instance.
      *
-     * @param  object $instance
+     * @param  object $apiParams
      * @access public
      * @return object
      */
-    public function stopApp($instance)
+    public function stopApp($apiParams)
     {
-        $instance->channel = $this->config->CNE->api->channel;
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
         $apiUrl = "/api/cne/app/stop";
-        return $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
     }
 
     /**
@@ -561,7 +563,7 @@ class cneModel extends model
     {
         if(!empty($apiParams->settings)) $apiParams->settings = $this->trasformSettings($apiParams->settings);
 
-        $apiParams->channel = $this->config->CNE->api->channel;
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
 
         $apiUrl = "/api/cne/app/install";
         return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -570,31 +572,33 @@ class cneModel extends model
     /**
      * uninstall an app instance.
      *
-     * @param  object $instance
+     * @param  object $apiParams
      * @access public
      * @return object
      */
-    public function uninstallApp($instance)
+    public function uninstallApp($apiParams)
     {
-        $instance->channel = $this->config->CNE->api->channel;
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
         $apiUrl = "/api/cne/app/uninstall";
-        return $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
     }
 
     /**
      * Config app instance.
      *
-     * @param  int    $instance
-     * @param  int    $settings
+     * @param  object $apiParams
+     * @param  object $settings
      * @access public
      * @return true
      */
-    public function configApp($instance, $settings)
+    public function configApp($apiParams, $settings)
     {
-        $instance->settings = $this->transformedSettings($settings);
-        $instance->channel  = $this->config->CNE->api->channel;
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiParams->settings = $this->transformedSettings($settings);
         $apiUrl = "/api/cne/app/settings";
-        $result = $this->apiPost($apiUrl, $instance, $this->config->CNE->api->headers);
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
         if($result && $result->code == 200) return true;
 
         return false;
@@ -632,7 +636,7 @@ class cneModel extends model
         $apiParams->name      = $instance->k8name;
         $apiParams->chart     = $instance->chart;
         $apiParams->namespace = $instance->spaceData->k8space;
-        $apiParams->channel   = $this->config->CNE->api->channel;
+        $apiParams->channel   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
         $apiUrl = "/api/cne/app/status";
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -652,8 +656,10 @@ class cneModel extends model
      */
     public function dbList($dbType = 'mysql', $namespace = '')
     {
-        $apiUrl = "/api/cne/component/gdb";
-        $result = $this->apiGet($apiUrl, array('kind' => $dbType, 'namespace' => $namespace), $this->config->CNE->api->headers);
+        $apiUrl    = "/api/cne/component/gdb";
+        $apiParams =  array('kind' => $dbType, 'namespace' => $namespace, 'channel' => $this->config->CNE->api->channel);
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
         if(empty($result) || $result->code != 200 || empty($result->data)) return array();
 
         $dbList = $result->data;

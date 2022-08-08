@@ -82,7 +82,12 @@ class admin extends control
             return print(json_encode(array('code' => 511, 'message' => 'Admin account not found, please init admin account firstly.')));
         }
 
-        $this->dao->update(TABLE_USER)->set('password')->eq(md5($password))->autoCheck()->where('id')->eq($admin->id)->exec();
+        $this->app->loadConfig('user');
+        $this->dao->update(TABLE_USER)
+            ->set('password')->eq(md5($password))
+            ->set('fails')->eq(0)
+            ->set('locked')->eq(date('Y-m-d H:i:s', time() - 60 * $this->config->user->lockMinutes))
+            ->autoCheck()->where('id')->eq($admin->id)->exec();
         $errorMsg = dao::isError();
         if($errorMsg)
         {

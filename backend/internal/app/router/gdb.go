@@ -5,14 +5,14 @@
 package router
 
 import (
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"net/http"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
 )
 
 // GDBList 全局数据库列表
@@ -28,18 +28,22 @@ import (
 // @Failure 500 {object} response5xx
 // @Router /api/cne/component/gdb [get]
 func GDBList(c *gin.Context) {
-	ctx := c.Request.Context()
-	var op model.CompDbServiceListModel
-	var err error
+	var (
+		ctx = c.Request.Context()
+		err error
+		op  model.CompDbServiceListModel
+	)
 
+	logger := getLogger(ctx)
 	if err = c.ShouldBindQuery(&op); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	i, err := service.Components(ctx, "").ListDbsComponents(op.Kind, op.Namespace)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errListDbServiceFailed)
+		logger.WithError(err).Error(errListDbServiceFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errListDbServiceFailed))
 		return
 	}
@@ -48,18 +52,23 @@ func GDBList(c *gin.Context) {
 }
 
 func GDBValidation(c *gin.Context) {
-	ctx := c.Request.Context()
-	var op model.CompDbServiceValidationModel
-	var err error
 
+	var (
+		ctx = c.Request.Context()
+		op  model.CompDbServiceValidationModel
+		err error
+	)
+
+	logger := getLogger(ctx)
 	if err = c.ShouldBindQuery(&op); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
 		renderError(c, http.StatusBadRequest, err)
 		return
 	}
 
 	i, err := service.Components(ctx, "").ValidDbService(op.Name, op.Namespace, op.Database, op.User)
 	if err != nil {
-		tlog.WithCtx(ctx).ErrorS(err, errValidDbSvcFailed)
+		logger.WithError(err).Error(errValidDbSvcFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errValidDbSvcFailed))
 		return
 	}

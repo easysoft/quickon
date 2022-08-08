@@ -11,8 +11,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
+
 	"github.com/gin-gonic/gin"
-	"k8s.io/klog/v2"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/router"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
@@ -24,30 +27,32 @@ const (
 	listenPort = 8087
 )
 
-func Serve(ctx context.Context) error {
+func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 	var err error
 	stopCh := make(chan struct{})
 
-	klog.Info("Initialize clusters")
+	logger.Info("Initialize clusters")
 	for cluster.Init(stopCh) != nil {
-		klog.Errorf("initialize failed")
+		logger.Errorf("initialize failed")
 		time.Sleep(time.Second * 10)
 	}
 
-	klog.Info("Setup cron tasks")
+	logger.Info("Setup cron tasks")
 	_ = helm.RepoUpdate()
 	defer cron.Cron.Stop()
 	cron.Cron.Add("01 * * * *", func() {
 		err = helm.RepoUpdate()
 		if err != nil {
-			klog.Warningf("cron helm repo update err: %v", err)
+			logger.WithError(err).Warning("cron helm repo update failed")
 		}
 	})
 	cron.Cron.Start()
 
-	klog.Info("Starting cne-api...")
+	service.Apps(ctx, "", "").Upgrade()
 
-	klog.Info("Setup gin engine")
+	logger.Info("Starting cne-api...")
+
+	logger.Info("Setup gin engine")
 	r := gin.New()
 	router.Config(r)
 
@@ -61,13 +66,13 @@ func Serve(ctx context.Context) error {
 		ctx, cancel := context.WithTimeout(context.TODO(), time.Second*5)
 		defer cancel()
 		if err := srv.Shutdown(ctx); err != nil {
-			klog.Errorf("Failed to stop server, error: %s", err)
+			logger.WithError(err).Error("Failed to stop server")
 		}
-		klog.Info("server exited.")
+		logger.Info("server exited.")
 	}()
-	klog.Infof("start application server, Listen on port: %d, pid is %v", listenPort, os.Getpid())
+	logger.Infof("start application server, Listen on port: %d, pid is %v", listenPort, os.Getpid())
 	if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-		klog.Errorf("Failed to start http server, error: %s", err)
+		logger.WithError(err).Error("Failed to start http server")
 		return err
 	}
 	<-stopCh

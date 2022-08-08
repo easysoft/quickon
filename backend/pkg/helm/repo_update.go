@@ -29,7 +29,6 @@ type repoUpdateOptions struct {
 }
 
 func RepoUpdate() error {
-	fmt.Println("update repo")
 	settings := cli.New()
 	o := &repoUpdateOptions{update: updateCharts}
 	o.repoFile = settings.RepositoryConfig

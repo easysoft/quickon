@@ -6,32 +6,35 @@ package cron
 
 import (
 	"github.com/robfig/cron/v3"
-	"k8s.io/klog/v2"
+	"github.com/sirupsen/logrus"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 var Cron *Client
 
 type Client struct {
 	client *cron.Cron
+	logger logrus.FieldLogger
 }
 
 func New() *Client {
-	return &Client{client: cron.New()}
+	return &Client{client: cron.New(), logger: logging.DefaultLogger()}
 }
 
 func (c *Client) Start() {
-	klog.Info("start cron tasks")
+	c.logger.Info("start cron tasks")
 	c.client.Start()
 }
 
 func (c *Client) Add(spec string, cmd func()) error {
 	id, err := c.client.AddFunc(spec, cmd)
-	klog.Infof("add cron: %v", id)
+	c.logger.Infof("add cron: %v", id)
 	return err
 }
 
 func (c *Client) Stop() {
-	klog.Info("stop cron tasks")
+	c.logger.Info("stop cron tasks")
 	c.client.Stop()
 }
 

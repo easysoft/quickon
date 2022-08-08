@@ -37,7 +37,7 @@
     <?php else:?>
     <div class="row">
       <?php foreach ($cloudApps as $cloudApp):?>
-      <div class='col-xs-4 col-sm-3 col-lg-2' data-id='<?php echo $cloudApp->id;?>'>
+      <div class='col-xs-4 col-sm-4 col-md-4 col-lg-3' data-id='<?php echo $cloudApp->id;?>'>
         <div class='panel card'>
           <a href="<?php echo $this->createLink('store', 'appview', "id=$cloudApp->id");?>">
             <div class='panel-heading text-center'>

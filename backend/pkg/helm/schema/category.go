@@ -7,7 +7,8 @@ package schema
 import (
 	"github.com/imdario/mergo"
 	"helm.sh/helm/v3/pkg/chart"
-	"k8s.io/klog/v2"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 func LoadCategories(currCh, parentCh *chart.Chart) Schemas {
@@ -20,7 +21,7 @@ func LoadCategories(currCh, parentCh *chart.Chart) Schemas {
 
 	err := mergo.Merge(&dest, curr, mergo.WithOverwriteWithEmptyValue)
 	if err != nil {
-		klog.ErrorS(err, "merge map failed")
+		logging.DefaultLogger().WithError(err).Error("merge map failed")
 	}
 
 	return dest

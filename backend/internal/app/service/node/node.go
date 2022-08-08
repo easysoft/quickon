@@ -8,14 +8,17 @@ import (
 	"context"
 	"sort"
 
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
+	"github.com/sirupsen/logrus"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
 	"k8s.io/apimachinery/pkg/labels"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
 )
 
 type Manager struct {
@@ -23,6 +26,7 @@ type Manager struct {
 
 	clusterName string
 	ks          *cluster.Cluster
+	logger      logrus.FieldLogger
 }
 
 func NewNodes(ctx context.Context, clusterName string) *Manager {
@@ -30,6 +34,7 @@ func NewNodes(ctx context.Context, clusterName string) *Manager {
 		ctx:         ctx,
 		clusterName: clusterName,
 		ks:          cluster.Get(clusterName),
+		logger:      logging.DefaultLogger().WithContext(ctx),
 	}
 }
 
@@ -64,7 +69,7 @@ func (m *Manager) GetNodes() []*v1.Node {
 	var err error
 	nodes, err = m.ks.Store.ListNodes(labels.Everything())
 	if err != nil {
-		tlog.WithCtx(m.ctx).ErrorS(err, "get nodes failed")
+		m.logger.WithError(err).Error("get nodes failed")
 	}
 	return nodes
 }

@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   `channel` char(20),
   `k8name` char(64) NOT NULL,
   `status` char(20) NOT NULL,
+  `pinned` enum('0', '1') NOT NULL DEFAULT '0',
   `domain` char(255) NOT NULL,
   `dbSettings` text,
   `env` text,

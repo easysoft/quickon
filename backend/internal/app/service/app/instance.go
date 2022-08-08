@@ -11,22 +11,23 @@ import (
 	"strings"
 
 	"github.com/imdario/mergo"
+	"github.com/sirupsen/logrus"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
+
+	"helm.sh/helm/v3/pkg/release"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/api/resource"
+	"k8s.io/apimachinery/pkg/labels"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/component"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
-
-	"helm.sh/helm/v3/pkg/release"
-	v1 "k8s.io/api/core/v1"
-	"k8s.io/apimachinery/pkg/api/resource"
-	"k8s.io/apimachinery/pkg/labels"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 type Instance struct {
@@ -41,9 +42,12 @@ type Instance struct {
 	ks *cluster.Cluster
 
 	release *release.Release
+	secret  *v1.Secret
 
 	ChartName           string
 	CurrentChartVersion string
+
+	logger logrus.FieldLogger
 }
 
 func newApp(ctx context.Context, am *Manager, name string) *Instance {
@@ -52,17 +56,27 @@ func newApp(ctx context.Context, am *Manager, name string) *Instance {
 		ctx:         ctx,
 		clusterName: am.clusterName, namespace: am.namespace, name: name,
 		ks: am.ks,
+		logger: logging.DefaultLogger().WithContext(ctx).WithFields(logrus.Fields{
+			"name": name, "namespace": am.namespace,
+		}),
 	}
 
 	i.release = i.fetchRelease()
 	return i
 }
 
-func (i *Instance) prepare() {
+func (i *Instance) prepare() error {
 	i.ChartName = i.release.Chart.Metadata.Name
 	i.CurrentChartVersion = i.release.Chart.Metadata.Version
 
 	i.selector = labels.Set{"release": i.name}.AsSelector()
+	secret, err := loadAppSecret(i.ctx, i.name, i.namespace, i.release.Version, i.ks)
+	if err != nil {
+		i.logger.WithError(err).Errorf("got release secret failed with resivion %d", i.release.Version)
+		return err
+	}
+	i.secret = secret
+	return nil
 }
 
 func (i *Instance) fetchRelease() *release.Release {
@@ -72,9 +86,21 @@ func (i *Instance) fetchRelease() *release.Release {
 	}
 	rel, err := getter.Last(i.name)
 	if err != nil {
-		tlog.WithCtx(i.ctx).ErrorS(err, "parse release failed")
+		i.logger.WithError(err).Error("parse release failed")
 	}
 	return rel
+}
+
+func (i *Instance) isApp() bool {
+	v, ok := i.secret.Labels[constant.LabelApplication]
+	if ok && v == "true" {
+		return true
+	}
+	return false
+}
+
+func (i *Instance) GetLogger() logrus.FieldLogger {
+	return i.logger
 }
 
 func (i *Instance) getServices() ([]*v1.Service, error) {
@@ -286,9 +312,9 @@ func (i *Instance) GetSchema(component, category string) string {
 
 	if component == i.ChartName {
 		jbody, err := helm.ReadSchemaFromChart(i.release.Chart, category, "test")
-		tlog.WithCtx(i.ctx).InfoS("get schema content", "data", string(jbody))
+		i.logger.Debugf("get schema content: %s", string(jbody))
 		if err != nil {
-			tlog.WithCtx(i.ctx).ErrorS(err, "get schema failed")
+			i.logger.WithError(err).Error("get schema failed")
 			return ""
 		}
 		data = string(jbody)
@@ -314,7 +340,7 @@ func (i *Instance) GetPvcList() []model.AppRespPvc {
 	var result []model.AppRespPvc
 	pvcList, err := i.ks.Clients.Base.CoreV1().PersistentVolumeClaims(i.namespace).List(i.ctx, metav1.ListOptions{LabelSelector: i.selector.String()})
 	if err != nil {
-		tlog.WithCtx(i.ctx).ErrorS(err, "list pvc failed")
+		i.logger.WithError(err).Error("list pvc failed")
 		return result
 	}
 	for _, pvc := range pvcList.Items {

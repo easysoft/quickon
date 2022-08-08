@@ -16,6 +16,11 @@
   <div class="content"><i class='icon-exclamation-sign'></i> <?php echo $error;?></div>
 </div>
 <?php endif;?>
+<div id='mainMenu' class='clearfix'>
+  <div class="btn-toolbar pull-left">
+    <?php echo html::a($this->createLink('system', 'index'), '<i class="icon icon-back icon-sm"></i> ' . $lang->goback, '', "class='btn btn-secondary'");?>
+  </div>
+</div>
 <div id='mainContent' class="main-row">
   <div class="main-col main-content">
     <div class='main-header'>

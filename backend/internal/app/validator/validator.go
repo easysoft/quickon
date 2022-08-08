@@ -7,12 +7,13 @@ package validator
 import (
 	"fmt"
 
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
+
 	"github.com/gin-gonic/gin/binding"
 	"github.com/go-playground/locales/en"
 	ut "github.com/go-playground/universal-translator"
 	"github.com/go-playground/validator/v10"
 	enTranslations "github.com/go-playground/validator/v10/translations/en"
-	"k8s.io/klog/v2"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/validator/field"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/validator/translation"
@@ -44,18 +45,19 @@ func initTrans(v *validator.Validate) (err error) {
 }
 
 func Setup() {
+	logger := logging.DefaultLogger()
 	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
 		var err error
 		for k, f := range field.New() {
 			if err = v.RegisterValidation(k, f); err != nil {
-				klog.ErrorS(err, "register validation failed", "name", k)
+				logger.WithError(err).WithField("name", k).Error("register validation failed")
 			} else {
-				klog.InfoS("register validation successful", "name", k)
+				logger.WithField("name", k).Info("register validation successful")
 			}
 		}
 
 		if err = initTrans(v); err != nil {
-			klog.ErrorS(err, "setup translate failed")
+			logger.WithError(err).Error("setup translate failed")
 		}
 	}
 }
