@@ -48,7 +48,7 @@ class store extends control
     public function browse($recTotal = 0, $recPerPage = 0, $pageID = 1, $channel = '')
     {
         global $config;
-        if(empty($recPerPage)) $recPerPage = $this->cookie->pagerStoreBrowse ? $this->cookie->pagerStoreBrowse : 20;
+        if(empty($recPerPage)) $recPerPage = $this->cookie->pagerStoreBrowse ? $this->cookie->pagerStoreBrowse : 24;
         if(in_array( $channel, array('stable', 'test')))
         {
             $config->CNE->api->channel   = $channel;

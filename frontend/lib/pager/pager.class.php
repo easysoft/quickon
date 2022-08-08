@@ -91,10 +91,11 @@ class pager extends basePager
      * @param  string $align
      * @param  string $type
      * @param  int    $maxRecPerPage
+     * @param  int    $minRecPerPage
      * @access public
      * @return void
      */
-    public function show($align = 'right', $type = 'full', $maxRecPerPage = 0)
+    public function show($align = 'right', $type = 'full', $maxRecPerPage = 0, $minRecPerPage = 5)
     {
         if($type == 'pagerjs')
         {
@@ -115,8 +116,12 @@ class pager extends basePager
                 if($maxRecPerPage)
                 {
                     /* Set record per page. */
-                    for($i = 5; $i <= 50; $i += 5) $options[] = $i;
-                    $options = array_merge($options, array(100, 200, 500, 1000, 2000));
+                    for($i = 1; $i <= 10; $i++) $options[] = $minRecPerPage * $i;
+                    $options[] = $minRecPerPage * 20;
+                    $options[] = $minRecPerPage * 40;
+                    $options[] = $minRecPerPage * 100;
+                    $options[] = $minRecPerPage * 200;
+                    $options[] = $minRecPerPage * 400;
 
                     $pageSizeOptions = 'data-page-size-options="';
                     foreach($options as $option)

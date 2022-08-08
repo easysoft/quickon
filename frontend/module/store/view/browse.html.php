@@ -60,7 +60,7 @@
       </div>
       <?php endforeach;?>
     </div>
-    <div class='table-footer pagination' id='pagination'><?php $pager->show('right', 'pagerjs');?></div>
+    <div class='table-footer pagination' id='pagination'><?php $pager->show('right', 'pagerjs', 4800, 12);?></div>
     <?php endif;?>
   <div>
 </div>
