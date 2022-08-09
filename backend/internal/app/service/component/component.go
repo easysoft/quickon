@@ -39,7 +39,7 @@ func NewComponents(ctx context.Context, clusterName string) *Manager {
 	}
 }
 
-func (m *Manager) ListDbService(namespace string) ([]model.ComponentDbService, error) {
+func (m *Manager) ListDbService(namespace string, onlyGlobal string) ([]model.ComponentDbService, error) {
 	var components []model.ComponentDbService
 	GlobalDbSvsList, err := m.ks.Store.ListDbService("", labels.Set{constant.LabelGlobalDatabase: "true"}.AsSelector())
 	if err != nil {
@@ -56,19 +56,21 @@ func (m *Manager) ListDbService(namespace string) ([]model.ComponentDbService, e
 		components = append(components, s)
 	}
 
-	dbSvsList, err := m.ks.Store.ListDbService(namespace, labels.Everything())
-	if err != nil {
-		return components, err
-	}
-
-	for _, dbSvc := range dbSvsList {
-		s := model.ComponentDbService{
-			ComponentBase: model.ComponentBase{Name: dbSvc.Name, NameSpace: dbSvc.Namespace},
-			Release:       dbSvc.Labels["release"],
-			DbType:        string(dbSvc.Spec.Type),
-			Alias:         decodeDbSvcAlias(dbSvc),
+	if onlyGlobal == "false" {
+		dbSvsList, err := m.ks.Store.ListDbService(namespace, labels.Everything())
+		if err != nil {
+			return components, err
 		}
-		components = append(components, s)
+
+		for _, dbSvc := range dbSvsList {
+			s := model.ComponentDbService{
+				ComponentBase: model.ComponentBase{Name: dbSvc.Name, NameSpace: dbSvc.Namespace},
+				Release:       dbSvc.Labels["release"],
+				DbType:        string(dbSvc.Spec.Type),
+				Alias:         decodeDbSvcAlias(dbSvc),
+			}
+			components = append(components, s)
+		}
 	}
 
 	return components, nil
