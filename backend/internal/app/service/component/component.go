@@ -41,6 +41,21 @@ func NewComponents(ctx context.Context, clusterName string) *Manager {
 
 func (m *Manager) ListDbService(namespace string) ([]model.ComponentDbService, error) {
 	var components []model.ComponentDbService
+	GlobalDbSvsList, err := m.ks.Store.ListDbService("", labels.Set{constant.LabelGlobalDatabase: "true"}.AsSelector())
+	if err != nil {
+		return components, err
+	}
+
+	for _, dbSvc := range GlobalDbSvsList {
+		s := model.ComponentDbService{
+			ComponentBase: model.ComponentBase{Name: dbSvc.Name, NameSpace: dbSvc.Namespace},
+			Release:       dbSvc.Labels["release"],
+			DbType:        string(dbSvc.Spec.Type),
+			Alias:         decodeDbSvcAlias(dbSvc),
+		}
+		components = append(components, s)
+	}
+
 	dbSvsList, err := m.ks.Store.ListDbService(namespace, labels.Everything())
 	if err != nil {
 		return components, err

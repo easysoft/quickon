@@ -96,6 +96,13 @@ func DbServiceList(c *gin.Context) {
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
+	for id, resp := range data {
+		i, err := service.Apps(ctx, op.Cluster, resp.NameSpace).GetApp(resp.Release)
+		if err != nil {
+			continue
+		}
+		data[id].Status = i.ParseStatus().Status
+	}
 
 	renderJson(c, http.StatusOK, data)
 }

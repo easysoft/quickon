@@ -33,6 +33,7 @@ type ComponentDbService struct {
 	Release string `json:"release"`
 	DbType  string `json:"db_type"`
 	Alias   string `json:"alias"`
+	Status  string `json:"status"`
 }
 
 type ComponentDbServiceDetail struct {
