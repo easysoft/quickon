@@ -6,7 +6,7 @@ div.main-header {border-bottom: 0;}
 #upgradeModal .confirm-text{font-weight: 700;}
 #confirmRollback .modal-content {padding-bottom: 20px;}
 #confirmRollback .confirm-text{font-weight: 700;}
-div#mainContent {width: 60%; min-width: 400px; max-width: 800px; margin: auto;}
+div#mainContent {width: 60%; min-width: 600px; max-width: 1000px; margin: auto;}
 table.table a {vertical-align: baseline;}
 .info-header {height: 50px;}
 .history-header {height: 50px;}
