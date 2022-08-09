@@ -7,7 +7,7 @@ package app
 import "errors"
 
 var (
-	ErrAppNotFound = errors.New("release: not found")
+	ErrAppNotFound = errors.New("release not found")
 
-	ErrPathParseFailed = errors.New("release: path parse failed")
+	ErrPathParseFailed = errors.New("release path parse failed")
 )

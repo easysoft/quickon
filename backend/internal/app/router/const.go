@@ -9,6 +9,7 @@ const (
 )
 
 const (
+	errBindDataFailed      = "request data can't be bound"
 	errGetAppFailed        = "get app failed"
 	errStartAppFailed      = "start app failed"
 	errStopAppFailed       = "stop app failed"

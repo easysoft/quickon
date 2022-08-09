@@ -2005,7 +2005,7 @@ EOT;
 
         $module = $this->app->getModuleName();
         $method = $this->app->getMethodName();
-        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade') return;
+        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade' || $module == 'navigation') return;
 
         if($this->isNotIframeMethod($module, $method)) return;
 

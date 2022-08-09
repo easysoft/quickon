@@ -18,7 +18,7 @@
   <?php else:?>
   <div class="row">
     <?php foreach ($instances as $instance):?>
-    <div class='col-sm-4 col-md-3 col-lg-2' data-id='<?php echo $instance->id;?>'>
+    <div class='col-sm-4 col-md-3 col-lg-3' data-id='<?php echo $instance->id;?>'>
       <div class='panel'>
           <div class='panel-heading'>
             <div class="q-card-title">

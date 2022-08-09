@@ -69,7 +69,7 @@
     <table class="table table-borderless">
       <thead>
         <tr>
-          <th class="w-150px"><?php echo $lang->instance->log->date;?></th>
+          <th class="w-180px"><?php echo $lang->instance->log->date;?></th>
           <th><?php echo $lang->instance->log->message;?></th>
           <th></th>
         </tr>

@@ -87,12 +87,35 @@ type AppRespPvc struct {
 }
 
 type AppRespBackup struct {
-	Name       string           `json:"name"`
-	Creator    string           `json:"creator"`
-	CreateTime int64            `json:"create_time"`
-	Status     string           `json:"status"`
-	Message    string           `json:"message"`
-	Restores   []AppRespRestore `json:"restores"`
+	Name          string           `json:"name"`
+	Creator       string           `json:"creator"`
+	CreateTime    int64            `json:"create_time"`
+	Status        string           `json:"status"`
+	Message       string           `json:"message"`
+	BackupDetails AppBackupDetails `json:"backup_details""`
+	Restores      []AppRespRestore `json:"restores"`
+}
+
+type AppBackupDetails struct {
+	DB  []AppDbBackupInfo  `json:"db"`
+	PVC []AppPvcBackupInfo `json:"volume"`
+}
+
+type AppDbBackupInfo struct {
+	DbType string  `json:"db_type"`
+	DbName string  `json:"db_name"`
+	Status string  `json:"status"`
+	Cost   float64 `json:"cost"`
+	Size   int64   `json:"size"`
+}
+
+type AppPvcBackupInfo struct {
+	PvcName    string  `json:"pvc_name"`
+	Volume     string  `json:"volume"`
+	Status     string  `json:"status"`
+	Cost       float64 `json:"cost"`
+	TotalBytes int64   `json:"total_bytes"`
+	DoneBytes  int64   `json:"doneBytes"`
 }
 
 type AppRespRestore struct {
@@ -101,4 +124,14 @@ type AppRespRestore struct {
 	CreateTime int64  `json:"create_time"`
 	Status     string `json:"status"`
 	Message    string `json:"message"`
+}
+
+type AppRespAppDetail struct {
+	Name      string                 `json:"name"`
+	Namespace string                 `json:"namespace"`
+	Chart     string                 `json:"chart"`
+	Version   string                 `json:"version"`
+	Channel   string                 `json:"channel"`
+	Username  string                 `json:"username"`
+	Values    map[string]interface{} `json:"values"`
 }

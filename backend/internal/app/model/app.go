@@ -14,6 +14,7 @@ type AppCreateOrUpdateModel struct {
 	Channel     string                 `json:"channel"`
 	Chart       string                 `json:"chart" binding:"required"`
 	Version     string                 `json:"version" binding:"version_format"`
+	Username    string                 `json:"username,omitempty"`
 	Settings    []stringSetting        `json:"settings"`
 	SettingsMap map[string]interface{} `json:"settings_map"`
 }
@@ -72,4 +73,9 @@ type AppRestoreModel struct {
 type NamespacedApp struct {
 	Namespace string `json:"namespace" binding:"required"`
 	Name      string `json:"name" binding:"required"`
+}
+
+type DbServiceModel struct {
+	QueryNamespace
+	Name string `form:"name" json:"name" binding:"required"`
 }

@@ -5,9 +5,14 @@
 package app
 
 import (
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/tlog"
-	"helm.sh/helm/v3/pkg/cli/values"
 	"os"
+
+	"helm.sh/helm/v3/pkg/release"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+
+	"helm.sh/helm/v3/pkg/cli/values"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
@@ -18,6 +23,9 @@ func (i *Instance) Stop(chart, channel string) error {
 	vals := i.release.Config
 
 	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
 	defer os.Remove(lastValFile)
 
 	stopSettings := []string{"global.stopped=true"}
@@ -27,7 +35,31 @@ func (i *Instance) Stop(chart, channel string) error {
 	}
 
 	h, _ := helm.NamespaceScope(i.namespace)
-	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
+	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+		return err
+	} else {
+		return i.updateSecretMeta(rel)
+	}
+}
+
+func (i *Instance) updateSecretMeta(rel *release.Release) error {
+	if !i.isApp() {
+		return nil
+	}
+	secretMeta := metav1.ObjectMeta{
+		Labels: map[string]string{
+			constant.LabelApplication: "true",
+		},
+		Annotations: make(map[string]string),
+	}
+	if creator, ok := i.secret.Annotations[constant.AnnotationAppCreator]; ok {
+		secretMeta.Annotations[constant.AnnotationAppCreator] = creator
+	}
+	if channel, ok := i.secret.Annotations[constant.AnnotationAppChannel]; ok {
+		secretMeta.Annotations[constant.AnnotationAppChannel] = channel
+	}
+
+	err := completeAppLabels(i.ctx, rel, i.ks, i.logger, secretMeta)
 	return err
 }
 
@@ -36,6 +68,9 @@ func (i *Instance) Start(chart, channel string) error {
 	vals := i.release.Config
 
 	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
 	defer os.Remove(lastValFile)
 
 	startSettings := []string{"global.stopped=null"}
@@ -47,8 +82,12 @@ func (i *Instance) Start(chart, channel string) error {
 	if err = helm.RepoUpdate(); err != nil {
 		return err
 	}
-	_, err = h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options)
-	return err
+	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+		return err
+	} else {
+		// add easyfost label for last secret
+		return i.updateSecretMeta(rel)
+	}
 }
 
 func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel) error {
@@ -65,6 +104,9 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	}
 
 	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
 	defer os.Remove(lastValFile)
 
 	var settings = make([]string, len(body.Settings))
@@ -78,10 +120,10 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	}
 
 	if len(body.SettingsMap) > 0 {
-		tlog.WithCtx(i.ctx).InfoS("build install settings", "namespace", i.namespace, "name", i.name, "settings_map", body.SettingsMap)
+		i.logger.Infof("load patch settings map: %+v", body.SettingsMap)
 		f, err := writeValuesFile(body.SettingsMap)
 		if err != nil {
-			tlog.WithCtx(i.ctx).ErrorS(err, "write values file failed")
+			i.logger.WithError(err).Error("write values file failed")
 		}
 		defer os.Remove(f)
 		options.ValueFiles = append(options.ValueFiles, f)
@@ -99,8 +141,11 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 			return err
 		}
 	}
-	_, err = h.Upgrade(i.name, genChart(body.Channel, chart), version, options)
-	return err
+	if rel, err := h.Upgrade(i.name, genChart(body.Channel, chart), version, options); err != nil {
+		return err
+	} else {
+		return i.updateSecretMeta(rel)
+	}
 }
 
 func genRepo(channel string) string {

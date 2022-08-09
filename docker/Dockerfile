@@ -8,7 +8,8 @@ RUN sed -i -r 's/(deb|security).debian.org/mirrors.tencent.com/g' /etc/apt/sourc
     && apt-get update \
     && apt-get install upx -y
 
-WORKDIR /go/src
+ENV WORKDIR /go/src/gitlab.zcorp.cc/pangu/cne-api
+WORKDIR $WORKDIR
 
 ENV GOPROXY=https://goproxy.cn,direct
 
@@ -25,7 +26,7 @@ COPY backend .
 ARG GIT_COMMIT
 ARG GIT_BRANCH
 
-RUN make build && upx -9 /go/src/_output/bin/cne-api
+RUN make build && cp ${WORKDIR}/_output/bin/cne-api /usr/bin/cne-api && upx -9 /usr/bin/cne-api
 
 # Build qucheng image
 FROM hub.qucheng.com/library/debian:11.3-slim
@@ -84,7 +85,7 @@ WORKDIR /apps/qucheng
 COPY --chown=www-data frontend .
 
 # Copy qucheng backend
-COPY --from=builder /go/src/_output/bin/cne-api /apps/backend/bin/cne-api
+COPY --from=builder /usr/bin/cne-api /apps/backend/bin/cne-api
 
 # Copy apache,php and qucheng config files
 COPY docker/rootfs /

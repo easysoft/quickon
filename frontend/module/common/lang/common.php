@@ -6,7 +6,6 @@ $lang->space       = new stdclass();
 $lang->instance    = new stdclass();
 $lang->CNE         = new stdclass();
 $lang->my          = new stdclass();
-$lang->release     = new stdclass();
 $lang->measurement = new stdclass();
 $lang->review      = new stdclass();
 $lang->milestone   = new stdclass();
@@ -40,6 +39,7 @@ $lang->misc        = new stdclass();
 $lang->acl         = new stdclass();
 $lang->curd        = new stdclass();
 $lang->sonarqube   = new stdclass();
+$lang->navigation  = new stdclass();
 
 /* Common action icons. */
 $lang->icons['todo']      = 'check';

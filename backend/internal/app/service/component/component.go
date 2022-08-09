@@ -8,9 +8,13 @@ import (
 	"context"
 	"encoding/base64"
 	"fmt"
+
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
 	"k8s.io/apimachinery/pkg/labels"
 
@@ -23,6 +27,7 @@ type Manager struct {
 
 	clusterName string
 	ks          *cluster.Cluster
+	logger      logrus.FieldLogger
 }
 
 func NewComponents(ctx context.Context, clusterName string) *Manager {
@@ -30,11 +35,85 @@ func NewComponents(ctx context.Context, clusterName string) *Manager {
 		ctx:         ctx,
 		clusterName: clusterName,
 		ks:          cluster.Get(clusterName),
+		logger:      logging.DefaultLogger().WithContext(ctx),
 	}
 }
 
-func (m *Manager) ListDbsComponents(kind, namespace string) ([]model.ComponentDbServiceModel, error) {
-	var components []model.ComponentDbServiceModel
+func (m *Manager) ListDbService(namespace string, onlyGlobal string) ([]model.ComponentDbService, error) {
+	var components []model.ComponentDbService
+	GlobalDbSvsList, err := m.ks.Store.ListDbService("", labels.Set{constant.LabelGlobalDatabase: "true"}.AsSelector())
+	if err != nil {
+		return components, err
+	}
+
+	for _, dbSvc := range GlobalDbSvsList {
+		s := model.ComponentDbService{
+			ComponentBase: model.ComponentBase{Name: dbSvc.Name, NameSpace: dbSvc.Namespace},
+			Release:       dbSvc.Labels["release"],
+			DbType:        string(dbSvc.Spec.Type),
+			Alias:         decodeDbSvcAlias(dbSvc),
+		}
+		components = append(components, s)
+	}
+
+	if onlyGlobal == "false" {
+		dbSvsList, err := m.ks.Store.ListDbService(namespace, labels.Everything())
+		if err != nil {
+			return components, err
+		}
+
+		for _, dbSvc := range dbSvsList {
+			s := model.ComponentDbService{
+				ComponentBase: model.ComponentBase{Name: dbSvc.Name, NameSpace: dbSvc.Namespace},
+				Release:       dbSvc.Labels["release"],
+				DbType:        string(dbSvc.Spec.Type),
+				Alias:         decodeDbSvcAlias(dbSvc),
+			}
+			components = append(components, s)
+		}
+	}
+
+	return components, nil
+}
+
+func (m *Manager) GetDbServiceDetail(name, namespace string) (interface{}, error) {
+	dbSvc, err := m.ks.Store.GetDbService(namespace, name)
+	if err != nil {
+		return nil, err
+	}
+
+	hp, err := m.parseDbSvcDetail(dbSvc)
+	if err != nil {
+		return nil, err
+	}
+
+	user := dbSvc.Spec.Account.User.Value
+	passwd := dbSvc.Spec.Account.Password.Value
+	if passwd == "" {
+		secretRef := dbSvc.Spec.Account.Password.ValueFrom.SecretKeyRef
+		if secretRef != nil {
+			secret, err := m.ks.Store.GetSecret(dbSvc.Namespace, secretRef.Name)
+			if err != nil {
+				return nil, err
+			}
+			passwd = string(secret.Data[secretRef.Key])
+		}
+	}
+
+	data := model.ComponentDbServiceDetail{
+		ComponentBase: model.ComponentBase{dbSvc.Name, dbSvc.Namespace},
+		Host:          hp.Host,
+		Port:          hp.Port,
+		UserName:      user,
+		Password:      passwd,
+		Database:      "",
+	}
+
+	return data, nil
+}
+
+func (m *Manager) ListGlobalDbsComponents(kind, namespace string) ([]model.ComponentGlobalDbServiceModel, error) {
+	var components []model.ComponentGlobalDbServiceModel
 	selector := labels.SelectorFromSet(map[string]string{
 		constant.LabelGlobalDatabase: "true",
 	})
@@ -51,7 +130,7 @@ func (m *Manager) ListDbsComponents(kind, namespace string) ([]model.ComponentDb
 		if err != nil {
 			continue
 		}
-		cm := model.ComponentDbServiceModel{
+		cm := model.ComponentGlobalDbServiceModel{
 			ComponentBase: model.ComponentBase{
 				Name: dbsvc.Name, NameSpace: dbsvc.Namespace,
 			},
@@ -174,7 +253,7 @@ func getSourceFromAnnotations(annotations map[string]string, key, value string) 
 func decodeDbSvcAlias(dbsvc *quchengv1beta1.DbService) string {
 	alias := dbsvc.Annotations[constant.AnnotationResourceAlias]
 	if alias == "" {
-		return fmt.Sprintf("%s/%s", dbsvc.Namespace, dbsvc.Name)
+		return ""
 	}
 
 	bs, err := base64.StdEncoding.DecodeString(alias)

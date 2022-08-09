@@ -64,12 +64,14 @@ class InstanceModel extends model
      * @access public
      * @return array
      */
-    public function getByAccount($account = '', $pager = null)
+    public function getByAccount($account = '', $pager = null, $pinned = '', $searchParam = '')
     {
         $instances = $this->dao->select('instance.*')->from(TABLE_INSTANCE)->alias('instance')
             ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
             ->where('instance.deleted')->eq(0)
             ->beginIF($account)->andWhere('space.owner')->eq($account)->fi()
+            ->beginIF($pinned)->andWhere('instance.pinned')->eq((int)$pinned)->fi()
+            ->beginIF($searchParam)->andWhere('instance.name')->like("%{$searchParam}%")->fi()
             ->orderBy('instance.id desc')
             ->beginIF($pager)->page($pager)->fi()
             ->fetchAll('id');
@@ -82,6 +84,20 @@ class InstanceModel extends model
         foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
 
         return $instances;
+    }
+
+    /**
+     * Pin instance to navigation page or Unpin instance.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function pinToggle($instanceID)
+    {
+        $instance = $this->getByID($instanceID);
+        $pinned = $instance->pinned == '0' ? '1' : '0';
+        $this->dao->update(TABLE_INSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($instanceID)->exec();
     }
 
     /**
@@ -341,6 +357,7 @@ class InstanceModel extends model
         $apiParams->namespace    = $space->k8space;
         $apiParams->name         = $k8name;
         $apiParams->chart        = $app->chart;
+        $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
 
         $result = $this->cne->installApp($apiParams);
@@ -367,12 +384,13 @@ class InstanceModel extends model
      */
     public function uninstall($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';// Multiple cluster should set this field.
-        $params->name      = $instance->k8name;
-        $params->namespace = $instance->spaceData->k8space;
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';// Multiple cluster should set this field.
+        $apiParams->name      = $instance->k8name;
+        $apiParams->channel   = $instance->channel;
+        $apiParams->namespace = $instance->spaceData->k8space;
 
-        $result = $this->cne->uninstallApp($params);
+        $result = $this->cne->uninstallApp($apiParams);
         if($result->code == 200 || $result->code == 404) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
 
         return $result;
@@ -387,13 +405,14 @@ class InstanceModel extends model
      */
     public function start($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';
-        $params->name      = $instance->k8name;
-        $params->chart     = $instance->chart;
-        $params->namespace = $instance->spaceData->k8space;
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->name      = $instance->k8name;
+        $apiParams->chart     = $instance->chart;
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->channel   = $instance->channel;
 
-        $result = $this->cne->startApp($params);
+        $result = $this->cne->startApp($apiParams);
         if($result->code == 200) $this->dao->update(TABLE_INSTANCE)->set('status')->eq('starting')->where('id')->eq($instance->id)->exec();
 
         return $result;
@@ -408,13 +427,14 @@ class InstanceModel extends model
      */
     public function stop($instance)
     {
-        $params = new stdclass;
-        $params->cluster   = '';// Mulit cluster should set this field.
-        $params->name      = $instance->k8name;
-        $params->chart     = $instance->chart;
-        $params->namespace = $instance->spaceData->k8space;
+        $apiPrams = new stdclass;
+        $apiParams->cluster   = '';// Mulit cluster should set this field.
+        $apiParams->name      = $instance->k8name;
+        $apiParams->chart     = $instance->chart;
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->channel   = $instance->channel;
 
-        $result = $this->cne->stopApp($params);
+        $result = $this->cne->stopApp($apiParams);
         if($result->code == 200) $this->dao->update(TABLE_INSTANCE)->set('status')->eq('stopping')->where('id')->eq($instance->id)->exec();
 
         return $result;

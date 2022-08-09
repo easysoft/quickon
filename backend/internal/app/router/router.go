@@ -76,6 +76,9 @@ func Config(r *gin.Engine) {
 		api.GET("/component/gdb", GDBList)
 		api.GET("/component/gdb/validation", GDBValidation)
 
+		api.GET("/component/dbservice", DbServiceList)
+		api.GET("/component/dbservice/detail", DbServiceDetail)
+
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)
@@ -87,6 +90,7 @@ func Config(r *gin.Engine) {
 		api.GET("/statistics/cluster", ClusterStatistics)
 
 		api.POST("/system/update", SystemUpdate)
+		api.GET("/system/app-full-list", FindAllApps)
 	}
 
 	r.NoMethod(func(c *gin.Context) {

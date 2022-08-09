@@ -7,6 +7,10 @@ package namespace
 import (
 	"context"
 
+	"github.com/sirupsen/logrus"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
+
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 
@@ -18,6 +22,7 @@ type Manager struct {
 
 	clusterName string
 	ks          *cluster.Cluster
+	logger      logrus.FieldLogger
 }
 
 func NewNamespaces(ctx context.Context, clusterName string) *Manager {
@@ -25,6 +30,7 @@ func NewNamespaces(ctx context.Context, clusterName string) *Manager {
 		ctx:         ctx,
 		clusterName: clusterName,
 		ks:          cluster.Get(clusterName),
+		logger:      logging.DefaultLogger().WithContext(ctx),
 	}
 }
 

@@ -45,11 +45,18 @@ var ClusterStatusMap = map[ClusterStatusType]string{
 const (
 	AnnotationResourceOwner = "easycorp.io/resource_owner"
 	AnnotationResourceAlias = "easycorp.io/resource_alias"
+	AnnotationAppCreator    = "easycorp.io/app_creator"
+	AnnotationAppChannel    = "easycorp.io/app_channel"
 )
 
 const (
+	LabelApplication    = "easycorp.io/application"
 	LabelBackupName     = "easycorp.io/backup_name"
 	LabelGlobalDatabase = "easycorp.io/global_database"
 )
 
-const DEFAULT_RUNTIME_NAMESPACE = "cne-system"
+const (
+	LableVeleroPvcUID = "velero.io/pvc-uid"
+)
+
+const DefaultRuntimeNamespace = "cne-system"
