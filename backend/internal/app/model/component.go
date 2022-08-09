@@ -39,7 +39,7 @@ type ComponentDbServiceDetail struct {
 	ComponentBase
 	Host     string `json:"host"`
 	Port     int32  `json:"port"`
-	UserName string `json:"user_name"`
+	UserName string `json:"username"`
 	Password string `json:"password"`
 	Database string `json:"database"`
 }
