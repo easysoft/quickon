@@ -41,7 +41,7 @@ func GDBList(c *gin.Context) {
 		return
 	}
 
-	i, err := service.Components(ctx, "").ListDbsComponents(op.Kind, op.Namespace)
+	i, err := service.Components(ctx, "").ListGlobalDbsComponents(op.Kind, op.Namespace)
 	if err != nil {
 		logger.WithError(err).Error(errListDbServiceFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errListDbServiceFailed))
@@ -74,4 +74,52 @@ func GDBValidation(c *gin.Context) {
 	}
 
 	renderJson(c, http.StatusOK, i)
+}
+
+func DbServiceList(c *gin.Context) {
+	var (
+		ctx = c.Request.Context()
+		op  model.QueryNamespace
+		err error
+	)
+
+	logger := getLogger(ctx)
+	if err = c.ShouldBindQuery(&op); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	data, err := service.Components(ctx, "").ListDbService(op.Namespace)
+	if err != nil {
+		logger.WithError(err).Error("list dbservice failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, data)
+}
+
+func DbServiceDetail(c *gin.Context) {
+	var (
+		ctx = c.Request.Context()
+		op  model.DbServiceModel
+		err error
+	)
+
+	logger := getLogger(ctx)
+	if err = c.ShouldBindQuery(&op); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	data, err := service.Components(ctx, op.Cluster).GetDbServiceDetail(op.Name, op.Namespace)
+	if err != nil {
+		logger.WithError(err).Error("get dbservice detail failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, data)
 }

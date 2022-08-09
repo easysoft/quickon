@@ -74,3 +74,8 @@ type NamespacedApp struct {
 	Namespace string `json:"namespace" binding:"required"`
 	Name      string `json:"name" binding:"required"`
 }
+
+type DbServiceModel struct {
+	QueryNamespace
+	Name string `form:"name" json:"name" binding:"required"`
+}

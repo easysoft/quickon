@@ -76,6 +76,9 @@ func Config(r *gin.Engine) {
 		api.GET("/component/gdb", GDBList)
 		api.GET("/component/gdb/validation", GDBValidation)
 
+		api.GET("/component/dbservice", DbServiceList)
+		api.GET("/component/dbservice/detail", DbServiceDetail)
+
 		api.POST("/namespace/create", NamespaceCreate)
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)

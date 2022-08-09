@@ -16,16 +16,32 @@ type CompDbServiceValidationModel struct {
 	Database  string `form:"database" json:"database" binding:"required"`
 }
 
-type ComponentDbServiceModel struct {
+type ComponentBase struct {
+	Name      string `json:"name"`
+	NameSpace string `json:"namespace"`
+}
+
+type ComponentGlobalDbServiceModel struct {
 	ComponentBase
 	Alias string `json:"alias"`
 	Host  string `json:"host"`
 	Port  int32  `json:"port"`
 }
 
-type ComponentBase struct {
-	Name      string `json:"name"`
-	NameSpace string `json:"namespace"`
+type ComponentDbService struct {
+	ComponentBase
+	Release string `json:"release"`
+	DbType  string `json:"db_type"`
+	Alias   string `json:"alias"`
+}
+
+type ComponentDbServiceDetail struct {
+	ComponentBase
+	Host     string `json:"host"`
+	Port     int32  `json:"port"`
+	UserName string `json:"user_name"`
+	Password string `json:"password"`
+	Database string `json:"database"`
 }
 
 type ComponentDbServiceValidResult struct {
