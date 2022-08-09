@@ -21,7 +21,7 @@ class systemModel extends model
     public function printAction($db)
     {
         $disabled = strtolower($db->status) == 'running' ? '' : 'disabled';
-        $btnHtml = html::commonButton($this->lang->system->login, "{$disabled} data-db-name='{$db->name}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
+        $btnHtml = html::commonButton($this->lang->system->management, "{$disabled} data-db-name='{$db->name}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
 
         echo $btnHtml;
     }
