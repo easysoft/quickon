@@ -1,5 +1,0 @@
-.plug-container a {display: inline-block; width: 150px; height:150px;}
-
-.logo { display: inline-block; padding: 10px; background-color: gray;}
-.logo .icon {font-size: 100px; }
-.logo img {width: 100px; height:100px;}

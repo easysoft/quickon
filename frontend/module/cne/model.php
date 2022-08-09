@@ -645,16 +645,53 @@ class cneModel extends model
         return $result;
     }
 
+    /**
+     * Get database detail.
+     *
+     * @param  string $dbService
+     * @param  string $namespace
+     * @access public
+     * @return null|object
+     */
+    public function dbDetail($dbService, $namespace)
+    {
+        $apiUrl    = "/api/cne/component/dbservice/detail";
+        $apiParams =  array('name' => $dbService, 'namespace' => $namespace, 'channel' => $this->config->CNE->api->channel);
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return;
+
+        return $result->data;
+    }
 
     /**
-     * Get shared database List.
+     * Get all database list.
+     *
+     * @param  string $namespace
+     * @access public
+     * @return mixed
+     */
+    public function allDBList($namespace = 'default')
+    {
+        $apiUrl    = "/api/cne/component/dbservice";
+        $apiParams =  array('namespace' => $namespace, 'channel' => $this->config->CNE->api->channel);
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
+
+        $dbList = $result->data;
+        return array_combine(array_column($dbList, 'name'), $dbList);
+    }
+
+    /**
+     * Get shared database list.
      *
      * @param  string $dbType    database type.
      * @param  string $namespace
      * @access public
      * @return array
      */
-    public function dbList($dbType = 'mysql', $namespace = '')
+    public function sharedDBList($dbType = 'mysql', $namespace = 'default')
     {
         $apiUrl    = "/api/cne/component/gdb";
         $apiParams =  array('kind' => $dbType, 'namespace' => $namespace, 'channel' => $this->config->CNE->api->channel);

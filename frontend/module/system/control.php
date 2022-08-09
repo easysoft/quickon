@@ -11,6 +11,12 @@
  */
 class system extends control
 {
+    /**
+     * System index.
+     *
+     * @access public
+     * @return void
+     */
     public function index()
     {
 
@@ -18,14 +24,50 @@ class system extends control
         $this->display();
     }
 
-    public function adminer()
+    /**
+     * Show database list.
+     *
+     * @access public
+     * @return void
+     */
+    public function dbList()
     {
-
         $this->view->position[] = $this->lang->system->dbManagement;
 
         $this->view->title = $this->lang->system->dbManagement;
+        $this->view->dbList = $this->loadModel('cne')->allDBList();
+        //$this->view->dbList = $this->system->dbList();
 
         $this->display();
+
+    }
+
+    /**
+     * Generate database auth parameters ad jump to login page.
+     *
+     * @param  istring $dbName
+     * @param  string  $namespace
+     * @access public
+     * @return mixed
+     */
+    public function loginDB()
+    {
+        $post = fixer::input('post')
+            ->setDefault('namespace', 'default')
+            ->get();
+        if(empty($post->dbName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->dbNameIsEmpty));
+
+        $detail = $this->loadModel('cne')->dbDetail($post->dbName, $post->namespace);
+        if(empty($detail)) return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->notFoundDB));
+
+        $dbAuth = array();
+        $dbAuth['server']   = $detail->host . ':' . $detail->port;
+        $dbAuth['username'] = $detail->username;
+        $dbAuth['db']       = $detail->database;
+        $dbAuth['password'] = $detail->password;
+
+        $url = '/adminer?'. http_build_query($dbAuth);
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $url)));
     }
 }
 
