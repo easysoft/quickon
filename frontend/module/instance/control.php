@@ -205,7 +205,7 @@ class instance extends control
             return $this->display('instance','resourceerror');
         }
 
-        $dbList = $this->cne->dbList();
+        $dbList = $this->cne->sharedDBList();
         $customData = new stdclass;
         if(!empty($_POST))
         {
