@@ -6,6 +6,7 @@ package router
 
 import (
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/db/manage"
 	"net/http"
 	"sync"
 
@@ -413,6 +414,75 @@ func AppAccountInfo(c *gin.Context) {
 	}
 
 	data := i.GetAccountInfo()
+	renderJson(c, http.StatusOK, data)
+}
+
+func AppDbList(c *gin.Context) {
+	var (
+		query model.AppModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	dbs := i.GetDbList()
+	var data []model.ComponentDb
+	for _, item := range dbs {
+		dbsvc, dbMeta, err := manage.ParseDB(i.Ctx, i.Ks.Store, item)
+		if err != nil {
+			logger.WithError(err).Errorf("parse db %s failed", item.Name)
+			continue
+		}
+		d := model.ComponentDb{
+			ComponentBase: model.ComponentBase{Name: item.Name, NameSpace: item.Namespace},
+			DbType:        string(dbsvc.DbType()),
+			DbName:        dbMeta.Name,
+		}
+		data = append(data, d)
+	}
+	renderJson(c, http.StatusOK, data)
+}
+
+func AppDbDetails(c *gin.Context) {
+	var (
+		query struct {
+			model.AppModel
+			Db string `form:"db" binding:"required"`
+		}
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	db, err := i.Ks.Store.GetDb(query.Namespace, query.Db)
+	if err != nil {
+		logger.WithError(err).Error("get db failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	dbsvc, dbMeta, err := manage.ParseDB(i.Ctx, i.Ks.Store, db)
+	if err != nil {
+		logger.WithError(err).Errorf("parse db %s failed", query.Db)
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	data := model.ComponentDbServiceDetail{
+		ComponentBase: model.ComponentBase{Name: db.Name, NameSpace: db.Namespace},
+		Host:          dbsvc.ServerInfo().Host(),
+		Port:          dbsvc.ServerInfo().Port(),
+		UserName:      dbMeta.User,
+		Password:      dbMeta.Password,
+		Database:      dbMeta.Name,
+	}
 	renderJson(c, http.StatusOK, data)
 }
 

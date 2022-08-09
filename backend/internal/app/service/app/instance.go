@@ -7,6 +7,7 @@ package app
 import (
 	"context"
 	"fmt"
+	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 	"reflect"
 	"strings"
 
@@ -31,7 +32,7 @@ import (
 )
 
 type Instance struct {
-	ctx context.Context
+	Ctx context.Context
 
 	clusterName string
 	namespace   string
@@ -39,7 +40,7 @@ type Instance struct {
 
 	selector labels.Selector
 
-	ks *cluster.Cluster
+	Ks *cluster.Cluster
 
 	release *release.Release
 	secret  *v1.Secret
@@ -53,9 +54,9 @@ type Instance struct {
 func newApp(ctx context.Context, am *Manager, name string) *Instance {
 
 	i := &Instance{
-		ctx:         ctx,
+		Ctx:         ctx,
 		clusterName: am.clusterName, namespace: am.namespace, name: name,
-		ks: am.ks,
+		Ks: am.ks,
 		logger: logging.DefaultLogger().WithContext(ctx).WithFields(logrus.Fields{
 			"name": name, "namespace": am.namespace,
 		}),
@@ -70,7 +71,7 @@ func (i *Instance) prepare() error {
 	i.CurrentChartVersion = i.release.Chart.Metadata.Version
 
 	i.selector = labels.Set{"release": i.name}.AsSelector()
-	secret, err := loadAppSecret(i.ctx, i.name, i.namespace, i.release.Version, i.ks)
+	secret, err := loadAppSecret(i.Ctx, i.name, i.namespace, i.release.Version, i.Ks)
 	if err != nil {
 		i.logger.WithError(err).Errorf("got release secret failed with resivion %d", i.release.Version)
 		return err
@@ -82,7 +83,7 @@ func (i *Instance) prepare() error {
 func (i *Instance) fetchRelease() *release.Release {
 	getter := &ReleaseGetter{
 		namespace: i.namespace,
-		store:     i.ks.Store,
+		store:     i.Ks.Store,
 	}
 	rel, err := getter.Last(i.name)
 	if err != nil {
@@ -104,25 +105,25 @@ func (i *Instance) GetLogger() logrus.FieldLogger {
 }
 
 func (i *Instance) getServices() ([]*v1.Service, error) {
-	return i.ks.Store.ListServices(i.namespace, i.selector)
+	return i.Ks.Store.ListServices(i.namespace, i.selector)
 }
 
 func (i *Instance) getComponents() *component.Components {
 	components := component.NewComponents()
 
-	deployments, _ := i.ks.Store.ListDeployments(i.namespace, i.selector)
+	deployments, _ := i.Ks.Store.ListDeployments(i.namespace, i.selector)
 
 	if len(deployments) >= 1 {
 		for _, d := range deployments {
-			components.Add(component.NewDeployComponent(d, i.ks))
+			components.Add(component.NewDeployComponent(d, i.Ks))
 		}
 	}
 
-	statefulsets, _ := i.ks.Store.ListStatefulSets(i.namespace, i.selector)
+	statefulsets, _ := i.Ks.Store.ListStatefulSets(i.namespace, i.selector)
 
 	if len(statefulsets) >= 1 {
 		for _, s := range statefulsets {
-			components.Add(component.NewStatefulsetComponent(s, i.ks))
+			components.Add(component.NewStatefulsetComponent(s, i.Ks))
 		}
 	}
 
@@ -182,7 +183,7 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 
 func (i *Instance) ListIngressHosts() []string {
 	var hosts []string
-	ingresses, err := i.ks.Store.ListIngresses(i.namespace, i.selector)
+	ingresses, err := i.Ks.Store.ListIngresses(i.namespace, i.selector)
 	if err != nil {
 		return hosts
 	}
@@ -338,7 +339,7 @@ func (i *Instance) GetSchema(component, category string) string {
 
 func (i *Instance) GetPvcList() []model.AppRespPvc {
 	var result []model.AppRespPvc
-	pvcList, err := i.ks.Clients.Base.CoreV1().PersistentVolumeClaims(i.namespace).List(i.ctx, metav1.ListOptions{LabelSelector: i.selector.String()})
+	pvcList, err := i.Ks.Clients.Base.CoreV1().PersistentVolumeClaims(i.namespace).List(i.Ctx, metav1.ListOptions{LabelSelector: i.selector.String()})
 	if err != nil {
 		i.logger.WithError(err).Error("list pvc failed")
 		return result
@@ -376,9 +377,17 @@ func (i *Instance) GetAccountInfo() map[string]string {
 	return data
 }
 
+func (i *Instance) GetDbList() []*quchengv1beta1.Db {
+	list, err := i.Ks.Store.ListDb(i.namespace, i.selector)
+	if err != nil {
+		i.logger.WithError(err).Error("filter dbs failed")
+	}
+	return list
+}
+
 func (i *Instance) GetMetrics() *model.AppMetric {
-	metrics := i.ks.Metric.ListPodMetrics(i.ctx, i.namespace, i.selector)
-	pods, _ := i.ks.Store.ListPods(i.namespace, i.selector)
+	metrics := i.Ks.Metric.ListPodMetrics(i.Ctx, i.namespace, i.selector)
+	pods, _ := i.Ks.Store.ListPods(i.namespace, i.selector)
 
 	var usage metric.Res
 	var limit metric.Res

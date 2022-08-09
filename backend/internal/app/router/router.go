@@ -57,6 +57,8 @@ func Config(r *gin.Engine) {
 		api.GET("/app/metric", AppMetric)
 		api.GET("/app/pvc", AppPvcList)
 		api.GET("/app/account", AppAccountInfo)
+		api.GET("/app/dbs", AppDbList)
+		api.GET("/app/dbs/detail", AppDbDetails)
 
 		api.GET("/test", AppTest)
 
