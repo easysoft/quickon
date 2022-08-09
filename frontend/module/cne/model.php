@@ -667,14 +667,15 @@ class cneModel extends model
     /**
      * Get all database list.
      *
-     * @param  string $namespace
+     * @param  string  $namespace
+     * @param  boolean $global true: global database
      * @access public
      * @return mixed
      */
-    public function allDBList($namespace = 'default')
+    public function allDBList($global = true, $namespace = 'default')
     {
         $apiUrl    = "/api/cne/component/dbservice";
-        $apiParams =  array('namespace' => $namespace, 'channel' => $this->config->CNE->api->channel);
+        $apiParams =  array( 'global' => ($global ? 'true' : 'false'), 'namespace' => $namespace, 'channel' => $this->config->CNE->api->channel);
 
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
         if(empty($result) || $result->code != 200 || empty($result->data)) return array();

@@ -37,8 +37,7 @@ class system extends control
         $this->view->position[] = $this->lang->system->dbManagement;
 
         $this->view->title = $this->lang->system->dbManagement;
-        //$this->view->dbList = $this->loadModel('cne')->allDBList();
-        $this->view->dbList = $this->system->dbList();
+        $this->view->dbList = $this->loadModel('cne')->allDBList();
 
         $this->display();
     }

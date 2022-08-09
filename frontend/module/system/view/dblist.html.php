@@ -23,16 +23,14 @@
     </div>
     <table class="table table-bordered text-center">
       <tr>
-        <th class="hidden"><?php echo $lang->system->dbName;?></th>
-        <th><?php echo $lang->system->dbAlias?></th>
+        <th><?php echo $lang->system->dbName;?></th>
         <th><?php echo $lang->system->dbType;?></th>
         <th><?php echo $lang->system->dbStatus;?></th>
         <th><?php echo $lang->system->action?></th>
       </tr>
       <?php foreach($dbList as $db):?>
       <tr>
-        <td><?php echo $db->alias;?></td>
-        <td class='hidden'><?php echo $db->alias;?></td>
+        <td><?php echo $db->name;?></td>
         <td><?php echo $db->db_type?></td>
         <td><?php echo zget($lang->instance->statusList, $db->status);?></td>
         <td><?php $this->system->printAction($db);?></td>
