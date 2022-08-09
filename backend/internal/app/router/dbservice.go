@@ -79,25 +79,23 @@ func GDBValidation(c *gin.Context) {
 func DbServiceList(c *gin.Context) {
 	var (
 		ctx = c.Request.Context()
-		op  model.QueryNamespace
 		err error
 	)
 
-	logger := getLogger(ctx)
-	if err = c.ShouldBindQuery(&op); err != nil {
-		logger.WithError(err).Error(errBindDataFailed)
-		renderError(c, http.StatusBadRequest, err)
-		return
-	}
+	cluster := c.DefaultQuery("cluster", "primary")
+	filterNamespace := c.DefaultQuery("namespace", "default")
+	filterGlobal := c.DefaultQuery("global", "false")
 
-	data, err := service.Components(ctx, "").ListDbService(op.Namespace)
+	logger := getLogger(ctx)
+
+	data, err := service.Components(ctx, cluster).ListDbService(filterNamespace, filterGlobal)
 	if err != nil {
 		logger.WithError(err).Error("list dbservice failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 	for id, resp := range data {
-		i, err := service.Apps(ctx, op.Cluster, resp.NameSpace).GetApp(resp.Release)
+		i, err := service.Apps(ctx, cluster, resp.NameSpace).GetApp(resp.Release)
 		if err != nil {
 			continue
 		}
