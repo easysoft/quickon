@@ -59,7 +59,7 @@ func (i *Instance) updateSecretMeta(rel *release.Release) error {
 		secretMeta.Annotations[constant.AnnotationAppChannel] = channel
 	}
 
-	err := completeAppLabels(i.ctx, rel, i.ks, i.logger, secretMeta)
+	err := completeAppLabels(i.Ctx, rel, i.Ks, i.logger, secretMeta)
 	return err
 }
 

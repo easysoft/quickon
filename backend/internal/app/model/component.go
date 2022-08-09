@@ -55,3 +55,9 @@ type DbValidation struct {
 	User     bool `json:"user"`
 	Database bool `json:"database"`
 }
+
+type ComponentDb struct {
+	ComponentBase
+	DbType string `json:"db_type"`
+	DbName string `json:"db_name"`
+}
