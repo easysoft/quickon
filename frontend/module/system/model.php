@@ -11,17 +11,40 @@
  */
 class systemModel extends model
 {
+    /**
+     * Get database list of running instance.
+     *
+     * @access public
+     * @return array
+     */
     public function dbList()
     {
         $dbList = $this->loadModel('cne')->allDBList();
         if(empty($dbList)) return array();
 
-        $k8nameList = array_column($dbList, 'name');
+        $k8nameList = array_column($dbList, 'release');
+        $instaceList = $this->dao->select('*,name,k8name')->from(TABLE_INSTANCE)->where('k8name')->in($k8nameList)->fetchPairs('k8name', 'name');
 
-        $instaceList = $this->dao->select('name,k8name')->from(TABLE_INSTANCE)->where('k8name')->in($k8nameList)->fetchPairs('name', 'k8name');
+        foreach($dbList as &$db) $db->alias = zget($instaceList, $db->release);
 
+        return $dbList;
     }
 
+
+    /**
+     * Print action buttons.
+     *
+     * @param  object $db
+     * @access public
+     * @return void
+     */
+    public function printAction($db)
+    {
+        $disabled = strtolower($db->status) == 'running' ? '' : 'disabled';
+        $btnHtml = html::commonButton($this->lang->system->login, "{$disabled} data-db-name='{$db->name}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
+
+        echo $btnHtml;
+    }
 
 }
 
