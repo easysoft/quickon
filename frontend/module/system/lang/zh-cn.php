@@ -10,4 +10,4 @@ $lang->system->management   = '管理';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB    = '找不到该数据库';
-$lang->system->errors->dbNameIsEmpty = '找不到该数据库';
+$lang->system->errors->dbNameIsEmpty = '数据库名为空';

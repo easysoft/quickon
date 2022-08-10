@@ -43,14 +43,12 @@ class system extends control
     }
 
     /**
-     * Generate database auth parameters ad jump to login page.
+     * Generate database auth parameters and jump to login page.
      *
-     * @param  istring $dbName
-     * @param  string  $namespace
      * @access public
-     * @return mixed
+     * @return void
      */
-    public function loginDB()
+    public function ajaxDBAuthUrl()
     {
         $post = fixer::input('post')
             ->setDefault('namespace', 'default')

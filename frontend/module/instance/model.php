@@ -441,7 +441,7 @@ class InstanceModel extends model
     }
 
     /**
-     * Upgrade app instnace to higher version.
+     * Upgrade app instance to higher version.
      *
      * @param  object $instance
      * @param  string $toVersion
@@ -765,6 +765,22 @@ class InstanceModel extends model
         $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-info");
 
         echo $btn;
+    }
+
+    /**
+     * Print button for managing database.
+     *
+     * @param  object $db
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function printDBAction($db, $instance)
+    {
+        $disabled = $db->ready ? '' : 'disabled';
+        $btnHtml = html::commonButton($this->lang->instance->management, "{$disabled} data-db-name='{$db->name}' data-id='{$instance->id}'", 'db-login btn btn-primary');
+
+        echo $btnHtml;
     }
 
     /**

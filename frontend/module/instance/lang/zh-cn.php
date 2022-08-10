@@ -9,9 +9,10 @@ $lang->instance->mem              = '内存';
 $lang->instance->space            = '空间';
 $lang->instance->domain           = '域名';
 $lang->instance->dbType           = '数据库';
-$lang->instance->advantageOption  = '高级选项';
+$lang->instance->advanceOption    = '高级选项';
 $lang->instance->baseInfo         = '基本信息';
 $lang->instance->backupAndRestore = '备份';
+$lang->instance->advance          = '高级';
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';
@@ -79,6 +80,15 @@ $lang->instance->restore->statusList['completed']      = '完成回滚';
 $lang->instance->restore->statusList['executedFailed'] = '回滚失败';
 $lang->instance->restore->statusList['downloading']    = '下载中';
 $lang->instance->restore->statusList['downloadFailed'] = '下载失败';
+
+$lang->instance->dbList     = '数据库';
+$lang->instance->dbName     = '名称';
+$lang->instance->dbStatus   = '状态';
+$lang->instance->dbType     = '类型';
+$lang->instance->action     = '操作';
+$lang->instance->management = '管理';
+$lang->instance->dbReady    = '正常';
+$lang->instance->dbWaiting  = '等待就绪';
 
 $lang->instance->log = new stdclass;
 $lang->instance->log->date    = '日期';
@@ -202,3 +212,6 @@ $lang->instance->errors->notEnoughMemory      = '%s 应用需要 %s 内存，当
 $lang->instance->errors->restoreRunning       = '当前回滚正在进行中，请等待当前回滚完成。';
 $lang->instance->errors->noBackup             = '无备份数据，';
 $lang->instance->errors->wrongRequestData     = '提交的数据有误，请刷新页面后重试。';
+$lang->instance->errors->noDBList             = '无数据库或不可访问';
+$lang->instance->errors->notFoundDB           = '找不到该数据库';
+$lang->instance->errors->dbNameIsEmpty        = '数据库名为空';

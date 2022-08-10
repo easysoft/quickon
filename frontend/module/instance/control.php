@@ -54,6 +54,9 @@ class instance extends control
         $backupList = array();
         if($tab == 'backup') $backupList = $this->instance->backupList($instance);
 
+        $dbList = new stdclass;
+        if($tab == 'advance') $dbList = $this->cne->appDBList($instance);
+
         $this->view->position[] = $instance->appName;
 
         $this->view->title          = $instance->appName;
@@ -62,6 +65,7 @@ class instance extends control
         $this->view->defaultAccount = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric = $instanceMetric;
         $this->view->backupList     = $backupList;
+        $this->view->dbList         = $dbList;
         $this->view->tab            = $tab;
         $this->view->pager          = $pager;
 
@@ -402,5 +406,35 @@ class instance extends control
         if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'deleteFail')));
 
         return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'deleteSuccess')));
+    }
+
+    /**
+     * Generate database auth parameters and jump to login page.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxDBAuthUrl()
+    {
+        $post = fixer::input('post')
+            ->setDefault('namespace', 'default')
+            ->setDefault('id', 0)
+            ->get();
+        if(empty($post->dbName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->dbNameIsEmpty));
+
+        $instance = $this->instance->getByID($post->id);
+        if(empty($instance)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->instanceNotExists));
+
+        $detail = $this->loadModel('cne')->appDBDetail($instance, $post->dbName);
+        if(empty($detail)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notFoundDB));
+
+        $dbAuth = array();
+        $dbAuth['server']   = $detail->host . ':' . $detail->port;
+        $dbAuth['username'] = $detail->username;
+        $dbAuth['db']       = $detail->database;
+        $dbAuth['password'] = $detail->password;
+
+        $url = '/adminer?' . http_build_query($dbAuth);
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $url)));
     }
 }

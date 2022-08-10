@@ -220,6 +220,25 @@ $(function()
         });
     });
 
+    $('button.db-login').on('click', function(event)
+    {
+        let dbName = $(event.target).data('db-name');
+        let id     = $(event.target).data('id');
+
+        $.post(createLink('instance', 'ajaxDBAuthUrl'), {dbName, id}).done(function(res)
+        {
+            let response = JSON.parse(res);
+            if(response.result == 'success')
+            {
+                window.parent.open(response.data.url, 'Adminer');
+            }
+            else
+            {
+                bootbox.alert(response.message);
+            }
+        });
+    });
+
     var enableTimer = true;
     window.parent.$(window.parent.document).on('showapp', function(event, app)
     {

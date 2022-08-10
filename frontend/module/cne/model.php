@@ -646,6 +646,54 @@ class cneModel extends model
     }
 
     /**
+     * Get all database list of app.
+     *
+     * @param  object  $instance
+     * @access public
+     * @return mixed
+     */
+    public function appDBList($instance)
+    {
+        $apiUrl    = "/api/cne/app/dbs";
+        $apiParams =  array();
+        $apiParams['cluster']   = 'default';
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['channel']   = $this->config->CNE->api->channel;
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
+
+        $dbList = $result->data;
+        return array_combine(array_column($dbList, 'name'), $dbList);
+    }
+
+    /**
+     * Get detail of app database.
+     *
+     * @param  object $instance
+     * @param  string $dbName
+     * @access public
+     * @return null|object
+     */
+    public function appDBDetail($instance, $dbName)
+    {
+        $apiParams =  array();
+        $apiParams['cluster']   = 'default';
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['db']        = $dbName;
+        $apiParams['channel']   = $this->config->CNE->api->channel;
+
+        $apiUrl    = "/api/cne/app/dbs/detail";
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return;
+
+        return $result->data;
+    }
+
+    /**
      * Get database detail.
      *
      * @param  string $dbService

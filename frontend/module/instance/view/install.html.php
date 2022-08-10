@@ -42,7 +42,7 @@
         </tbody>
       </table>
       <?php if(isset($cloudApp->dependencies->mysql)):?>
-      <div class='advanced'><?php echo html::a("#advanced-settings", $lang->instance->advantageOption . "<i class='icon icon-chevron-double-down'></i>", '', "data-toggle='collapse'");?></div>
+      <div class='advanced'><?php echo html::a("#advanced-settings", $lang->instance->advanceOption . "<i class='icon icon-chevron-double-down'></i>", '', "data-toggle='collapse'");?></div>
       <table class="collapse table table-form" id="advanced-settings">
         <tbody>
           <tr>
