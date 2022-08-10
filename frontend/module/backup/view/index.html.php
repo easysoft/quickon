@@ -32,10 +32,10 @@
       <thead class="text-center">
         <tr class='info-header'>
           <th class='w-150px'><?php echo $lang->backup->name;?></th>
-          <th class='w-150px'><?php echo $lang->backup->status;?></th>
-          <th class='w-100px'><?php echo $lang->backup->currentVersion;?></th>
+          <th class='w-80px'><?php echo $lang->backup->status;?></th>
+          <th class='w-80px'><?php echo $lang->backup->currentVersion;?></th>
           <th class='w-100px'><?php echo $lang->backup->latestVersion;?></th>
-          <th class='actionWidth'><?php echo $lang->actions?></th>
+          <th class='w-200px actionWidth'><?php echo $lang->actions?></th>
         </tr>
       </thead>
       <tbody class='text-center'>
