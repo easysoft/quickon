@@ -83,10 +83,11 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		return err
 	}
 
+	a := analysis.Install(body.Chart, body.Version)
 	rel, err := h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
 	if err != nil {
 		logger.WithError(err).Error("helm install failed")
-		analysis.Install(body.Chart, body.Version).AddFeature().Fail(err)
+		a.Fail(err)
 		if _, e := h.GetRelease(name); e == nil {
 			logger.Info("recycle incomplete release")
 			_ = h.Uninstall(name)
@@ -105,7 +106,7 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		secretMeta.Annotations[constant.AnnotationAppCreator] = body.Username
 	}
 	err = completeAppLabels(m.ctx, rel, m.ks, logger, secretMeta)
-	analysis.Install(body.Chart, body.Version).AddFeature("gdb", "ldap").Success()
+	a.Success()
 	return err
 }
 

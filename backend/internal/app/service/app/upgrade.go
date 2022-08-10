@@ -5,6 +5,7 @@
 package app
 
 import (
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"os"
 
 	"helm.sh/helm/v3/pkg/release"
@@ -136,10 +137,13 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	if body.Version != "" {
 		version = body.Version
 	}
+
+	a := analysis.Upgrade(body.Chart, i.CurrentChartVersion)
 	if version != i.CurrentChartVersion {
 		if err = helm.RepoUpdate(); err != nil {
 			return err
 		}
+		a = a.WithVersion(version)
 	}
 	if rel, err := h.Upgrade(i.name, genChart(body.Channel, chart), version, options); err != nil {
 		return err

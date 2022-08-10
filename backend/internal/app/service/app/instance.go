@@ -7,8 +7,10 @@ package app
 import (
 	"context"
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"reflect"
 	"strings"
+	"time"
 
 	"github.com/imdario/mergo"
 	"github.com/sirupsen/logrus"
@@ -374,6 +376,27 @@ func (i *Instance) GetAccountInfo() map[string]string {
 	}
 
 	return data
+}
+
+func (i *Instance) Uninstall() error {
+	h, err := helm.NamespaceScope(i.namespace)
+	if err != nil {
+		return err
+	}
+
+	installTime := i.release.Info.FirstDeployed.Time
+	uninstallTime := time.Now()
+
+	dur := uninstallTime.Sub(installTime)
+	a := analysis.UnInstall(i.ChartName, i.CurrentChartVersion).WithDuration(dur.Seconds())
+
+	err = h.Uninstall(i.name)
+	if err != nil {
+		a.Fail(err)
+		return err
+	}
+	a.Success()
+	return nil
 }
 
 func (i *Instance) GetMetrics() *model.AppMetric {

@@ -2,7 +2,8 @@ package analysis
 
 import (
 	"context"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis/client"
+	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/httplib/market"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"time"
 )
@@ -12,7 +13,7 @@ type Analysis struct {
 	maxQueueLength int
 	bufferChan     chan string
 	flushInterval  int64
-	client         *client.QuickonMarketClient
+	client         *market.Client
 
 	disabled bool
 }
@@ -25,7 +26,7 @@ func Init() *Analysis {
 		maxQueueLength: 1024,
 		bufferChan:     make(chan string),
 		flushInterval:  5,
-		client:         client.NewClient(),
+		client:         market.New(),
 		disabled:       false,
 	}
 	return _analysis
@@ -63,9 +64,13 @@ loop:
 }
 
 func (s *Analysis) flush() {
+	var err error
 	for _, item := range s.queue {
 		body := item
-		s.client.Send(body)
+		err = s.client.SendAppAnalysis(body)
+		if err != nil {
+			logrus.WithError(err).Error("request market api server failed")
+		}
 	}
 	s.queue = s.queue[:0]
 }
