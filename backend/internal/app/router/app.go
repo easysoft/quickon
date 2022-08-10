@@ -441,6 +441,7 @@ func AppDbList(c *gin.Context) {
 			ComponentBase: model.ComponentBase{Name: item.Name, NameSpace: item.Namespace},
 			DbType:        string(dbsvc.DbType()),
 			DbName:        dbMeta.Name,
+			Ready:         item.Status.Ready,
 		}
 		data = append(data, d)
 	}
