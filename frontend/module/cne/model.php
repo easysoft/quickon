@@ -67,15 +67,28 @@ class cneModel extends model
     /**
      * Get app info from cloud market.
      *
-     * @param  int    $id
-     * @param  boolea $analysis true: log this request for analysis.
+     * @param  int     $id
+     * @param  boolean $analysis true: log this request for analysis.
+     * @param  string  $chart
+     * @param  string  $version
+     * @param  string  $namespace
+     * @param  string  $channel
      * @access public
      * @return object|null
      */
-    public function getAppInfo($id, $analysis = false)
+    public function getAppInfo($id, $analysis = false, $chart = '', $version ='', $namespace = '', $channel = '')
     {
+        $apiParams = array();
+        $apiParams['analysis'] = $analysis ? 'true' : 'false' ;
+
+        if($id)        $apiParams['id']        = $id;
+        if($chart)     $apiParams['chart']     = $chart;
+        if($version)   $apiParams['version']   = $version;
+        if($namespace) $apiParams['namespace'] = $namespace;
+        if($channel)   $apiParams['channel']   = $channel;
+
         $apiUrl = '/api/market/appinfo';
-        $result = $this->apiGet($apiUrl, array('id' => $id, 'analysis' => ($analysis ? 'true' : 'false')), $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
         return $result->data;
