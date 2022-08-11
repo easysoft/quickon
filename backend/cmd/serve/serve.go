@@ -21,17 +21,19 @@ func NewCmdServe() *cobra.Command {
 		Short: "serve apiserver",
 		Run:   serve,
 	}
+	cmd.Flags().StringVar(&logging.LogLevel, "log-level", "info", "logging level")
 	return cmd
 }
 
 func serve(cmd *cobra.Command, args []string) {
-	logger := logging.DefaultLogger().WithField("action", "initialize")
+	logger := logging.NewLogger().WithField("action", "initialize")
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		<-ctx.Done()
 		stop()
 	}()
 
+	logger.Debugf("loglevel set to %s", logging.LogLevel)
 	logger.Info("start server")
 	if err := gins.Serve(ctx, logger); err != nil {
 		logger.Fatal("run serve: %v", err)

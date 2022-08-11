@@ -158,7 +158,7 @@ class backupModel extends model
 
         if($importResult && $importResult->result)
         {
-            $this->loadModel('instance')->deleteNotExist();
+            $this->loadModel('instance')->restoreInstanceList();
             $this->processRestoreSummary('sql', 'done');
         }
 

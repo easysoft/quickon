@@ -34,7 +34,7 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 
 	logger.Info("Initialize clusters")
 	for cluster.Init(stopCh) != nil {
-		logger.Errorf("initialize failed")
+		logger.Errorf("initialize kubernetes client failed")
 		time.Sleep(time.Second * 10)
 	}
 

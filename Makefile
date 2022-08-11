@@ -2,7 +2,10 @@ date_time := $(shell date +%Y%m%d)
 ci_tag := $(citag)
 export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
 export commit_id := $(shell git rev-parse --short HEAD)
-export branch_name := $(shell git branch -r --contains | head -1 | sed -E -e "s%(HEAD ->|origin|upstream)/?%%g" | xargs | tr '/' '-' )
+
+# read gitlab-ci branch tag first, git command for developer environment
+export branch_name := $(or $(CI_COMMIT_BRANCH),$(shell git branch --show-current))
+export branch_name := $(shell echo $(branch_name) | tr "/" "-")
 export _branch_prefix := $(shell echo $(branch_name) | sed 's/-.*//')
 
 ifneq (,$(filter $(_branch_prefix), test sprint))
@@ -76,4 +79,7 @@ pull: ## 拉取最新镜像
 mountFiles:
 	mkdir -p /root/.config/helm
 	kubectl get cm -n cne-system qucheng-files -o jsonpath='{.data.repositories\.yaml}' > /root/.config/helm/repositories.yaml.dev
-	sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.dev
+	@sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.dev
+
+debug:
+	@echo $(branch_name) "123"
