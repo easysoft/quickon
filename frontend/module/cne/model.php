@@ -67,14 +67,15 @@ class cneModel extends model
     /**
      * Get app info from cloud market.
      *
-     * @param  int $id
+     * @param  int    $id
+     * @param  boolea $analysis true: log this request for analysis.
      * @access public
      * @return object|null
      */
-    public function getAppInfo($id)
+    public function getAppInfo($id, $analysis = false)
     {
         $apiUrl = '/api/market/appinfo';
-        $result = $this->apiGet($apiUrl, array('id' => $id), $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        $result = $this->apiGet($apiUrl, array('id' => $id, 'analysis' => ($analysis ? 'true' : 'false')), $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
         return $result->data;
@@ -212,6 +213,22 @@ class cneModel extends model
         $categories->categories = array();
         $categories->total      = 0;
         return $categories;
+    }
+
+    /**
+     * Get all instance of app in cluster.
+     *
+     * @access public
+     * @return array
+     */
+    public function instanceList()
+    {
+        $apiUrl = "/api/cne/system/app-full-list";
+        $result = $this->apiGet($apiUrl, array(), $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
+
+        $instanceList = $result->data;
+        return array_combine(array_column($instanceList, 'name'), $instanceList);
     }
 
     /**
