@@ -7,6 +7,7 @@ package serve
 import (
 	"context"
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"net/http"
 	"os"
 	"time"
@@ -36,6 +37,10 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 		logger.Errorf("initialize failed")
 		time.Sleep(time.Second * 10)
 	}
+
+	logger.Info("Setup analysis")
+	als := analysis.Init()
+	go als.Run(ctx)
 
 	logger.Info("Setup cron tasks")
 	_ = helm.RepoUpdate()
