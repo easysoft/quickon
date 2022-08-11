@@ -119,7 +119,7 @@ func (m *Manager) ListGlobalDbsComponents(kind, namespace string) ([]model.Compo
 	selector := labels.SelectorFromSet(map[string]string{
 		constant.LabelGlobalDatabase: "true",
 	})
-	dbsvcs, err := m.ks.Store.ListDbService(namespace, selector)
+	dbsvcs, err := m.ks.Store.ListDbService("", selector)
 	if err != nil {
 		return nil, err
 	}
