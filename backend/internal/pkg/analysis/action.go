@@ -9,20 +9,31 @@ type model struct {
 	Successful bool   `json:"success"`
 	Err        string `json:"err"`
 
-	Extra map[string]interface{} `json:"extra_properties"`
+	Extra       string                 `json:"extra_properties"`
+	extraSource map[string]interface{} `json:"-"`
 }
 
 func newModel(name, version, action string) model {
 	return model{
-		Name:    name,
-		Version: version,
-		Action:  action,
-		Extra:   make(map[string]interface{}),
+		Name:        name,
+		Version:     version,
+		Action:      action,
+		extraSource: make(map[string]interface{}),
+	}
+}
+
+func (m *model) renderExtra() {
+	if len(m.extraSource) > 0 {
+		content, err := json.Marshal(m.extraSource)
+		if err == nil {
+			m.Extra = string(content)
+		}
 	}
 }
 
 func (m *model) Success() {
 	m.Successful = true
+	m.renderExtra()
 	content, _ := json.Marshal(m)
 	_analysis.write(string(content))
 }
@@ -30,6 +41,7 @@ func (m *model) Success() {
 func (m *model) Fail(err error) {
 	m.Successful = false
 	m.Err = err.Error()
+	m.renderExtra()
 	content, _ := json.Marshal(m)
 	_analysis.write(string(content))
 }
@@ -45,7 +57,7 @@ func Install(name, version string) *modelInstall {
 }
 
 func (m *modelInstall) WithFeatures(feats []string) *model {
-	m.model.Extra["features"] = feats
+	m.model.extraSource["features"] = feats
 	return &m.model
 }
 
@@ -60,7 +72,7 @@ func UnInstall(name, version string) *modelUninstall {
 }
 
 func (m *modelUninstall) WithDuration(dur float64) *model {
-	m.model.Extra["duration"] = dur
+	m.model.extraSource["duration"] = dur
 	return &m.model
 }
 
