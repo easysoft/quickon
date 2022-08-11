@@ -68,7 +68,7 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		secretMeta.Annotations[constant.AnnotationAppCreator] = body.Username
 	}
 	err = completeAppLabels(m.ctx, rel, m.ks, logger, secretMeta)
-	analysis.Install(body.Chart, body.Version).WithFeatures(feats).Success()
+	analysis.Install(body.Chart, rel.Chart.Metadata.Version).WithFeatures(feats).Success()
 	return err
 }
 
