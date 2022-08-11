@@ -13,13 +13,14 @@ import (
 
 var (
 	defaultLogger *logrus.Logger
+
+	LogLevel = "info"
 )
 
-func init() {
-	defaultLogger = NewLogger()
-}
-
 func DefaultLogger() *logrus.Logger {
+	if defaultLogger == nil {
+		defaultLogger = NewLogger()
+	}
 	return defaultLogger
 }
 
@@ -51,6 +52,13 @@ func NewLogger() *logrus.Logger {
 			return "", fmt.Sprintf("%s:%d", filename, f.Line)
 		},
 	}
+	level, err := logrus.ParseLevel(LogLevel)
+	if err != nil {
+		logger.WithError(err).Error("setup loglevel failed")
+	} else {
+		logger.SetLevel(level)
+	}
+
 	logger.AddHook(&ContextFieldsHook{})
 	return logger
 }
@@ -70,5 +78,3 @@ func readModuleName() string {
 
 	return moduleName
 }
-
-var _ = DefaultLogger()
