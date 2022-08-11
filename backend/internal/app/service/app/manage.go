@@ -5,23 +5,22 @@
 package app
 
 import (
+	"bytes"
+	"compress/gzip"
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
-
 	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/instance"
 	"helm.sh/helm/v3/pkg/releaseutil"
+	"io/ioutil"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
-	"io/ioutil"
-	"os"
 	"strconv"
 
-	"gopkg.in/yaml.v3"
-	"helm.sh/helm/v3/pkg/cli/values"
 	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -30,7 +29,6 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 )
 
 type Manager struct {
@@ -52,81 +50,8 @@ func NewApps(ctx context.Context, clusterName, namespace string) *Manager {
 	}
 }
 
-func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error {
-	logger := m.logger.WithFields(logrus.Fields{
-		"name": name, "namespace": body.Namespace,
-	})
-	h, err := helm.NamespaceScope(m.namespace)
-	if err != nil {
-		return err
-	}
-
-	var settings = make([]string, len(body.Settings))
-	for _, s := range body.Settings {
-		settings = append(settings, s.Key+"="+s.Val)
-	}
-	options := &values.Options{Values: settings}
-	logger.Infof("user custom settings is %+v", settings)
-
-	if len(body.SettingsMap) > 0 {
-		logger.Infof("user custom settingsMap is %+v", body.SettingsMap)
-		f, err := writeValuesFile(body.SettingsMap)
-		if err != nil {
-			logger.WithError(err).Error("write values file failed")
-		}
-		defer os.Remove(f)
-		options.ValueFiles = []string{f}
-	}
-
-	if err = helm.RepoUpdate(); err != nil {
-		logger.WithError(err).Error("helm update repo failed")
-		return err
-	}
-
-	a := analysis.Install(body.Chart, body.Version)
-	rel, err := h.Install(name, genChart(body.Channel, body.Chart), body.Version, options)
-	if err != nil {
-		logger.WithError(err).Error("helm install failed")
-		a.Fail(err)
-		if _, e := h.GetRelease(name); e == nil {
-			logger.Info("recycle incomplete release")
-			_ = h.Uninstall(name)
-		}
-		return err
-	}
-	secretMeta := metav1.ObjectMeta{
-		Labels: map[string]string{
-			constant.LabelApplication: "true",
-		},
-		Annotations: map[string]string{
-			constant.AnnotationAppChannel: body.Channel,
-		},
-	}
-	if body.Username != "" {
-		secretMeta.Annotations[constant.AnnotationAppCreator] = body.Username
-	}
-	err = completeAppLabels(m.ctx, rel, m.ks, logger, secretMeta)
-	a.Success()
-	return err
-}
-
-func (m *Manager) UnInstall(name string) error {
-	h, err := helm.NamespaceScope(m.namespace)
-	if err != nil {
-		return err
-	}
-
-	err = h.Uninstall(name)
-	return err
-}
-
-func (m *Manager) GetApp(name string) (*Instance, error) {
-	app := newApp(m.ctx, m, name)
-	if app.release == nil {
-		return nil, ErrAppNotFound
-	}
-
-	err := app.prepare()
+func (m *Manager) GetApp(name string) (*instance.Instance, error) {
+	app, err := instance.NewInstance(m.ctx, name, m.clusterName, m.namespace, m.ks)
 	return app, err
 }
 
@@ -203,23 +128,6 @@ func (m *Manager) ListAllApplications() (interface{}, error) {
 	return result, nil
 }
 
-func writeValuesFile(data map[string]interface{}) (string, error) {
-	f, err := ioutil.TempFile("/tmp", "values.******.yaml")
-	if err != nil {
-		return "", err
-	}
-	vars, err := yaml.Marshal(data)
-	if err != nil {
-		return "nil", err
-	}
-	_, err = f.Write(vars)
-	if err != nil {
-		return "nil", err
-	}
-	_ = f.Close()
-	return f.Name(), nil
-}
-
 func completeAppLabels(ctx context.Context, rel *release.Release, ks *cluster.Cluster, logger logrus.FieldLogger, meta metav1.ObjectMeta) error {
 	logger.Info("start complete app labels")
 	latestSecret, err := loadAppSecret(ctx, rel.Name, rel.Namespace, rel.Version, ks)
@@ -263,4 +171,46 @@ func loadAppSecret(ctx context.Context, name, namespace string, revision int, ks
 	}
 
 	return targetSecret, nil
+}
+
+/*
+helm func
+*/
+
+var b64 = base64.StdEncoding
+
+var magicGzip = []byte{0x1f, 0x8b, 0x08}
+
+// decodeRelease decodes the bytes of data into a release
+// type. Data must contain a base64 encoded gzipped string of a
+// valid release, otherwise an error is returned.
+func decodeRelease(data string) (*release.Release, error) {
+	// base64 decode string
+	b, err := b64.DecodeString(data)
+	if err != nil {
+		return nil, err
+	}
+
+	// For backwards compatibility with releases that were stored before
+	// compression was introduced we skip decompression if the
+	// gzip magic header is not found
+	if bytes.Equal(b[0:3], magicGzip) {
+		r, err := gzip.NewReader(bytes.NewReader(b))
+		if err != nil {
+			return nil, err
+		}
+		defer r.Close()
+		b2, err := ioutil.ReadAll(r)
+		if err != nil {
+			return nil, err
+		}
+		b = b2
+	}
+
+	var rls release.Release
+	// unmarshal release object bytes
+	if err := json.Unmarshal(b, &rls); err != nil {
+		return nil, err
+	}
+	return &rls, nil
 }

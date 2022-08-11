@@ -15,18 +15,21 @@ type Analysis struct {
 	flushInterval  int64
 	client         *market.Client
 
+	logger   *logrus.Logger
 	disabled bool
 }
 
 var _analysis *Analysis
 
 func Init() *Analysis {
+	logger := logging.DefaultLogger()
 	_analysis = &Analysis{
 		queue:          make([]string, 0),
 		maxQueueLength: 1024,
 		bufferChan:     make(chan string),
-		flushInterval:  5,
+		flushInterval:  1,
 		client:         market.New(),
+		logger:         logger,
 		disabled:       false,
 	}
 	return _analysis
@@ -44,7 +47,7 @@ func (s *Analysis) Run(ctx context.Context) {
 }
 
 func (s *Analysis) process(ctx context.Context) {
-	ticker := time.NewTicker(time.Duration(s.flushInterval) * time.Millisecond)
+	ticker := time.NewTicker(time.Duration(s.flushInterval) * time.Second)
 loop:
 	for {
 		select {
@@ -65,11 +68,17 @@ loop:
 
 func (s *Analysis) flush() {
 	var err error
+	length := len(s.queue)
+	if length == 0 {
+		return
+	}
+
+	s.logger.Infof("flush analysis data, %d records will be upload", length)
 	for _, item := range s.queue {
 		body := item
 		err = s.client.SendAppAnalysis(body)
 		if err != nil {
-			logrus.WithError(err).Error("request market api server failed")
+			s.logger.WithError(err).Error("request market api server failed")
 		}
 	}
 	s.queue = s.queue[:0]

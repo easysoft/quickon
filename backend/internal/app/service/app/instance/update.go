@@ -1,12 +1,9 @@
-// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
-// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
-// license that can be found in the LICENSE file.
-
-package app
+package instance
 
 import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"os"
+	"time"
 
 	"helm.sh/helm/v3/pkg/release"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -36,32 +33,11 @@ func (i *Instance) Stop(chart, channel string) error {
 	}
 
 	h, _ := helm.NamespaceScope(i.namespace)
-	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
 		return i.updateSecretMeta(rel)
 	}
-}
-
-func (i *Instance) updateSecretMeta(rel *release.Release) error {
-	if !i.isApp() {
-		return nil
-	}
-	secretMeta := metav1.ObjectMeta{
-		Labels: map[string]string{
-			constant.LabelApplication: "true",
-		},
-		Annotations: make(map[string]string),
-	}
-	if creator, ok := i.secret.Annotations[constant.AnnotationAppCreator]; ok {
-		secretMeta.Annotations[constant.AnnotationAppCreator] = creator
-	}
-	if channel, ok := i.secret.Annotations[constant.AnnotationAppChannel]; ok {
-		secretMeta.Annotations[constant.AnnotationAppChannel] = channel
-	}
-
-	err := completeAppLabels(i.ctx, rel, i.ks, i.logger, secretMeta)
-	return err
 }
 
 func (i *Instance) Start(chart, channel string) error {
@@ -83,7 +59,7 @@ func (i *Instance) Start(chart, channel string) error {
 	if err = helm.RepoUpdate(); err != nil {
 		return err
 	}
-	if rel, err := h.Upgrade(i.name, genChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
 		// add easyfost label for last secret
@@ -138,28 +114,57 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 		version = body.Version
 	}
 
-	a := analysis.Upgrade(body.Chart, i.CurrentChartVersion)
 	if version != i.CurrentChartVersion {
 		if err = helm.RepoUpdate(); err != nil {
 			return err
 		}
-		a = a.WithVersion(version)
 	}
-	if rel, err := h.Upgrade(i.name, genChart(body.Channel, chart), version, options); err != nil {
+	if rel, err := h.Upgrade(i.name, helm.GenChart(body.Channel, chart), version, options); err != nil {
+		analysis.Upgrade(body.Chart, version).Fail(err)
 		return err
 	} else {
+		analysis.Upgrade(body.Chart, version).Success()
 		return i.updateSecretMeta(rel)
 	}
 }
 
-func genRepo(channel string) string {
-	c := "test"
-	if channel != "" {
-		c = channel
+func (i *Instance) Uninstall() error {
+	h, err := helm.NamespaceScope(i.namespace)
+	if err != nil {
+		return err
 	}
-	return "qucheng-" + c
+
+	installTime := i.release.Info.FirstDeployed.Time
+	uninstallTime := time.Now()
+
+	dur := uninstallTime.Sub(installTime)
+
+	err = h.Uninstall(i.name)
+	if err != nil {
+		analysis.UnInstall(i.ChartName, i.CurrentChartVersion).WithDuration(dur.Seconds()).Fail(err)
+		return err
+	}
+	analysis.UnInstall(i.ChartName, i.CurrentChartVersion).WithDuration(dur.Seconds()).Success()
+	return nil
 }
 
-func genChart(channel, chart string) string {
-	return genRepo(channel) + "/" + chart
+func (i *Instance) updateSecretMeta(rel *release.Release) error {
+	if !i.isApp() {
+		return nil
+	}
+	secretMeta := metav1.ObjectMeta{
+		Labels: map[string]string{
+			constant.LabelApplication: "true",
+		},
+		Annotations: make(map[string]string),
+	}
+	if creator, ok := i.secret.Annotations[constant.AnnotationAppCreator]; ok {
+		secretMeta.Annotations[constant.AnnotationAppCreator] = creator
+	}
+	if channel, ok := i.secret.Annotations[constant.AnnotationAppChannel]; ok {
+		secretMeta.Annotations[constant.AnnotationAppChannel] = channel
+	}
+
+	err := completeAppLabels(i.ctx, rel, i.ks, i.logger, secretMeta)
+	return err
 }

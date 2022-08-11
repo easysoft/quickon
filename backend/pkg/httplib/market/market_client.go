@@ -22,6 +22,7 @@ func New() *Client {
 	if server.Host == "" || server.Port == "" {
 		panic("environment CNE_MARKET_API_HOST and CNE_MARKET_API_PORT must be set")
 	}
+
 	c := &Client{
 		HTTPServer: &server,
 		client:     gorequest.New().SetDebug(server.Debug),

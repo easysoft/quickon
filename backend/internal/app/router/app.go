@@ -6,6 +6,7 @@ package router
 
 import (
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/instance"
 	"net/http"
 	"sync"
 
@@ -18,7 +19,6 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
 )
 
 // AppInstall 安装接口
@@ -39,7 +39,7 @@ func AppInstall(c *gin.Context) {
 		ctx  = c.Request.Context()
 		err  error
 		body model.AppCreateOrUpdateModel
-		i    *app.Instance
+		i    *instance.Instance
 	)
 	if err = c.ShouldBindJSON(&body); err != nil {
 		renderError(c, http.StatusBadRequest, err)
@@ -87,7 +87,7 @@ func AppUnInstall(c *gin.Context) {
 		body model.AppModel
 	)
 
-	ctx, i, code, err := LookupApp(c, &body)
+	_, i, code, err := LookupApp(c, &body)
 	if err != nil {
 		renderError(c, code, err)
 		return
@@ -95,7 +95,7 @@ func AppUnInstall(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	if err = service.Apps(ctx, body.Cluster, body.Namespace).UnInstall(body.Name); err != nil {
+	if err = i.Uninstall(); err != nil {
 		logger.WithError(err).Error("uninstall app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return

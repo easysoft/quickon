@@ -9,7 +9,7 @@ type model struct {
 	Successful bool   `json:"success"`
 	Err        string `json:"err"`
 
-	Extra map[string]interface{} `json:"extraProperties"`
+	Extra map[string]interface{} `json:"extra_properties"`
 }
 
 func newModel(name, version, action string) model {
@@ -44,7 +44,7 @@ func Install(name, version string) *modelInstall {
 	}
 }
 
-func (m *modelInstall) AddFeature(feats ...string) *model {
+func (m *modelInstall) WithFeatures(feats []string) *model {
 	m.model.Extra["features"] = feats
 	return &m.model
 }
@@ -72,9 +72,4 @@ func Upgrade(name, version string) *modelUpgrade {
 	return &modelUpgrade{
 		newModel(name, version, "upgrade"),
 	}
-}
-
-func (m *modelUpgrade) WithVersion(version string) *model {
-	m.model.Extra["upgrade_to"] = version
-	return &m.model
 }
