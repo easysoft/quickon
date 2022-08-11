@@ -13,6 +13,8 @@ require (
 	github.com/go-sql-driver/mysql v1.5.0
 	github.com/google/uuid v1.3.0
 	github.com/imdario/mergo v0.3.12
+	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.12.1
 	github.com/robfig/cron/v3 v3.0.1
@@ -151,6 +153,7 @@ require (
 	k8s.io/klog/v2 v2.70.1 // indirect
 	k8s.io/kube-openapi v0.0.0-20220328201542-3ee0da9b0b42 // indirect
 	k8s.io/utils v0.0.0-20220713171938-56c0de1e6f5e // indirect
+	moul.io/http2curl v1.0.0 // indirect
 	oras.land/oras-go v1.1.1 // indirect
 	sigs.k8s.io/controller-runtime v0.12.3 // indirect
 	sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2 // indirect

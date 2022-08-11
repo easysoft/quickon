@@ -1,8 +1,4 @@
-// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
-// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
-// license that can be found in the LICENSE file.
-
-package app
+package instance
 
 import (
 	"fmt"
@@ -204,4 +200,12 @@ func (i *Instance) GetRestoreStatus(restoreName string) (interface{}, error) {
 	}
 
 	return data, nil
+}
+
+func (i *Instance) GetDbList() []*quchengv1beta1.Db {
+	l, err := i.Ks.Store.ListDb(i.namespace, i.selector)
+	if err != nil {
+		i.logger.WithError(err).Error("find dbs failed")
+	}
+	return l
 }
