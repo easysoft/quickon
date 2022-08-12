@@ -34,16 +34,16 @@
     <tr>
       <td><?php echo date('Y-m-d H:i:s', $backup->create_time);?></td>
       <td><?php echo $backup->username;?></td>
-      <td><?php echo zget($backup->backup_details->db[0], 'db_type');?></td>
-      <td><?php echo zget($backup->backup_details->db[0], 'db_name');?></td>
-      <td><?php echo zget($lang->instance->backup->statusList, strtolower(zget($backup->backup_details->db[0], 'status')));?></td>
-      <td><?php echo zget($backup->backup_details->db[0], 'cost');?></td>
-      <td><?php echo helper::formatKB(zget($backup->backup_details->db[0], 'size') / 1024);?></td>
-      <td><?php echo zget($backup->backup_details->volume[0], 'pvc_name');?></td>
-      <td><?php echo zget($backup->backup_details->volume[0], 'volume');?></td>
-      <td><?php echo zget($lang->instance->backup->statusList, strtolower(zget($backup->backup_details->volume[0], 'status')));?></td>
-      <td><?php echo zget($backup->backup_details->volume[0], 'cost');?></td>
-      <td><?php echo helper::formatKB(zget($backup->backup_details->volume[0], 'doneBytes') / 1024);?></td>
+      <td><?php echo isset($backup->backup_details->db[0]) ? zget($backup->backup_details->db[0], 'db_type') : '';?></td>
+      <td><?php echo isset($backup->backup_details->db[0]) ? zget($backup->backup_details->db[0], 'db_name') : '';?></td>
+      <td><?php echo isset($backup->backup_details->db[0]) ? zget($lang->instance->backup->statusList, strtolower(zget($backup->backup_details->db[0], 'status'))) : '';?></td>
+      <td><?php echo isset($backup->backup_details->db[0]) ? zget($backup->backup_details->db[0], 'cost') : '';?></td>
+      <td><?php echo isset($backup->backup_details->db[0]) ? helper::formatKB(zget($backup->backup_details->db[0], 'size') / 1024) : '';?></td>
+      <td><?php echo isset($backup->backup_details->volume[0]) ? zget($backup->backup_details->volume[0], 'pvc_name') : '';?></td>
+      <td><?php echo isset($backup->backup_details->volume[0]) ? zget($backup->backup_details->volume[0], 'volume') : '';?></td>
+      <td><?php echo isset($backup->backup_details->volume[0]) ? zget($lang->instance->backup->statusList, strtolower(zget($backup->backup_details->volume[0], 'status'))) : '';?></td>
+      <td><?php echo isset($backup->backup_details->volume[0]) ? zget($backup->backup_details->volume[0], 'cost') : '';?></td>
+      <td><?php echo isset($backup->backup_details->volume[0]) ? helper::formatKB(zget($backup->backup_details->volume[0], 'doneBytes') / 1024) : '';?></td>
       <td><?php $this->instance->printRestoreBtn($instance, $backup);?></td>
     </tr>
     <?php endforeach;?>
