@@ -1,6 +1,6 @@
 <?php
 /**
- * The index view file of navigation module of QuCheng.
+ * The browse view file of navigation module of QuCheng.
  *
  * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJiang QuCheng Software Co,LTD, www.qucheng.com)
  * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
@@ -19,6 +19,10 @@
       <?php foreach($instances as $instance):?>
       <?php $active = ((bool)$instance->pinned) == true ? 'active' : '';?>
         <li><?php echo $instance->name;?><a class="instance-item <?php echo $active;?>" data-id="<?php echo $instance->id;?>" ><i class="icon icon-pushpin"></i></a></li>
+      <?php endforeach;?>
+      <?php foreach($apps as $app):?>
+      <?php $active = ((bool)$app->pinned) == true ? 'active' : '';?>
+        <li><?php echo $app->title;?><a class="instance-item app-item <?php echo $active;?>" data-id="<?php echo $app->id;?>" ><i class="icon icon-pushpin"></i></a></li>
       <?php endforeach;?>
     </ul>
   </nav>
@@ -48,12 +52,27 @@
           </div>
         </section>
       <?php endforeach;?>
+      <?php foreach($pinnedApps as $app):?>
+        <section class="item-container" data-id="<?php echo $app->id;?>">
+          <div class="item" style="background-color: #161b1f;">
+          <?php if($app->logo) echo html::image($app->logo, "class='instance-logo'");?>
+            <div class="details">
+              <div class="title white">
+                <div class='title'><?php echo $app->title;?></div>
+              </div>
+            </div>
+            <a title="<?php echo $app->desc;?>"  class="link white" target="_blank" href="<?php echo $app->domain;?>"><i class="icon icon-right-to-line"></i></a>
+          </div>
+        </section>
+      <?php endforeach;?>
         <section class="add-item">
           <a id="add-item" href=""><?php echo $this->lang->navigation->pinInstance;?></a>
         </section>
       </div>
       <div id="config-buttons">
         <a id="config-button" class="config" href=""><i class="icon icon-edit" style="font-size:20px;"></i></a>
+        <?php echo html::a($this->createLink('navigation', 'create'), '<i class="icon icon-plus" style="font-size:20px;"></i>');?>
+        <?php echo html::a($this->createLink('navigation', 'settings'), '<i class="icon icon-cog-outline" style="font-size:20px;"></i>');?>
       </div>
     </main>
   </div>

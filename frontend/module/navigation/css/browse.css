@@ -4,7 +4,7 @@
 #app main {flex-direction: column;}
 #app main, #app #sortable {padding: 30px 10px; display: flex; justify-content: center; align-items: center; flex: 1; position: relative; flex-wrap: wrap; align-content: center; list-style: none; margin: 0;}
 #config-buttons {position: fixed; bottom: 0; right: 0; display: flex; flex-direction: column;}
-#config-buttons a {text-align: center; line-height: 50px; color: white; margin-top: 1px;}
+#config-buttons a {text-align: center; line-height: 30px; color: white; margin-top: 1px;}
 .item-container {position: relative;}
 #app.sidebar nav {left: 0;}
 .add-item {width: 280px; height: 90px; margin: 20px; flex: 0 0 280px; border-radius: 6px; padding: 20px; border: 4px dashed rgba(255, 255, 255, 0.7); box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.3); color: white; overflow: hidden; position: relative; display: none; outline: 1px solid transparent;}

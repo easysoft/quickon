@@ -97,6 +97,8 @@ define('TABLE_FILE',          '`' . $config->db->prefix . 'file`');
 
 define('TABLE_ENTRY',         '`' . $config->db->prefix . 'entry`');
 
+define('TABLE_APP',           '`' . $config->db->prefix . 'app`');
+
 if(!defined('TABLE_LANG'))        define('TABLE_LANG', '`' . $config->db->prefix . 'lang`');
 
 $config->objectTables['instance']     = TABLE_INSTANCE;
