@@ -245,6 +245,22 @@ class cneModel extends model
     }
 
     /**
+     * Upgrade platform.
+     *
+     * @param  string $toVersion
+     * @access public
+     * @return bool
+     */
+    public function upgradePlatform($toVersion)
+    {
+        $apiUrl = "/api/cne/system/update";
+        $result = $this->apiPost($apiUrl, array('version' => $toVersion, 'channel' => $this->config->CNE->api->channel), $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
      * Upgrade or degrade platform version.
      *
      * @param  string $version

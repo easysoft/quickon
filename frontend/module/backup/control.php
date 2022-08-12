@@ -493,7 +493,7 @@ class backup extends control
 
         $logExtra = array('result' => 'success', 'data' => array('oldVersion' => getenv('APP_VERSION'), 'newVersion' => $this->session->platformLatestVersion->version));
 
-        $success = $this->loadModel('cne')->setPlatformVersion($this->session->platformLatestVersion->version);
+        $success = $this->loadModel('cne')->upgradePlatform($this->session->platformLatestVersion->version);
         if($success)
         {
             $this->setting->setItem('system.backup.global.chartVersion', $this->session->platformLatestVersion->version);
