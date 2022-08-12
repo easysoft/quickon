@@ -63,6 +63,7 @@ $lang->instance->backup->statusList['success']        = '失败';
 $lang->instance->backup->statusList['failed']         = '失败';
 $lang->instance->backup->statusList['pending']        = '等待备份';
 $lang->instance->backup->statusList['processing']     = '备份中';
+$lang->instance->backup->statusList['inprogress']     = '备份中';
 $lang->instance->backup->statusList['completed']      = '完成备份';
 $lang->instance->backup->statusList['executedFailed'] = '备份失败';
 $lang->instance->backup->statusList['uploading']      = '上传中';

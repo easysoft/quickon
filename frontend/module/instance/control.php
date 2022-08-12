@@ -381,7 +381,9 @@ class instance extends control
         if(empty($postData->instanceID) || empty($postData->backupName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->wrongRequestData));
 
         $instance = $this->instance->getByID($postData->instanceID);
+        if(empty($instance))return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
 
+        $this->instance->backup($instance, $this->app->user); // Backup automatically before restroe.
         $success = $this->instance->restore($instance, $this->app->user, $postData->backupName);
         if(!$success)
         {
