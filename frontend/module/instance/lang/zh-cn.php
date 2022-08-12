@@ -59,7 +59,7 @@ $lang->instance->backup->volSpentSeconds = '耗时(秒)';
 $lang->instance->backup->volSize         = '大小';
 
 $lang->instance->backup->statusList = array();
-$lang->instance->backup->statusList['success']        = '失败';
+$lang->instance->backup->statusList['success']        = '成功';
 $lang->instance->backup->statusList['failed']         = '失败';
 $lang->instance->backup->statusList['pending']        = '等待备份';
 $lang->instance->backup->statusList['processing']     = '备份中';
@@ -73,7 +73,7 @@ $lang->instance->backup->statusList['downloadFailed'] = '下载失败';
 
 $lang->instance->restore = new stdclass;
 $lang->instance->restore->statusList = array();
-$lang->instance->restore->statusList['success']        = '失败';
+$lang->instance->restore->statusList['success']        = '成功';
 $lang->instance->restore->statusList['failed']         = '失败';
 $lang->instance->restore->statusList['pending']        = '等待回滚';
 $lang->instance->restore->statusList['processing']     = '回滚中';

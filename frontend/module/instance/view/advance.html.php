@@ -1,13 +1,13 @@
 <div class="panel">
   <div class="panel-heading">
+    <div class="panel-title"><?php echo $lang->instance->domain;?>:<span><?php echo $instance->domain;?></span></div>
+  </div>
+  <?php if(!empty($dbList)):?>
+  <hr/>
+  <div class="panel-heading">
     <div class="panel-title"><?php echo $lang->instance->dbList;?></div>
   </div>
   <div class="panel-body">
-    <?php if(empty($dbList)):?>
-    <div class="table-empty-tip">
-      <p><?php echo $lang->instance->errors->noDBList;?></p>
-    </div>
-    <?php else:?>
     <table class="table table-bordered text-center">
       <tr>
         <th><?php echo $lang->instance->dbName?></th>
@@ -24,7 +24,7 @@
       <tr>
       <?php endforeach;?>
     </table>
-    <?php endif;?>
   </div>
+  <?php endif;?>
 </div>
 
