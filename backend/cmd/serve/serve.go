@@ -6,7 +6,9 @@ package serve
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"os/signal"
+	"strings"
 	"syscall"
 
 	"github.com/spf13/cobra"
@@ -21,19 +23,24 @@ func NewCmdServe() *cobra.Command {
 		Short: "serve apiserver",
 		Run:   serve,
 	}
-	cmd.Flags().StringVar(&logging.LogLevel, "log-level", "info", "logging level")
+
+	viper.AutomaticEnv()
+	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
+
+	flags := cmd.Flags()
+	flags.String(logging.FlagLogLevel, "info", "logging level")
+	viper.BindPFlag(logging.FlagLogLevel, flags.Lookup(logging.FlagLogLevel))
 	return cmd
 }
 
 func serve(cmd *cobra.Command, args []string) {
-	logger := logging.NewLogger().WithField("action", "initialize")
+	logger := logging.DefaultLogger().WithField("action", "initialize")
 	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGTERM, syscall.SIGINT)
 	go func() {
 		<-ctx.Done()
 		stop()
 	}()
 
-	logger.Debugf("loglevel set to %s", logging.LogLevel)
 	logger.Info("start server")
 	if err := gins.Serve(ctx, logger); err != nil {
 		logger.Fatal("run serve: %v", err)
