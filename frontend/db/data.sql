@@ -203,8 +203,8 @@ CREATE TABLE `q_grouppriv` (
   UNIQUE KEY `group` (`group`,`module`,`method`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_app`;
-CREATE TABLE IF NOT EXISTS `q_app` (
+DROP TABLE IF EXISTS `q_navinstance`;
+CREATE TABLE IF NOT EXISTS `q_navinstance` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `title` char(50),
   `domain` char(255) NOT NULL,

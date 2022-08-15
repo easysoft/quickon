@@ -31,7 +31,7 @@ class navigationModel extends model
      */
     public function getByID($id)
     {
-        return $this->dao->select('*')->from(TABLE_APP)->where('id')->eq($id)->fetch();
+        return $this->dao->select('*')->from(TABLE_NAVINSTANCE)->where('id')->eq($id)->fetch();
     }
 
     /**
@@ -48,7 +48,7 @@ class navigationModel extends model
             ->setDefault('createdAt', helper::now())
             ->get();
 
-        $this->dao->insert(TABLE_APP)->data($app)->autoCheck()->check('title', 'notempty')->exec();
+        $this->dao->insert(TABLE_NAVINSTANCE)->data($app)->autoCheck()->check('title', 'notempty')->exec();
     }
 
     /**
@@ -61,7 +61,7 @@ class navigationModel extends model
      */
     public function getApps($pinned = '', $searchParam = '')
     {
-        $apps = $this->dao->select('*')->from(TABLE_APP)
+        $apps = $this->dao->select('*')->from(TABLE_NAVINSTANCE)
             ->beginIF($pinned)->where('pinned')->eq((int)$pinned)->fi()
             ->beginIF($searchParam)->andWhere('title')->like("%{$searchParam}%")->fi()
             ->fetchAll();
@@ -79,7 +79,7 @@ class navigationModel extends model
     {
         $app = $this->getByID($appID);
         $pinned = $app->pinned == '0' ? '1' : '0';
-        $this->dao->update(TABLE_APP)->set('pinned')->eq($pinned)->where('id')->eq($appID)->exec();
+        $this->dao->update(TABLE_NAVINSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($appID)->exec();
     }
 
 }
