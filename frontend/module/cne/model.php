@@ -69,22 +69,20 @@ class cneModel extends model
      *
      * @param  int     $id
      * @param  boolean $analysis true: log this request for analysis.
-     * @param  string  $chart
+     * @param  string  $name
      * @param  string  $version
-     * @param  string  $namespace
      * @param  string  $channel
      * @access public
      * @return object|null
      */
-    public function getAppInfo($id, $analysis = false, $chart = '', $version ='', $namespace = '', $channel = '')
+    public function getAppInfo($id, $analysis = false, $name = '', $version ='',  $channel = '')
     {
         $apiParams = array();
         $apiParams['analysis'] = $analysis ? 'true' : 'false' ;
 
         if($id)        $apiParams['id']        = $id;
-        if($chart)     $apiParams['chart']     = $chart;
+        if($chart)     $apiParams['name']      = $name;
         if($version)   $apiParams['version']   = $version;
-        if($namespace) $apiParams['namespace'] = $namespace;
         if($channel)   $apiParams['channel']   = $channel;
 
         $apiUrl = '/api/market/appinfo';
