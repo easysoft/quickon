@@ -60,7 +60,7 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
             <div class='title'><?php echo $app->title;?></div>
           </div>
         </div>
-        <a title="<?php echo $app->desc;?>" style="pointer-events: none;" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="icon icon-right-to-line"></i></a>
+        <a title="<?php echo $app->desc;?>"  class="link white" target="_blank" href="<?php echo $app->domain;?>"><i class="icon icon-right-to-line"></i></a>
       </div>
     </section>
   <?php endforeach;?>
