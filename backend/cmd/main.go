@@ -6,11 +6,10 @@ package main
 
 import (
 	"github.com/spf13/cobra"
-	_ "go.uber.org/automaxprocs"
-	"k8s.io/kubectl/pkg/util/i18n"
-
 	"gitlab.zcorp.cc/pangu/cne-api/cmd/serve"
 	"gitlab.zcorp.cc/pangu/cne-api/cmd/version"
+	_ "go.uber.org/automaxprocs"
+	"k8s.io/kubectl/pkg/util/i18n"
 )
 
 // @title CNE API
