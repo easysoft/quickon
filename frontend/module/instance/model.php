@@ -608,7 +608,6 @@ class InstanceModel extends model
 
         //软删除不存在的数据
         $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('k8name')->notIn($k8NameList)->exec();
-
         foreach($k8AppList as $k8App)
         {
             $existInstance = $this->dao->select('id')->from(TABLE_INSTANCE)->where('k8name')->eq($k8App->name)->fetch();
