@@ -2,6 +2,7 @@ package logging
 
 import (
 	"fmt"
+	"github.com/spf13/viper"
 	"path"
 	"runtime"
 	"runtime/debug"
@@ -11,10 +12,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const FlagLogLevel = "log-level"
+
 var (
 	defaultLogger *logrus.Logger
-
-	LogLevel = "info"
 )
 
 func DefaultLogger() *logrus.Logger {
@@ -52,11 +53,14 @@ func NewLogger() *logrus.Logger {
 			return "", fmt.Sprintf("%s:%d", filename, f.Line)
 		},
 	}
-	level, err := logrus.ParseLevel(LogLevel)
+
+	lv := viper.GetString(FlagLogLevel)
+	level, err := logrus.ParseLevel(lv)
 	if err != nil {
-		logger.WithError(err).Error("setup loglevel failed")
+		logger.WithError(err).Fatalf("setup log level '%s' failed", lv)
 	} else {
 		logger.SetLevel(level)
+		logger.Infof("setup log level to %s", lv)
 	}
 
 	logger.AddHook(&ContextFieldsHook{})

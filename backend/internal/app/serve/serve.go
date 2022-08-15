@@ -44,14 +44,16 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 
 	logger.Info("Setup cron tasks")
 	_ = helm.RepoUpdate()
-	defer cron.Cron.Stop()
-	cron.Cron.Add("01 * * * *", func() {
+
+	cr := cron.New()
+	defer cr.Stop()
+	cr.Add("01 * * * *", func() {
 		err = helm.RepoUpdate()
 		if err != nil {
 			logger.WithError(err).Warning("cron helm repo update failed")
 		}
 	})
-	cron.Cron.Start()
+	cr.Start()
 
 	service.Apps(ctx, "", "").Upgrade()
 
