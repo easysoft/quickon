@@ -101,8 +101,15 @@ class navigation extends control
         $this->display('navigation', 'ajaxGetPinnedInstance');
     }
 
+    /**
+     * The settings page of navigation.
+     * 
+     * @access public
+     * @return void
+     */
     public function settings()
     {
+        $this->view->settings = $this->navigation->getSettings();
         $this->display();
     }
 }
