@@ -103,15 +103,15 @@ class cneModel extends model
      * @access public
      * @return mixed
      */
-    public function appVersionList($id, $name = '', $channel = '', $page = 1, $pageSize = 10)
+    public function appVersionList($id, $name = '', $channel = '', $page = 1, $pageSize = 3)
     {
         $apiParams = array();
         $apiParams['page']      = $page;
         $apiParams['page_size'] = $pageSize;
 
-        if($id)        $apiParams['id']        = $id;
-        if($chart)     $apiParams['name']      = $name;
-        if($channel)   $apiParams['channel']   = $channel;
+        if($id)      $apiParams['id']      = $id;
+        if($name)    $apiParams['name']    = $name;
+        if($channel) $apiParams['channel'] = $channel;
 
         $apiUrl = '/api/market/app/version';
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);

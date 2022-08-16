@@ -21,8 +21,8 @@
       <table class="table table-form">
         <tbody>
           <tr>
-            <th class='w-70px'><?php echo $lang->instance->name;?></th>
-            <td class='w-230px'>
+            <th class='w-80px'><?php echo $lang->instance->name;?></th>
+            <td class='w-250px'>
               <div class='input-group'>
                 <?php echo html::input('customName', $cloudApp->alias, "class='form-control' maxlength='20'");?>
               </div>
@@ -41,13 +41,24 @@
           </tr>
         </tbody>
       </table>
-      <?php if(isset($cloudApp->dependencies->mysql)):?>
       <div class='advanced'><?php echo html::a("#advanced-settings", $lang->instance->advanceOption . "<i class='icon icon-chevron-double-down'></i>", '', "data-toggle='collapse'");?></div>
       <table class="collapse table table-form" id="advanced-settings">
         <tbody>
+          <?php if(getenv('ALLOW_SELECT_VERSION')):?>
           <tr>
-            <th class='w-70px'><?php echo $lang->instance->dbType;?></th>
-            <td class='w-230px'>
+            <th class='w-80px'><?php echo $lang->instance->version;?></th>
+            <td class='w-250px'>
+              <div class='input-group'>
+                <?php echo html::select('version', $versionList, '', "class='form-control'");?>
+              </div>
+            </td>
+            <td></td>
+          </tr>
+          <?php endif;?>
+          <?php if(isset($cloudApp->dependencies->mysql)):?>
+          <tr>
+            <th class='w-80px'><?php echo $lang->instance->dbType;?></th>
+            <td class='w-250px'>
               <div class='input-group'>
                 <?php echo html::radio('dbType', $lang->instance->dbTypes, 'sharedDB');?>
               </div>
@@ -63,9 +74,9 @@
             </td>
             <td></td>
           </tr>
+          <?php endif;?>
         </tbody>
       </table>
-      <?php endif;?>
       <div class="text-center form-actions"><?php echo html::submitButton($lang->instance->install);?></div>
     </form>
   </div>

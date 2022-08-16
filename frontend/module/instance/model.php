@@ -341,7 +341,7 @@ class InstanceModel extends model
         $instanceData->channel      = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
         $instanceData->chart        = $app->chart;
         $instanceData->appVersion   = $app->app_version;
-        $instanceData->version      = $app->version;
+        $instanceData->version      = $customData->version;
         $instanceData->space        = $space->id;
         $instanceData->k8name       = $k8name;
         $instanceData->status       = 'creating';
@@ -357,6 +357,7 @@ class InstanceModel extends model
         $apiParams->namespace    = $space->k8space;
         $apiParams->name         = $k8name;
         $apiParams->chart        = $app->chart;
+        $apiParams->version      = $instance->version;
         $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
 

@@ -216,6 +216,7 @@ class instance extends control
             $customData = fixer::input('post')
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
+                ->trim('version')->setDefault('version', '')
                 ->trim('dbType')
                 ->trim('dbService')
                 ->get();
@@ -237,6 +238,9 @@ class instance extends control
 
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
+
+        $versionList             = $this->cne->appVersionList($cloudApp->id);
+        $this->view->versionList = array_combine(array_column($versionList, 'version'), array_column($versionList, 'app_version'));
         $this->view->thirdDomain = $this->instance->randThirdDomain();
         $this->view->dbList      = $this->instance->dbListToOptions($dbList);
 
