@@ -69,25 +69,51 @@ class cneModel extends model
      *
      * @param  int     $id
      * @param  boolean $analysis true: log this request for analysis.
-     * @param  string  $chart
+     * @param  string  $name
      * @param  string  $version
-     * @param  string  $namespace
      * @param  string  $channel
      * @access public
      * @return object|null
      */
-    public function getAppInfo($id, $analysis = false, $chart = '', $version ='', $namespace = '', $channel = '')
+    public function getAppInfo($id, $analysis = false, $name = '', $version ='',  $channel = '')
     {
         $apiParams = array();
         $apiParams['analysis'] = $analysis ? 'true' : 'false' ;
 
         if($id)        $apiParams['id']        = $id;
-        if($chart)     $apiParams['chart']     = $chart;
+        if($name)      $apiParams['name']      = $name;
         if($version)   $apiParams['version']   = $version;
-        if($namespace) $apiParams['namespace'] = $namespace;
         if($channel)   $apiParams['channel']   = $channel;
 
         $apiUrl = '/api/market/appinfo';
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return $result->data;
+    }
+
+    /**
+     * Get app version list to install.
+     *
+     * @param  int    $id
+     * @param  string $name
+     * @param  string $channel
+     * @param  int    $page
+     * @param  int    $pageSize
+     * @access public
+     * @return mixed
+     */
+    public function appVersionList($id, $name = '', $channel = '', $page = 1, $pageSize = 10)
+    {
+        $apiParams = array();
+        $apiParams['page']      = $page;
+        $apiParams['page_size'] = $pageSize;
+
+        if($id)        $apiParams['id']        = $id;
+        if($chart)     $apiParams['name']      = $name;
+        if($channel)   $apiParams['channel']   = $channel;
+
+        $apiUrl = '/api/market/app/version';
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 

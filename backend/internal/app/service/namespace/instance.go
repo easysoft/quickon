@@ -4,14 +4,30 @@
 
 package namespace
 
-import v1 "k8s.io/api/core/v1"
+import (
+	"context"
+	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
+	v1 "k8s.io/api/core/v1"
+)
 
 type Instance struct {
-	ns *v1.Namespace
+	ctx       context.Context
+	namespace string
+	ns        *v1.Namespace
+	ks        *cluster.Cluster
+	logger    logrus.FieldLogger
 }
 
-func newInstance(ns *v1.Namespace) *Instance {
-	return &Instance{ns: ns}
+func newInstance(ctx context.Context, ns *v1.Namespace, ks *cluster.Cluster) *Instance {
+	return &Instance{
+		ctx:       ctx,
+		namespace: ns.Name,
+		ns:        ns,
+		ks:        ks,
+		logger:    logging.DefaultLogger().WithContext(ctx).WithField("namespace", ns),
+	}
 }
 
 func (i *Instance) WriteAble() bool {

@@ -23,24 +23,45 @@ $(function()
             });
         }, 1000);
     })
+
     $(".restoreButton").click(function()
     {
-        $('#confirmRollback').modal('show');
+        let restoreUrl = $(this).data('url');
+        $('#confirmRestore #submitRestore').data('url', restoreUrl);
+        $('#confirmRestore').modal('show');
     });
-    $('.submitRestore').click(function()
+    $('#submitRestore').click(function()
     {
-        $('#confirmRollback').modal('hide');
+        let restoreUrl = $('#confirmRestore #submitRestore').data('url');
+        $('#hiddenwin').attr('src', restoreUrl);
+        $('#confirmRestore').modal('hide');
         $('#restoring').modal('show');
         setInterval(function()
         {
             $.get(createLink('backup', 'ajaxGetRestoreProgress'), function(data)
             {
+              console.log(data);
                 data = JSON.parse(data);
                 $('.restoreSQL').text(data.sql);
                 $('.restoreFile').text(data.file);
             });
         }, 1000);
     });
+
+    $(".deleteButton").click(function()
+    {
+        let delUrl = $(this).data('url');
+        $('#confirmDelete #submitDelete').data('url', delUrl);
+        $('#confirmDelete').modal('show');
+    });
+    $('#submitDelete').click(function()
+    {
+        $('#confirmDelete').modal('hide');
+        let delUrl = $('#confirmDelete #submitDelete').data('url');
+
+        $('#hiddenwin').attr('src', delUrl);
+    });
+
     $('.rmPHPHeader').click(function()
     {
         $('#waitting .modal-body #backupType').html(rmPHPHeader);
@@ -48,29 +69,4 @@ $(function()
         $('#waitting').modal('show');
     })
 
-    $('.restore').click(function()
-    {
-        url = $(this).attr('href');
-        bootbox.confirm(confirmRestore, function(result)
-        {
-            if(result)
-            {
-                $('#waitting .modal-body #backupType').html(restore);
-                $('#waitting .modal-content #message').hide();
-                $('#waitting').modal('show');
-
-                $.getJSON(url, function(response)
-                {
-                    $('#waitting').modal('hide');
-                    bootbox.alert(response.message);
-                });
-            }
-            else
-            {
-                return location.reload();
-            }
-        })
-
-        return false;
-    })
 })

@@ -60,7 +60,9 @@ func AppInstall(c *gin.Context) {
 		return
 	}
 
-	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body); err != nil {
+	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+
+	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body, snippetSettings); err != nil {
 		logger.WithError(err).Error("install app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
@@ -196,7 +198,7 @@ func AppPatchSettings(c *gin.Context) {
 		body model.AppCreateOrUpdateModel
 	)
 
-	_, i, code, err := LookupApp(c, &body)
+	ctx, i, code, err := LookupApp(c, &body)
 	if err != nil {
 		renderError(c, code, err)
 		return
@@ -204,7 +206,9 @@ func AppPatchSettings(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	err = i.PatchSettings(body.Chart, body)
+	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+
+	err = i.PatchSettings(body.Chart, body, snippetSettings)
 	if err != nil {
 		logger.WithError(err).Error(errPatchAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errPatchAppFailed))

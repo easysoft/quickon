@@ -46,6 +46,7 @@ type Informer struct {
 	Services     cache.SharedIndexInformer
 	Endpoints    cache.SharedIndexInformer
 	Secrets      cache.SharedIndexInformer
+	ConfigMaps   cache.SharedIndexInformer
 	Deployments  cache.SharedIndexInformer
 	StatefulSets cache.SharedIndexInformer
 
@@ -65,6 +66,7 @@ func (i *Informer) Run(stopCh chan struct{}) {
 	go i.Ingresses.Run(stopCh)
 	go i.Services.Run(stopCh)
 	go i.Endpoints.Run(stopCh)
+	go i.ConfigMaps.Run(stopCh)
 	go i.Secrets.Run(stopCh)
 	go i.Deployments.Run(stopCh)
 	go i.StatefulSets.Run(stopCh)
@@ -82,6 +84,7 @@ func (i *Informer) Run(stopCh chan struct{}) {
 		i.Ingresses.HasSynced,
 		i.Services.HasSynced,
 		i.Endpoints.HasSynced,
+		i.ConfigMaps.HasSynced,
 		i.Secrets.HasSynced,
 		i.Deployments.HasSynced,
 		i.StatefulSets.HasSynced,
@@ -103,6 +106,7 @@ type Lister struct {
 	Ingresses    networkv1.IngressLister
 	Services     v1.ServiceLister
 	Endpoints    v1.EndpointsLister
+	ConfigMaps   v1.ConfigMapLister
 	Secrets      v1.SecretLister
 	Deployments  appsv1.DeploymentLister
 	StatefulSets appsv1.StatefulSetLister
@@ -159,6 +163,9 @@ func NewStorer(config rest.Config) *Storer {
 
 		s.informers.Endpoints = factory.Core().V1().Endpoints().Informer()
 		s.listers.Endpoints = factory.Core().V1().Endpoints().Lister()
+
+		s.informers.ConfigMaps = factory.Core().V1().ConfigMaps().Informer()
+		s.listers.ConfigMaps = factory.Core().V1().ConfigMaps().Lister()
 
 		s.informers.Secrets = factory.Core().V1().Secrets().Informer()
 		s.listers.Secrets = factory.Core().V1().Secrets().Lister()
@@ -256,6 +263,14 @@ func (s *Storer) GetEndpoint(namespace, name string) (*metav1.Endpoints, error) 
 
 func (s *Storer) ListEndpoints(namespace string, selector labels.Selector) ([]*metav1.Endpoints, error) {
 	return s.listers.Endpoints.Endpoints(namespace).List(selector)
+}
+
+func (s *Storer) GetConfigMap(namespace, name string) (*metav1.ConfigMap, error) {
+	return s.listers.ConfigMaps.ConfigMaps(namespace).Get(name)
+}
+
+func (s *Storer) ListConfigMaps(namespace string, selector labels.Selector) ([]*metav1.ConfigMap, error) {
+	return s.listers.ConfigMaps.ConfigMaps(namespace).List(selector)
 }
 
 func (s *Storer) GetSecret(namespace, name string) (*metav1.Secret, error) {

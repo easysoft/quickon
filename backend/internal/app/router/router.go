@@ -93,6 +93,11 @@ func Config(r *gin.Engine) {
 
 		api.POST("/system/update", SystemUpdate)
 		api.GET("/system/app-full-list", FindAllApps)
+
+		api.GET("/snippet", ListSnippets)
+		api.POST("/snippet/add", CreateSnippet)
+		api.POST("/snippet/update", UpdateSnippet)
+		api.POST("/snippet/remove", RemoveSnippet)
 	}
 
 	r.NoMethod(func(c *gin.Context) {

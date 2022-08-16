@@ -174,7 +174,7 @@ class backup extends control
     }
 
     /**
-     * Restore.
+     * Restore platform database and file.
      *
      * @param  string $fileName
      * @param  string $confirm  yes|no

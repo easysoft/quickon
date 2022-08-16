@@ -60,8 +60,8 @@ $lang->backup->waitting        = '<span id="backupType"></span>正在进行中�
 $lang->backup->progressSQL     = '备份中，已备份%s';
 $lang->backup->progressAttach  = '备份中，共有%s个文件，已经备份%s个';
 $lang->backup->progressCode    = '代码备份中，共有%s个文件，已经备份%s个';
-$lang->backup->confirmDelete   = '是否删除备份？';
-$lang->backup->confirmRestore  = '是否还原该备份？';
+$lang->backup->confirmDelete   = '是否删除该备份？';
+$lang->backup->confirmRestore  = '请确认是否回滚？';
 $lang->backup->holdDays        = '备份保留最近 %s 天';
 $lang->backup->copiedFail      = '复制失败的文件：';
 $lang->backup->restoreTip      = '还原功能只还原数据库。';
@@ -72,7 +72,6 @@ $lang->backup->backupTitle     = '正在备份 渠成平台...';
 $lang->backup->restoreTitle    = '正在回滚 渠成平台...';
 $lang->backup->backingUp       = '进行中';
 $lang->backup->restoring       = '进行中';
-$lang->backup->confirmRollback = '请确认是否回滚渠成平台？';
 
 $lang->backup->success = new stdclass();
 $lang->backup->success->backup  = '备份成功！';

@@ -1,9 +1,8 @@
 package router
 
 import (
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"net/http"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
@@ -31,9 +30,10 @@ func SystemUpdate(c *gin.Context) {
 		return
 	}
 
+	blankSnippet := make(map[string]interface{})
 	if err = qcApp.PatchSettings(qcApp.ChartName, model.AppCreateOrUpdateModel{
 		Version: body.Version, Channel: body.Channel,
-	}); err != nil {
+	}, blankSnippet); err != nil {
 		logger.WithError(err).WithField("channel", body.Channel).Errorf("update qucheng chart to version %s failed", body.Version)
 		renderError(c, http.StatusInternalServerError, err)
 		return
@@ -50,7 +50,7 @@ func SystemUpdate(c *gin.Context) {
 
 	if err = opApp.PatchSettings(opApp.ChartName, model.AppCreateOrUpdateModel{
 		Version: "latest", Channel: body.Channel,
-	}); err != nil {
+	}, blankSnippet); err != nil {
 		logger.WithError(err).WithField("channel", body.Channel).Info("update operator chart failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
