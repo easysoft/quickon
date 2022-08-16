@@ -81,11 +81,39 @@ class cneModel extends model
         $apiParams['analysis'] = $analysis ? 'true' : 'false' ;
 
         if($id)        $apiParams['id']        = $id;
-        if($chart)     $apiParams['name']      = $name;
+        if($name)      $apiParams['name']      = $name;
         if($version)   $apiParams['version']   = $version;
         if($channel)   $apiParams['channel']   = $channel;
 
         $apiUrl = '/api/market/appinfo';
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return $result->data;
+    }
+
+    /**
+     * Get app version list to install.
+     *
+     * @param  int    $id
+     * @param  string $name
+     * @param  string $channel
+     * @param  int    $page
+     * @param  int    $pageSize
+     * @access public
+     * @return mixed
+     */
+    public function appVersionList($id, $name = '', $channel = '', $page = 1, $pageSize = 10)
+    {
+        $apiParams = array();
+        $apiParams['page']      = $page;
+        $apiParams['page_size'] = $pageSize;
+
+        if($id)        $apiParams['id']        = $id;
+        if($chart)     $apiParams['name']      = $name;
+        if($channel)   $apiParams['channel']   = $channel;
+
+        $apiUrl = '/api/market/app/version';
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
