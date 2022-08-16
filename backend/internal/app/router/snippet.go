@@ -1,10 +1,13 @@
 package router
 
 import (
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/snippet"
 	"net/http"
+	"strings"
 )
 
 func ListSnippets(c *gin.Context) {
@@ -40,6 +43,13 @@ func CreateSnippet(c *gin.Context) {
 		return
 	}
 	logger.Debugf("receive snippet create request: %+v", body)
+
+	if !strings.HasPrefix(body.Name, snippet.NamePrefix) {
+		e := fmt.Errorf("snippet name should start with 'snippet-'")
+		logger.WithError(err).Error("invalid post data")
+		renderError(c, http.StatusBadRequest, e)
+		return
+	}
 
 	err = service.Snippets(ctx, "").Create(body.Name, body.Namespace, body.Content)
 	if err != nil {

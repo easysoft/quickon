@@ -1,7 +1,7 @@
 package snippet
 
 const (
-	SnippetNamePrefix                 = "snippet-"
+	NamePrefix                        = "snippet-"
 	LabelSnippetConfig                = "easysoft.io/snippet-config"
 	snippetContentKey                 = "content"
 	annotationSnippetConfigCategory   = "easysoft.io/snippet-config/category"

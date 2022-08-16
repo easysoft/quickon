@@ -67,7 +67,7 @@ func (i *Instance) Start(chart, channel string) error {
 	}
 }
 
-func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel) error {
+func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel, snippetSettings map[string]interface{}) error {
 	var (
 		err     error
 		vals    map[string]interface{}
@@ -96,14 +96,25 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 		ValueFiles: []string{lastValFile},
 	}
 
+	if len(snippetSettings) > 0 {
+		snippetValueFile, err := writeValuesFile(snippetSettings)
+		if err != nil {
+			i.logger.WithError(err).Error("write values file failed")
+		} else {
+			defer os.Remove(snippetValueFile)
+			options.ValueFiles = append(options.ValueFiles, snippetValueFile)
+		}
+	}
+
 	if len(body.SettingsMap) > 0 {
 		i.logger.Infof("load patch settings map: %+v", body.SettingsMap)
 		f, err := writeValuesFile(body.SettingsMap)
 		if err != nil {
 			i.logger.WithError(err).Error("write values file failed")
+		} else {
+			defer os.Remove(f)
+			options.ValueFiles = append(options.ValueFiles, f)
 		}
-		defer os.Remove(f)
-		options.ValueFiles = append(options.ValueFiles, f)
 	}
 
 	if err = h.PatchValues(vals, settings); err != nil {

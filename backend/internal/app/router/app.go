@@ -198,7 +198,7 @@ func AppPatchSettings(c *gin.Context) {
 		body model.AppCreateOrUpdateModel
 	)
 
-	_, i, code, err := LookupApp(c, &body)
+	ctx, i, code, err := LookupApp(c, &body)
 	if err != nil {
 		renderError(c, code, err)
 		return
@@ -206,7 +206,9 @@ func AppPatchSettings(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	err = i.PatchSettings(body.Chart, body)
+	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+
+	err = i.PatchSettings(body.Chart, body, snippetSettings)
 	if err != nil {
 		logger.WithError(err).Error(errPatchAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errPatchAppFailed))

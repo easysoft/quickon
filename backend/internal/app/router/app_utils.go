@@ -14,8 +14,8 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 	var data map[string]interface{}
 	for _, name := range snippetNames {
 		logger.Debugf("try to parse snippet '%s'", name)
-		if !strings.HasPrefix(name, snippet.SnippetNamePrefix) {
-			name = snippet.SnippetNamePrefix + name
+		if !strings.HasPrefix(name, snippet.NamePrefix) {
+			name = snippet.NamePrefix + name
 			logger.Debugf("use internal snippet name '%s'", name)
 		}
 
