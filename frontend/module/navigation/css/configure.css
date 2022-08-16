@@ -1,0 +1,41 @@
+article, aside, details, figcaption, figure, footer, header, hgroup, main, menu, nav, section, summary {display: block;}
+#app main {flex-direction: column;}
+#app {display: flex; min-height: 100vh; flex-direction: column; background-image: url("/background.jpg"); background-repeat: no-repeat; background-size: cover; background-position: bottom center;}
+#app main, #app #sortable {padding: 30px 10px; display: flex; justify-content: center; align-items: center; flex: 1; position: relative; flex-wrap: wrap; align-content: center; list-style: none; margin: 0;}
+#app .content {flex-grow: 1; display: flex; flex-direction: column;}
+.module-container {box-shadow: 0 0 10px 0px rgba(0, 0, 0, 0.4); border: 1px solid #cdced8; background: #f9fafd; max-width: 1000px; width: 100%; margin: 10px 40px; border-radius: 5px; overflow: hidden;}
+.module-container header, .module-container footer {display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #fff; background: #f2f3f6; font-size: 16px; border-bottom: 1px solid #dbdce3; height: 60px; position: relative;}
+.module-container header .section-title, .module-container footer .section-title {font-size: 18px; color: #5b5b5b; margin-left: 25px;}
+.module-container footer {border-top: 1px solid #dbdce3;}
+.module-actions {display: flex; justify-content: space-between; align-items: center;}
+.module-actions .button {font-size: 18px; color: #515564; padding: 0 10px; border: none; border-left: 1px solid #cdced8; display: flex; line-height: 1; position: relative; background: transparent; flex-direction: column; justify-content: center; align-items: center; min-width: 65px; height: 60px; text-decoration: none; box-sizing: border-box;}
+.module-actions .button:after {position: absolute; content: ""; top: 0; left: 0; bottom: 0; border-right: 1px solid #fff;}
+.module-actions .button span {display: inline-block; line-height: 1; font-size: 9px; font-weight: 400; text-transform: uppercase; color: #ababab; position: relative; top: 4px; margin: 0;}
+.module-container footer {border-top: 1px solid #dbdce3;}
+.module-container .table {width: 100%; margin: 0; background: #fff;}
+.module-container .table tbody tr:hover {background: #fefbf2;}
+.module-container .table tbody tr:hover td:first-child {position: relative;}
+.module-container .table tbody tr:hover td:first-child:before {content: ""; position: absolute; top: 0; left: 0; bottom: 0; width: 5px; background: #0eb584;}
+.module-container .table tbody td {padding: 20px 25px; font-size: 13px; color: #2f313a; max-width: 500px; word-break: break-word;}
+.module-container .table tbody td.form-error {background: #e69191; color: white; text-align: center;}
+.module-container .table tbody a {color: #2f313a;}
+div.create {padding: 30px 15px; display: flex; flex-wrap: wrap;}
+div.create .input {width: 280px; margin: 20px;}
+div.create .input label:not(.switch) {width: 100%; font-size: 13px; color: #9094a5; margin-bottom: 15px; display: block; font-weight: 300;}
+div.create .input input, div.create .input select {width: 100%; border: 1px solid #dedfe2; padding: 10px; border-radius: 6px;}
+#config-buttons {position: fixed; bottom: 0; right: 0; display: flex; flex-direction: column;}
+#config-buttons a img {width: 26px; height: 26px; margin-top: 12px;}
+#config-buttons a {text-align: center; line-height: 30px; color: white; margin-top: 1px;}
+
+/* The slider */
+.switch input {display: none;}
+.config-slider {position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #4a556b; transition: 0.4s;}
+.config-slider:before {position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: 0.4s;}
+input:checked + .config-slider {background-color: #2196F3;}
+input:focus + .config-slider {box-shadow: 0 0 1px #2196F3;}
+input:checked + .config-slider:before {transform: translateX(16px);}
+.switch {position: relative; display: inline-block; width: 36px; height: 20px;}
+
+/* Rounded sliders */
+.config-slider.round {border-radius: 20px;}
+.config-slider.round:before {border-radius: 50%;}

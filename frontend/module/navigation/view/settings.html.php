@@ -31,7 +31,7 @@
             <tr>
               <td><?php echo zget($this->lang->navigation->settings, $setting->key);?></td>
               <td><?php echo zget($this->lang->navigation->settings, $setting->value);?></td>
-              <td class="text-center"> <?php //echo html::a($this->createLink('navigation', 'set'), "<i class='icon icon-edit'></i>");?></td>
+              <td class="text-center"> <?php echo html::a($this->createLink('navigation', 'configure', 'field=hideInaccessible'), "<i class='icon icon-edit'></i>");?></td>
             </tr>
           <?php endforeach;?>
           </tbody>
