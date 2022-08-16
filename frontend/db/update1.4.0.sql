@@ -10,3 +10,5 @@ CREATE TABLE IF NOT EXISTS `q_navinstance` (
   `createdAt` datetime NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'navigation', 'global', 'hideInaccessible', 'off');

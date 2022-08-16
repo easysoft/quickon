@@ -82,4 +82,15 @@ class navigationModel extends model
         $this->dao->update(TABLE_NAVINSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($appID)->exec();
     }
 
+    /**
+     * Get all navigation's setting.
+     * 
+     * @access public
+     * @return array
+     */
+    public function getSettings()
+    {
+        $settings = $this->dao->select('*')->from(TABLE_CONFIG)->where('module')->eq('navigation')->fetchAll();
+        return $settings;
+    }
 }
