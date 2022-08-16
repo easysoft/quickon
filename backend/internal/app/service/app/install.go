@@ -14,7 +14,7 @@ import (
 	"os"
 )
 
-func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error {
+func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel, snippetSettings map[string]interface{}) error {
 	logger := m.logger.WithFields(logrus.Fields{
 		"name": name, "namespace": body.Namespace,
 	})
@@ -23,22 +23,35 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel) error 
 		return err
 	}
 
-	var settings = make([]string, len(body.Settings))
-	for _, s := range body.Settings {
-		settings = append(settings, s.Key+"="+s.Val)
+	options := &values.Options{ValueFiles: make([]string, 0)}
+
+	if len(snippetSettings) > 0 {
+		snippetValueFile, err := writeValuesFile(snippetSettings)
+		if err != nil {
+			logger.WithError(err).Error("write values file failed")
+		} else {
+			defer os.Remove(snippetValueFile)
+			options.ValueFiles = append(options.ValueFiles, snippetValueFile)
+		}
 	}
-	options := &values.Options{Values: settings}
-	logger.Infof("user custom settings is %+v", settings)
 
 	if len(body.SettingsMap) > 0 {
 		logger.Infof("user custom settingsMap is %+v", body.SettingsMap)
 		f, err := writeValuesFile(body.SettingsMap)
 		if err != nil {
 			logger.WithError(err).Error("write values file failed")
+		} else {
+			defer os.Remove(f)
+			options.ValueFiles = append(options.ValueFiles, f)
 		}
-		defer os.Remove(f)
-		options.ValueFiles = []string{f}
 	}
+
+	var settings = make([]string, len(body.Settings))
+	for _, s := range body.Settings {
+		settings = append(settings, s.Key+"="+s.Val)
+	}
+	options.Values = settings
+	logger.Infof("user custom settings is %+v", settings)
 
 	if err = helm.RepoUpdate(); err != nil {
 		logger.WithError(err).Error("helm update repo failed")
