@@ -1,11 +1,13 @@
 package instance
 
 import (
-	"github.com/imdario/mergo"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
 	"reflect"
 	"strings"
+
+	"github.com/imdario/mergo"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
 )
 
 type settingLayout int

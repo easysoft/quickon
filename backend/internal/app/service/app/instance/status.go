@@ -1,10 +1,11 @@
 package instance
 
 import (
+	v1 "k8s.io/api/core/v1"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/component"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-	v1 "k8s.io/api/core/v1"
 )
 
 func (i *Instance) getServices() ([]*v1.Service, error) {

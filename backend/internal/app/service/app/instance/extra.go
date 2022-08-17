@@ -2,9 +2,11 @@ package instance
 
 import (
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
+
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 )
 
 func (i *Instance) GetPvcList() []model.AppRespPvc {

@@ -3,12 +3,14 @@ package manage
 import (
 	"context"
 	"fmt"
+
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 	"github.com/pkg/errors"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/store"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/util/intstr"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/store"
 )
 
 func ParseDB(ctx context.Context, c *store.Storer, db *quchengv1beta1.Db) (DbManager, *DbMeta, error) {

@@ -1,10 +1,11 @@
 package instance
 
 import (
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/api/resource"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
 )
 
 func (i *Instance) GetMetrics() *model.AppMetric {
