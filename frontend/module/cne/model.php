@@ -117,7 +117,7 @@ class cneModel extends model
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
-        return $result->data;
+        return array_combine(array_column($result->data, 'version'), $result->data);
     }
 
     /**
