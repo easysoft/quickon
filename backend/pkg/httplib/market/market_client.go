@@ -4,6 +4,7 @@ import (
 	"github.com/kelseyhightower/envconfig"
 	"github.com/parnurzeal/gorequest"
 	"github.com/sirupsen/logrus"
+
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/httplib"
 )
 

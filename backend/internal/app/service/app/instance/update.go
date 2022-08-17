@@ -1,9 +1,10 @@
 package instance
 
 import (
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"os"
 	"time"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 
 	"helm.sh/helm/v3/pkg/release"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"

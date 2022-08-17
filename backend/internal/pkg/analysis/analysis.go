@@ -2,10 +2,12 @@ package analysis
 
 import (
 	"context"
+	"time"
+
 	"github.com/sirupsen/logrus"
+
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/httplib/market"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
-	"time"
 )
 
 type Analysis struct {

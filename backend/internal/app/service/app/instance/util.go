@@ -4,16 +4,18 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"strconv"
+
 	"github.com/sirupsen/logrus"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/release"
-	"io/ioutil"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
-	"strconv"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 )
 
 func loadAppSecret(ctx context.Context, name, namespace string, revision int, ks *cluster.Cluster) (*v1.Secret, error) {

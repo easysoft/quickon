@@ -7,10 +7,14 @@ package serve
 import (
 	"context"
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/spf13/viper"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 
 	"github.com/sirupsen/logrus"
 
@@ -31,6 +35,8 @@ const (
 func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 	var err error
 	stopCh := make(chan struct{})
+
+	logger.Infof("Setup runtime namespace to %s", viper.GetString(constant.FlagRuntimeNamespace))
 
 	logger.Info("Initialize clusters")
 	for cluster.Init(stopCh) != nil {

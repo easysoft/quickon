@@ -2,12 +2,14 @@ package router
 
 import (
 	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/gin-gonic/gin"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/snippet"
-	"net/http"
-	"strings"
 )
 
 func ListSnippets(c *gin.Context) {

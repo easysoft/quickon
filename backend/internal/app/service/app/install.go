@@ -1,17 +1,19 @@
 package app
 
 import (
+	"io/ioutil"
+	"os"
+
 	"github.com/sirupsen/logrus"
+	"gopkg.in/yaml.v3"
+	"helm.sh/helm/v3/pkg/cli/values"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/utils/kvpath"
-	"gopkg.in/yaml.v3"
-	"helm.sh/helm/v3/pkg/cli/values"
-	"io/ioutil"
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"os"
 )
 
 func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel, snippetSettings map[string]interface{}) error {

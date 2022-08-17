@@ -1,9 +1,10 @@
 package kvpath
 
 import (
-	"github.com/pkg/errors"
 	"reflect"
 	"strings"
+
+	"github.com/pkg/errors"
 )
 
 var ErrPathParseFailed = errors.New("release path parse failed")

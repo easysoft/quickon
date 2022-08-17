@@ -1,8 +1,9 @@
 package instance
 
 import (
-	"github.com/imdario/mergo"
 	"reflect"
+
+	"github.com/imdario/mergo"
 )
 
 func (i *Instance) GetAccountInfo() map[string]string {

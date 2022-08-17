@@ -2,13 +2,15 @@ package snippet
 
 import (
 	"context"
+
 	"github.com/sirupsen/logrus"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
 type Manager struct {

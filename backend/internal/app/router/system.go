@@ -1,8 +1,10 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
@@ -23,7 +25,9 @@ func SystemUpdate(c *gin.Context) {
 		return
 	}
 
-	qcApp, err := service.Apps(ctx, "", constant.DefaultRuntimeNamespace).GetApp("qucheng")
+	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
+
+	qcApp, err := service.Apps(ctx, "", runtimeNs).GetApp("qucheng")
 	if err != nil {
 		logger.WithError(err).Error("get qucheng app failed")
 		renderError(c, http.StatusInternalServerError, err)
@@ -41,7 +45,7 @@ func SystemUpdate(c *gin.Context) {
 
 	logger.WithField("channel", body.Channel).Infof("update qucheng chart to version %s success", body.Version)
 
-	opApp, err := service.Apps(ctx, "", constant.DefaultRuntimeNamespace).GetApp("cne-operator")
+	opApp, err := service.Apps(ctx, "", runtimeNs).GetApp("cne-operator")
 	if err != nil {
 		logger.WithError(err).Error("get cne-operator app failed")
 		renderError(c, http.StatusInternalServerError, err)
