@@ -4,19 +4,24 @@
 
 package model
 
-type AppModel struct {
+type ResourceModel struct {
 	QueryNamespace
 	Name string `form:"name" json:"name" binding:"required"`
 }
 
+type AppModel struct {
+	ResourceModel
+}
+
 type AppCreateOrUpdateModel struct {
 	AppModel
-	Channel     string                 `json:"channel"`
-	Chart       string                 `json:"chart" binding:"required"`
-	Version     string                 `json:"version" binding:"version_format"`
-	Username    string                 `json:"username,omitempty"`
-	Settings    []stringSetting        `json:"settings"`
-	SettingsMap map[string]interface{} `json:"settings_map"`
+	Channel          string                 `json:"channel"`
+	Chart            string                 `json:"chart" binding:"required"`
+	Version          string                 `json:"version" binding:"version_format"`
+	Username         string                 `json:"username,omitempty"`
+	Settings         []stringSetting        `json:"settings"`
+	SettingsMap      map[string]interface{} `json:"settings_map"`
+	SettingsSnippets []string               `json:"settings_snippets"`
 }
 
 type stringSetting struct {

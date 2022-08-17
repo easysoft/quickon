@@ -1,13 +1,11 @@
-// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
-// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
-// license that can be found in the LICENSE file.
-
-package app
+package instance
 
 import (
 	"fmt"
 	"strings"
 	"time"
+
+	"github.com/spf13/viper"
 
 	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
 	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
@@ -46,13 +44,17 @@ func (i *Instance) CreateBackup(username string) (interface{}, error) {
 		CreateTime int64  `json:"create_time"`
 	}{backupName, currTime.Unix()}
 
-	_, err := i.ks.Clients.Cne.QuchengV1beta1().Backups(constant.DefaultRuntimeNamespace).Create(i.ctx, &backupReq, metav1.CreateOptions{})
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+
+	_, err := i.Ks.Clients.Cne.QuchengV1beta1().Backups(ns).Create(i.Ctx, &backupReq, metav1.CreateOptions{})
 	return data, err
 }
 
 func (i *Instance) GetBackupList() ([]model.AppRespBackup, error) {
 	var result []model.AppRespBackup
-	backups, err := i.ks.Store.ListBackups(constant.DefaultRuntimeNamespace, i.selector)
+
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+	backups, err := i.Ks.Store.ListBackups(ns, i.selector)
 	if err != nil {
 		return nil, err
 	}
@@ -70,12 +72,12 @@ func (i *Instance) GetBackupList() ([]model.AppRespBackup, error) {
 		bkReq, _ := labels.NewRequirement(constant.LabelBackupName, "==", []string{b.Name})
 		bkLabel := i.selector.Add(*bkReq)
 
-		dbBackups, _ := i.ks.Store.ListDbBackups(constant.DefaultRuntimeNamespace, labels.NewSelector().Add(*bkReq))
-		volumeBackups, _ := i.ks.Store.ListVolumeBackups(constant.DefaultRuntimeNamespace, labels.NewSelector().Add(*bkReq))
+		dbBackups, _ := i.Ks.Store.ListDbBackups(ns, labels.NewSelector().Add(*bkReq))
+		volumeBackups, _ := i.Ks.Store.ListVolumeBackups(ns, labels.NewSelector().Add(*bkReq))
 
 		item.BackupDetails = i.statisticBackupDetail(dbBackups, volumeBackups)
 
-		restores, err := i.ks.Store.ListRestores(constant.DefaultRuntimeNamespace, bkLabel)
+		restores, err := i.Ks.Store.ListRestores(ns, bkLabel)
 		if err != nil {
 			return result, err
 		}
@@ -114,14 +116,14 @@ func (i *Instance) statisticBackupDetail(dbs []*quchengv1beta1.DbBackup, volumes
 			info.Size, _ = db.Status.Size.AsInt64()
 		}
 
-		_db, err := i.ks.Store.GetDb(db.Spec.Db.Namespace, db.Spec.Db.Name)
+		_db, err := i.Ks.Store.GetDb(db.Spec.Db.Namespace, db.Spec.Db.Name)
 		if err == nil {
 			info.DbName = _db.Spec.DbName
 			targetNs := _db.Namespace
 			if _db.Spec.TargetService.Namespace != "" {
 				targetNs = _db.Spec.TargetService.Namespace
 			}
-			dbsvc, err := i.ks.Store.GetDbService(targetNs, _db.Spec.TargetService.Name)
+			dbsvc, err := i.Ks.Store.GetDbService(targetNs, _db.Spec.TargetService.Name)
 			if err == nil {
 				info.DbType = string(dbsvc.Spec.Type)
 			}
@@ -131,7 +133,7 @@ func (i *Instance) statisticBackupDetail(dbs []*quchengv1beta1.DbBackup, volumes
 
 	for _, vol := range volumes {
 		info := model.AppPvcBackupInfo{
-			PvcName: vol.Labels[constant.LableVeleroPvcUID],
+			PvcName: vol.Labels[constant.LabelVeleroPvcUID],
 			Volume:  vol.Spec.Volume,
 			Status:  strings.ToLower(string(vol.Status.Phase)),
 		}
@@ -149,7 +151,8 @@ func (i *Instance) statisticBackupDetail(dbs []*quchengv1beta1.DbBackup, volumes
 }
 
 func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
-	backup, err := i.ks.Store.GetBackup(constant.DefaultRuntimeNamespace, backupName)
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+	backup, err := i.Ks.Store.GetBackup(ns, backupName)
 	if err != nil {
 		return nil, err
 	}
@@ -188,12 +191,14 @@ func (i *Instance) CreateRestore(backupName string, username string) (interface{
 		CreateTime  int64  `json:"create_time"`
 	}{backupName, currTime.Unix()}
 
-	_, err := i.ks.Clients.Cne.QuchengV1beta1().Restores(constant.DefaultRuntimeNamespace).Create(i.ctx, &restoreReq, metav1.CreateOptions{})
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+	_, err := i.Ks.Clients.Cne.QuchengV1beta1().Restores(ns).Create(i.Ctx, &restoreReq, metav1.CreateOptions{})
 	return data, err
 }
 
 func (i *Instance) GetRestoreStatus(restoreName string) (interface{}, error) {
-	restore, err := i.ks.Store.GetRestore(constant.DefaultRuntimeNamespace, restoreName)
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+	restore, err := i.Ks.Store.GetRestore(ns, restoreName)
 	if err != nil {
 		return nil, err
 	}
@@ -204,4 +209,12 @@ func (i *Instance) GetRestoreStatus(restoreName string) (interface{}, error) {
 	}
 
 	return data, nil
+}
+
+func (i *Instance) GetDbList() []*quchengv1beta1.Db {
+	l, err := i.Ks.Store.ListDb(i.namespace, i.selector)
+	if err != nil {
+		i.logger.WithError(err).Error("find dbs failed")
+	}
+	return l
 }

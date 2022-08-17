@@ -56,7 +56,6 @@ const (
 )
 
 const (
-	LableVeleroPvcUID = "velero.io/pvc-uid"
+	LabelVeleroPvcUID = "velero.io/pvc-uid"
 )
-
-const DefaultRuntimeNamespace = "cne-system"
+const FlagRuntimeNamespace = "pod-namespace"

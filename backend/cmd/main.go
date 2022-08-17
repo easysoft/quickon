@@ -26,6 +26,7 @@ func main() {
 
 	cmd.AddCommand(serve.NewCmdServe())
 	cmd.AddCommand(version.NewCmdVersion())
+
 	if err := cmd.Execute(); err != nil {
 		panic(err)
 	}

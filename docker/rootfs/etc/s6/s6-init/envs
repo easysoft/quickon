@@ -19,6 +19,7 @@ export MYSQL_DB=${MYSQL_DB:-qucheng}
 export MYSQL_USER=${MYSQL_USER:-root}
 export MYSQL_PASSWORD=${MYSQL_PASSWORD:-pass4Qucheng}
 export MAXWAIT=${MAXWAIT:-30}
+export ALLOW_SELECT_VERSION=${ALLOW_SELECT_VERSION:-false}
 
 #==========#
 # Apache   #

@@ -1,15 +1,13 @@
 .errorFiles {text-align: left; padding: 5px;}
 .main-col table {margin-bottom: 30px;}
 div.main-header {border-bottom: 0;}
+.main-header h2 {font-size: 16px;}
 .btn-wide {width: 100px; margin: 0 10px;}
-#upgradeModal .modal-content {padding-bottom: 20px;}
-#upgradeModal .confirm-text{font-weight: 700;}
-#confirmRollback .modal-content {padding-bottom: 20px;}
-#confirmRollback .confirm-text{font-weight: 700;}
-div#mainContent {width: 60%; min-width: 600px; max-width: 1000px; margin: auto;}
+.modal .modal-content {padding-bottom: 20px;}
+.confirm-text{font-weight: 700;}
+div#mainContent {width: 900px; margin: auto;}
 table.table a {vertical-align: baseline;}
-.info-header {height: 50px;}
+#mainContent .table tr{height: 40px;}
 .history-header {height: 50px;}
-.info-row {height: 50px;}
 .history-row {height: 50px;}
 table.table-backup > tbody > tr > th {font-weight: normal;}

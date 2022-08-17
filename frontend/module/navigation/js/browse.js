@@ -71,7 +71,14 @@ $('.instance-item').click(function()
         $(this).addClass('active');
     }
     instanceID = $(this).attr('data-id');
-    link = createLink('navigation', 'ajaxGetPinnedInstance', 'instanceID=' + instanceID);
+    if($(this).hasClass('app-item'))
+    {
+        link = createLink('navigation', 'ajaxGetPinnedInstance', 'instanceID=' + instanceID + '&objectType=app');
+    }
+    else
+    {
+        link = createLink('navigation', 'ajaxGetPinnedInstance', 'instanceID=' + instanceID);
+    }
     $.get(link, function(result)
     {
         $('#sortable').replaceWith(result);

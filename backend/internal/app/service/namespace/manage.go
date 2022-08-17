@@ -59,5 +59,5 @@ func (m *Manager) Has(name string) bool {
 
 func (m *Manager) Get(name string) *Instance {
 	ns, _ := m.ks.Clients.Base.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
-	return newInstance(ns)
+	return newInstance(m.ctx, ns, m.ks)
 }

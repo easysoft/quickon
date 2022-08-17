@@ -27,8 +27,9 @@
 </div>
 <div id='mainContent' class='main-row'>
   <ul class="nav nav-tabs">
-  <li class="<?php echo $tab == 'baseinfo' ? 'active' : '';?>"><a href="<?php echo $this->createLink('instance', 'view', "id=$instance->id&page=&perPage=&pageSize=&tab=baseinfo");?>"><?php echo $lang->instance->baseInfo;?></a></li>
+    <li class="<?php echo $tab == 'baseinfo' ? 'active' : '';?>"><a href="<?php echo $this->createLink('instance', 'view', "id=$instance->id&page=&perPage=&pageSize=&tab=baseinfo");?>"><?php echo $lang->instance->baseInfo;?></a></li>
     <li class="<?php echo $tab == 'backup' ? 'active' : '';?>"><a href="<?php echo $this->createLink('instance', 'view', "id={$instance->id}&total=&perPage=&pageID=&tab=backup");?>"><?php echo $lang->instance->backupAndRestore;?></a></li>
+    <li class="<?php echo $tab == 'advance' ? 'active' : '';?>"><a href="<?php echo $this->createLink('instance', 'view', "id={$instance->id}&total=&perPage=&pageID=&tab=advance");?>"><?php echo $lang->instance->advance;?></a></li>
   </ul>
   <div class="tab-content">
   <div class="tab-pane <?php echo $tab == 'baseinfo' ? 'active' : '';?>" id="baseInfo">
@@ -36,6 +37,9 @@
     </div>
     <div class="tab-pane <?php echo $tab == 'backup' ? 'active' : '';?>" id="backup">
       <?php include 'backup.html.php';?>
+    </div>
+    <div class="tab-pane <?php echo $tab == 'advance' ? 'active' : '';?>" id="advance">
+      <?php include 'advance.html.php';?>
     </div>
   </div>
 </div>

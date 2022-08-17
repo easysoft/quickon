@@ -1,7 +1,7 @@
 <div>
   <div class="panel">
     <div class="panel-heading">
-      <div class="panel-title"><?php echo $lang->instance->serviceInfo?></div>
+      <div class="panel-title"><?php echo $lang->instance->serviceInfo;?></div>
     </div>
     <div class="panel-body">
       <div class="row">

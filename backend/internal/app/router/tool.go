@@ -10,21 +10,22 @@ import (
 	"errors"
 	"net/http"
 
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/instance"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/gin-gonic/gin"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
-func LookupApp(c *gin.Context, q interface{}) (context.Context, *app.Instance, int, error) {
+func LookupApp(c *gin.Context, q interface{}) (context.Context, *instance.Instance, int, error) {
 	var (
 		ctx = c.Request.Context()
 		err error
-		i   *app.Instance
+		i   *instance.Instance
 	)
 
 	if c.Request.Method == "POST" {
@@ -45,7 +46,7 @@ func LookupApp(c *gin.Context, q interface{}) (context.Context, *app.Instance, i
 		logger.WithError(err).WithFields(logrus.Fields{
 			"name": query.Name, "namespace": query.Namespace,
 		}).Error(errGetAppFailed)
-		if errors.Is(err, app.ErrAppNotFound) {
+		if errors.Is(err, instance.ErrAppNotFound) {
 			return ctx, i, http.StatusNotFound, err
 		}
 		return ctx, i, http.StatusInternalServerError, errors.New(errGetAppStatusFailed)

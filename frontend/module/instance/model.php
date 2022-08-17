@@ -64,7 +64,7 @@ class InstanceModel extends model
      * @access public
      * @return array
      */
-    public function getByAccount($account = '', $pager = null, $pinned = '', $searchParam = '')
+    public function getByAccount($account = '', $pager = null, $pinned = '', $searchParam = '', $status = 'all')
     {
         $instances = $this->dao->select('instance.*')->from(TABLE_INSTANCE)->alias('instance')
             ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
@@ -72,6 +72,7 @@ class InstanceModel extends model
             ->beginIF($account)->andWhere('space.owner')->eq($account)->fi()
             ->beginIF($pinned)->andWhere('instance.pinned')->eq((int)$pinned)->fi()
             ->beginIF($searchParam)->andWhere('instance.name')->like("%{$searchParam}%")->fi()
+            ->beginIF($status != 'all')->andWhere('instance.status')->eq($status)->fi()
             ->orderBy('instance.id desc')
             ->beginIF($pager)->page($pager)->fi()
             ->fetchAll('id');
@@ -340,8 +341,8 @@ class InstanceModel extends model
         $instanceData->source       = 'cloud';
         $instanceData->channel      = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
         $instanceData->chart        = $app->chart;
-        $instanceData->appVersion   = $app->app_version;
-        $instanceData->version      = $app->version;
+        $instanceData->appVersion   = $customData->app_version ? $customData->app_version : $app->app_version;
+        $instanceData->version      = $customData->version;
         $instanceData->space        = $space->id;
         $instanceData->k8name       = $k8name;
         $instanceData->status       = 'creating';
@@ -357,6 +358,7 @@ class InstanceModel extends model
         $apiParams->namespace    = $space->k8space;
         $apiParams->name         = $k8name;
         $apiParams->chart        = $app->chart;
+        $apiParams->version      = $instance->version;
         $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
 
@@ -441,7 +443,7 @@ class InstanceModel extends model
     }
 
     /**
-     * Upgrade app instnace to higher version.
+     * Upgrade app instance to higher version.
      *
      * @param  object $instance
      * @param  string $toVersion
@@ -596,25 +598,77 @@ class InstanceModel extends model
     }
 
     /**
-     * Delete instances don't exist in CNE.
+     * Restore instance by data from k8s cluster.
      *
      * @access public
      * @return void
      */
-    public function deleteNotExist()
+    public function restoreInstanceList()
     {
-        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->fetchAll('id');
+        $k8AppList = $this->cne->instancelist();
+        $k8NameList = array_keys($k8AppList);
 
-        $spaces = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->in(array_column($instances, 'space'))->fetchAll('id');
-
-        foreach($instances as $instance)
+        //软删除不存在的数据
+        $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('k8name')->notIn($k8NameList)->exec();
+        foreach($k8AppList as $k8App)
         {
-            $instance->spaceData = zget($spaces, $instance->space, new stdclass);
+            $existInstance = $this->dao->select('id')->from(TABLE_INSTANCE)->where('k8name')->eq($k8App->name)->fetch();
+            if($existInstance) continue;
 
-            $statusResponse = $this->cne->queryStatus($instance);
+            $marketApp = $this->cne->getAppInfo(0, false, $k8App->chart, $k8App->version,  $k8App->channel);
+            if(empty($marketApp)) continue;
 
-            if($statusResponse->code == 404) $this->softDeleteByID($instance->id);
+            $instanceData = new stdclass;
+            $instanceData->appId        = $marketApp->id;
+            $instanceData->appName      = $marketApp->alias;
+            $instanceData->name         = $marketApp->alias;
+            $instanceData->logo         = $marketApp->logo;
+            $instanceData->desc         = $marketApp->desc;
+            $instanceData->introduction = isset($marketApp->introduction) ? $marketApp->introduction : $marketApp->desc;
+            $instanceData->source       = 'cloud';
+            $instanceData->channel      = $k8App->channel;
+            $instanceData->chart        = $k8App->chart;
+            $instanceData->appVersion   = $marketApp->app_version;
+            $instanceData->version      = $k8App->version;
+            $instanceData->k8name       = $k8App->name;
+            $instanceData->status       = 'stopped';
+
+            $parsedK8Name = $this->parseK8Name($k8App->name);
+
+            $instanceData->createdBy = $k8App->username ? $k8App->username : $parsedK8Name->createdBy;
+            $instanceData->createdAt =  $parsedK8Name->createdAt;
+
+            $space = $this->dao->select('id,k8space')->from(TABLE_SPACE)->where('k8space')->eq($k8App->namespace)->fetch();
+            if(empty($space)) $space = $this->loadModel('space')->defaultSpace($instanceData->createdBy);
+
+            $instanceData->space = $space ? $space->id : $defaultSpace->id;
+
+            $this->dao->insert(TABLE_INSTANCE)->data($instanceData)->exec();
         }
+    }
+
+    /**
+     * Parse K8Name to get more data: chart, created time, user name.
+     *
+     * @param  string    $k8Name
+     * @access public
+     * @return mixed
+     */
+    public function parseK8Name($k8Name)
+    {
+        $datePosition = strripos($k8Name, '-');
+        $createdAt    = trim(substr($k8Name, $datePosition), '-');
+
+        $createdBy       = trim(substr($k8Name, 0, $datePosition), '-');
+        $accountPosition = strripos($createdBy, '-');
+        $createdBy       = trim(substr($createdBy, $accountPosition), '-');
+
+        $parsedData = new stdclass;
+        $parsedData->chart     = trim(substr($k8Name, 0, $accountPosition));
+        $parsedData->createdBy = trim($createdBy, '-');
+        $parsedData->createdAt = date('Y-m-d H:i:s', strtotime($createdAt));
+
+        return $parsedData;
     }
 
     /**
@@ -765,6 +819,22 @@ class InstanceModel extends model
         $btn      = html::commonButton($this->lang->instance->backup->restore, "instance-id='{$instance->id}' title='{$title}' {$disabled} backup-name='{$backup->name}'", "btn-restore btn btn-info");
 
         echo $btn;
+    }
+
+    /**
+     * Print button for managing database.
+     *
+     * @param  object $db
+     * @param  object $instance
+     * @access public
+     * @return void
+     */
+    public function printDBAction($db, $instance)
+    {
+        $disabled = $db->ready ? '' : 'disabled';
+        $btnHtml = html::commonButton($this->lang->instance->management, "{$disabled} data-db-name='{$db->name}' data-id='{$instance->id}'", 'db-login btn btn-primary');
+
+        echo $btnHtml;
     }
 
     /**

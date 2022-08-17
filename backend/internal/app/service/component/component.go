@@ -52,6 +52,7 @@ func (m *Manager) ListDbService(namespace string, onlyGlobal string) ([]model.Co
 			Release:       dbSvc.Labels["release"],
 			DbType:        string(dbSvc.Spec.Type),
 			Alias:         decodeDbSvcAlias(dbSvc),
+			Ready:         dbSvc.Status.Ready,
 		}
 		components = append(components, s)
 	}
@@ -68,6 +69,7 @@ func (m *Manager) ListDbService(namespace string, onlyGlobal string) ([]model.Co
 				Release:       dbSvc.Labels["release"],
 				DbType:        string(dbSvc.Spec.Type),
 				Alias:         decodeDbSvcAlias(dbSvc),
+				Ready:         dbSvc.Status.Ready,
 			}
 			components = append(components, s)
 		}
@@ -117,7 +119,7 @@ func (m *Manager) ListGlobalDbsComponents(kind, namespace string) ([]model.Compo
 	selector := labels.SelectorFromSet(map[string]string{
 		constant.LabelGlobalDatabase: "true",
 	})
-	dbsvcs, err := m.ks.Store.ListDbService(namespace, selector)
+	dbsvcs, err := m.ks.Store.ListDbService("", selector)
 	if err != nil {
 		return nil, err
 	}

@@ -97,7 +97,7 @@ class store extends control
      */
     public function appView($id)
     {
-        $appInfo = $this->cne->getAppInfo($id);
+        $appInfo = $this->cne->getAppInfo($id, true);
         if(empty($appInfo)) return print(js::locate('back', 'parent'));
 
         $this->lang->switcherMenu = $this->store->getAppViewSwitcher($appInfo);

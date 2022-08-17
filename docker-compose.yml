@@ -33,6 +33,10 @@ services:
       - CLOUD_DEFAULT_CHANNEL=test
       - DEBUG=1
       - ENABLE_BACKEND=true
+      - CNE_MARKET_API_SCHEMA=http
+      - CNE_MARKET_API_HOST=cne-market.internal-pre.chandao.net
+      - CNE_MARKET_API_PORT=80
+      - ALLOW_SELECT_VERSION=true
 
   qucheng-dev:
     image: hub.qucheng.com/platform/qucheng:${TAG}
@@ -62,6 +66,10 @@ services:
       - CLOUD_DEFAULT_CHANNEL=test
       - APP_DOMAIN=qc.yunop.com
       - CLOUD_SWITCH_CHANNEL=true
+      - CNE_MARKET_API_SCHEMA=https
+      - CNE_MARKET_API_HOST=api.qucheng.com
+      - CNE_MARKET_API_PORT=443
+      - ALLOW_SELECT_VERSION=true
 
 volumes:
   db:

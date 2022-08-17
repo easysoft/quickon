@@ -67,17 +67,57 @@ class cneModel extends model
     /**
      * Get app info from cloud market.
      *
-     * @param  int $id
+     * @param  int     $id
+     * @param  boolean $analysis true: log this request for analysis.
+     * @param  string  $name
+     * @param  string  $version
+     * @param  string  $channel
      * @access public
      * @return object|null
      */
-    public function getAppInfo($id)
+    public function getAppInfo($id, $analysis = false, $name = '', $version ='',  $channel = '')
     {
+        $apiParams = array();
+        $apiParams['analysis'] = $analysis ? 'true' : 'false' ;
+
+        if($id)        $apiParams['id']        = $id;
+        if($name)      $apiParams['name']      = $name;
+        if($version)   $apiParams['version']   = $version;
+        if($channel)   $apiParams['channel']   = $channel;
+
         $apiUrl = '/api/market/appinfo';
-        $result = $this->apiGet($apiUrl, array('id' => $id), $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
         return $result->data;
+    }
+
+    /**
+     * Get app version list to install.
+     *
+     * @param  int    $id
+     * @param  string $name
+     * @param  string $channel
+     * @param  int    $page
+     * @param  int    $pageSize
+     * @access public
+     * @return mixed
+     */
+    public function appVersionList($id, $name = '', $channel = '', $page = 1, $pageSize = 3)
+    {
+        $apiParams = array();
+        $apiParams['page']      = $page;
+        $apiParams['page_size'] = $pageSize;
+
+        if($id)      $apiParams['id']      = $id;
+        if($name)    $apiParams['name']    = $name;
+        if($channel) $apiParams['channel'] = $channel;
+
+        $apiUrl = '/api/market/app/version';
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers, $this->config->cloud->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return array_combine(array_column($result->data, 'version'), $result->data);
     }
 
     /**
@@ -212,6 +252,38 @@ class cneModel extends model
         $categories->categories = array();
         $categories->total      = 0;
         return $categories;
+    }
+
+    /**
+     * Get all instance of app in cluster.
+     *
+     * @access public
+     * @return array
+     */
+    public function instanceList()
+    {
+        $apiUrl = "/api/cne/system/app-full-list";
+        $result = $this->apiGet($apiUrl, array(), $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
+
+        $instanceList = $result->data;
+        return array_combine(array_column($instanceList, 'name'), $instanceList);
+    }
+
+    /**
+     * Upgrade platform.
+     *
+     * @param  string $toVersion
+     * @access public
+     * @return bool
+     */
+    public function upgradePlatform($toVersion)
+    {
+        $apiUrl = "/api/cne/system/update";
+        $result = $this->apiPost($apiUrl, array('version' => $toVersion, 'channel' => $this->config->CNE->api->channel), $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
     }
 
     /**
@@ -643,6 +715,54 @@ class cneModel extends model
         if($result && $result->code == 200) return $result;
 
         return $result;
+    }
+
+    /**
+     * Get all database list of app.
+     *
+     * @param  object  $instance
+     * @access public
+     * @return mixed
+     */
+    public function appDBList($instance)
+    {
+        $apiUrl    = "/api/cne/app/dbs";
+        $apiParams =  array();
+        $apiParams['cluster']   = 'default';
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['channel']   = $this->config->CNE->api->channel;
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return array();
+
+        $dbList = $result->data;
+        return array_combine(array_column($dbList, 'name'), $dbList);
+    }
+
+    /**
+     * Get detail of app database.
+     *
+     * @param  object $instance
+     * @param  string $dbName
+     * @access public
+     * @return null|object
+     */
+    public function appDBDetail($instance, $dbName)
+    {
+        $apiParams =  array();
+        $apiParams['cluster']   = 'default';
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['db']        = $dbName;
+        $apiParams['channel']   = $this->config->CNE->api->channel;
+
+        $apiUrl    = "/api/cne/app/dbs/detail";
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200 || empty($result->data)) return;
+
+        return $result->data;
     }
 
     /**

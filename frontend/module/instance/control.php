@@ -54,6 +54,9 @@ class instance extends control
         $backupList = array();
         if($tab == 'backup') $backupList = $this->instance->backupList($instance);
 
+        $dbList = new stdclass;
+        if($tab == 'advance') $dbList = $this->cne->appDBList($instance);
+
         $this->view->position[] = $instance->appName;
 
         $this->view->title          = $instance->appName;
@@ -62,6 +65,7 @@ class instance extends control
         $this->view->defaultAccount = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric = $instanceMetric;
         $this->view->backupList     = $backupList;
+        $this->view->dbList         = $dbList;
         $this->view->tab            = $tab;
         $this->view->pager          = $pager;
 
@@ -205,16 +209,20 @@ class instance extends control
             return $this->display('instance','resourceerror');
         }
 
-        $dbList = $this->cne->sharedDBList();
-        $customData = new stdclass;
+        $versionList = $this->cne->appVersionList($cloudApp->id);
+        $dbList      = $this->cne->sharedDBList();
+        $customData  = new stdclass;
         if(!empty($_POST))
         {
             $customData = fixer::input('post')
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
+                ->trim('version')->setDefault('version', '')
                 ->trim('dbType')
                 ->trim('dbService')
+                ->setDefault('app_version', '')
                 ->get();
+            if($customData->version && isset($versionList[$customData->version])) $customData->app_version = $versionList[$customData->version]->app_version;
 
             if(isset($this->config->instance->keepDomainList[$customData->customDomain]) || $this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->errors->domainExists));
 
@@ -233,6 +241,8 @@ class instance extends control
 
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
+
+        $this->view->versionList = array_combine(array_column($versionList, 'version'), array_column($versionList, 'app_version'));
         $this->view->thirdDomain = $this->instance->randThirdDomain();
         $this->view->dbList      = $this->instance->dbListToOptions($dbList);
 
@@ -377,7 +387,9 @@ class instance extends control
         if(empty($postData->instanceID) || empty($postData->backupName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->wrongRequestData));
 
         $instance = $this->instance->getByID($postData->instanceID);
+        if(empty($instance))return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
 
+        $this->instance->backup($instance, $this->app->user); // Backup automatically before restroe.
         $success = $this->instance->restore($instance, $this->app->user, $postData->backupName);
         if(!$success)
         {
@@ -402,5 +414,35 @@ class instance extends control
         if(!$success) return $this->send(array('result' => 'fail', 'message' => zget($this->lang->instance->notices, 'deleteFail')));
 
         return $this->send(array('result' => 'success', 'message' => zget($this->lang->instance->notices, 'deleteSuccess')));
+    }
+
+    /**
+     * Generate database auth parameters and jump to login page.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxDBAuthUrl()
+    {
+        $post = fixer::input('post')
+            ->setDefault('namespace', 'default')
+            ->setDefault('id', 0)
+            ->get();
+        if(empty($post->dbName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->dbNameIsEmpty));
+
+        $instance = $this->instance->getByID($post->id);
+        if(empty($instance)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->instanceNotExists));
+
+        $detail = $this->loadModel('cne')->appDBDetail($instance, $post->dbName);
+        if(empty($detail)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notFoundDB));
+
+        $dbAuth = array();
+        $dbAuth['server']   = $detail->host . ':' . $detail->port;
+        $dbAuth['username'] = $detail->username;
+        $dbAuth['db']       = $detail->database;
+        $dbAuth['password'] = $detail->password;
+
+        $url = '/adminer?' . http_build_query($dbAuth);
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $url)));
     }
 }

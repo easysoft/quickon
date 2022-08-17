@@ -11,6 +11,11 @@ import (
 	"os"
 	"time"
 
+	"github.com/spf13/viper"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+
 	"github.com/sirupsen/logrus"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
@@ -31,22 +36,30 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 	var err error
 	stopCh := make(chan struct{})
 
+	logger.Infof("Setup runtime namespace to %s", viper.GetString(constant.FlagRuntimeNamespace))
+
 	logger.Info("Initialize clusters")
 	for cluster.Init(stopCh) != nil {
-		logger.Errorf("initialize failed")
+		logger.Errorf("initialize kubernetes client failed")
 		time.Sleep(time.Second * 10)
 	}
 
+	logger.Info("Setup analysis")
+	als := analysis.Init()
+	go als.Run(ctx)
+
 	logger.Info("Setup cron tasks")
 	_ = helm.RepoUpdate()
-	defer cron.Cron.Stop()
-	cron.Cron.Add("01 * * * *", func() {
+
+	cr := cron.New()
+	defer cr.Stop()
+	cr.Add("01 * * * *", func() {
 		err = helm.RepoUpdate()
 		if err != nil {
 			logger.WithError(err).Warning("cron helm repo update failed")
 		}
 	})
-	cron.Cron.Start()
+	cr.Start()
 
 	service.Apps(ctx, "", "").Upgrade()
 

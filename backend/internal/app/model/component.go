@@ -34,6 +34,7 @@ type ComponentDbService struct {
 	DbType  string `json:"db_type"`
 	Alias   string `json:"alias"`
 	Status  string `json:"status"`
+	Ready   bool   `json:"ready"`
 }
 
 type ComponentDbServiceDetail struct {
@@ -54,4 +55,11 @@ type ComponentDbServiceValidResult struct {
 type DbValidation struct {
 	User     bool `json:"user"`
 	Database bool `json:"database"`
+}
+
+type ComponentDb struct {
+	ComponentBase
+	DbType string `json:"db_type"`
+	DbName string `json:"db_name"`
+	Ready  bool   `json:"ready"`
 }

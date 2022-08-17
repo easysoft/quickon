@@ -4,8 +4,6 @@
 #app .content {flex-grow: 1; display: flex; flex-direction: column;}
 #app main {flex-direction: column;}
 #app main, #app #sortable {padding: 30px 10px; display: flex; justify-content: center; align-items: center; flex: 1; position: relative; flex-wrap: wrap; align-content: center; list-style: none; margin: 0;}
-#config-buttons {position: fixed; bottom: 0; right: 0; display: flex; flex-direction: column;}
-#config-buttons a {text-align: center; line-height: 50px; color: white; margin-top: 1px;}
 .item-container {position: relative;}
 #app.sidebar nav {left: 0;}
 .add-item {width: 280px; height: 90px; margin: 20px; flex: 0 0 280px; border-radius: 6px; padding: 20px; border: 4px dashed rgba(255, 255, 255, 0.7); box-shadow: 0 0 20px 2px rgba(0, 0, 0, 0.3); color: white; overflow: hidden; position: relative; display: none; outline: 1px solid transparent;}
@@ -50,6 +48,21 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
     <?php endif;?>
     </div>
   </section>
+  <?php endforeach;?>
+  <?php endif;?>
+  <?php if(!empty($pinnedApps)):?>
+  <?php foreach($pinnedApps as $app):?>
+    <section class="item-container" data-id="<?php echo $app->id;?>">
+      <div class="item" style="background-color: #161b1f;">
+      <?php if($app->logo) echo html::image($app->logo, "class='instance-logo'");?>
+        <div class="details">
+          <div class="title white">
+            <div class='title'><?php echo $app->title;?></div>
+          </div>
+        </div>
+        <a title="<?php echo $app->desc;?>"  class="link white" target="_blank" href="<?php echo $app->domain;?>"><i class="icon icon-right-to-line"></i></a>
+      </div>
+    </section>
   <?php endforeach;?>
   <?php endif;?>
   <?php $isActive = (isset($showAddItem) and $showAddItem === true) ? 'active' : ''; ?>

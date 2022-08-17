@@ -2,7 +2,7 @@
 // Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
 // license that can be found in the LICENSE file.
 
-package app
+package instance
 
 import (
 	"bytes"

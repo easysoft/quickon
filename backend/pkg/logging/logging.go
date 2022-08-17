@@ -8,18 +8,21 @@ import (
 	"strings"
 	"time"
 
+	"github.com/spf13/viper"
+
 	"github.com/sirupsen/logrus"
 )
+
+const FlagLogLevel = "log-level"
 
 var (
 	defaultLogger *logrus.Logger
 )
 
-func init() {
-	defaultLogger = NewLogger()
-}
-
 func DefaultLogger() *logrus.Logger {
+	if defaultLogger == nil {
+		defaultLogger = NewLogger()
+	}
 	return defaultLogger
 }
 
@@ -51,6 +54,16 @@ func NewLogger() *logrus.Logger {
 			return "", fmt.Sprintf("%s:%d", filename, f.Line)
 		},
 	}
+
+	lv := viper.GetString(FlagLogLevel)
+	level, err := logrus.ParseLevel(lv)
+	if err != nil {
+		logger.WithError(err).Fatalf("setup log level '%s' failed", lv)
+	} else {
+		logger.SetLevel(level)
+		logger.Infof("setup log level to %s", lv)
+	}
+
 	logger.AddHook(&ContextFieldsHook{})
 	return logger
 }
@@ -70,5 +83,3 @@ func readModuleName() string {
 
 	return moduleName
 }
-
-var _ = DefaultLogger()

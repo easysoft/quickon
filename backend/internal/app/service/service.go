@@ -7,6 +7,8 @@ package service
 import (
 	"context"
 
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/snippet"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/component"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/middleware"
@@ -32,4 +34,8 @@ func Middlewares(ctx context.Context) *middleware.Manager {
 
 func Components(ctx context.Context, clusterName string) *component.Manager {
 	return component.NewComponents(ctx, "primary")
+}
+
+func Snippets(ctx context.Context, clusterName string) *snippet.Manager {
+	return snippet.NewSnippets(ctx, "primary")
 }

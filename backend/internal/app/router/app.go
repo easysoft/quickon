@@ -9,6 +9,9 @@ import (
 	"net/http"
 	"sync"
 
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/instance"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/db/manage"
+
 	"github.com/sirupsen/logrus"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
@@ -18,7 +21,6 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app"
 )
 
 // AppInstall 安装接口
@@ -39,7 +41,7 @@ func AppInstall(c *gin.Context) {
 		ctx  = c.Request.Context()
 		err  error
 		body model.AppCreateOrUpdateModel
-		i    *app.Instance
+		i    *instance.Instance
 	)
 	if err = c.ShouldBindJSON(&body); err != nil {
 		renderError(c, http.StatusBadRequest, err)
@@ -59,7 +61,9 @@ func AppInstall(c *gin.Context) {
 		return
 	}
 
-	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body); err != nil {
+	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+
+	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body, snippetSettings); err != nil {
 		logger.WithError(err).Error("install app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
@@ -87,7 +91,7 @@ func AppUnInstall(c *gin.Context) {
 		body model.AppModel
 	)
 
-	ctx, i, code, err := LookupApp(c, &body)
+	_, i, code, err := LookupApp(c, &body)
 	if err != nil {
 		renderError(c, code, err)
 		return
@@ -95,7 +99,7 @@ func AppUnInstall(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	if err = service.Apps(ctx, body.Cluster, body.Namespace).UnInstall(body.Name); err != nil {
+	if err = i.Uninstall(); err != nil {
 		logger.WithError(err).Error("uninstall app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
@@ -195,7 +199,7 @@ func AppPatchSettings(c *gin.Context) {
 		body model.AppCreateOrUpdateModel
 	)
 
-	_, i, code, err := LookupApp(c, &body)
+	ctx, i, code, err := LookupApp(c, &body)
 	if err != nil {
 		renderError(c, code, err)
 		return
@@ -203,7 +207,9 @@ func AppPatchSettings(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	err = i.PatchSettings(body.Chart, body)
+	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+
+	err = i.PatchSettings(body.Chart, body, snippetSettings)
 	if err != nil {
 		logger.WithError(err).Error(errPatchAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errPatchAppFailed))
@@ -413,6 +419,76 @@ func AppAccountInfo(c *gin.Context) {
 	}
 
 	data := i.GetAccountInfo()
+	renderJson(c, http.StatusOK, data)
+}
+
+func AppDbList(c *gin.Context) {
+	var (
+		query model.AppModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	dbs := i.GetDbList()
+	var data []model.ComponentDb
+	for _, item := range dbs {
+		dbsvc, dbMeta, err := manage.ParseDB(i.Ctx, i.Ks.Store, item)
+		if err != nil {
+			logger.WithError(err).Errorf("parse db %s failed", item.Name)
+			continue
+		}
+		d := model.ComponentDb{
+			ComponentBase: model.ComponentBase{Name: item.Name, NameSpace: item.Namespace},
+			DbType:        string(dbsvc.DbType()),
+			DbName:        dbMeta.Name,
+			Ready:         item.Status.Ready,
+		}
+		data = append(data, d)
+	}
+	renderJson(c, http.StatusOK, data)
+}
+
+func AppDbDetails(c *gin.Context) {
+	var (
+		query struct {
+			model.AppModel
+			Db string `form:"db" binding:"required"`
+		}
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	db, err := i.Ks.Store.GetDb(query.Namespace, query.Db)
+	if err != nil {
+		logger.WithError(err).Error("get db failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	dbsvc, dbMeta, err := manage.ParseDB(i.Ctx, i.Ks.Store, db)
+	if err != nil {
+		logger.WithError(err).Errorf("parse db %s failed", query.Db)
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	data := model.ComponentDbServiceDetail{
+		ComponentBase: model.ComponentBase{Name: db.Name, NameSpace: db.Namespace},
+		Host:          dbsvc.ServerInfo().Host(),
+		Port:          dbsvc.ServerInfo().Port(),
+		UserName:      dbMeta.User,
+		Password:      dbMeta.Password,
+		Database:      dbMeta.Name,
+	}
 	renderJson(c, http.StatusOK, data)
 }
 

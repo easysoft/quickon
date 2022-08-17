@@ -38,6 +38,6 @@ func (c *Client) Stop() {
 	c.client.Stop()
 }
 
-func init() {
-	Cron = New()
-}
+//func init() {
+//	Cron = New()
+//}
