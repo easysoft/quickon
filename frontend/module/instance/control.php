@@ -209,8 +209,9 @@ class instance extends control
             return $this->display('instance','resourceerror');
         }
 
-        $dbList = $this->cne->sharedDBList();
-        $customData = new stdclass;
+        $versionList = $this->cne->appVersionList($cloudApp->id);
+        $dbList      = $this->cne->sharedDBList();
+        $customData  = new stdclass;
         if(!empty($_POST))
         {
             $customData = fixer::input('post')
@@ -219,7 +220,9 @@ class instance extends control
                 ->trim('version')->setDefault('version', '')
                 ->trim('dbType')
                 ->trim('dbService')
+                ->setDefault('app_version', '')
                 ->get();
+            if($customData->version && isset($versionList[$customData->version])) $customData->app_version = $versionList[$customData->version]->app_version;
 
             if(isset($this->config->instance->keepDomainList[$customData->customDomain]) || $this->instance->domainExists($customData->customDomain)) return $this->send(array('result' => 'fail', 'message' => $customData->customDomain . $this->lang->instance->errors->domainExists));
 
@@ -239,7 +242,6 @@ class instance extends control
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
 
-        $versionList             = $this->cne->appVersionList($cloudApp->id);
         $this->view->versionList = array_combine(array_column($versionList, 'version'), array_column($versionList, 'app_version'));
         $this->view->thirdDomain = $this->instance->randThirdDomain();
         $this->view->dbList      = $this->instance->dbListToOptions($dbList);

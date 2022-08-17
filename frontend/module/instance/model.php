@@ -340,7 +340,7 @@ class InstanceModel extends model
         $instanceData->source       = 'cloud';
         $instanceData->channel      = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
         $instanceData->chart        = $app->chart;
-        $instanceData->appVersion   = $app->app_version;
+        $instanceData->appVersion   = $customData->app_version ? $customData->app_version : $app->app_version;
         $instanceData->version      = $customData->version;
         $instanceData->space        = $space->id;
         $instanceData->k8name       = $k8name;
