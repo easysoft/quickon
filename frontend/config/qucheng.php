@@ -66,6 +66,10 @@ $config->openMethods[] = 'admin.resetpassword';
 $config->openMethods[] = 'instance.apidetail';
 $config->openMethods[] = 'backup.ajaxupgradestatus';
 
+$config->anonymousOpenMethods = array();
+$config->anonymousOpenMethods[] = 'navigation.browse';
+$config->anonymousOpenMethods[] = 'navigation.ajaxsearchpinnedinstance';
+
 $config->notIframeMethods = array();
 $config->notIframeMethods[] = 'admin.resetpassword';
 $config->notIframeMethods[] = 'admin.init';

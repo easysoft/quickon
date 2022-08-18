@@ -90,7 +90,10 @@ class navigationModel extends model
      */
     public function getSettings()
     {
-        $settings = $this->dao->select('*')->from(TABLE_CONFIG)->where('module')->eq('navigation')->fetchAll();
+        $settings = $this->dao->select('*')->from(TABLE_CONFIG)
+            ->where('module')->eq('navigation')
+            ->orWhere('`key`')->eq('allowAnonymousAccess')
+            ->fetchAll();
         return $settings;
     }
 
@@ -103,7 +106,7 @@ class navigationModel extends model
      */
     public function getSetting($field)
     {
-        return $this->dao->select('value')->from(TABLE_CONFIG)->where('module')->eq('navigation')->andWhere('`key`')->eq($field)->fetch();
+        return $this->dao->select('value')->from(TABLE_CONFIG)->where('`key`')->eq($field)->fetch();
     }
 
     /**
@@ -118,6 +121,14 @@ class navigationModel extends model
         $post = fixer::input('post')->get();
         $value = $post->value == '1' ? 'on' : 'off';
 
-        $this->loadModel('setting')->setItem('system.navigation.global.hideInaccessible', $value);
+        if($field == 'allowAnonymousAccess')
+        {
+            $path = 'system.common.global.allowAnonymousAccess';
+        }
+        else
+        {
+            $path = 'system.navigation.global.' . $field;
+        }
+        $this->loadModel('setting')->setItem($path, $value);
     }
 }

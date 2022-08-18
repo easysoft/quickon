@@ -179,6 +179,9 @@ class commonModel extends model
      */
     public function isOpenMethod($module, $method)
     {
+        $allowAnonAccess = $this->loadModel('setting')->getItem('owner=system&module=common&key=allowAnonymousAccess');
+        if($allowAnonAccess == 'on' and in_array("$module.$method", $this->config->anonymousOpenMethods)) return true;
+
         if(in_array("$module.$method", $this->config->openMethods)) return true;
 
         if($module == 'block' and $method == 'main' and isset($_GET['hash'])) return true;

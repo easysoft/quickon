@@ -10,8 +10,8 @@ $lang->navigation->label       = '设置项';
 $lang->navigation->value       = '值';
 
 $lang->navigation->settings = new stdclass();
-$lang->navigation->settings->common           = '设置';
-$lang->navigation->settings->hideInaccessible = '隐藏未启动的服务';
-$lang->navigation->settings->on               = '开启';
-$lang->navigation->settings->off              = '关闭';
-
+$lang->navigation->settings->common               = '设置';
+$lang->navigation->settings->hideInaccessible     = '隐藏未启动的服务';
+$lang->navigation->settings->allowAnonymousAccess = '允许匿名用户访问';
+$lang->navigation->settings->on                   = '开启';
+$lang->navigation->settings->off                  = '关闭';

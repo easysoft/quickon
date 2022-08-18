@@ -70,7 +70,9 @@
         </section>
       </div>
       <div id="config-buttons">
+        <?php if($user !== 'anonymous'):?>
         <a id="config-button" class="config" href=""><i class="icon icon-edit" style="font-size:20px;"></i></a>
+        <?php endif;?>
         <?php echo html::a($this->createLink('navigation', 'create'), '<i class="icon icon-plus" style="font-size:20px;"></i>');?>
         <?php echo html::a($this->createLink('navigation', 'settings'), '<i class="icon icon-cog-outline" style="font-size:20px;"></i>');?>
       </div>

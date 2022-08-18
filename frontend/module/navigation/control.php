@@ -38,7 +38,9 @@ class navigation extends control
     public function browse()
     {
         $this->loadModel('instance');
-        $account = $this->app->user->account;
+
+        $account = isset($this->app->user->account) ? $this->app->user->account : 'admin';
+        $user    = isset($this->app->user->account) ? $this->app->user->account : 'anonymous';
 
         $hideInaccessible = $this->navigation->getSetting('hideInaccessible');
         $status = $hideInaccessible->value == 'on' ? 'running' : 'all';
@@ -53,6 +55,7 @@ class navigation extends control
         $this->view->pinnedInstances = $pinnedInstances;
         $this->view->apps            = $apps;
         $this->view->pinnedApps      = $pinnedApps;
+        $this->view->user            = $user;
 
         $this->display();
     }
@@ -99,7 +102,8 @@ class navigation extends control
     {
         $name = base64_decode(trim($name));
         $this->loadModel('instance');
-        $account = $this->app->user->account;
+        $account = isset($this->app->user->account) ? $this->app->user->account : 'admin';
+        $user    = isset($this->app->user->account) ? $this->app->user->account : 'anonymous';
 
         $hideInaccessible = $this->navigation->getSetting('hideInaccessible');
         $status = $hideInaccessible->value == 'on' ? 'running' : 'all';
@@ -107,6 +111,7 @@ class navigation extends control
         $this->view->pinnedInstances = $this->instance->getByAccount($account, '', true, $name, $status);
         $this->view->pinnedApps      = $this->navigation->getApps(true, $name);
 
+        $this->view->user        = $user;
         $this->view->showAddItem = false;
         $this->display('navigation', 'ajaxGetPinnedInstance');
     }
@@ -139,10 +144,10 @@ class navigation extends control
             return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => inlink('settings')));
         } 
 
-        $hideInaccessible = $this->navigation->getSetting('hideInaccessible');
+        $setting = $this->navigation->getSetting($field);
 
         $this->view->field = $field;
-        $this->view->value = $hideInaccessible->value;
+        $this->view->value = $setting->value;
         $this->display();
     }
 }
