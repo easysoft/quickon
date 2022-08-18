@@ -82,4 +82,42 @@ class navigationModel extends model
         $this->dao->update(TABLE_NAVINSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($appID)->exec();
     }
 
+    /**
+     * Get all navigation's setting.
+     * 
+     * @access public
+     * @return array
+     */
+    public function getSettings()
+    {
+        $settings = $this->dao->select('*')->from(TABLE_CONFIG)->where('module')->eq('navigation')->fetchAll();
+        return $settings;
+    }
+
+    /**
+     * Get a setting of navigation.
+     * 
+     * @param  string    $field
+     * @access public
+     * @return object
+     */
+    public function getSetting($field)
+    {
+        return $this->dao->select('value')->from(TABLE_CONFIG)->where('module')->eq('navigation')->andWhere('`key`')->eq($field)->fetch();
+    }
+
+    /**
+     * Change a setting.
+     * 
+     * @param  string    $field
+     * @access public
+     * @return void
+     */
+    public function configure($field)
+    {
+        $post = fixer::input('post')->get();
+        $value = $post->value == '1' ? 'on' : 'off';
+
+        $this->loadModel('setting')->setItem('system.navigation.global.hideInaccessible', $value);
+    }
 }

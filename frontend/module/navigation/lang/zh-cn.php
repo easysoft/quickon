@@ -6,3 +6,12 @@ $lang->navigation->search      = '搜索';
 $lang->navigation->addApp      = '添加服务';
 $lang->navigation->url         = 'URL';
 $lang->navigation->appName     = '服务名称';
+$lang->navigation->label       = '设置项';
+$lang->navigation->value       = '值';
+
+$lang->navigation->settings = new stdclass();
+$lang->navigation->settings->common           = '设置';
+$lang->navigation->settings->hideInaccessible = '隐藏未启动的服务';
+$lang->navigation->settings->on               = '开启';
+$lang->navigation->settings->off              = '关闭';
+
