@@ -242,7 +242,9 @@ class instance extends control
         $this->view->title       = $this->lang->instance->install . $cloudApp->alias;
         $this->view->cloudApp    = $cloudApp;
 
-        $this->view->versionList = array_combine(array_column($versionList, 'version'), array_column($versionList, 'app_version'));
+        $this->view->versionList = array();
+        foreach($versionList as $version) $this->view->versionList[$version->version] = $version->app_version . " ({$version->version})";
+
         $this->view->thirdDomain = $this->instance->randThirdDomain();
         $this->view->dbList      = $this->instance->dbListToOptions($dbList);
 
