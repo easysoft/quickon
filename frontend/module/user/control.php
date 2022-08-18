@@ -97,8 +97,8 @@ class user extends control
      */
     public function create($deptID = 0)
     {
-        $this->lang->user->menu      = $this->lang->company->menu;
-        $this->lang->user->menuOrder = $this->lang->company->menuOrder;
+        //$this->lang->user->menu      = $this->lang->company->menu;
+        //$this->lang->user->menuOrder = $this->lang->company->menuOrder;
 
         if(!empty($_POST))
         {
@@ -111,7 +111,7 @@ class user extends control
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             if($this->viewType == 'json') return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'id' => $userID));
-            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $this->createLink('company', 'browse')));
+            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => $this->createLink('my', 'index')));
         }
 
         $groups = $this->dao->select('id, name, role')
@@ -129,7 +129,7 @@ class user extends control
         $position[] = $this->lang->user->create;
         $this->view->title     = $title;
         $this->view->position  = $position;
-        $this->view->depts     = $this->dept->getOptionMenu();
+        $this->view->depts     = array();//$this->dept->getOptionMenu();
         $this->view->groupList = $groupList;
         $this->view->roleGroup = $roleGroup;
         $this->view->deptID    = $deptID;

@@ -29,23 +29,6 @@ $showVisionList = count($visionList) > 1;
       <table align='center' class="table table-form">
         <?php $thClass = common::checkNotCN() ? 'w-enVerifyPassword' : 'w-verifyPassword';?>
         <tr>
-          <th class='<?php echo $thClass?>'><?php echo $lang->user->type;?></th>
-          <td colspan='2'><?php echo html::radio('type', $lang->user->typeList , 'inside', "onclick='changeType(this.value)'");?></td>
-        </tr>
-        <tr id='companyBox' class='hide'>
-          <th><?php echo $lang->user->company;?></th>
-          <td>
-            <div class='input-group'>
-            <?php echo html::select('company', $companies, '', "class='form-control chosen'");?>
-            <span class='input-group-addon'><?php echo html::checkBox('new', $lang->company->create);?></span>
-            </div>
-          </td>
-        </tr>
-        <tr>
-          <th class='<?php echo $thClass?>'><?php echo $lang->user->dept;?></th>
-          <td class='w-p40'><?php echo html::select('dept', $depts, $deptID, "class='form-control chosen'");?></td>
-        </tr>
-        <tr>
           <th><?php echo $lang->user->account;?></th>
           <td><?php echo html::input('account', '', "class='form-control'");?></td>
         </tr>
@@ -64,37 +47,13 @@ $showVisionList = count($visionList) > 1;
           <th><?php echo $lang->user->password2;?></th>
           <td><?php echo html::password('password2', '', "class='form-control'");?></td>
         </tr>
-        <tr <?php if(!$showVisionList) echo "class='hide'";?>>
-          <th><?php echo $lang->user->visions;?></th>
-          <td><?php echo html::checkbox('visions', $visionList, isset($visionList[$this->config->vision]) ? $this->config->vision : key($visionList), "class='form-control'");?></td>
-        </tr>
         <tr>
           <th><?php echo $lang->user->realname;?></th>
           <td><?php echo html::input('realname', '', "class='form-control'");?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->user->join;?></th>
-          <td><?php echo html::input('join', date('Y-m-d'), "class='form-control form-date'");?></td>
-        </tr>
-        <tr>
-          <th><?php echo $lang->user->role;?></th>
-          <td><?php echo html::select('role', $lang->user->roleList, '', "class='form-control' onchange='changeGroup(this.value)'");?></td>
-          <td><?php echo $lang->user->placeholder->role?></td>
-        </tr>
-        <?php if(common::hasPriv('group', 'managemember')):?>
-        <tr>
-          <th><?php echo $lang->user->group;?></th>
-          <td><?php echo html::select('group[]', $groupList, '', "multiple=multiple class='form-control chosen'");?></td>
-          <td><?php echo $lang->user->placeholder->group?></td>
-        </tr>
-        <?php endif;?>
-        <tr>
           <th><?php echo $lang->user->email;?></th>
           <td><?php echo html::input('email', '', "class='form-control'");?></td>
-        </tr>
-        <tr>
-          <th><?php echo $lang->user->commiter;?></th>
-          <td><?php echo html::input('commiter', '', "class='form-control'");?></td>
         </tr>
         <tr>
           <th><?php echo $lang->user->gender;?></th>

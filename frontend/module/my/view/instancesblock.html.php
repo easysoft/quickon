@@ -1,5 +1,6 @@
 <?php $this->app->loadLang('instance');?>
 <?php js::set('instanceIdList',  array_column($instances, 'id'));?>
+<?php js::set('demoAppLife',     $config->demoAppLife);?>
 <div class="cell main-table instance-container">
   <h3 class='text-center'><?php echo $lang->instance->installedService;?></h3>
   <?php if(empty($instances)):?>
@@ -13,7 +14,7 @@
         <th><?php echo $lang->instance->name;?></th>
         <th><?php echo $lang->instance->version;?></th>
         <th><?php echo $lang->instance->space?></th>
-        <th><?php echo $lang->instance->status?></th>
+        <th class='w-180px'><?php echo $lang->instance->status?></th>
         <th><?php echo $lang->instance->cpu;?></th>
         <th><?php echo $lang->instance->mem;?></th>
       </tr>
@@ -26,6 +27,12 @@
         <td><?php echo html::a($this->createLink('space', 'browse', "id=$instance->space"), $instance->spaceData->name);?></td>
         <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
           <?php echo $this->instance->printStatus($instance, false);?>
+          <?php if(commonModel::isDemoAccount()):?>
+          <span class="count-down label label-outline label-danger" data-created-at="<?php echo strtotime($instance->createdAt);?>">
+            <span><?php echo $lang->instance->leftTime;?></span>
+            <span class='left-time'>00:00</span>
+          </span>
+          <?php endif;?>
         </td>
         <?php $metrics= zget($instancesMetrics, $instance->id);?>
         <td><?php $this->instance->printCpuUsage($metrics->cpu);?></td>

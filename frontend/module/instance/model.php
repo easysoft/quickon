@@ -32,7 +32,11 @@ class InstanceModel extends model
      */
     public function getByID($id)
     {
-        $instance = $this->dao->select('*')->from(TABLE_INSTANCE)->where('id')->eq($id)->andWhere('deleted')->eq(0)->fetch();
+        $instance = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('id')->eq($id)
+            ->andWhere('deleted')->eq(0)
+            ->andWhere('createdBy')->eq($this->app->user->account)
+            ->fetch();
         if(!$instance) return null;
 
         $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
@@ -672,6 +676,35 @@ class InstanceModel extends model
     }
 
     /**
+     * Delete expired instances if run in demo mode.
+     *
+     * @access public
+     * @return void
+     */
+    public function deleteExpiredDemoInstance()
+    {
+        $deadline     = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+        $demoAccounts = array_filter(explode(',', $this->config->demoAccounts));
+
+        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('deleted')->eq(0)
+            ->andWhere('createdAt')->lt($deadline)
+            ->andWhere('createdBy')->in($demoAccounts)
+            ->fetchAll('space');
+        if(empty($instanceList)) return;
+
+        $spaceList = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->in(array_column($instanceList, 'space'))->fetchAll('id');
+
+        foreach($instanceList as $instance)
+        {
+            $instance->spaceData = zget($spaceList, $instance->space);
+            if(empty($instance->spaceData)) continue;
+
+            $this->uninstall($instance);
+        }
+    }
+
+    /**
      * Print instance status.
      *
      * @param  object $instance
@@ -908,12 +941,9 @@ class InstanceModel extends model
      */
     public function getSwitcher($instance)
     {
-        $space  = $this->dao->select('id,name')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
-        $output = $this->loadModel('space')->getSwitcher($space, 'space', 'browse');
-
         $instanceLink = helper::createLink('instance', 'view', "id=$instance->id");
 
-        $output .= "<div class='btn-group header-btn'>";
+        $output  = "<div class='btn-group header-btn'>";
         $output .= html::a($instanceLink, $instance->appName, '', 'class="btn"');
         $output .= "</div>";
 

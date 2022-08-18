@@ -35,6 +35,12 @@
           <td><?php echo $instance->appVersion;?></td>
           <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
             <?php $this->instance->printStatus($instance);?>
+            <?php if(commonModel::isDemoAccount()):?>
+            <span class="count-down label label-outline label-danger" data-created-at="<?php echo strtotime($instance->createdAt);?>">
+              <span><?php echo $lang->instance->leftTime;?></span>
+              <span class='left-time'>00:00</span>
+            </span>
+            <?php endif;?>
           </td>
           <td><?php $this->instance->printIconActions($instance);?></td>
         </tr>

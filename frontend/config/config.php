@@ -26,6 +26,9 @@ $config->customSession   = false;                // 是否开启自定义session
 $config->sessionLife     = 3600;                 // 设置过期时间，默认为3600秒。Set the session expired time by seconds, default is 3600 seconds.
 $config->edition         = 'open';               // 设置系统的edition，可选值：open|biz|max。Set edition, optional: open|biz|max.
 
+$config->demoAccounts    = '';                   // 用于演示的账号列表，该账号安装的应用30钟后会自动删除。 In account list for demo, app instance of demo will be removed in 30 minutes.
+$config->demoAppLife     = 30;                   // Demo安装的应用实例存续时长(分钟)。The minutes life of instance which demo account installed.
+
 /* 框架路由相关设置。Routing settings. */
 $config->requestType = 'PATH_INFO';               // 请求类型：PATH_INFO|PATHINFO2|GET。    The request type: PATH_INFO|PATH_INFO2|GET.
 $config->requestFix  = '-';                       // PATH_INFO和PATH_INFO2模式的分隔符。    The divider in the url when PATH_INFO|PATH_INFO2.

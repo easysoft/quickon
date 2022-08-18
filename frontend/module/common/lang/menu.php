@@ -45,3 +45,4 @@ $lang->navGroup = new stdclass();
 $lang->navGroup->instance = 'space';
 $lang->navGroup->backup   = 'system';
 $lang->navGroup->system   = 'system';
+$lang->navGroup->user     = 'system';

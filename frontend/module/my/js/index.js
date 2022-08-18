@@ -61,4 +61,35 @@ $(function()
             if(res.locate) window.parent.location.href = res.locate;
         });
     }, 1000 * 5);
+
+    /* Count down for demo instance. */
+    setInterval(function()
+    {
+        let nowSeconds = Math.round((new Date).getTime() / 1000);
+        $('.count-down').each(function(index, item)
+        {
+            let createdAt = $(item).data('created-at');
+            let passSeconds = nowSeconds - createdAt;
+            let leftSeconds = (demoAppLife ? demoAppLife : 30) * 60 - passSeconds;
+
+            if(leftSeconds < 0)
+            {
+                $.post(createLink('instance', 'ajaxDeleteDemoInstance')).done(function(response)
+                {
+                    let res = JSON.parse(response);
+                    if(res.result == 'success')
+                    {
+                        window.parent.location.reload();
+                    }
+                });
+            }
+            else
+            {
+                let minutes = Math.floor(leftSeconds / 60);
+                let seconds = Math.round(leftSeconds % 60);
+                $(item).find('.left-time').text(('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2));
+            }
+
+        })
+    }, 1000);
 });

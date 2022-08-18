@@ -4,6 +4,7 @@
 #cardsContainer .panel{border-radius: 2px;}
 #cardsContainer .panel-heading {padding: 14px 14px 20px 14px;}
 #cardsContainer .panel-body {padding: 0 14px;}
+#cardsContainer .panel-footer .count-down{display: inline-block; margin: 0 10px;}
 #cardsContainer .instance-detail {height: 44px; margin-bottom: 6px;}
 #cardsContainer .instance-logo {float: left;}
 #cardsContainer .instance-logo img {width: 44px; height: 44px;}
