@@ -53,6 +53,12 @@
             <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
               <?php $this->instance->printStatus($instance);?>
             </div>
+            <?php if(commonModel::isDemoAccount()):?>
+            <div class="pull-right count-down label label-outline label-danger" instance-id="<?php echo $instance->id;?>" data-created-at="<?php echo strtotime($instance->createdAt);?>">
+              <span><?php echo $lang->instance->leftTime;?></span>
+              <span class='left-time'>00:00</span>
+            </div>
+            <?php endif;?>
           </div>
         </a>
       </div>

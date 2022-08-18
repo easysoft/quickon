@@ -17,6 +17,9 @@
     <div class='main-header'>
       <h2><?php echo $lang->instance->installApp . $cloudApp->alias . $cloudApp->app_version;?></h2>
     </div>
+    <?php if(commonModel::isDemoAccount()):?>
+    <div class='text-center'><span class="label label-outline label-danger"><?php echo $lang->instance->appLifeTip;?></span></div>
+    <?php endif;?>
     <form id='installForm' action='<?php echo helper::createLink("instance", "install", "id={$cloudApp->id}", '', '', false);?>' class="cell not-watch load-indicator main-form">
       <table class="table table-form">
         <tbody>

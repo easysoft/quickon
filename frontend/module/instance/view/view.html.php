@@ -13,11 +13,18 @@
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <?php js::set('instanceNotices', $lang->instance->notices);?>
 <?php js::set('instanceIdList',  array($instance->id));?>
+<?php js::set('demoAppLife',     $config->demoAppLife);?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left instance-name'>
     <h3><?php echo $instance->name;?></h3>
     <span><?php echo $instance->appVersion;?></span>
     <?php echo html::a($this->createLink('instance', 'editname', "id=$instance->id", '', true), '<i class="icon-edit"></i>', '', "class='iframe' title='$lang->edit' data-width='600' data-app='space'");?>
+    <?php if(commonModel::isDemoAccount()):?>
+    <span class="count-down label label-outline label-danger" instance-id="<?php echo $instance->id;?>" data-created-at="<?php echo strtotime($instance->createdAt);?>">
+        <span><?php echo $lang->instance->leftTime;?></span>
+        <span class='left-time'>00:00</span>
+    </span>
+    <?php endif;?>
   </div>
   <div class='btn-toolbar pull-right instance-panel'>
     <div class="">

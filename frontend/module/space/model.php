@@ -92,28 +92,10 @@ class spaceModel extends model
      */
     public function getByID($id)
     {
-        return  $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->eq($id)->fetch();
-    }
-
-    /*
-     * Get space switcher.
-     *
-     * @param  object  $space
-     * @param  string  $currentModule
-     * @param  string  $currentMethod
-     * @access public
-     * @return string
-     */
-    public function getSwitcher($space, $currentModule, $currentMethod)
-    {
-        $currentSpaceName = $space->name;
-
-        $dropMenuLink = helper::createLink('space', 'ajaxGetDropMenu', "objectID=$space->id&module=$currentModule&method=$currentMethod");
-
-        $output  = "<div class='btn-group header-btn' id='swapper'><button data-toggle='dropdown' type='button' class='btn' id='currentItem' title='{$currentSpaceName}'><span class='text'>{$currentSpaceName}</span> <span class='caret' style='margin-bottom: -1px'></span></button><div id='dropMenu' class='dropdown-menu search-list' data-ride='searchList' data-url='$dropMenuLink'>";
-        $output .= '<div class="input-control search-box has-icon-left has-icon-right search-example"><input type="search" class="form-control search-input" /><label class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label><a class="input-control-icon-right search-clear-btn"><i class="icon icon-close icon-sm"></i></a></div>';
-        $output .= "</div></div>";
-
-        return $output;
+        return  $this->dao->select('*')->from(TABLE_SPACE)
+            ->where('deleted')->eq(0)
+            ->andWhere('id')->eq($id)
+            ->andWhere('owner')->eq($this->app->user->account)
+            ->fetch();
     }
 }

@@ -447,4 +447,17 @@ class instance extends control
         $url = '/adminer?' . http_build_query($dbAuth);
         $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $url)));
     }
+
+    /**
+     * Ajax delete expired demo instance.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxDeleteDemoInstance()
+    {
+        $this->instance->deleteExpiredDemoInstance();
+
+        return $this->send(array('result' => 'success', 'message' => ''));
+    }
 }

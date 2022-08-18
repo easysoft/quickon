@@ -26,6 +26,7 @@ $lang->instance->installedService = '已安装服务';
 $lang->instance->installApp       = '安装应用';
 $lang->instance->cpuUsage         = 'CPU';
 $lang->instance->memUsage         = '内存';
+$lang->instance->leftTime         = '剩余';
 
 $lang->instance->dbTypes = array();
 $lang->instance->dbTypes['sharedDB']   = '共享数据库';
@@ -70,17 +71,6 @@ $lang->instance->backup->statusList['uploading']      = '上传中';
 $lang->instance->backup->statusList['uploadFailed']   = '上传失败';
 $lang->instance->backup->statusList['downloading']    = '下载中';
 $lang->instance->backup->statusList['downloadFailed'] = '下载失败';
-
-$lang->instance->restore = new stdclass;
-$lang->instance->restore->statusList = array();
-$lang->instance->restore->statusList['success']        = '成功';
-$lang->instance->restore->statusList['failed']         = '失败';
-$lang->instance->restore->statusList['pending']        = '等待回滚';
-$lang->instance->restore->statusList['processing']     = '回滚中';
-$lang->instance->restore->statusList['completed']      = '完成回滚';
-$lang->instance->restore->statusList['executedFailed'] = '回滚失败';
-$lang->instance->restore->statusList['downloading']    = '下载中';
-$lang->instance->restore->statusList['downloadFailed'] = '下载失败';
 
 $lang->instance->dbList     = '数据库';
 $lang->instance->dbName     = '名称';
@@ -202,6 +192,7 @@ $lang->instance->noHigherVersion    = '未找到更高版本！';
 $lang->instance->backupOnlyRunning  = '运行状态才能备份';
 $lang->instance->restoreOnlyRunning = '运行状态才能回滚';
 $lang->instance->howToSelectDB      = '如何选择?';
+$lang->instance->appLifeTip         = 'demo账号安装的应用有30分钟限制，30分钟后自动删除。';
 
 $lang->instance->errors = new stdclass;
 $lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';

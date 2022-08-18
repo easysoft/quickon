@@ -2176,6 +2176,22 @@ EOT;
     }
 
     /**
+     * Check (current) user is demo account or not.
+     *
+     * @param  string $account
+     * @static
+     * @access public
+     * @return bool
+     */
+    public static function isDemoAccount($account = '')
+    {
+        global $app, $config;
+        if(empty($account)) $account = $app->user->account;
+
+        return stripos($config->demoAccounts, ",{$account},") !== false;
+    }
+
+    /**
      * Convert items to Pinyin.
      *
      * @param  array    $items
