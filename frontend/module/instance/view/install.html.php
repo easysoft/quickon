@@ -44,7 +44,7 @@
       <div class='advanced'><?php echo html::a("#advanced-settings", $lang->instance->advanceOption . "<i class='icon icon-chevron-double-down'></i>", '', "data-toggle='collapse'");?></div>
       <table class="collapse table table-form" id="advanced-settings">
         <tbody>
-          <?php if(getenv('ALLOW_SELECT_VERSION')):?>
+          <?php if(strtolower(getenv('ALLOW_SELECT_VERSION')) == 'true' || strtolower(getenv('ALLOW_SELECT_VERSION')) == '1'):?>
           <tr>
             <th class='w-80px'><?php echo $lang->instance->version;?></th>
             <td class='w-250px'>
