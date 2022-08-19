@@ -27,7 +27,7 @@ make_soft_link "/etc/s6/s6-available/apache" "/etc/s6/s6-enable/02-apache" "www-
 
 # Prepare cron
 if [ "$ENABLE_CRON" == "true" ];then
-    make_soft_link "/etc/s6/s6-available/cron " "/etc/s6/s6-enable/03-cron" "www-data"
+    make_soft_link "/etc/s6/s6-available/cron" "/etc/s6/s6-enable/03-cron" "www-data"
 fi
 
 # Start s6 or other custom cmd
