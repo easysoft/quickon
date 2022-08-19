@@ -32,10 +32,13 @@ class InstanceModel extends model
      */
     public function getByID($id)
     {
+        $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+
         $instance = $this->dao->select('*')->from(TABLE_INSTANCE)
             ->where('id')->eq($id)
             ->andWhere('deleted')->eq(0)
             ->andWhere('createdBy')->eq($this->app->user->account)
+            ->beginIF(commonModel::isDemoAccount())->andWhere('createdAt')->gt($deadline)->fi()
             ->fetch();
         if(!$instance) return null;
 

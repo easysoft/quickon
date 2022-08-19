@@ -14,13 +14,13 @@
 <?php js::set('instanceNotices', $lang->instance->notices);?>
 <div id='mainContent' class='main-content'>
   <div class='main-header'>
-    <h2><?php echo $lang->instance->upgrade;?></h2>
+    <h2><?php echo "{$lang->instance->upgrade} : {$instance->name}";?></h2>
   </div>
   <form method='post' action='<?php echo helper::createLink("instance", "upgrade", "id=$instance->id");?>' id='upgradeForm'>
     <?php if(empty($instance->latestVersion)):?>
     <p class='modal-message text-center'><?php echo $lang->instance->noHigherVersion;?></p>
     <?php else:?>
-    <p class='modal-message text-center'><?php echo sprintf($lang->instance->notices['confirmUpgrade'], $instance->appVersion, $instance->latestVersion->app_version);?></p>
+    <p class='modal-message text-center'><?php echo $lang->instance->notices['confirmUpgrade'];?></p>
     <?php echo html::hidden('confirm', 'yes');?>
     <div class='text-center'>
       <button type="button" class="btn btn-default btn-wide" data-dismiss="modal"><?php echo $lang->cancel;?></button>

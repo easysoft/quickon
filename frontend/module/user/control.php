@@ -353,7 +353,7 @@ class user extends control
      * @access public
      * @return void
      */
-    public function login($referer = '', $from = '')
+    public function login($referer = '', $from = '', $demoAccount = '', $demoPass = '')
     {
         /* Check if you can operating on the folder. */
         $canModifyDIR = true;
@@ -530,11 +530,13 @@ class user extends control
         }
         else
         {
-            $this->view->title     = $this->lang->user->login;
-            $this->view->referer   = $this->referer;
-            $this->view->s         = zget($this->config->global, 'sn', '');
-            $this->view->keepLogin = $this->cookie->keepLogin ? $this->cookie->keepLogin : 'off';
-            $this->view->rand      = $this->user->updateSessionRandom();
+            $this->view->title       = $this->lang->user->login;
+            $this->view->referer     = $this->referer;
+            $this->view->s           = zget($this->config->global, 'sn', '');
+            $this->view->keepLogin   = $this->cookie->keepLogin ? $this->cookie->keepLogin : 'off';
+            $this->view->rand        = $this->user->updateSessionRandom();
+            $this->view->demoAccount = $demoAccount;
+            $this->view->demoPass    = $demoPass;
             $this->display();
         }
     }

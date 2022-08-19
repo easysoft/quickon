@@ -278,14 +278,7 @@ $(function()
 
             if(leftSeconds < 0)
             {
-                $.post(createLink('instance', 'ajaxDeleteDemoInstance')).done(function(response)
-                {
-                    let res = JSON.parse(response);
-                    if(res.result == 'success')
-                    {
-                        window.parent.location.href = createLink('space', 'browse');
-                    }
-                });
+                window.parent.location.href = createLink('space', 'browse');
             }
             else
             {

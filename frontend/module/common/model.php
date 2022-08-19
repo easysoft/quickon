@@ -2186,7 +2186,8 @@ EOT;
     public static function isDemoAccount($account = '')
     {
         global $app, $config;
-        if(empty($account)) $account = $app->user->account;
+        if(empty($account)) $account = isset($app->user) ? $app->user->account : '';
+        if(empty($account)) return false;
 
         return stripos($config->demoAccounts, ",{$account},") !== false;
     }
