@@ -1,5 +1,12 @@
 # 渠成企业管理软件百宝箱(QuickOn)
 
+![GitHub go.mod Go version (subdirectory of monorepo)](https://img.shields.io/github/go-mod/go-version/easysoft/quickon?filename=backend/go.mod&style=flat-square)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/w/easysoft/quickon?style=flat-square)
+![GitHub](https://img.shields.io/badge/license-ZPL%20%2B%20AGPL-blue)
+[![Releases](https://img.shields.io/github/release-pre/easysoft/quickon.svg)](https://github.com/easysoft/quickon/releases)
+[![docs](https://img.shields.io/badge/docs-done-green)](https://www.qucheng.com/)
+[![Chat on QQ](https://img.shields.io/badge/chat-768721743-blueviolet?logo=TencentQQ)](https://img.qucheng.com/group/qq.jpg)
+
 渠成企业管理软件百宝箱 简称 渠成百宝箱 是 北京渠成软件有限公司自主设计、研发的开源轻量级应用交付平台。通过渠成应用市场，您可以一键安装企业级软件，不仅具备高可用特性，还支持自动与手动备份，当有新版本发布时，您可以查看软件的更新日志，并决定是否升级。
 
 渠成百宝箱底层基于容器和Kubernetes技术，通过Helm进行应用的封装，提供了渠成应用市场、服务管理、服务监控与告警、日志管理与审计、集群管理等平台功能，平台代码及应用镜像代码完全公开。
@@ -129,3 +136,7 @@
 ### 许可
 
 [ZPL](http://zpl.pub/page/zplv12.html)或者[AGPL](https://www.gnu.org/licenses/agpl-3.0.en.html)
+
+### 反馈
+
+安装使用问题或者应用上架等需求反馈, 欢迎加入QQ群探讨([768721743](https://img.qucheng.com/group/qq.jpg))
