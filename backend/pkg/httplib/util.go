@@ -18,7 +18,7 @@ func GenerateHTTPServer(server *HTTPServer) string {
 }
 
 // GenerateURL return the full http request url
-// with query paramters encode
+// with query parameters encode
 func GenerateURL(server *HTTPServer, path string, queries ...[2]string) string {
 	var uri bytes.Buffer
 	uri.WriteString(GenerateHTTPServer(server))
