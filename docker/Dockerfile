@@ -79,7 +79,6 @@ RUN rm -rf /etc/apache2/sites-available/* /etc/apache2/sites-enabled/*
 ARG VERSION
 ENV BUILD_VERSION=$VERSION
 ENV EASYSOFT_APP_NAME="QuCheng $BUILD_VERSION"
-ENV ENABLE_CRON=true
 
 # Copy qucheng source code
 WORKDIR /apps/qucheng
