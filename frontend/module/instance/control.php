@@ -449,15 +449,15 @@ class instance extends control
     }
 
     /**
-     * Ajax delete expired demo instance.
+     * Delete expired demo instance by cron.
      *
      * @access public
      * @return void
      */
-    public function ajaxDeleteDemoInstance()
+    public function deleteExpiredDemoInstance()
     {
         $this->instance->deleteExpiredDemoInstance();
 
-        return $this->send(array('result' => 'success', 'message' => ''));
+        $this->send(array('result' => 'success', 'message' => ''));
     }
 }

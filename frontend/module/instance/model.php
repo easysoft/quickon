@@ -692,7 +692,7 @@ class InstanceModel extends model
             ->where('deleted')->eq(0)
             ->andWhere('createdAt')->lt($deadline)
             ->andWhere('createdBy')->in($demoAccounts)
-            ->fetchAll('space');
+            ->fetchAll();
         if(empty($instanceList)) return;
 
         $spaceList = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->in(array_column($instanceList, 'space'))->fetchAll('id');
@@ -702,7 +702,7 @@ class InstanceModel extends model
             $instance->spaceData = zget($spaceList, $instance->space);
             if(empty($instance->spaceData)) continue;
 
-            $this->uninstall($instance);
+            $result = $this->uninstall($instance);
         }
     }
 
