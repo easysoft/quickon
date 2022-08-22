@@ -378,6 +378,8 @@ class InstanceModel extends model
         $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
 
+        if(commonModel::isDemoAccount()) $apiParams->settings_snippets = array('quickon_saas');
+
         $result = $this->cne->installApp($apiParams);
         if($result->code != 200)
         {
