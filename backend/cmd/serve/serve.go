@@ -6,11 +6,10 @@ package serve
 
 import (
 	"context"
+	"github.com/spf13/viper"
 	"os/signal"
 	"strings"
 	"syscall"
-
-	"github.com/spf13/viper"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 
@@ -36,6 +35,7 @@ func NewCmdServe() *cobra.Command {
 
 	flags.String(constant.FlagRuntimeNamespace, "cne-system", "working namespace")
 	viper.BindPFlag(constant.FlagRuntimeNamespace, flags.Lookup(constant.FlagRuntimeNamespace))
+
 	return cmd
 }
 

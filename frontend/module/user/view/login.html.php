@@ -39,11 +39,11 @@ if(empty($config->notMd5Pwd))js::import($jsRoot . 'md5.js');
               <tbody>
                 <tr>
                   <th><?php echo $lang->user->account;?></th>
-                  <td><input class='form-control' type='text' name='account' id='account' autocomplete='off' autofocus /></td>
+                  <td><input class='form-control' type='text' name='account' id='account' value="<?php echo commonModel::isDemoAccount($demoAccount) ? $demoAccount : '';?>" autocomplete='off' autofocus /></td>
                 </tr>
                 <tr>
                   <th><?php echo $lang->user->password;?></th>
-                  <td><input class='form-control' type='password' name='password' autocomplete='off' /></td>
+                  <td><input class='form-control' type='password' name='password' value="<?php echo commonModel::isDemoAccount($demoAccount) ? $demoPass : '';?>" autocomplete='off' /></td>
                 </tr>
                 <?php if(!empty($this->config->safe->loginCaptcha)):?>
                 <tr>

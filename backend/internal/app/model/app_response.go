@@ -92,7 +92,7 @@ type AppRespBackup struct {
 	CreateTime    int64            `json:"create_time"`
 	Status        string           `json:"status"`
 	Message       string           `json:"message"`
-	BackupDetails AppBackupDetails `json:"backup_details""`
+	BackupDetails AppBackupDetails `json:"backup_details"`
 	Restores      []AppRespRestore `json:"restores"`
 }
 

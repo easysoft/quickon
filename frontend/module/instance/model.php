@@ -32,10 +32,13 @@ class InstanceModel extends model
      */
     public function getByID($id)
     {
+        $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+
         $instance = $this->dao->select('*')->from(TABLE_INSTANCE)
             ->where('id')->eq($id)
             ->andWhere('deleted')->eq(0)
             ->andWhere('createdBy')->eq($this->app->user->account)
+            ->beginIF(commonModel::isDemoAccount())->andWhere('createdAt')->gt($deadline)->fi()
             ->fetch();
         if(!$instance) return null;
 
@@ -53,7 +56,13 @@ class InstanceModel extends model
      */
     public function getByIdList($idList)
     {
-        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)->where('id')->in($idList)->andWhere('deleted')->eq(0)->fetchAll('id');
+        $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+
+        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('id')->in($idList)
+            ->andWhere('deleted')->eq(0)
+            ->beginIF(commonModel::isDemoAccount())->andWhere('createdAt')->gt($deadline)->fi()
+            ->fetchAll('id');
         $spaces    = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->in(array_column($instances, 'space'))->fetchAll('id');
         foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
 
@@ -70,6 +79,8 @@ class InstanceModel extends model
      */
     public function getByAccount($account = '', $pager = null, $pinned = '', $searchParam = '', $status = 'all')
     {
+        $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+
         $instances = $this->dao->select('instance.*')->from(TABLE_INSTANCE)->alias('instance')
             ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
             ->where('instance.deleted')->eq(0)
@@ -77,6 +88,7 @@ class InstanceModel extends model
             ->beginIF($pinned)->andWhere('instance.pinned')->eq((int)$pinned)->fi()
             ->beginIF($searchParam)->andWhere('instance.name')->like("%{$searchParam}%")->fi()
             ->beginIF($status != 'all')->andWhere('instance.status')->eq($status)->fi()
+            ->beginIF(commonModel::isDemoAccount())->andWhere('instance.createdAt')->gt($deadline)->fi()
             ->orderBy('instance.id desc')
             ->beginIF($pager)->page($pager)->fi()
             ->fetchAll('id');
@@ -690,7 +702,7 @@ class InstanceModel extends model
             ->where('deleted')->eq(0)
             ->andWhere('createdAt')->lt($deadline)
             ->andWhere('createdBy')->in($demoAccounts)
-            ->fetchAll('space');
+            ->fetchAll();
         if(empty($instanceList)) return;
 
         $spaceList = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->in(array_column($instanceList, 'space'))->fetchAll('id');
@@ -700,7 +712,7 @@ class InstanceModel extends model
             $instance->spaceData = zget($spaceList, $instance->space);
             if(empty($instance->spaceData)) continue;
 
-            $this->uninstall($instance);
+            $result = $this->uninstall($instance);
         }
     }
 

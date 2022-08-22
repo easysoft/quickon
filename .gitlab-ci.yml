@@ -32,6 +32,8 @@ build-custom:
     - make qucheng
   after_script:
     - echo "clean build"
+  except:
+    - tags
 
 build-api:
   stage: build
