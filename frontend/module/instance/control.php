@@ -197,16 +197,19 @@ class instance extends control
         $cloudApp = $this->cne->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
-        $clusterResource = $this->cne->cneMetrics();
-        $freeMemory = intval($clusterResource->metrics->memory->allocatable * 0.9); // Remain 10% memory for system.
-        if($cloudApp->memory > $freeMemory)
+        if(empty($this->config->demoAccounts))
         {
-            $this->view->cloudApp       = $cloudApp;
-            $this->view->gapMemory      = helper::formatKB(intval(($cloudApp->memory - $freeMemory) / 1024));
-            $this->view->requiredMemory = helper::formatKB(intval($cloudApp->memory / 1024));
-            $this->view->freeMemory     = helper::formatKB(intval($freeMemory / 1024));
+            $clusterResource = $this->cne->cneMetrics();
+            $freeMemory = intval($clusterResource->metrics->memory->allocatable * 0.9); // Remain 10% memory for system.
+            if($cloudApp->memory > $freeMemory)
+            {
+                $this->view->cloudApp       = $cloudApp;
+                $this->view->gapMemory      = helper::formatKB(intval(($cloudApp->memory - $freeMemory) / 1024));
+                $this->view->requiredMemory = helper::formatKB(intval($cloudApp->memory / 1024));
+                $this->view->freeMemory     = helper::formatKB(intval($freeMemory / 1024));
 
-            return $this->display('instance','resourceerror');
+                return $this->display('instance','resourceerror');
+            }
         }
 
         $versionList = $this->cne->appVersionList($cloudApp->id);
