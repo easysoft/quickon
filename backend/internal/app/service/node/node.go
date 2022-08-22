@@ -6,9 +6,8 @@ package node
 
 import (
 	"context"
-	"sort"
-
 	"github.com/sirupsen/logrus"
+	"sort"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
@@ -87,11 +86,7 @@ func (m *Manager) Statistic() (model.NodeMetric, error) {
 	var capacity metric.Res
 
 	sumNodeUsage(&usage, metrics)
-	sumNodeCapacity(&capacity, &allocatable, nodes)
-
-	memUsage, _ := usage.Memory.AsInt64()
-	memCapacity, _ := capacity.Memory.AsInt64()
-	memAllocatable, _ := allocatable.Memory.AsInt64()
+	sumNodeCapacity(&capacity, &allocatable, nodes, m.logger)
 
 	metricData := model.NodeMetric{
 		Cpu: model.NodeResourceCpu{
@@ -99,7 +94,7 @@ func (m *Manager) Statistic() (model.NodeMetric, error) {
 			Allocatable: allocatable.Cpu.AsApproximateFloat64(),
 		},
 		Memory: model.NodeResourceMemory{
-			Usage: memUsage, Capacity: memCapacity, Allocatable: memAllocatable,
+			Usage: usage.Memory.Value(), Capacity: capacity.Memory.Value(), Allocatable: allocatable.Memory.Value(),
 		},
 	}
 
@@ -116,17 +111,23 @@ func sumNodeUsage(dst *metric.Res, metrics []*metric.Res) {
 	}
 }
 
-func sumNodeCapacity(cap *metric.Res, allocat *metric.Res, nodes []*v1.Node) {
+func sumNodeCapacity(cap *metric.Res, allocat *metric.Res, nodes []*v1.Node, logger logrus.FieldLogger) {
 	cap.Cpu = resource.NewQuantity(0, resource.DecimalExponent)
 	cap.Memory = resource.NewQuantity(0, resource.DecimalExponent)
 	allocat.Cpu = resource.NewQuantity(0, resource.DecimalExponent)
 	allocat.Memory = resource.NewQuantity(0, resource.DecimalExponent)
 
 	for _, node := range nodes {
+		logger.Debugf("node capacity, node name %s", node.Name)
+		logger.Debugf("node capacity detail: %+v", node.Status.Capacity)
 		cap.Cpu.Add(*node.Status.Capacity.Cpu())
 		cap.Memory.Add(*node.Status.Capacity.Memory())
+
+		logger.Debugf("node memory capacity %s", node.Status.Capacity.Memory().String())
+		logger.Debugf("total memory capacity %d", cap.Memory.Value())
 
 		allocat.Cpu.Add(*node.Status.Allocatable.Cpu())
 		allocat.Memory.Add(*node.Status.Allocatable.Memory())
 	}
+
 }
