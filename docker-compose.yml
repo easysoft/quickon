@@ -69,6 +69,7 @@ services:
       - CNE_MARKET_API_SCHEMA=https
       - CNE_MARKET_API_HOST=api.qucheng.com
       - CNE_MARKET_API_PORT=443
+      - LOG_FILE=/logs/backend.log
       - ALLOW_SELECT_VERSION=true
       - ENABLE_CRON=true
       - DEMO_ACCOUNTS=,demo,

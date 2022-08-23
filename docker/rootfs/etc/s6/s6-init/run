@@ -33,8 +33,8 @@ fi
 # Persistence logs for qucheng   #
 #================================#
 ensure_dir_exists "/logs" "www-data"
-ln -s /logs /apps/qucheng/tmp/log
 ln -s /logs /apps/qucheng/logs
+ln -s /logs /apps/qucheng/tmp/log
 
 #=====================#
 #   Prepare PHP       #
