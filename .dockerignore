@@ -4,3 +4,4 @@
 !**/*.sum
 !Makefile
 !VERSION
+frontend/tmp/log
