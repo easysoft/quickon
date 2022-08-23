@@ -2,18 +2,18 @@ package logging
 
 import (
 	"fmt"
+	"io"
+	"os"
 	"path"
 	"runtime"
 	"runtime/debug"
 	"strings"
 	"time"
 
-	"github.com/spf13/viper"
-
 	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
-
-const FlagLogLevel = "log-level"
 
 var (
 	defaultLogger *logrus.Logger
@@ -55,7 +55,9 @@ func NewLogger() *logrus.Logger {
 		},
 	}
 
-	lv := viper.GetString(FlagLogLevel)
+	logger.SetOutput(prepareOutput())
+
+	lv := viper.GetString(flagLogLevel)
 	level, err := logrus.ParseLevel(lv)
 	if err != nil {
 		logger.WithError(err).Fatalf("setup log level '%s' failed", lv)
@@ -66,6 +68,23 @@ func NewLogger() *logrus.Logger {
 
 	logger.AddHook(&ContextFieldsHook{})
 	return logger
+}
+
+func prepareOutput() io.Writer {
+	logFile := viper.GetString(flagLogFile)
+	if logFile == "" {
+		return os.Stdout
+	}
+
+	fileHandler := lumberjack.Logger{
+		Filename:   logFile,
+		MaxSize:    100 * 1024 * 1024,
+		MaxAge:     0,
+		MaxBackups: viper.GetInt(flagLogFileBackups),
+		LocalTime:  true,
+		Compress:   true,
+	}
+	return &fileHandler
 }
 
 func readModuleName() string {

@@ -30,8 +30,9 @@ func NewCmdServe() *cobra.Command {
 	viper.SetEnvKeyReplacer(strings.NewReplacer("-", "_"))
 
 	flags := cmd.Flags()
-	flags.String(logging.FlagLogLevel, "info", "logging level")
-	viper.BindPFlag(logging.FlagLogLevel, flags.Lookup(logging.FlagLogLevel))
+	if err := logging.BingFlags(flags); err != nil {
+		panic(err)
+	}
 
 	flags.String(constant.FlagRuntimeNamespace, "cne-system", "working namespace")
 	viper.BindPFlag(constant.FlagRuntimeNamespace, flags.Lookup(constant.FlagRuntimeNamespace))
