@@ -95,6 +95,6 @@ RUN chmod +x /usr/bin/entrypoint.sh /apps/backend/bin/cne-api \
 
 EXPOSE 80
 
-VOLUME ["/data"]
+VOLUME ["/data", "/logs"]
 
 ENTRYPOINT ["/usr/bin/entrypoint.sh"]
