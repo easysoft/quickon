@@ -246,7 +246,7 @@ func AppStatus(c *gin.Context) {
 	data := i.ParseStatus()
 	logger := i.GetLogger()
 
-	logger.Info("parse status success")
+	logger.Debug("parse status success")
 	/*
 		parse App Uri
 	*/
