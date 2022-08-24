@@ -40,7 +40,9 @@ class my extends control
         $pager = new pager($total, $recPerPage, $pageID);
 
         $instances = $this->loadModel('instance')->getByAccount($this->app->user->account, $pager);
-        $actions   = $this->loadModel('action')->getDynamic('all', 'today');
+
+        $account = commonModel::isDemoAccount() ? $this->app->user->account : 'all';
+        $actions = $this->loadModel('action')->getDynamic($account, 'today');
 
         $this->view->position[] = $this->lang->my->common;
 
