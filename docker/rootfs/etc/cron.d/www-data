@@ -1,2 +1,1 @@
-* * * * * php /apps/qucheng/bin/ztcli http://localhost/instance-deleteExpiredDemoInstance.html
-
+* * * * * curl http://localhost/instance-deleteExpiredDemoInstance.html
