@@ -64,6 +64,7 @@ $config->openMethods[] = 'admin.ignore';
 $config->openMethods[] = 'admin.init';
 $config->openMethods[] = 'admin.resetpassword';
 $config->openMethods[] = 'instance.apidetail';
+$config->openMethods[] = 'instance.deleteexpireddemoinstance';
 $config->openMethods[] = 'backup.ajaxupgradestatus';
 
 $config->anonymousOpenMethods = array();
@@ -83,6 +84,7 @@ $config->notIframeMethods[] = 'file.uploadimages';
 $config->notIframeMethods[] = 'file.download';
 $config->notIframeMethods[] = 'misc.status';
 $config->notIframeMethods[] = 'backup.ajaxupgradestatus';
+$config->notIframeMethods[] = 'instance.deleteexpireddemoinstance';
 
 /* Define the tables. */
 define('TABLE_USER',          '`' . $config->db->prefix . 'user`');

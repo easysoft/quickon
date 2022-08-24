@@ -2045,6 +2045,9 @@ EOT;
         /* Check the parent object is closed. */
         if(!empty($method) and strpos('close|batchclose', $method) === false and !commonModel::canBeChanged($module, $object)) return false;
 
+        /* If user is demo accout, forbid to visit system module.  Temporary codes.*/
+        if(self::isDemoAccount() && $module == 'system') return false;
+
         /* Check is the super admin or not. */
         if(!empty($app->user->admin) || strpos($app->company->admins, ",{$app->user->account},") !== false) return true;
 

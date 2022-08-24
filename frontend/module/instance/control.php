@@ -459,6 +459,8 @@ class instance extends control
      */
     public function deleteExpiredDemoInstance()
     {
+        if(empty($this->config->demoAccounts)) return $this->send(array('result' => 'fail', 'message' => 'This api is only for demo enviroment.'));
+
         $this->instance->deleteExpiredDemoInstance();
 
         $this->send(array('result' => 'success', 'message' => ''));
