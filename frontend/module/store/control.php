@@ -60,6 +60,7 @@ class store extends control
         $postCategories = array();
         if(!empty($_POST))
         {
+            $pageID = 1;
             $conditions = fixer::input('post')
                 ->setDefault('keyword', '')
                 ->setDefault('categories', array())
