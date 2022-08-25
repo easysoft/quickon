@@ -866,7 +866,7 @@ class cneModel extends model
     public function apiGet($url, $data, $header = array(), $host = '')
     {
         $requestUri  = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data, '', '', PHP_QUERY_RFC3986);
+        $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data, null, '&', PHP_QUERY_RFC3986);
         $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
         if($result && $result->code != 200) return $this->translateError($result);;
