@@ -50,7 +50,7 @@ class cneModel extends model
     public function searchApps($keyword = '', $categories = array(), $page = 1, $pageSize = 20)
     {
         $apiUrl  = '/api/market/applist?channel='. $this->config->cloud->api->channel;
-        $apiUrl .= "&q=$keyword";
+        $apiUrl .= "&q=" . rawurlencode($keyword);
         $apiUrl .= "&page=$page";
         $apiUrl .= "&page_size=$pageSize";
         foreach($categories as $category) $apiUrl .= "&category=$category"; // Same name reason is CNE api is required.
@@ -866,7 +866,7 @@ class cneModel extends model
     public function apiGet($url, $data, $header = array(), $host = '')
     {
         $requestUri  = ($host ? $host : $this->config->CNE->api->host) . $url;
-        $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data);
+        $requestUri .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data, '', '', PHP_QUERY_RFC3986);
         $result      = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $header, 'json', 20));
         if($result && $result->code == 200) return $result;
         if($result && $result->code != 200) return $this->translateError($result);;
