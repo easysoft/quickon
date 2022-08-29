@@ -13,7 +13,7 @@ class navigation extends control
 {
     /**
      * Create a app.
-     * 
+     *
      * @access public
      * @return void
      */
@@ -31,7 +31,7 @@ class navigation extends control
 
     /**
      * The main page of navigation.
-     * 
+     *
      * @access public
      * @return void
      */
@@ -62,7 +62,7 @@ class navigation extends control
 
     /**
      * Ajax get pinned instances and pinned apps.
-     * 
+     *
      * @param  int    $id
      * @param  string $objectType
      * @access public
@@ -93,7 +93,7 @@ class navigation extends control
 
     /**
      * Ajax search pinned instances and pinned apps.
-     * 
+     *
      * @param  string $name
      * @access public
      * @return void
@@ -118,7 +118,7 @@ class navigation extends control
 
     /**
      * The settings page of navigation.
-     * 
+     *
      * @access public
      * @return void
      */
@@ -130,19 +130,26 @@ class navigation extends control
 
     /**
      * Configure settings for navigation.
-     * 
+     *
      * @param  string    $field
      * @access public
      * @return void
      */
     public function configure($field)
     {
+        if($field == 'backgroundImage' and $_FILES)
+        {
+            $fileTitles = $this->loadModel('file')->saveUpload('navBackground', '', '', 'backgroundImage');
+            $imageInfo  = $this->loadModel('file')->getById(key($fileTitles));
+            $this->session->set('backgroundImage', $imageInfo->webPath);
+            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => inlink('settings')));
+        }
         if($_POST)
         {
             $this->navigation->configure($field);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
             return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => inlink('settings')));
-        } 
+        }
 
         $setting = $this->navigation->getSetting($field);
 

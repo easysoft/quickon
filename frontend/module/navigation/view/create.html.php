@@ -11,6 +11,7 @@
  */
 ?>
 <?php include '../../common/view/header.lite.html.php';?>
+<?php js::set('backgroundImage', $this->session->backgroundImage);?>
 <div id="app">
   <div class="content">
     <main>

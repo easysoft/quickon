@@ -24,7 +24,7 @@ class navigationModel extends model
 
     /**
      * Get a app by id.
-     * 
+     *
      * @param  int    $id
      * @access public
      * @return object
@@ -36,7 +36,7 @@ class navigationModel extends model
 
     /**
      * Create a app.
-     * 
+     *
      * @access public
      * @return void
      */
@@ -53,7 +53,7 @@ class navigationModel extends model
 
     /**
      * Get apps.
-     * 
+     *
      * @param  string $pinned
      * @param  string $searchParam
      * @access public
@@ -70,7 +70,7 @@ class navigationModel extends model
 
     /**
      * Toggle pinned or unpinned.
-     * 
+     *
      * @param  int    $appID
      * @access public
      * @return void
@@ -84,7 +84,7 @@ class navigationModel extends model
 
     /**
      * Get all navigation's setting.
-     * 
+     *
      * @access public
      * @return array
      */
@@ -99,19 +99,26 @@ class navigationModel extends model
 
     /**
      * Get a setting of navigation.
-     * 
+     *
      * @param  string    $field
      * @access public
      * @return object
      */
     public function getSetting($field)
     {
+        if($field == 'backgroundImage')
+        {
+            $setting = new stdClass();
+            $setting->field = 'backgroundImage';
+            $setting->value = '';
+            return $setting;
+        }
         return $this->dao->select('value')->from(TABLE_CONFIG)->where('`key`')->eq($field)->fetch();
     }
 
     /**
      * Change a setting.
-     * 
+     *
      * @param  string    $field
      * @access public
      * @return void

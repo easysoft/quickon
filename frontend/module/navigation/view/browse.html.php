@@ -11,6 +11,7 @@
  */
 ?>
 <?php include '../../common/view/header.lite.html.php';?>
+<?php js::set('backgroundImage', $this->session->backgroundImage);?>
 <div id="app">
   <nav class="sidenav">
     <a class="close-sidenav" href=""><i class="icon icon-close"></i></a>

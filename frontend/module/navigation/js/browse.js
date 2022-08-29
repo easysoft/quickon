@@ -25,6 +25,7 @@ function searchInstance()
 }
 
 $('.sidenav').hide();
+if(backgroundImage !== false) $('#app').css('background-image', "url(" + backgroundImage + ")");
 
 $('#app').on('click', '#config-button', function(e) {
     e.preventDefault();

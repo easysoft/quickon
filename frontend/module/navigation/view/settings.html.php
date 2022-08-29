@@ -11,6 +11,7 @@
  */
 ?>
 <?php include '../../common/view/header.lite.html.php';?>
+<?php js::set('backgroundImage', $this->session->backgroundImage);?>
 <div id="app">
   <div class="content">
     <main>
@@ -34,6 +35,11 @@
               <td class="text-center"> <?php echo html::a($this->createLink('navigation', 'configure', 'field=' . $setting->key), "<i class='icon icon-edit'></i>");?></td>
             </tr>
           <?php endforeach;?>
+            <tr>
+              <td><?php echo $this->lang->navigation->settings->uploadBackground;?></td>
+              <td></td>
+              <td class="text-center"> <?php echo html::a($this->createLink('navigation', 'configure', 'field=backgroundImage'), "<i class='icon icon-edit'></i>");?></td>
+            </tr>
           </tbody>
         </table>
       </section>

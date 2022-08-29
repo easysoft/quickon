@@ -15,3 +15,4 @@ $lang->navigation->settings->hideInaccessible     = '隐藏未启动的服务';
 $lang->navigation->settings->allowAnonymousAccess = '允许匿名用户访问';
 $lang->navigation->settings->on                   = '开启';
 $lang->navigation->settings->off                  = '关闭';
+$lang->navigation->settings->uploadBackground     = '上传背景图片';
