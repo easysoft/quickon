@@ -70,6 +70,7 @@
           <a id="add-item" href=""><?php echo $this->lang->navigation->pinInstance;?></a>
         </section>
       </div>
+      <div class='power'><?php echo $this->lang->navigation->power;?></div>
       <div id="config-buttons">
         <?php if($user !== 'anonymous'):?>
         <a id="config-button" class="config" href=""><i class="icon icon-edit" style="font-size:20px;"></i></a>

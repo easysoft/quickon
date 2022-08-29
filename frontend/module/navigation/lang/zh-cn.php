@@ -8,6 +8,7 @@ $lang->navigation->url         = 'URL';
 $lang->navigation->appName     = '服务名称';
 $lang->navigation->label       = '设置项';
 $lang->navigation->value       = '值';
+$lang->navigation->power       = 'Power by Heimdall';
 
 $lang->navigation->settings = new stdclass();
 $lang->navigation->settings->common               = '设置';

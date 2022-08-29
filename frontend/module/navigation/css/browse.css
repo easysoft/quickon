@@ -35,3 +35,4 @@ hr {margin: 23px 0 18px; height: 0; border-style: none; border-width: 0; border-
 .searchform input {padding: 17px 15px; font-size: 15px; border: 0 none; width: 100%; background: transparent;}
 .searchform button {position: absolute; right: 0px; top: 0px; border: none; font-size: 16px; padding: 10px 15px; line-height: 38px; font-weight: 500; border-top-right-radius: 5px; border-bottom-right-radius: 5px; color: white; text-transform: uppercase; background: #d64d55;}
 .searchform select {padding: 0 10px; background: #f5f5f5; border: none; border-right: 1px solid #ddd;}
+div.power {font-size: 20px;}
