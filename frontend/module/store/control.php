@@ -108,6 +108,8 @@ class store extends control
         $this->view->cloudApp   = $appInfo;
         $this->view->components = null; // Hide custom installation in version 1.0. If want, opened by: $this->cne->getAppSettings($id);
 
+        $this->view->dynamicArticles = $this->store->appDynamic($appInfo);
+
         $this->display();
     }
 }

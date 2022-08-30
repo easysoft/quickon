@@ -62,4 +62,33 @@ class storeModel extends model
 
         return $output;
     }
+
+    /**
+     * Get app dynamic news from Qucheng offical site.
+     *
+     * @param  object $cloudApp
+     * @param  int    $pageID
+     * @param  int    $recPerPage
+     * @access public
+     * @return mixed
+     */
+    public function appDynamic($cloudApp, $pageID = 1, $recPerPage = 20)
+    {
+        $url = $this->config->store->quchengSiteHost . '/article-apibrowse.html';
+
+
+        $headers = array();
+        $headers[] = 'X-Requested-With:XMLHttpRequest';
+        $headers[] = 'Accept:application/json';
+
+        $apiParams = array();
+        $apiParams['alias']      = strtolower(str_replace('-', '', $cloudApp->chart));
+        $apiParams['page']       = $pageID;
+        $apiParams['recPerPage'] = $recPerPage;
+
+        $result = commonModel::apiPost($url, $apiParams, $headers);
+        if($result && $result->code == 200) return $result->data;
+
+        return array();
+    }
 }
