@@ -2,3 +2,12 @@
 .app-logo img {width: 48px; height: 48px;}
 table tr td.app-desc {vertical-align: top;}
 table tr td.app-action {vertical-align: top; text-align: center;}
+#mainContent .cell{padding: 20px;}
+#mainContent .app-logo img {width: 50px; height: 50px; display: inline-block; margin-right: 20px;}
+#mainContent hr {margin: 10px 0; }
+#appInfoHeader {height: 60px;}
+#appInfoHeader .btn { display: inline-block; margin: 0 10px;}
+.dynamicContainer {padding: 10px; border: solid 1px #ddd;}
+.dynamicContainer table {margin-bottom: 0;}
+.screenshotsContainer .errorBox{padding: 20px; border: solid 1px #ddd;}
+.screenshotsContainer img{width: 100%; height: auto; border: solid 1px #ddd; border-radius: 3px; padding: 5px;}

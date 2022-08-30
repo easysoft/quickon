@@ -19,39 +19,81 @@
   </div>
 </div>
 <div id="mainContent" class="main-row">
-  <div class="main-col">
-    <div class="cell">
-      <div class="main-header">
-        <h2 class="app-name"><?php echo $cloudApp->alias;?></h2>
-        <div class="btn-group dropdown pull-right">
-          <?php echo html::a(helper::createLink('instance', 'install', "id={$cloudApp->id}", '', true), $lang->instance->install, '', "class='iframe btn btn-primary' title='{$lang->instance->install}' data-width='520' data-app='space'");?>
+  <div class="main-col cell">
+    <div id="appInfoHeader">
+      <div class="pull-left app-logo">
+          <?php echo html::image($cloudApp->logo ? $cloudApp->logo : '', "referrer='origin'");?>
+          <h2 style="display: inline-block;"><?php echo $cloudApp->alias;?></h2>
+      </div>
+      <div class="btn-group dropdown pull-right">
+        <?php echo html::a(helper::createLink('instance', 'install', "id={$cloudApp->id}", '', true), $lang->instance->install, '', "class='iframe btn btn-primary' title='{$lang->instance->install}' data-width='520' data-app='space'");?>
+      </div>
+      <div class="pull-right">
+        <div class="dropdown">
+          <button class="btn" type="button" data-toggle="dropdown"><i class='icon icon-info-sign'></i>&nbsp;<?php echo $lang->store->support;?><span class="caret"></span></button>
+          <ul class="dropdown-menu">
+            <li><?php echo html::a(zget($cloudApp, 'git_url', '#'), $lang->store->gitUrl, '_blank', "class='icon icon-github'");?></li>
+            <li><?php echo html::a(zget($cloudApp, 'dockerfile_url', '#'), $lang->store->dockerfileUrl, '_blank', "class='icon icon-dockerhub'");?></li>
+            <li><?php echo html::a(zget($cloudApp, 'forum_url', '#'), $lang->store->forumUrl, '_blank', "class='icon icon-comments-alt'");?></li>
+          </ul>
         </div>
       </div>
-      <table class="table table-data">
-        <tbody>
-          <tr>
-            <td class="w-120px app-logo"><div style="text-align: right;"><?php echo html::image($cloudApp->logo, "referrer='origin'");?></div></td>
-            <td class="app-desc"><?php echo $cloudApp->desc;?></td>
-            <td class="w-120px app-action"></td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->store->appVersion;?></th>
-            <td><?php echo $cloudApp->app_version;?></td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->store->releaseDate;?></th>
-            <td><?php echo (new DateTime($cloudApp->publish_time))->format('Y-m-d');?></td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->store->author;?></th>
-            <td><?php echo $cloudApp->author;?></td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->store->appType;?></th>
-            <td><?php echo trim(implode('/', array_column($cloudApp->categories, 'alias')), '/');?></td>
-          </tr>
-        </tbody>
-      </table>
+    </div>
+    <hr/>
+    <div id='appInfoBody'>
+      <?php if(empty($cloudApp)):?>
+      <div class="table-empty-tip">
+        <p><span class="text-muted"><?php echo $lang->store->empty;?></span></p>
+      </div>
+      <?php else:?>
+      <div class="row">
+        <div style='padding-right: 10px;' class='col-lg-8'>
+          <h3><?php echo $lang->store->appBaseInfo;?></h3>
+          <p><?php echo $cloudApp->desc;?></p>
+          <table style="border: solid 1px #ddd;" class="table table-data">
+            <tbody>
+              <tr>
+                <th><?php echo $lang->store->appVersion;?>:</th>
+                <td><?php echo $cloudApp->app_version;?></td>
+                <th><?php echo $lang->store->author;?>:</th>
+                <td><?php echo $cloudApp->author;?></td>
+              </tr>
+              <tr>
+                <th><?php echo $lang->store->releaseDate;?>:</th>
+                <td><?php echo (new DateTime($cloudApp->publish_time))->format('Y-m-d');?></td>
+                <th><?php echo $lang->store->appType;?>:</th>
+                <td><?php echo trim(implode('/', array_column($cloudApp->categories, 'alias')), '/');?></td>
+              </tr>
+            </tbody>
+          </table>
+          <h3><?php echo $lang->store->screenshots;?></h3>
+          <div class='row screenshotsContainer'>
+            <?php if(empty(array_filter($cloudApp->screenshot_urls))):?>
+            <div class='col-sm-12'><div class='errorBox'><?php echo $lang->store->noScreenshot;?></div></div>
+            <?php else:?>
+            <?php foreach(array_filter($cloudApp->screenshot_urls) as $imgUrl):?>
+            <div class='col-xs-6 col-sm-3'>
+              <a href="<?php echo $imgUrl;?>" target="_blank"><?php echo html::image($imgUrl, "class='img-thumbnail'");?></a>
+            </div>
+            <?php endforeach;?>
+            <?php endif;?>
+          </div>
+        </div>
+        <div class='col-lg-4'>
+          <h3><?php echo $lang->store->appDynamic;?></h3>
+          <div class='dynamicContainer'>
+            <table class="table table-striped table-hover table-borderless">
+            <?php if(empty($dynamicArticles)):?>
+            <tr><td><?php echo $lang->store->noDynamicArticle;?></td></tr>
+            <?php endif;?>
+            <?php foreach($dynamicArticles as $article):?>
+            <tr><td><?php echo html::a($article->url, $article->title,);?></td></tr>
+            <?php endforeach;?>
+            </table>
+          </div>
+        </div>
+      </div>
+      <?php endif;?>
     </div>
   </div>
 </div>

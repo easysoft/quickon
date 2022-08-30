@@ -289,6 +289,7 @@ $lang->error->tutorialData    = '新手模式下不会插入数据，请退出�
 $lang->error->noCurlExt       = '服务器未安装Curl模块。';
 $lang->error->fail            = '失败';
 $lang->error->success         = '成功';
+$lang->error->httpServerError = '服务器错误';
 
 /* 分页信息。*/
 $lang->pager               = new stdclass();
