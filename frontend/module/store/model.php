@@ -76,10 +76,10 @@ class storeModel extends model
     {
         $url = $this->config->store->quchengSiteHost . '/article-apibrowse.html';
 
-
         $headers = array();
-        $headers[] = 'X-Requested-With:XMLHttpRequest';
-        $headers[] = 'Accept:application/json';
+        $headers[] = 'X-Requested-With: XMLHttpRequest';
+        $headers[] = 'Accept: application/json';
+        $headers[] = 'Content-type: multipart/form-data';
 
         $apiParams = array();
         $apiParams['alias']      = strtolower(str_replace('-', '', $cloudApp->chart));

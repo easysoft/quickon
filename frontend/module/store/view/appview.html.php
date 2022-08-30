@@ -48,7 +48,7 @@
       <?php else:?>
       <div class="row">
         <div style='padding-right: 10px;' class='col-lg-8'>
-          <h3><?php echo $lang->store->appBaseInfo;?></h3>
+          <h3><?php echo $lang->store->appBasicInfo;?></h3>
           <p><?php echo $cloudApp->desc;?></p>
           <table style="border: solid 1px #ddd;" class="table table-data">
             <tbody>
