@@ -29,9 +29,16 @@ class navigationModel extends model
      * @access public
      * @return object
      */
-    public function getByID($id)
+    public function getByID($id, $type = 'app')
     {
-        return $this->dao->select('*')->from(TABLE_NAVINSTANCE)->where('id')->eq($id)->fetch();
+        if($type == 'app')
+        {
+            return $this->dao->select('*')->from(TABLE_NAVINSTANCE)->where('id')->eq($id)->fetch();
+        }
+        else
+        {
+            return $this->loadModel('instance')->getByID($id);
+        }
     }
 
     /**
@@ -49,6 +56,20 @@ class navigationModel extends model
             ->get();
 
         $this->dao->insert(TABLE_NAVINSTANCE)->data($app)->autoCheck()->check('title', 'notempty')->exec();
+    }
+
+    /**
+     * Update a app.
+     *
+     * @param  int    $id
+     * @param  string $type
+     * @access public
+     * @return mixed
+     */
+    public function update($id, $type)
+    {
+        $app = fixer::input('post')->remove('post')->get();
+        if($type == 'app') $this->dao->update(TABLE_NAVINSTANCE)->data($app)->where('id')->eq($id)->autoCheck()->exec();
     }
 
     /**

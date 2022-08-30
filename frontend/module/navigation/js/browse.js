@@ -35,6 +35,7 @@ $('#app').on('click', '#config-button', function(e) {
     if(active)
     {
         $('.add-item').hide();
+        $('.item-edit').hide();
     }
     else
     {

@@ -30,6 +30,31 @@ class navigation extends control
     }
 
     /**
+     * Edit a app.
+     *
+     * @param  int    $id
+     * @param  string $type
+     * @access public
+     * @return mixed
+     */
+    public function edit($id, $type)
+    {
+        $oldApp = $this->navigation->getByID($id, $type);
+
+        if($_POST)
+        {
+            $this->navigation->update($id, $type);
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+            return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => inlink('browse')));
+        }
+
+        $this->view->id     = $id;
+        $this->view->type   = $type;
+        $this->view->oldApp = $oldApp;
+        $this->display();
+    }
+
+    /**
      * The main page of navigation.
      *
      * @access public

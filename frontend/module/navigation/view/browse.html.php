@@ -51,6 +51,7 @@
             <a title="<?php echo $pinnedInstance->introduction;?>" style="<?php $isRunning === true ? 'pointer-events: none;' : '' ?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="icon icon-right-to-line"></i></a>
             <?php endif;?>
           </div>
+          <?php echo html::a($this->createLink('navigation', 'edit', "id={$pinnedInstance->id}&type=instance"), '<i class="icon icon-pencil"></i>', '', "class='item-edit'");?>
         </section>
       <?php endforeach;?>
       <?php foreach($pinnedApps as $app):?>
@@ -64,6 +65,7 @@
             </div>
             <a title="<?php echo $app->desc;?>"  class="link white" target="_blank" href="<?php echo $app->domain;?>"><i class="icon icon-right-to-line"></i></a>
           </div>
+          <?php echo html::a($this->createLink('navigation', 'edit', "id={$app->id}&type=app"), '<i class="icon icon-pencil"></i>', '', "class='item-edit'");?>
         </section>
       <?php endforeach;?>
         <section class="add-item">
