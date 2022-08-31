@@ -68,7 +68,7 @@ class navigationModel extends model
      */
     public function update($id, $type)
     {
-        $app = fixer::input('post')->remove('post')->get();
+        $app = fixer::input('post')->remove('post,logo')->get();
         if($type == 'app') $this->dao->update(TABLE_NAVINSTANCE)->data($app)->where('id')->eq($id)->autoCheck()->exec();
     }
 

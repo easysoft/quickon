@@ -31,6 +31,12 @@
               <label><?php echo $this->lang->navigation->url;?></label>
               <?php echo html::input('domain', isset($oldApp->domain) ? $oldApp->domain : '', "class='form-control' id='appurl' $disableInput");?>
             </div>
+            <?php if($type == 'app'):?>
+            <div class="input">
+              <label><?php echo $this->lang->navigation->logo;?></label>
+              <?php echo html::file('logo');?>
+            </div>
+            <?php endif;?>
             <div id="sapconfig"></div>
           </div>
           <footer>

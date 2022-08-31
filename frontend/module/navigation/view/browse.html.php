@@ -41,7 +41,7 @@
         <?php $isRunning = $pinnedInstance->status == 'running' ? true : false;?>
         <?php $itemStyle = $isRunning === true ? "background-color: #161b1f" : "background-color: grey";?>
           <div class="item" title='<?php echo zget($this->lang->instance->statusList, $pinnedInstance->status);?>' style="<?php echo $itemStyle;?>">
-          <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
+          <?php if(!empty($pinnedInstance->logo)) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
             <div class="details">
               <div class="title white">
                 <div class='title'><?php echo $pinnedInstance->name;?></div>

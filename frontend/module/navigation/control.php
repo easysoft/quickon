@@ -43,6 +43,14 @@ class navigation extends control
 
         if($_POST)
         {
+            if(isset($_FILES))
+            {
+                $fileTitles = $this->loadModel('file')->saveUpload('logo', '', '', 'logo');
+                $imageInfo  = $this->loadModel('file')->getById(key($fileTitles));
+                $logo       = $imageInfo->webPath;
+                if($type == 'app' and $fileTitles !== array()) $this->dao->update(TABLE_NAVINSTANCE)->set('logo')->eq($logo)->where('id')->eq($id)->exec();
+            }
+
             $this->navigation->update($id, $type);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
             return $this->send(array('result' => 'success', 'message' => $this->lang->saveSuccess, 'locate' => inlink('browse')));
