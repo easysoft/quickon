@@ -378,7 +378,7 @@ class InstanceModel extends model
         $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
 
-        if(commonModel::isDemoAccount()) $apiParams->settings_snippets = array('quickon_saas');
+        if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas');
 
         $result = $this->cne->installApp($apiParams);
         if($result->code != 200)
@@ -447,7 +447,7 @@ class InstanceModel extends model
      */
     public function stop($instance)
     {
-        $apiPrams = new stdclass;
+        $apiParams = new stdclass;
         $apiParams->cluster   = '';// Mulit cluster should set this field.
         $apiParams->name      = $instance->k8name;
         $apiParams->chart     = $instance->chart;

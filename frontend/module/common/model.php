@@ -2527,10 +2527,11 @@ EOT;
      * @access public
      * @return object
      */
-    public static function apiGet($url, $data, $headers = array())
+    public static function apiGet($url, $data = array(), $headers = array())
     {
-        $requestUri = (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data, null, '&', PHP_QUERY_RFC3986);
-        $result     = json_decode(commonModel::http($requestUri, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $headers, 'json', 20));
+        $url .= (strpos($url, '?') !== false ? '&' : '?') . http_build_query($data, null, '&', PHP_QUERY_RFC3986);
+
+        $result = json_decode(commonModel::http($url, $data, array(CURLOPT_CUSTOMREQUEST => 'GET'), $headers, 'json', 20));
         if($result && $result->code == 200) return $result;
 
         return self::apiError($result);

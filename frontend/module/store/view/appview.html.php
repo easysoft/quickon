@@ -82,14 +82,18 @@
         <div class='col-lg-4'>
           <h3><?php echo $lang->store->appDynamic;?></h3>
           <div class='dynamicContainer'>
-            <table class="table table-striped table-hover table-borderless">
+            <table class="table table-striped table-borderless">
             <?php if(empty($dynamicArticles)):?>
             <tr><td><?php echo $lang->store->noDynamicArticle;?></td></tr>
-            <?php endif;?>
+            <?php else:?>
             <?php foreach($dynamicArticles as $article):?>
-            <tr><td><?php echo html::a($article->url, $article->title,);?></td></tr>
+            <tr><td><?php echo html::a($article->url, $article->title, "target='_blank'");?></td></tr>
             <?php endforeach;?>
+            <?php endif;?>
             </table>
+            <?php if(!empty($dynamicArticles)):?>
+            <div class="table-footer"><?php $dynamicPager->show('right', 'pagerjs');?></div>
+            <?php endif;?>
           </div>
         </div>
       </div>
