@@ -943,7 +943,7 @@ a.list-group-item:focus,a.list-group-item:hover {
 }
 
 .table-hover>tbody>tr:hover>td,.table-hover>tbody>tr:hover>th {
-    background-color: #e5fbf3
+    background-color: #ececed;
 }
 
 .table tr.active>td,.table tr.active>th,.table tr>td.active,.table tr>th.active {

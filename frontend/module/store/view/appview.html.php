@@ -72,7 +72,7 @@
             <div class='col-sm-12'><div class='errorBox'><?php echo $lang->store->noScreenshot;?></div></div>
             <?php else:?>
             <?php foreach(array_filter($cloudApp->screenshot_urls) as $imgUrl):?>
-            <div class='col-xs-6 col-sm-3'>
+            <div class='col-xs-6 col-sm-4'>
               <a href="<?php echo $imgUrl;?>" target="_blank"><?php echo html::image($imgUrl, "class='img-thumbnail'");?></a>
             </div>
             <?php endforeach;?>
@@ -82,7 +82,7 @@
         <div class='col-lg-4'>
           <h3><?php echo $lang->store->appDynamic;?></h3>
           <div class='dynamicContainer'>
-            <table class="table table-striped table-borderless">
+            <table class="table table-striped table-hover table-borderless">
             <?php if(empty($dynamicArticles)):?>
             <tr><td><?php echo $lang->store->noDynamicArticle;?></td></tr>
             <?php else:?>
