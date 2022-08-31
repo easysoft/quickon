@@ -11,6 +11,7 @@
  */
 ?>
 <?php include '../../common/view/header.lite.html.php';?>
+<?php js::set('backgroundImage', $this->session->backgroundImage);?>
 <div id="app">
   <div class="content">
     <main>
@@ -21,6 +22,13 @@
             <div class="module-actions">
             </div>
           </header>
+          <?php if($field == 'backgroundImage'):?>
+          <div class="create">
+            <div class="input">
+              <?php echo html::file('backgroundImage');?>
+            </div>
+          </div>
+          <?php else:?>
           <div class="create">
             <div class="input">
               <?php $checked = $value == 'on' ? 'checked' : '';?>
@@ -28,6 +36,7 @@
               <label class="switch"><input type="checkbox" name="value" value="1" <?php echo $checked;?> /><span class="config-slider round"></span></label>
             </div>
           </div>
+          <?php endif;?>
           <footer>
             <div class="section-title">&nbsp;</div>
             <div class="module-actions">

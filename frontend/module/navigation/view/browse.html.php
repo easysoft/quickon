@@ -11,6 +11,7 @@
  */
 ?>
 <?php include '../../common/view/header.lite.html.php';?>
+<?php js::set('backgroundImage', $this->session->backgroundImage);?>
 <div id="app">
   <nav class="sidenav">
     <a class="close-sidenav" href=""><i class="icon icon-close"></i></a>
@@ -40,7 +41,7 @@
         <?php $isRunning = $pinnedInstance->status == 'running' ? true : false;?>
         <?php $itemStyle = $isRunning === true ? "background-color: #161b1f" : "background-color: grey";?>
           <div class="item" title='<?php echo zget($this->lang->instance->statusList, $pinnedInstance->status);?>' style="<?php echo $itemStyle;?>">
-          <?php if($pinnedInstance->logo) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
+          <?php if(!empty($pinnedInstance->logo)) echo html::image($pinnedInstance->logo, "class='instance-logo'");?>
             <div class="details">
               <div class="title white">
                 <div class='title'><?php echo $pinnedInstance->name;?></div>
@@ -50,6 +51,7 @@
             <a title="<?php echo $pinnedInstance->introduction;?>" style="<?php $isRunning === true ? 'pointer-events: none;' : '' ?>" class="link white" target="_blank" href="<?php echo '//' . $pinnedInstance->domain;?>"><i class="icon icon-right-to-line"></i></a>
             <?php endif;?>
           </div>
+          <?php echo html::a($this->createLink('navigation', 'edit', "id={$pinnedInstance->id}&type=instance"), '<i class="icon icon-pencil"></i>', '', "class='item-edit'");?>
         </section>
       <?php endforeach;?>
       <?php foreach($pinnedApps as $app):?>
@@ -63,12 +65,14 @@
             </div>
             <a title="<?php echo $app->desc;?>"  class="link white" target="_blank" href="<?php echo $app->domain;?>"><i class="icon icon-right-to-line"></i></a>
           </div>
+          <?php echo html::a($this->createLink('navigation', 'edit', "id={$app->id}&type=app"), '<i class="icon icon-pencil"></i>', '', "class='item-edit'");?>
         </section>
       <?php endforeach;?>
         <section class="add-item">
           <a id="add-item" href=""><?php echo $this->lang->navigation->pinInstance;?></a>
         </section>
       </div>
+      <div class='power'><?php echo $this->lang->navigation->power;?></div>
       <div id="config-buttons">
         <?php if($user !== 'anonymous'):?>
         <a id="config-button" class="config" href=""><i class="icon icon-edit" style="font-size:20px;"></i></a>

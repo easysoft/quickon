@@ -1,6 +1,6 @@
 <?php
 /**
- * The create view file of navigation module of QuCheng.
+ * The edit view file of navigation module of QuCheng.
  *
  * @copyright   Copyright 2021-2022 北京渠成软件有限公司(BeiJiang QuCheng Software Co,LTD, www.qucheng.com)
  * @license     ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
@@ -12,23 +12,31 @@
 ?>
 <?php include '../../common/view/header.lite.html.php';?>
 <?php js::set('backgroundImage', $this->session->backgroundImage);?>
+<?php $disableInput = $type !== 'app' ? " disabled='disabled'" : '';?>
 <div id="app">
   <div class="content">
     <main>
       <form class="form-ajax" method="post" target='hiddenwin' id="itemform">
+        <?php echo html::hidden('post', '');?>
         <section class="module-container">
           <header>
-            <div class="section-title"><?php echo $this->lang->navigation->addApp;?></div>
+            <div class="section-title"><?php echo $this->lang->navigation->editApp;?></div>
           </header>
           <div id="create" class="create">
             <div class="input">
               <label><?php echo $this->lang->navigation->appName;?></label>
-              <?php echo html::input('title', '', "class='form-control' id='appName'");?>
+              <?php echo html::input('title', isset($oldApp->title) ? $oldApp->title : '', "class='form-control' id='appName' $disableInput");?>
             </div>
             <div class="input">
               <label><?php echo $this->lang->navigation->url;?></label>
-              <?php echo html::input('domain', '', "class='form-control' id='appurl'");?>
+              <?php echo html::input('domain', isset($oldApp->domain) ? $oldApp->domain : '', "class='form-control' id='appurl' $disableInput");?>
             </div>
+            <?php if($type == 'app'):?>
+            <div class="input">
+              <label><?php echo $this->lang->navigation->logo;?></label>
+              <?php echo html::file('logo');?>
+            </div>
+            <?php endif;?>
             <div id="sapconfig"></div>
           </div>
           <footer>

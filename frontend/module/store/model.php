@@ -70,25 +70,16 @@ class storeModel extends model
      * @param  int    $pageID
      * @param  int    $recPerPage
      * @access public
-     * @return mixed
+     * @return object|null
      */
     public function appDynamic($cloudApp, $pageID = 1, $recPerPage = 20)
     {
-        $url = $this->config->store->quchengSiteHost . '/article-apibrowse.html';
+        $alias = strtolower(str_replace('-', '', $cloudApp->chart));
+        $url   = $this->config->store->quchengSiteHost . "/article-apibrowse-{$alias}-{$pageID}-{$recPerPage}.html";
 
-        $headers = array();
-        $headers[] = 'X-Requested-With: XMLHttpRequest';
-        $headers[] = 'Accept: application/json';
-        $headers[] = 'Content-type: multipart/form-data';
-
-        $apiParams = array();
-        $apiParams['alias']      = strtolower(str_replace('-', '', $cloudApp->chart));
-        $apiParams['page']       = $pageID;
-        $apiParams['recPerPage'] = $recPerPage;
-
-        $result = commonModel::apiPost($url, $apiParams, $headers);
+        $result = commonModel::apiGet($url);
         if($result && $result->code == 200) return $result->data;
 
-        return array();
+        return null;
     }
 }

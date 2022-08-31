@@ -24,19 +24,26 @@ class navigationModel extends model
 
     /**
      * Get a app by id.
-     * 
+     *
      * @param  int    $id
      * @access public
      * @return object
      */
-    public function getByID($id)
+    public function getByID($id, $type = 'app')
     {
-        return $this->dao->select('*')->from(TABLE_NAVINSTANCE)->where('id')->eq($id)->fetch();
+        if($type == 'app')
+        {
+            return $this->dao->select('*')->from(TABLE_NAVINSTANCE)->where('id')->eq($id)->fetch();
+        }
+        else
+        {
+            return $this->loadModel('instance')->getByID($id);
+        }
     }
 
     /**
      * Create a app.
-     * 
+     *
      * @access public
      * @return void
      */
@@ -52,8 +59,22 @@ class navigationModel extends model
     }
 
     /**
+     * Update a app.
+     *
+     * @param  int    $id
+     * @param  string $type
+     * @access public
+     * @return mixed
+     */
+    public function update($id, $type)
+    {
+        $app = fixer::input('post')->remove('post,logo')->get();
+        if($type == 'app') $this->dao->update(TABLE_NAVINSTANCE)->data($app)->where('id')->eq($id)->autoCheck()->exec();
+    }
+
+    /**
      * Get apps.
-     * 
+     *
      * @param  string $pinned
      * @param  string $searchParam
      * @access public
@@ -70,7 +91,7 @@ class navigationModel extends model
 
     /**
      * Toggle pinned or unpinned.
-     * 
+     *
      * @param  int    $appID
      * @access public
      * @return void
@@ -84,7 +105,7 @@ class navigationModel extends model
 
     /**
      * Get all navigation's setting.
-     * 
+     *
      * @access public
      * @return array
      */
@@ -99,19 +120,26 @@ class navigationModel extends model
 
     /**
      * Get a setting of navigation.
-     * 
+     *
      * @param  string    $field
      * @access public
      * @return object
      */
     public function getSetting($field)
     {
+        if($field == 'backgroundImage')
+        {
+            $setting = new stdClass();
+            $setting->field = 'backgroundImage';
+            $setting->value = '';
+            return $setting;
+        }
         return $this->dao->select('value')->from(TABLE_CONFIG)->where('`key`')->eq($field)->fetch();
     }
 
     /**
      * Change a setting.
-     * 
+     *
      * @param  string    $field
      * @access public
      * @return void

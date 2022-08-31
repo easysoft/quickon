@@ -96,19 +96,31 @@ class store extends control
      * @access public
      * @return viod
      */
-    public function appView($id)
+    public function appView($id, $pageID = 1, $recPerPage = 20)
     {
         $appInfo = $this->cne->getAppInfo($id, true);
         if(empty($appInfo)) return print(js::locate('back', 'parent'));
 
         $this->lang->switcherMenu = $this->store->getAppViewSwitcher($appInfo);
 
-        $this->view->title      = $appInfo->alias;
-        $this->view->position[] = $appInfo->alias;
-        $this->view->cloudApp   = $appInfo;
-        $this->view->components = null; // Hide custom installation in version 1.0. If want, opened by: $this->cne->getAppSettings($id);
+        $dynamicResult = $this->store->appDynamic($appInfo, $pageID, $recPerPage);
+        $articles = array();
+        $totalArticle = 0;
+        if(!empty($dynamicResult))
+        {
+            $articles     = $dynamicResult->articles;
+            $totalArticle = $dynamicResult->recTotal;
+        }
+        $this->view->dynamicArticles = $articles;
 
-        $this->view->dynamicArticles = $this->store->appDynamic($appInfo);
+        $this->app->loadClass('pager', true);
+        $pager = pager::init($totalArticle, $recPerPage, $pageID);
+        $this->view->dynamicPager = $pager;
+
+        $this->view->title        = $appInfo->alias;
+        $this->view->position[]   = $appInfo->alias;
+        $this->view->cloudApp     = $appInfo;
+        $this->view->components   = null; // Hide custom installation in version 1.0. If want, opened by: $this->cne->getAppSettings($id);
 
         $this->display();
     }
