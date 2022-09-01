@@ -13,3 +13,5 @@
 #appContainer .app-footer {height: 50px; padding: 10px 20px; font-size: 14px; font-weight: bold;}
 #appContainer .app-footer span {display: inline-block; margin: 0 10px;}
 #appContainer .pagination ul {float: right;}
+#appContainer .btn-toolbar {height: 40px;}
+.sort {padding: 0 10px;}

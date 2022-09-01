@@ -20,3 +20,8 @@ $lang->store->gitUrl           = '应用源码';
 $lang->store->dockerfileUrl    = 'Dockerfile';
 $lang->store->forumUrl         = '论坛';
 
+$lang->store->sortTypes = array();
+$lang->store->sortTypes['id']          = '默认';
+$lang->store->sortTypes['create_time'] = '最新上架';
+$lang->store->sortTypes['update_time'] = '最近更新';
+//$lang->store->sortTypes['name']        = '名称';

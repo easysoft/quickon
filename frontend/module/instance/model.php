@@ -21,6 +21,7 @@ class InstanceModel extends model
     {
         parent::__construct();
         $this->loadModel('cne');
+        $this->loadModel('store');
     }
 
     /**
@@ -633,7 +634,7 @@ class InstanceModel extends model
             $existInstance = $this->dao->select('id')->from(TABLE_INSTANCE)->where('k8name')->eq($k8App->name)->fetch();
             if($existInstance) continue;
 
-            $marketApp = $this->cne->getAppInfo(0, false, $k8App->chart, $k8App->version,  $k8App->channel);
+            $marketApp = $this->store->getAppInfo(0, false, $k8App->chart, $k8App->version,  $k8App->channel);
             if(empty($marketApp)) continue;
 
             $instanceData = new stdclass;

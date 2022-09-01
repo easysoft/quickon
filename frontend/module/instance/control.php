@@ -24,6 +24,7 @@ class instance extends control
         parent::__construct($moduleName, $methodName);
         $this->loadModel('action');
         $this->loadModel('cne');
+        $this->loadModel('store');
     }
 
     /**
@@ -115,7 +116,7 @@ class instance extends control
     public function upgrade($id)
     {
         $instance = $this->instance->getByID($id);
-        $instance->latestVersion = $this->cne->appLatestVersion($instance->appID, $instance->version);
+        $instance->latestVersion = $this->store->appLatestVersion($instance->appID, $instance->version);
 
         if($_POST)
         {
@@ -158,10 +159,10 @@ class instance extends control
         $storeUrl = $this->createLink('store', 'appview', "id=$id");
         return js::execute("window.parent.location.href='{$storeUrl}';");
 
-        $cloudApp = $this->cne->getAppInfo($id);
+        $cloudApp = $this->sotre->getAppInfo($id);
         if(empty($cloudApp)) return print(js::locate('back', 'parent'));
 
-        $components = $this->cne->getAppSettings($id);
+        $components = $this->store->getAppSettings($id);
 
         if(!empty($_POST))
         {
@@ -194,7 +195,7 @@ class instance extends control
      */
     public function install($appID)
     {
-        $cloudApp = $this->cne->getAppInfo($appID);
+        $cloudApp = $this->store->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
 
         if(empty($this->config->demoAccounts))
@@ -212,7 +213,7 @@ class instance extends control
             }
         }
 
-        $versionList = $this->cne->appVersionList($cloudApp->id);
+        $versionList = $this->store->appVersionList($cloudApp->id);
         $dbList      = $this->cne->sharedDBList();
         $customData  = new stdclass;
         if(!empty($_POST))

@@ -30,6 +30,15 @@
     </form>
   </div>
   <div class='main-cell' id='appContainer'>
+    <div>
+      <div class="btn-toolbar">
+        <?php foreach($lang->store->sortTypes as $sortCode => $sortLabel):?>
+        <?php $active = $sortType == $sortCode ? 'btn-active-text' : '';?>
+        <?php $label = "<span class='text'>$sortLabel</span>";?>
+        <?php echo html::a(inlink('browse', "sortType=$sortCode"), $label, '', "class='sort $active'");?>
+        <?php endforeach;?>
+      </div>
+    </div>
     <?php if(empty($cloudApps)):?>
     <div class="table-empty-tip">
       <p><span class="text-muted"><?php echo $lang->store->empty;?></span></p>
