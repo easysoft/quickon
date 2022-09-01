@@ -72,7 +72,7 @@ class backup extends control
         krsort($backups);
 
         /* Fresh latest version of QuCheng platform in session.  */
-        $this->session->set('platformLatestVersion', $this->loadModel('cne')->platformLatestVersion());
+        $this->session->set('platformLatestVersion', $this->loadModel('store')->platformLatestVersion());
 
         $this->view->title      = $this->lang->backup->common;
         $this->view->position[] = $this->lang->backup->common;

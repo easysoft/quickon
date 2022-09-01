@@ -45,7 +45,7 @@ class store extends control
      * @access public
      * @return void
      */
-    public function browse($recTotal = 0, $recPerPage = 0, $pageID = 1, $channel = '')
+    public function browse($sortType = 'create_time', $recPerPage = 0, $pageID = 1, $channel = '')
     {
         global $config;
         if(empty($recPerPage)) $recPerPage = $this->cookie->pagerStoreBrowse ? $this->cookie->pagerStoreBrowse : 24;
@@ -69,11 +69,11 @@ class store extends control
             $postCategories = $conditions->categories;
         }
 
-        $pagedApps = $this->cne->searchApps($keyword, $postCategories, $pageID, $recPerPage);
+        $pagedApps = $this->store->searchApps($sortType, $keyword, $postCategories, $pageID, $recPerPage);
         $this->app->loadClass('pager', true);
         $pager = pager::init($pagedApps->total, $recPerPage, $pageID);
 
-        $pagedCategories = $this->cne->getCategories();
+        $pagedCategories = $this->store->getCategories();
         $categories      = array_combine(array_column($pagedCategories->categories, 'id'), array_column($pagedCategories->categories, 'alias'));
 
         $this->lang->switcherMenu = $this->store->getBrowseSwitcher();
@@ -84,6 +84,7 @@ class store extends control
         $this->view->categories     = $categories;
         $this->view->postCategories = $postCategories;
         $this->view->keyword        = $keyword;
+        $this->view->sortType       = $sortType;
         $this->view->pager          = $pager;
 
         $this->display();
@@ -98,7 +99,7 @@ class store extends control
      */
     public function appView($id, $pageID = 1, $recPerPage = 20)
     {
-        $appInfo = $this->cne->getAppInfo($id, true);
+        $appInfo = $this->store->getAppInfo($id, true);
         if(empty($appInfo)) return print(js::locate('back', 'parent'));
 
         $this->lang->switcherMenu = $this->store->getAppViewSwitcher($appInfo);
@@ -120,7 +121,7 @@ class store extends control
         $this->view->title        = $appInfo->alias;
         $this->view->position[]   = $appInfo->alias;
         $this->view->cloudApp     = $appInfo;
-        $this->view->components   = null; // Hide custom installation in version 1.0. If want, opened by: $this->cne->getAppSettings($id);
+        $this->view->components   = null; // Hide custom installation in version 1.0. If want, opened by: $this->store->getAppSettings($id);
 
         $this->display();
     }

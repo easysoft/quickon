@@ -80,8 +80,8 @@ class spaceModel extends model
             ->beginIF(commonModel::isDemoAccount())->andWhere('createdAt')->gt($deadline)->fi()
             ->orderBy('id desc')->page($pager)->fetchAll('id');
 
-        $this->loadModel('cne');
-        foreach($instances as $instance) $instance->latestVersion = $this->cne->appLatestVersion($instance->appID, $instance->version);
+        $this->loadModel('store');
+        foreach($instances as $instance) $instance->latestVersion = $this->store->appLatestVersion($instance->appID, $instance->version);
 
         return $instances;
     }

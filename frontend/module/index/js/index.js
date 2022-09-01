@@ -115,7 +115,8 @@
 
         /* Create pate app object and store it */
         var app = openedApps[appCode];
-        if(app)
+        /* Cancel cache because QuCheng need new data. */
+        if(false && app)
         {
             if(app.$iframe && app.$iframe.length)
             {
