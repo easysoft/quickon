@@ -217,6 +217,6 @@ CREATE TABLE IF NOT EXISTS `q_navinstance` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
 REPLACE INTO `q_company` (`name`, `admins`) VALUES ('', '');
-REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.1.1');
+REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '1.4.1');
 REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'navigation', 'global', 'hideInaccessible', 'off');
 REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'allowAnonymousAccess', 'off');
