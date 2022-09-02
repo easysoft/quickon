@@ -55,6 +55,21 @@ class instance extends control
         $backupList = array();
         if($tab == 'backup') $backupList = $this->instance->backupList($instance);
 
+        foreach($backupList as $backup)
+        {
+            $backup->latest_restore_time   = 0;
+            $backup->latest_restore_status = '';
+            foreach($backup->restores as $restore)
+            {
+                if($restore->create_time > $backup->latest_restore_time)
+                {
+                    $backup->latest_restore_time   = $restore->create_time;
+                    $backup->latest_restore_status = $restore->status;
+                }
+            }
+
+        }
+
         $dbList = new stdclass;
         if($tab == 'advance') $dbList = $this->cne->appDBList($instance);
 

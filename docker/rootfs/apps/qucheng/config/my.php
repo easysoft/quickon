@@ -28,3 +28,7 @@ $config->cloud->api->switchChannel = getenv('CLOUD_SWITCH_CHANNEL') == 'true' ||
 $config->default->lang = 'zh-cn';
 
 $config->demoAccounts= getenv('DEMO_ACCOUNTS') ?  getenv('DEMO_ACCOUNTS') : '';
+
+getenv('CONTENT_SECURITY_SCRIPT') && $config->CSPs[] = getenv('CONTENT_SECURITY_SCRIPT');
+getenv('CONTENT_SECURITY_STYLE')  && $config->CSPs[] = getenv('CONTENT_SECURITY_STYLE');
+getenv('CONTENT_SECURITY_IMG')    && $config->CSPs[] = getenv('CONTENT_SECURITY_IMG');

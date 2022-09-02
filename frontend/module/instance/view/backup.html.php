@@ -14,6 +14,7 @@
         <th rowspan="2"><?php echo $lang->instance->backup->operator;?></th>
         <th colspan="5"><?php echo $lang->instance->backup->database;?></th>
         <th colspan="5"><?php echo $lang->instance->backup->volumne;?></th>
+        <th colspan="2"><?php echo $lang->instance->backup->lastRestore;?></th>
         <th rowspan="2" class="actions"><?php echo $lang->instance->backup->action;?></th>
       </tr>
       <tr>
@@ -27,6 +28,8 @@
         <th><?php echo $lang->instance->backup->volStatus;?></th>
         <th><?php echo $lang->instance->backup->volSpentSeconds;?></th>
         <th><?php echo $lang->instance->backup->volSize;?></th>
+        <th><?php echo $lang->instance->backup->restoreDate;?></th>
+        <th><?php echo $lang->instance->backup->dbStatus;?></th>
       </tr>
     </thead>
     <tbody>
@@ -44,6 +47,8 @@
       <td><?php echo isset($backup->backup_details->volume[0]) ? zget($lang->instance->backup->statusList, strtolower(zget($backup->backup_details->volume[0], 'status'))) : '';?></td>
       <td><?php echo isset($backup->backup_details->volume[0]) ? zget($backup->backup_details->volume[0], 'cost') : '';?></td>
       <td><?php echo isset($backup->backup_details->volume[0]) ? helper::formatKB(zget($backup->backup_details->volume[0], 'doneBytes') / 1024) : '';?></td>
+      <td><?php echo $backup->latest_restore_time ?  date('Y-m-d H:i:s', $backup->latest_restore_time) : '';?></td>
+      <td><?php echo $backup->latest_restore_status ?  zget($lang->instance->backup->statusList, $backup->latest_restore_status, '') : '';?></td>
       <td><?php $this->instance->printRestoreBtn($instance, $backup);?></td>
     </tr>
     <?php endforeach;?>

@@ -58,6 +58,8 @@ $lang->instance->backup->volMountName    = '挂载目录';
 $lang->instance->backup->volStatus       = '状态';
 $lang->instance->backup->volSpentSeconds = '耗时(秒)';
 $lang->instance->backup->volSize         = '大小';
+$lang->instance->backup->lastRestore     = '上次回滚';
+$lang->instance->backup->restoreDate     = '回滚时间';
 
 $lang->instance->backup->statusList = array();
 $lang->instance->backup->statusList['success']        = '成功';

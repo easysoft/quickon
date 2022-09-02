@@ -58,7 +58,10 @@ class commonModel extends model
         /* Set Content-Security-Policy header. */
         if($this->config->CSPs)
         {
-            foreach($this->config->CSPs as $CSP) header("Content-Security-Policy: $CSP;");
+            $CSPs = '';
+            foreach($this->config->CSPs as $CSP) $CSPs .= $CSP . ';';
+
+            header("Content-Security-Policy: $CSPs");
         }
 
         if($this->loadModel('setting')->getItem('owner=system&module=sso&key=turnon'))

@@ -73,6 +73,9 @@ services:
       - ALLOW_SELECT_VERSION=true
       - ENABLE_CRON=true
       - DEMO_ACCOUNTS=,demo,
+      - CONTENT_SECURITY_SCRIPT=script-src 'self' 'unsafe-inline' 'unsafe-eval' demo.haogs.cn qucheng.com
+      - CONTENT_SECURITY_STYLE=
+      - CONTENT_SECURITY_IMG=
 
 volumes:
   db:
