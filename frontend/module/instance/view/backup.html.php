@@ -48,7 +48,7 @@
       <td><?php echo isset($backup->backup_details->volume[0]) ? zget($backup->backup_details->volume[0], 'cost') : '';?></td>
       <td><?php echo isset($backup->backup_details->volume[0]) ? helper::formatKB(zget($backup->backup_details->volume[0], 'doneBytes') / 1024) : '';?></td>
       <td><?php echo $backup->latest_restore_time ?  date('Y-m-d H:i:s', $backup->latest_restore_time) : '';?></td>
-      <td><?php echo $backup->latest_restore_status ?  zget($lang->instance->backup->statusList, $backup->latest_restore_status, '') : '';?></td>
+      <td><?php echo $backup->latest_restore_status ?  zget($lang->instance->restore->statusList, $backup->latest_restore_status, '') : '';?></td>
       <td><?php $this->instance->printRestoreBtn($instance, $backup);?></td>
     </tr>
     <?php endforeach;?>

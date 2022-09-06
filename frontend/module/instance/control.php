@@ -345,34 +345,6 @@ class instance extends control
     }
 
     /**
-     *  Get instance info for q tool in console.
-     *
-     * @param  int    $id
-     * @access public
-     * @return mixed
-     */
-    public function apiDetail($id)
-    {
-        $token = zget($_SERVER, 'HTTP_TOKEN');
-        if(!($token == $this->config->CNE->api->token || $token == $this->config->cloud->api->token))
-        {
-            header("HTTP/1.1 401");
-            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
-        }
-
-        if(empty($id)) return print(json_encode(array('code' => 401, 'message' => 'Invalid id.')));
-
-        $instance = $this->instance->getByID($id);
-        if(empty($instance)) return print(json_encode(array('code' => 404, 'message' => 'Not found.', 'data' => array())));
-
-        $instance->space = $instance->spaceData && isset($instance->spaceData->k8space) ? $instance->spaceData->k8space : '';
-        unset($instance->desc);
-        unset($instance->spaceData);
-
-        return print(json_encode(array('code' => 200, 'message' => '', 'data' => $instance)));
-    }
-
-    /**
      * Backup instnacd by ajax.
      *
      * @param  int    $instanceID
@@ -481,4 +453,120 @@ class instance extends control
 
         $this->send(array('result' => 'success', 'message' => ''));
     }
+
+    /**
+     *  Get instance info for q tool in console.
+     *
+     * @param  int    $id
+     * @access public
+     * @return mixed
+     */
+    public function apiDetail($id)
+    {
+        if(!$this->checkCneToken())
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
+        }
+
+        if(empty($id)) return print(json_encode(array('code' => 401, 'message' => 'Invalid id.')));
+
+        $instance = $this->instance->getByID($id);
+        if(empty($instance)) return print(json_encode(array('code' => 404, 'message' => 'Not found.', 'data' => array())));
+
+        $instance->space = $instance->spaceData && isset($instance->spaceData->k8space) ? $instance->spaceData->k8space : '';
+        unset($instance->desc);
+        unset($instance->spaceData);
+
+        return print(json_encode(array('code' => 200, 'message' => 'success', 'data' => $instance)));
+    }
+
+    /**
+     * Get instances list by account through api for q tool.
+     *
+     * @access public
+     * @return void
+     */
+    public function apiBrowse()
+    {
+        if(!$this->checkCneToken())
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
+        }
+
+        $requestBody = json_decode(file_get_contents("php://input"));
+        $account = zget($requestBody, 'account', '');
+        if(empty($account)) return print(json_encode(array('code' => 700, 'message' => 'Account is required.', 'data' => new stdclass)));
+
+        $recPerPage = zget($requestBody, 'perPage', 20);
+        $pageID     = zget($requestBody, 'page', 1);
+
+        $this->app->loadClass('pager', true);
+        $pager = pager::init(0, $recPerPage, $pageID);
+
+        $instanceList = $this->instance->getByAccount($account, $pager);
+
+        $result = new stdclass;
+        $result->list      = $instanceList;
+        $result->page      = $pageID;
+        $result->perPage   = $recPerPage;
+        $result->pageTotal = $pager->pageTotal;
+        $result->total     = $pager->recTotal;
+
+        return print(json_encode(array('code' => 200, 'message' => 'success', 'data' => $result)));
+    }
+
+    /**
+     * Install app by api for q tool.
+     *
+     * @access public
+     * @return void
+     */
+    public function apiInstall()
+    {
+        if(!$this->checkCneToken())
+        {
+            header("HTTP/1.1 401");
+            return print(json_encode(array('code' => 401, 'message' => 'Invalid token.')));
+        }
+
+        $requestBody = json_decode(file_get_contents("php://input"));
+        $chart = zget($requestBody , 'chart', '');
+        if(empty($chart)) return print(json_encode(array('code' => 701, 'message' => 'Param chart is required.')));
+
+        $user = null;
+        $account = zget($requestBody, 'account', '');
+        if($account) $user = $this->loadModel('user')->getById($account);
+        if(empty($user)) $user = $this->loadModel('company')->getAdmin();
+        if(empty($user)) return print(json_encode(array('code' => 703, 'message' => 'No user.')));
+
+        $this->app->user = $user;
+
+        $thirdDomain = zget($requestBody , 'domain', '');
+        $name        = zget($requestBody , 'name', '');
+        $channel     = zget($requestBody , 'channel', 'stable');
+
+        $cloudApp = $this->store->getAppInfoByChart($chart, $channel, false);
+        if(empty($cloudApp)) return print(json_encode(array('code' => 702, 'message' => 'App not found.')));
+
+        $result = $this->instance->apiInstall($cloudApp, $thirdDomain, $name, $channel);
+
+        if($result) return print(json_encode(array('code' => 200, 'message' => 'success', 'data' => new stdclass)));
+
+        return print(json_encode(array('code' => 704, 'message' => 'Fail to install app.', 'data' => new stdclass)));
+    }
+
+    /**
+     * Check CNE token.
+     *
+     * @access private
+     * @return bool
+     */
+    private function checkCneToken()
+    {
+        $token = zget($_SERVER, 'HTTP_TOKEN');
+        return $token == $this->config->CNE->api->token;
+    }
+
 }

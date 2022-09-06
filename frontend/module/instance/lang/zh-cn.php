@@ -64,15 +64,22 @@ $lang->instance->backup->restoreDate     = '回滚时间';
 $lang->instance->backup->statusList = array();
 $lang->instance->backup->statusList['success']        = '成功';
 $lang->instance->backup->statusList['failed']         = '失败';
-$lang->instance->backup->statusList['pending']        = '等待备份';
+$lang->instance->backup->statusList['pending']        = '等待中';
 $lang->instance->backup->statusList['processing']     = '备份中';
 $lang->instance->backup->statusList['inprogress']     = '备份中';
-$lang->instance->backup->statusList['completed']      = '完成备份';
-$lang->instance->backup->statusList['executedFailed'] = '备份失败';
+$lang->instance->backup->statusList['completed']      = '完成';
+$lang->instance->backup->statusList['executedFailed'] = '失败';
 $lang->instance->backup->statusList['uploading']      = '上传中';
 $lang->instance->backup->statusList['uploadFailed']   = '上传失败';
 $lang->instance->backup->statusList['downloading']    = '下载中';
 $lang->instance->backup->statusList['downloadFailed'] = '下载失败';
+
+$lang->instance->restore = new stdclass;
+$lang->instance->restore->statusList = array();
+$lang->instance->restore->statusList['pending']    = '等待中';
+$lang->instance->restore->statusList['inprogress'] = '进行中';
+$lang->instance->restore->statusList['completed']  = '完成';
+$lang->instance->restore->statusList['failed']     = '失败';
 
 $lang->instance->dbList     = '数据库';
 $lang->instance->dbName     = '名称';

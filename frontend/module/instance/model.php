@@ -21,7 +21,6 @@ class InstanceModel extends model
     {
         parent::__construct();
         $this->loadModel('cne');
-        $this->loadModel('store');
     }
 
     /**
@@ -116,20 +115,6 @@ class InstanceModel extends model
         $instance = $this->getByID($instanceID);
         $pinned = $instance->pinned == '0' ? '1' : '0';
         $this->dao->update(TABLE_INSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($instanceID)->exec();
-    }
-
-    /**
-     * Create instance status.
-     *
-     * @param  object $instance
-     * @access public
-     * @return object
-     */
-    public function createInstance($instance)
-    {
-        $this->dao->insert(TABLE_INSTANCE)->data($instance)->autoCheck()->exec();
-
-        return $this->getByID($this->dao->lastInsertID());
     }
 
     /**
@@ -321,7 +306,7 @@ class InstanceModel extends model
     }
 
     /**
-     * Install app.
+     * Install app by request from Web page.
      *
      * @param  object $app
      * @param  array  $dbList
@@ -332,9 +317,6 @@ class InstanceModel extends model
      */
     public function install($app, $dbList, $customData, $spaceID = null)
     {
-        $this->loadModel('store');
-        $this->app->loadLang('store');
-
         $this->loadModel('space');
         if($spaceID)
         {
@@ -345,36 +327,99 @@ class InstanceModel extends model
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
+        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, $channel);
+
+        if(!$instance) return false;
+
+        return $this->doCneInstall($app, $instance, $space, $customData, $dbList);
+    }
+
+    /**
+     * Install app through API.
+     *
+     * @param  object $app
+     * @param  string $thirdDomain
+     * @param  string $name
+     * @param  string $channel
+     * @access public
+     * @return bool|object
+     */
+    public function apiInstall($app, $thirdDomain = '', $name = '', $channel = 'stable')
+    {
+        $this->loadModel('space');
+        $space = $this->space->defaultSpace($this->app->user->account);
+
+        $customData = new stdclass;
+        $customData->dbType = null;
+        $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
+
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $channel);
+        if(!$instance) return false;
+
+        return $this->doCneInstall($app, $instance, $space, $customData, null);
+    }
+
+    /**
+     * Create instance recorder for installation.
+     *
+     * @param  object $app
+     * @param  object $space
+     * @param  object $thirdDomain
+     * @param  string $name
+     * @param  string $channel
+     * @access public
+     * @return bool|object
+     */
+    public function createInstance($app, $space, $thirdDomain, $name = '',  $channel = 'stable')
+    {
         $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
 
         $instanceData = new stdclass;
         $instanceData->appId        = $app->id;
         $instanceData->appName      = $app->alias;
-        $instanceData->name         = !empty($customData->customName)   ? $customData->customName : $app->alias;
-        $instanceData->domain       = !empty($customData->customDomain) ? $this->fullDomain($customData->customDomain) : '';
+        $instanceData->name         = !empty($name)   ? $name : $app->alias;
+        $instanceData->domain       = !empty($thirdDomain) ? $this->fullDomain($thirdDomain) : '';
         $instanceData->logo         = $app->logo;
         $instanceData->desc         = $app->desc;
         $instanceData->introduction = isset($app->introduction) ? $app->introduction : $app->desc;
         $instanceData->source       = 'cloud';
-        $instanceData->channel      = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $instanceData->channel      = $channel;
         $instanceData->chart        = $app->chart;
-        $instanceData->appVersion   = $customData->app_version ? $customData->app_version : $app->app_version;
-        $instanceData->version      = $customData->version;
+        $instanceData->appVersion   = $app->app_version;
+        $instanceData->version      = $app->version;
         $instanceData->space        = $space->id;
         $instanceData->k8name       = $k8name;
         $instanceData->status       = 'creating';
         $instanceData->createdBy    = $this->app->user->account;
         $instanceData->createdAt    = date('Y-m-d H:i:s');
 
-        $instance = $this->createInstance($instanceData);
+        $this->dao->insert(TABLE_INSTANCE)->data($instanceData)->autoCheck()->exec();
         if(dao::isError()) return false;
 
+        $instance = $this->getByID($this->dao->lastInsertID());
+        return $instance;
+    }
+
+    /**
+     * Create app instance on CNE platform.
+     *
+     * @param  object $app
+     * @param  object $instance
+     * @param  object $space
+     * @param  object $customData
+     * @param  object $dbList
+     * @access private
+     * @return object
+     */
+    private function doCneInstall($app, $instance, $space, $customData, $dbList = null)
+    {
         $apiParams = new stdclass;
-        $apiParams->userame      = $this->app->user->account;
+        $apiParams->userame      = $instance->createdBy;
         $apiParams->cluser       = '';
         $apiParams->namespace    = $space->k8space;
-        $apiParams->name         = $k8name;
-        $apiParams->chart        = $app->chart;
+        $apiParams->name         = $instance->k8name;
+        $apiParams->chart        = $instance->chart;
         $apiParams->version      = $instance->version;
         $apiParams->channel      = $instance->channel;
         $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
@@ -390,8 +435,10 @@ class InstanceModel extends model
 
         $this->loadModel('action')->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'app' => $app)));
 
-        $status = $result->code == 200 ? 'initializing' : 'installationFail';
-        $this->updateByID($instance->id, array('status' => $status, 'dbSettings' => json_encode($apiParams->settings_map)));
+        $instance->status     = 'initializing';
+        $instance->dbSettings = json_encode($apiParams->settings_map);
+
+        $this->updateByID($instance->id, array('status' => $instance->status, 'dbSettings' => $instance->dbSettings));
 
         return  $instance;
     }
@@ -634,6 +681,7 @@ class InstanceModel extends model
             $existInstance = $this->dao->select('id')->from(TABLE_INSTANCE)->where('k8name')->eq($k8App->name)->fetch();
             if($existInstance) continue;
 
+            $this->loadModel('store');
             $marketApp = $this->store->getAppInfo(0, false, $k8App->chart, $k8App->version,  $k8App->channel);
             if(empty($marketApp)) continue;
 

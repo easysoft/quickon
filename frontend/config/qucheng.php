@@ -64,6 +64,8 @@ $config->openMethods[] = 'admin.ignore';
 $config->openMethods[] = 'admin.init';
 $config->openMethods[] = 'admin.resetpassword';
 $config->openMethods[] = 'instance.apidetail';
+$config->openMethods[] = 'instance.apibrowse';
+$config->openMethods[] = 'instance.apiinstall';
 $config->openMethods[] = 'instance.deleteexpireddemoinstance';
 $config->openMethods[] = 'backup.ajaxupgradestatus';
 
@@ -75,6 +77,8 @@ $config->notIframeMethods = array();
 $config->notIframeMethods[] = 'admin.resetpassword';
 $config->notIframeMethods[] = 'admin.init';
 $config->notIframeMethods[] = 'instance.apidetail';
+$config->notIframeMethods[] = 'instance.apibrowse';
+$config->notIframeMethods[] = 'instance.apiinstall';
 $config->notIframeMethods[] = 'user.login';
 $config->notIframeMethods[] = 'user.deny';
 $config->notIframeMethods[] = 'user.logout';

@@ -58,6 +58,21 @@ class storeModel extends model
     }
 
     /**
+     * Get app info by App chart from cloud market.
+     *
+     * @param  string $chart
+     * @param  string $channel
+     * @param  bool   $analysis
+     * @param  string $version
+     * @access public
+     * @return object|null
+     */
+    public function getAppInfoByChart($chart, $channel, $analysis, $version = '')
+    {
+         return $this->getAppInfo(0, $analysis, $chart, $version,  $channel);
+    }
+
+    /**
      * Get app info from cloud market.
      *
      * @param  int     $id
