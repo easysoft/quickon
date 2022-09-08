@@ -6,7 +6,6 @@ package router
 
 import (
 	"fmt"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"net/http"
 	"sync"
 
@@ -238,30 +237,18 @@ func AppStatus(c *gin.Context) {
 		query model.AppModel
 	)
 
-	tmpLogger := logging.DefaultLogger()
-	tmpLogger.Infof("start status api")
-
-	tmpLogger.Infof("start lookup app")
 	ctx, i, code, err := LookupApp(c, &query)
 	if err != nil {
 		renderError(c, code, err)
 		return
 	}
-	tmpLogger.Infof("end lookup app")
 
-	tmpLogger.Infof("start get logger")
 	logger := i.GetLogger()
-	logger.Infof("end get logger")
-
-	logger.Infof("start parse status")
+	logger.Debug("start parse status")
 	data := i.ParseStatus()
-	logger.Infof("end parse status")
-
-	logger.Debug("parse status success")
 	/*
 		parse App Uri
 	*/
-	logger.Infof("start parse access host")
 	data.AccessHost = ""
 	ingressHosts := i.ListIngressHosts()
 	if len(ingressHosts) > 0 {
@@ -276,9 +263,64 @@ func AppStatus(c *gin.Context) {
 			}
 		}
 	}
-	logger.Infof("end parse access host")
 
 	renderJson(c, http.StatusOK, data)
+}
+
+func AppListStatus(c *gin.Context) {
+	var (
+		ctx  = c.Request.Context()
+		wg   sync.WaitGroup
+		err  error
+		body model.AppListModel
+	)
+
+	if err = c.ShouldBindJSON(&body); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger := getLogger(ctx)
+	statusList := make([]model.NamespacedAppRespStatus, len(body.Apps))
+
+	for id, a := range body.Apps {
+		wg.Add(1)
+		go func(index int, na model.NamespacedApp) {
+			defer wg.Done()
+
+			statusList[index].Namespace = na.Namespace
+			statusList[index].Name = na.Name
+
+			i, e := service.Apps(ctx, body.Cluster, na.Namespace).GetApp(na.Name)
+			if e != nil {
+				logger.WithError(e).WithFields(logrus.Fields{"name": na.Name, "namespace": na.Namespace}).Error(errGetAppFailed)
+				return
+			}
+
+			status := i.ParseStatus()
+			statusList[index].Status = status.Status
+			statusList[index].Age = status.Age
+			statusList[index].Version = status.Version
+
+			ingressHosts := i.ListIngressHosts()
+			if len(ingressHosts) > 0 {
+				statusList[index].AccessHost = ingressHosts[0]
+			} else {
+				nodePort := i.ParseNodePort()
+				if nodePort > 0 {
+					nodePortIPS := service.Nodes(ctx, body.Cluster).ListNodePortIPS()
+					if len(nodePortIPS) != 0 {
+						accessHost := fmt.Sprintf("%s:%d", nodePortIPS[0], nodePort)
+						statusList[index].AccessHost = accessHost
+					}
+				}
+			}
+
+		}(id, a)
+	}
+	wg.Wait()
+
+	renderJson(c, http.StatusOK, statusList)
 }
 
 func AppSimpleSettings(c *gin.Context) {

@@ -32,7 +32,7 @@ func NewLogger() *logrus.Logger {
 	logger.Formatter = &logrus.TextFormatter{
 		DisableColors:    true,
 		ForceQuote:       true,
-		TimestampFormat:  "2006-01-02T15:04:05.999999999Z07:00",
+		TimestampFormat:  "2006-01-02T15:04:05.999Z07:00",
 		FullTimestamp:    true,
 		QuoteEmptyFields: true,
 		CallerPrettyfier: func(f *runtime.Frame) (string, string) {

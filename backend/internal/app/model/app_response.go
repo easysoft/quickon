@@ -27,6 +27,15 @@ type AppRespStatusComponent struct {
 	Age        int64                  `json:"age"`
 }
 
+type NamespacedAppRespStatus struct {
+	Name       string `json:"name"`
+	Namespace  string `json:"namespace"`
+	Status     string `json:"status"`
+	Version    string `json:"version"`
+	Age        int64  `json:"age"`
+	AccessHost string `json:"access_host"`
+}
+
 type NamespaceAppMetric struct {
 	Namespace string     `json:"namespace"`
 	Name      string     `json:"name"`
