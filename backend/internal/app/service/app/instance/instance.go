@@ -44,10 +44,12 @@ func NewInstance(ctx context.Context, name string, clusterName, namespace string
 		}),
 	}
 
+	i.logger.Debugf("start fetch release")
 	i.release = i.fetchRelease()
 	if i.release == nil {
 		return nil, ErrAppNotFound
 	}
+	i.logger.Debugf("start prepare")
 	err := i.prepare()
 	return i, err
 }
@@ -71,10 +73,12 @@ func (i *Instance) fetchRelease() *release.Release {
 		namespace: i.namespace,
 		store:     i.Ks.Store,
 	}
+	i.logger.Debug("start fetch release secrets")
 	rel, err := getter.Last(i.name)
 	if err != nil {
 		i.logger.WithError(err).Error("parse release failed")
 	}
+	i.logger.Debug("end fetch release secrets")
 	return rel
 }
 

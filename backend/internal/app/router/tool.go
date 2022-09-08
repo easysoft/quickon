@@ -27,7 +27,9 @@ func LookupApp(c *gin.Context, q interface{}) (context.Context, *instance.Instan
 		err error
 		i   *instance.Instance
 	)
+	logger := getLogger(ctx)
 
+	logger.Debug("bind query")
 	if c.Request.Method == "POST" {
 		if err = c.ShouldBindJSON(q); err != nil {
 			return ctx, nil, http.StatusBadRequest, err
@@ -38,9 +40,10 @@ func LookupApp(c *gin.Context, q interface{}) (context.Context, *instance.Instan
 		return ctx, nil, http.StatusBadRequest, err
 	}
 
+	logger.Debug("parse app model")
 	query := parseAppModel(q)
-	logger := getLogger(ctx)
 
+	logger.Debug("start get app")
 	i, err = service.Apps(ctx, query.Cluster, query.Namespace).GetApp(query.Name)
 	if err != nil {
 		logger.WithError(err).WithFields(logrus.Fields{
