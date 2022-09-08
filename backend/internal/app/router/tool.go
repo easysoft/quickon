@@ -34,10 +34,11 @@ func LookupApp(c *gin.Context, q interface{}) (context.Context, *instance.Instan
 		if err = c.ShouldBindJSON(q); err != nil {
 			return ctx, nil, http.StatusBadRequest, err
 		}
-	}
-
-	if err = c.ShouldBindQuery(q); err != nil {
-		return ctx, nil, http.StatusBadRequest, err
+	} else {
+		logger.Debug("bind get query")
+		if err = c.ShouldBindQuery(q); err != nil {
+			return ctx, nil, http.StatusBadRequest, err
+		}
 	}
 
 	logger.Debug("parse app model")
