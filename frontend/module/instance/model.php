@@ -354,10 +354,17 @@ class InstanceModel extends model
         $customData->dbType = null;
         $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
 
+        $dbList = $this->cne->sharedDBList();
+        if(count($dbList) > 0)
+        {
+            $customData->dbType    = 'sharedDB';
+            $customData->dbService = reset($dbList)->name; // Use first shared database.
+        }
+
         $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $channel);
         if(!$instance) return false;
 
-        return $this->doCneInstall($app, $instance, $space, $customData, null);
+        return $this->doCneInstall($app, $instance, $space, $customData, $dbList);
     }
 
     /**
