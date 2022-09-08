@@ -249,6 +249,11 @@ class InstanceModel extends model
             $settingsMap->ingress = new stdclass;
             $settingsMap->ingress->enabled = true;
             $settingsMap->ingress->host    = $this->fullDomain($customData->customDomain);
+
+            $settingsMap->global = new stdclass;
+            $settingsMap->global->ingress = new stdclass;
+            $settingsMap->global->ingress->enabled = true;
+            $settingsMap->global->ingress->host    = $settingsMap->ingress->host;
         }
 
         if(empty($customData->dbType) || $customData->dbType == 'unsharedDB' || empty($customData->dbService)) return $settingsMap;
