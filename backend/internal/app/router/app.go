@@ -6,6 +6,7 @@ package router
 
 import (
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 	"net/http"
 	"sync"
 
@@ -237,19 +238,30 @@ func AppStatus(c *gin.Context) {
 		query model.AppModel
 	)
 
+	tmpLogger := logging.DefaultLogger()
+	tmpLogger.Infof("start status api")
+
+	tmpLogger.Infof("start lookup app")
 	ctx, i, code, err := LookupApp(c, &query)
 	if err != nil {
 		renderError(c, code, err)
 		return
 	}
+	tmpLogger.Infof("end lookup app")
 
-	data := i.ParseStatus()
+	tmpLogger.Infof("start get logger")
 	logger := i.GetLogger()
+	logger.Infof("end get logger")
+
+	logger.Infof("start parse status")
+	data := i.ParseStatus()
+	logger.Infof("end parse status")
 
 	logger.Debug("parse status success")
 	/*
 		parse App Uri
 	*/
+	logger.Infof("start parse access host")
 	data.AccessHost = ""
 	ingressHosts := i.ListIngressHosts()
 	if len(ingressHosts) > 0 {
@@ -264,6 +276,7 @@ func AppStatus(c *gin.Context) {
 			}
 		}
 	}
+	logger.Infof("end parse access host")
 
 	renderJson(c, http.StatusOK, data)
 }
