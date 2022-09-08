@@ -543,9 +543,10 @@ class instance extends control
 
         $this->app->user = $user;
 
-        $thirdDomain = zget($requestBody , 'domain', '');
         $name        = zget($requestBody , 'name', '');
         $channel     = zget($requestBody , 'channel', 'stable');
+        $thirdDomain = zget($requestBody , 'domain', '');
+        if($this->instance->domainExists($thirdDomain))  return print(json_encode(array('code' => 705, 'message' => $thirdDomain . ' has been used, please change it and try again.')));
 
         $cloudApp = $this->store->getAppInfoByChart($chart, $channel, false);
         if(empty($cloudApp)) return print(json_encode(array('code' => 702, 'message' => 'App not found.')));
