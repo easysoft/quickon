@@ -543,15 +543,18 @@ class instance extends control
 
         $this->app->user = $user;
 
-        $name        = zget($requestBody , 'name', '');
-        $channel     = zget($requestBody , 'channel', 'stable');
+        $name    = zget($requestBody , 'name', '');
+        $channel = zget($requestBody , 'channel', 'stable');
+        $k8name  = zget($requestBody , 'k8name', '');
+        if($k8name && $this->instance->k8nameExists($k8name))  return print(json_encode(array('code' => 706, 'message' => $k8name . ' has been used, please change it and try again.')));
+
         $thirdDomain = zget($requestBody , 'domain', '');
         if($this->instance->domainExists($thirdDomain))  return print(json_encode(array('code' => 705, 'message' => $thirdDomain . ' has been used, please change it and try again.')));
 
         $cloudApp = $this->store->getAppInfoByChart($chart, $channel, false);
         if(empty($cloudApp)) return print(json_encode(array('code' => 702, 'message' => 'App not found.')));
 
-        $result = $this->instance->apiInstall($cloudApp, $thirdDomain, $name, $channel);
+        $result = $this->instance->apiInstall($cloudApp, $thirdDomain, $name, $k8name, $channel);
 
         if($result) return print(json_encode(array('code' => 200, 'message' => 'success', 'data' => new stdclass)));
 

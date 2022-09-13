@@ -221,7 +221,7 @@ class InstanceModel extends model
     /**
      * Check if the domain exists.
      *
-     * @param  int    $thirdDomain
+     * @param  string $thirdDomain
      * @access public
      * @return bool   true: exists, false: not exist.
      */
@@ -229,6 +229,18 @@ class InstanceModel extends model
     {
         $domain = $this->fullDomain($thirdDomain);
         return boolval($this->dao->select('id')->from(TABLE_INSTANCE)->where('domain')->eq($domain)->andWhere('deleted')->eq(0)->fetch());
+    }
+
+    /**
+     * Check if the k8name exists.
+     *
+     * @param  string $k8name
+     * @access public
+     * @return bool   true: exists, false: not exist.
+     */
+    public function k8nameExists($k8name)
+    {
+        return boolval($this->dao->select('id')->from(TABLE_INSTANCE)->where('k8name')->eq($k8name)->andWhere('deleted')->eq(0)->fetch());
     }
 
     /**
@@ -333,7 +345,7 @@ class InstanceModel extends model
         }
 
         $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
-        $instance = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, $channel);
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, '',$channel);
 
         if(!$instance) return false;
 
@@ -350,7 +362,7 @@ class InstanceModel extends model
      * @access public
      * @return bool|object
      */
-    public function apiInstall($app, $thirdDomain = '', $name = '', $channel = 'stable')
+    public function apiInstall($app, $thirdDomain = '', $name = '', $k8name = '', $channel = 'stable')
     {
         $this->loadModel('space');
         $space = $this->space->defaultSpace($this->app->user->account);
@@ -366,7 +378,7 @@ class InstanceModel extends model
             $customData->dbService = reset($dbList)->name; // Use first shared database.
         }
 
-        $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $channel);
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $k8name, $channel);
         if(!$instance) return false;
 
         return $this->doCneInstall($app, $instance, $space, $customData, $dbList);
@@ -383,9 +395,9 @@ class InstanceModel extends model
      * @access public
      * @return bool|object
      */
-    public function createInstance($app, $space, $thirdDomain, $name = '',  $channel = 'stable')
+    public function createInstance($app, $space, $thirdDomain, $name = '', $k8name = '', $channel = 'stable')
     {
-        $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
+        if(empty($k8name)) $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
 
         $instanceData = new stdclass;
         $instanceData->appId        = $app->id;
@@ -551,19 +563,36 @@ class InstanceModel extends model
      */
     public function batchFresh(&$instances)
     {
-        $statusList   = array();
-        foreach($instances as $instance)
+        $statusList = $this->cne->batchQueryStatus($instances);
+
+        $newStatusList  = array();
+
+        foreach($instances  as $instance)
         {
-            $instance = $this->freshStatus($instance);
+            $statusData = zget($statusList, $instance->k8name, '');
+            if($statusData)
+            {
+                if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
+                {
+                    $this->dao->update(TABLE_INSTANCE)
+                        ->set('status')->eq($statusData->status)
+                        ->beginIF($statusData->version)->set('version')->eq($statusData->version)->fi()
+                        ->beginIF($statusData->access_host)->set('domain')->eq($statusData->access_host)->fi()
+                        ->where('id')->eq($instance->id)
+                        ->autoCheck()
+                        ->exec();
+                    $instance->status = $statusData->status;
+                }
+            }
 
             $status = new stdclass;
             $status->id     = $instance->id;
             $status->status = $instance->status;
 
-            $statusList[] = $status;
+            $newStatusList[] = $status;
         }
 
-        return $statusList;
+        return $newStatusList;
     }
 
     /*
@@ -580,7 +609,7 @@ class InstanceModel extends model
         if($statusResponse->code != 200) return $instance;
 
         $statusData = $statusResponse->data;
-        $instance->runDuration = intval($statusData->age);
+        $instance->runDuration = intval($statusData->age); // Run duration used in view page.
 
         if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
         {

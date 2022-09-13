@@ -525,10 +525,13 @@ class cneModel extends model
         }
 
         $apiUrl = "/api/cne/app/status/multi";
-        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
-        if($result && $result->code == 200) return $result;
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if(empty($result) || $result->code != 200) return array();
 
-        return $result;
+        $statusList = array();
+        foreach($result->data as $status) $statusList[$status->name] = $status;
+
+        return $statusList;
     }
 
     /**
