@@ -501,6 +501,37 @@ class cneModel extends model
     }
 
     /**
+     * Query status of instance list.
+     *
+     * @param  object $instanceList
+     * @access public
+     * @return object|null
+     */
+    public function batchQueryStatus($instanceList)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->apps = array();
+
+        foreach($instanceList as $instance)
+        {
+            $app = new stdclass;
+            $app->name      = $instance->k8name;
+            $app->chart     = $instance->chart;
+            $app->namespace = $instance->spaceData->k8space;
+            $app->channel   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
+
+            $apiParams->apps[] = $app;
+        }
+
+        $apiUrl = "/api/cne/app/status/multi";
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result;
+
+        return $result;
+    }
+
+    /**
      * Get all database list of app.
      *
      * @param  object  $instance
