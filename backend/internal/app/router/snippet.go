@@ -5,6 +5,10 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/spf13/viper"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+
 	"github.com/gin-gonic/gin"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
@@ -53,7 +57,7 @@ func CreateSnippet(c *gin.Context) {
 		return
 	}
 
-	err = service.Snippets(ctx, "").Create(body.Name, body.Namespace, body.Content)
+	err = service.Snippets(ctx, "").Create(body.Name, body.Namespace, body.Category, body.Values, body.AutoImport)
 	if err != nil {
 		logger.WithError(err).Error("failed to create snippet")
 		renderError(c, http.StatusInternalServerError, err)
@@ -61,6 +65,35 @@ func CreateSnippet(c *gin.Context) {
 	}
 
 	renderSuccess(c, http.StatusOK)
+}
+
+func ReadSnippet(c *gin.Context) {
+	var (
+		ctx = c.Request.Context()
+		err error
+		req model.SnippetQuery
+	)
+
+	logger := getLogger(ctx)
+	if err = c.ShouldBindQuery(&req); err != nil {
+		logger.WithError(err).Error("bind json failed")
+		renderError(c, http.StatusOK, err)
+		return
+	}
+
+	namespace := req.Namespace
+	if namespace == "" {
+		namespace = viper.GetString(constant.FlagRuntimeNamespace)
+	}
+
+	obj, err := service.Snippets(ctx, "").Get(req.Name, namespace)
+	if err != nil {
+		logger.WithError(err).Error("failed to create snippet")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, obj.Values())
 }
 
 func UpdateSnippet(c *gin.Context) {
@@ -78,7 +111,7 @@ func UpdateSnippet(c *gin.Context) {
 	}
 	logger.Debugf("receive snippet update request: %+v", body)
 
-	err = service.Snippets(ctx, "").Update(body.Name, body.Namespace, body.Content)
+	err = service.Snippets(ctx, "").Update(body.Name, body.Namespace, body.Category, body.Values, body.AutoImport)
 	if err != nil {
 		logger.WithError(err).Error("failed to create snippet")
 		renderError(c, http.StatusInternalServerError, err)

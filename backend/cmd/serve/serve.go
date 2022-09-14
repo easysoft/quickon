@@ -6,10 +6,11 @@ package serve
 
 import (
 	"context"
-	"github.com/spf13/viper"
 	"os/signal"
 	"strings"
 	"syscall"
+
+	"github.com/spf13/viper"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 

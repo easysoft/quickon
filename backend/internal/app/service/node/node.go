@@ -6,8 +6,9 @@ package node
 
 import (
 	"context"
-	"github.com/sirupsen/logrus"
 	"sort"
+
+	"github.com/sirupsen/logrus"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 

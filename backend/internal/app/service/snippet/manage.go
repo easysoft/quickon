@@ -2,6 +2,9 @@ package snippet
 
 import (
 	"context"
+	"fmt"
+
+	"gopkg.in/yaml.v3"
 
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"
@@ -47,7 +50,7 @@ func (m *Manager) List(namespace string) ([]*model.SnippetConfig, error) {
 			Name:       cm.Name,
 			Namespace:  cm.Namespace,
 			Category:   snippet.Category(),
-			Content:    snippet.content,
+			Values:     snippet.Values(),
 			AutoImport: snippet.IsAutoImport(),
 		}
 		data = append(data, sc)
@@ -66,7 +69,11 @@ func (m *Manager) Get(name, namespace string) (*Snippet, error) {
 	return s, err
 }
 
-func (m *Manager) Create(name, namespace, content string) error {
+func (m *Manager) Create(name, namespace, category string, values map[string]interface{}, autoImport bool) error {
+	content, err := yaml.Marshal(values)
+	if err != nil {
+		return err
+	}
 
 	cm := v1.ConfigMap{
 		ObjectMeta: metav1.ObjectMeta{
@@ -74,22 +81,38 @@ func (m *Manager) Create(name, namespace, content string) error {
 			Labels: labels.Set{
 				LabelSnippetConfig: "true",
 			},
+			Annotations: make(map[string]string),
 		},
 		Data: map[string]string{
-			snippetContentKey: content,
+			snippetContentKey: string(content),
 		},
 	}
-	_, err := m.ks.Clients.Base.CoreV1().ConfigMaps(namespace).Create(m.ctx, &cm, metav1.CreateOptions{})
+	if autoImport {
+		cm.Annotations[annotationSnippetConfigAutoImport] = "true"
+	}
+	if category != "" {
+		cm.Annotations[annotationSnippetConfigCategory] = category
+	}
+
+	_, err = m.ks.Clients.Base.CoreV1().ConfigMaps(namespace).Create(m.ctx, &cm, metav1.CreateOptions{})
 	return err
 }
 
-func (m *Manager) Update(name, namespace, content string) error {
+func (m *Manager) Update(name, namespace, category string, values map[string]interface{}, autoImport bool) error {
 	cm, err := m.ks.Store.GetConfigMap(namespace, name)
 	if err != nil {
 		return err
 	}
 
-	cm.Data[snippetContentKey] = content
+	content, err := yaml.Marshal(values)
+	if err != nil {
+		return err
+	}
+	cm.Data[snippetContentKey] = string(content)
+	cm.Annotations[annotationSnippetConfigAutoImport] = fmt.Sprintf("%v", autoImport)
+	if category != "" {
+		cm.Annotations[annotationSnippetConfigCategory] = category
+	}
 	_, err = m.ks.Clients.Base.CoreV1().ConfigMaps(namespace).Update(m.ctx, cm, metav1.UpdateOptions{})
 	return err
 }
