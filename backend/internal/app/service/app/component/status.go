@@ -47,6 +47,14 @@ func parseStatus(replicas, availableReplicas, updatedReplicas, readyReplicas int
 					break
 				}
 
+				if ctnStatus.State.Waiting != nil {
+					reason := ctnStatus.State.Waiting.Reason
+					if reason == "ImagePullBackOff" {
+						appStatus = constant.AppStatusPulling
+						break
+					}
+				}
+
 				if time.Now().Unix()-createTime.Unix() > 300 {
 					appStatus = constant.AppStatusAbnormal
 					break

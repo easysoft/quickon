@@ -497,11 +497,15 @@ func AppDbList(c *gin.Context) {
 			logger.WithError(err).Errorf("parse db %s failed", item.Name)
 			continue
 		}
+		ready := false
+		if item.Status.Ready != nil {
+			ready = *item.Status.Ready
+		}
 		d := model.ComponentDb{
 			ComponentBase: model.ComponentBase{Name: item.Name, NameSpace: item.Namespace},
 			DbType:        string(dbsvc.DbType()),
 			DbName:        dbMeta.Name,
-			Ready:         item.Status.Ready,
+			Ready:         ready,
 		}
 		data = append(data, d)
 	}
