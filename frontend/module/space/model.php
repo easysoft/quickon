@@ -39,6 +39,33 @@ class spaceModel extends model
     }
 
     /**
+     * Get system space.
+     *
+     * @param  string $account
+     * @access public
+     * @return object
+     */
+    public function getSystemSpace($account)
+    {
+        $k8space = getenv('POD_NAMESPACE');
+        if(empty($k8space)) $k8space = 'cne-system';
+
+        $sysSpace = $this->dao->select('*')->from(TABLE_SPACE)->where('k8space')->eq($k8space)->andWhere('owner')->eq($account)->fetch();
+        if($sysSpace) return $sysSpace;
+
+        $spaceData = new stdClass;
+        $spaceData->name      = $this->lang->space->systemSpace;
+        $spaceData->owner     = $account;
+        $spaceData->k8space   = $k8space;
+        $spaceData->default   = false;
+        $spaceData->createdAt = date('Y-m-d H:i:s');
+
+        $this->dao->insert(TABLE_SPACE)->data($spaceData)->autoCheck()->exec();
+
+        return $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($this->dao->lastInsertId())->fetch();
+    }
+
+    /**
      * Create default space by account
      *
      * @param  string $account

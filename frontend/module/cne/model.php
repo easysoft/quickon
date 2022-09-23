@@ -408,6 +408,21 @@ class cneModel extends model
     }
 
     /**
+     * Create snippet.
+     *
+     * @param  object $apiParams
+     * @access public
+     * @return object
+     */
+    public function addSnippet($apiParams)
+    {
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/snippet/add";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
      * Install app.
      *
      * @param  object $apiParams

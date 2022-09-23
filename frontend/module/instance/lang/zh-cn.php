@@ -116,6 +116,7 @@ $lang->instance->statusList = array();
 $lang->instance->statusList['installationFail'] = '安装失败';
 $lang->instance->statusList['creating']         = '创建中';
 $lang->instance->statusList['initializing']     = '初始化';
+$lang->instance->statusList['pulling']          = '下载中';
 $lang->instance->statusList['startup']          = '启动中';
 $lang->instance->statusList['starting']         = '启动中';
 $lang->instance->statusList['running']          = '运行中';

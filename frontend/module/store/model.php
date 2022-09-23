@@ -69,7 +69,7 @@ class storeModel extends model
      */
     public function getAppInfoByChart($chart, $channel, $analysis, $version = '')
     {
-         return $this->getAppInfo(0, $analysis, $chart, $version,  $channel);
+        return $this->getAppInfo(0, $analysis, $chart, $version,  $channel);
     }
 
     /**
@@ -88,10 +88,10 @@ class storeModel extends model
         $apiParams = array();
         $apiParams['analysis'] = $analysis ? 'true' : 'false' ;
 
-        if($id)        $apiParams['id']        = $id;
-        if($name)      $apiParams['name']      = $name;
-        if($version)   $apiParams['version']   = $version;
-        if($channel)   $apiParams['channel']   = $channel;
+        if($id)      $apiParams['id']      = $id;
+        if($name)    $apiParams['name']    = $name;
+        if($version) $apiParams['version'] = $version;
+        if($channel) $apiParams['channel'] = $channel;
 
         $apiUrl  = $this->config->cloud->api->host;
         $apiUrl .= '/api/market/appinfo';
@@ -260,7 +260,7 @@ class storeModel extends model
         $result  = commonModel::apiGet($apiUrl, array(), $this->config->cloud->api->headers);
         if($result->code == 200) return $result->data;
 
-        $categories= new stdclass;
+        $categories = new stdclass;
         $categories->categories = array();
         $categories->total      = 0;
         return $categories;
@@ -278,8 +278,7 @@ class storeModel extends model
 
         if($this->config->cloud->api->switchChannel) $title .= '（' . ($this->config->cloud->api->channel == 'stable' ? $this->lang->store->stableChannel : $this->lang->store->testChannel) . '）';
 
-        $output  = "<div class='btn-group header-btn'>";
-
+        $output = "<div class='btn-group header-btn'>";
         if($this->config->cloud->api->switchChannel)
         {
             $stableActive = $this->config->cloud->api->channel == 'stable' ? 'active' : '';

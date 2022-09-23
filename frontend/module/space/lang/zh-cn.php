@@ -2,6 +2,7 @@
 $lang->space->status         = '状态';
 $lang->space->noApps         = '暂无服务';
 $lang->space->defaultSpace   = '默认空间';
+$lang->space->systemSpace    = '系统空间';
 $lang->space->searchInstance = '搜索服务';
 $lang->space->upgrade        = '升级';
 

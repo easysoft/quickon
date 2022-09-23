@@ -19,8 +19,6 @@ class system extends control
      */
     public function index()
     {
-
-        $this->position = $this->lang->system->common;
         $this->display();
     }
 
@@ -34,10 +32,63 @@ class system extends control
     {
         $this->app->loadLang('instance');
 
-        $this->view->position[] = $this->lang->system->dbManagement;
-
-        $this->view->title = $this->lang->system->dbManagement;
+        $this->view->title  = $this->lang->system->dbManagement;
         $this->view->dbList = $this->loadModel('cne')->allDBList();
+
+        $this->display();
+    }
+
+    /**
+     * Install LDAP
+     *
+     * @access public
+     * @return void
+     */
+    public function installLDAP()
+    {
+        if($this->system->hasSystemLDAP()) return print(js::locate($this->inLink('ldapView')));
+
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $ldapApp = $this->loadModel('store')->getAppInfoByChart('openldap', $channel, false);
+        if($_POST)
+        {
+            $this->system->installLDAP($ldapApp, $channel);
+
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapInstallSuccess, 'locate' => $this->inLink('ldapView')));
+        }
+
+        $this->lang->switcherMenu = $this->system->getLDAPSwitcher();
+
+        $this->view->title   = $this->lang->system->ldapManagement;
+        $this->view->ldapApp = $ldapApp;
+        $this->display();
+    }
+
+    /**
+     * LDAP view.
+     *
+     * @access public
+     * @return void
+     */
+    public function ldapView()
+    {
+        $this->loadModel('instance');
+        $this->app->loadLang('instance');
+
+        $instanceID   = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
+        $ldatInstance = $this->instance->getByID($instanceID);
+        if(empty($ldatInstance)) return print js::alert($this->lang->system->notices->noLDAP);
+
+        $ldatInstance = $this->instance->freshStatus($ldatInstance);
+
+        $this->lang->switcherMenu = $this->system->getLDAPSwitcher();
+
+        $this->view->title = $this->lang->system->ldapManagement;
+
+        $this->view->ldapInstance = $ldatInstance;
+        $this->view->ldapSettings = json_decode($ldatInstance->ldapSettings);
 
         $this->display();
     }

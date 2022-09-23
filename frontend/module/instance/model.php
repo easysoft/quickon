@@ -270,6 +270,7 @@ class InstanceModel extends model
 
         if(empty($customData->dbType) || $customData->dbType == 'unsharedDB' || empty($customData->dbService)) return $settingsMap;
 
+        /* Set DB settings. */
         $selectedDB = zget($dbList, $customData->dbService, '');
 
         $dbSettings = new stdclass;
@@ -349,7 +350,68 @@ class InstanceModel extends model
 
         if(!$instance) return false;
 
-        return $this->doCneInstall($app, $instance, $space, $customData, $dbList);
+        $settingMap = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+        return $this->doCneInstall($app, $instance, $space, $settingMap);
+    }
+
+    /**
+     * Install LDAP.
+     *
+     * @param  object $app
+     * @param  string $thirdDomain
+     * @param  string $name
+     * @param  string $channel
+     * @access public
+     * @return bool|object
+     */
+    public function installLDAP($app, $thirdDomain = '', $name = '', $k8name = '', $channel = 'stable')
+    {
+        $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+        $customData = new stdclass;
+        $customData->dbType       = null;
+        $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
+
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $k8name, $channel);
+        if(!$instance) return false;
+
+        $settingMap = $this->installationSettingsMap($customData, array(), $app, $instance);
+
+        $settingMap->auth = new stdclass;
+        $settingMap->auth->username = $app->account ? $app->account->username : 'admin';
+        $settingMap->auth->password = helper::randStr(16);
+        $settingMap->auth->root     = 'dc=quickon,dc=org';
+
+        $instance = $this->doCneInstall($app, $instance, $space, $settingMap);
+        if($instance)
+        {
+            /* Post snippet to CNE.  */
+            $snippetSettings = new stdclass;
+            $snippetSettings->name = 'snippet-ldap';
+            $snippetSettings->values = new stdclass;
+            $snippetSettings->values->auth = new stdclass;
+            $snippetSettings->values->auth->ldap = new stdclass;
+            $snippetSettings->values->auth->ldap->enabled   = 'true';
+            $snippetSettings->values->auth->ldap->type      = 'ldap';
+            $snippetSettings->values->auth->ldap->host      = $instance->domain;
+            $snippetSettings->values->auth->ldap->port      = 1389;
+            $snippetSettings->values->auth->ldap->bindDN    = "cn={$settingMap->auth->username},dc=quickon,dc=org";
+            $snippetSettings->values->auth->ldap->bindPass  = $settingMap->auth->password;
+            $snippetSettings->values->auth->ldap->baseDN    = $settingMap->auth->root;
+            $snippetSettings->values->auth->ldap->filter    = "&(objectClass=posixAccount)(cn=%s)";
+            $snippetSettings->values->auth->ldap->attrUser  = 'uid';
+            $snippetSettings->values->auth->ldap->attrEmail = 'mail';
+
+            $this->loadModel('cne')->addSnippet($snippetSettings);
+            //@todo How to handle failure?
+
+            /* Save LDAP account. */
+            $settingMap->auth->password = openssl_encrypt($settingMap->auth->password, 'DES-ECB', $instance->createdAt);
+            $this->dao->update(TABLE_INSTANCE)->set('ldapSettings')->eq(json_encode($settingMap))->where('id')->eq($instance->id)->exec();
+            $this->loadModel('setting')->setItem('system.common.ldap.instanceID', $instance->id);
+        }
+
+        return $instance;
     }
 
     /**
@@ -368,7 +430,7 @@ class InstanceModel extends model
         $space = $this->space->defaultSpace($this->app->user->account);
 
         $customData = new stdclass;
-        $customData->dbType = null;
+        $customData->dbType       = null;
         $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
 
         $dbList = $this->cne->sharedDBList();
@@ -381,7 +443,8 @@ class InstanceModel extends model
         $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $k8name, $channel);
         if(!$instance) return false;
 
-        return $this->doCneInstall($app, $instance, $space, $customData, $dbList);
+        $settingMap = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+        return $this->doCneInstall($app, $instance, $space, $settingMap);
     }
 
     /**
@@ -431,12 +494,11 @@ class InstanceModel extends model
      * @param  object $app
      * @param  object $instance
      * @param  object $space
-     * @param  object $customData
-     * @param  object $dbList
+     * @param  object $settingMap
      * @access private
-     * @return object
+     * @return object|bool
      */
-    private function doCneInstall($app, $instance, $space, $customData, $dbList = null)
+    private function doCneInstall($app, $instance, $space, $settingMap)
     {
         $apiParams = new stdclass;
         $apiParams->userame      = $instance->createdBy;
@@ -446,7 +508,7 @@ class InstanceModel extends model
         $apiParams->chart        = $instance->chart;
         $apiParams->version      = $instance->version;
         $apiParams->channel      = $instance->channel;
-        $apiParams->settings_map = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+        $apiParams->settings_map = $settingMap;
 
         if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas');
 
@@ -712,7 +774,7 @@ class InstanceModel extends model
      */
     public function restoreInstanceList()
     {
-        $k8AppList = $this->cne->instancelist();
+        $k8AppList  = $this->cne->instancelist();
         $k8NameList = array_keys($k8AppList);
 
         //软删除不存在的数据
@@ -837,10 +899,7 @@ class InstanceModel extends model
         $rate = $metrics->rate;
         $tip  = "{$rate}% = {$metrics->usage} / {$metrics->limit}";
 
-        if(strtolower($type) == 'pie')
-        {
-            return commonModel::printProgressPie($rate, '', $tip);
-        }
+        if(strtolower($type) == 'pie') return commonModel::printProgressPie($rate, '', $tip);
 
         return commonModel::printProgressBar($rate, '', $tip);
     }
@@ -890,7 +949,7 @@ class InstanceModel extends model
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//'.$instance->domain, '<i class="icon icon-menu-my"></i>', '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg btn-action btn-link'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+            $actionHtml  .= html::a('//' . $instance->domain, '<i class="icon icon-menu-my"></i>', '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg btn-action btn-link'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;
@@ -919,7 +978,7 @@ class InstanceModel extends model
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-             $actionHtml  .= html::a('//'.$instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-primary label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+            $actionHtml  .= html::a('//' . $instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-primary label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;

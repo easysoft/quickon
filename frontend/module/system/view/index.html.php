@@ -26,6 +26,12 @@
           <span class='plug-title text-center'><?php echo $lang->system->dbManagement;?></span>
         </a>
       </div>
+      <div class='text-center col-xs-6 col-sm-3 col-md-2 col-lg-2'>
+        <a class='cell' href='<?php echo helper::createLink("system", "installLDAP");?>'>
+          <span class='logo'><img src="/theme/default/images/main/ldap_logo.jpg" /></span><br/>
+          <span class='plug-title text-center'><?php echo $lang->system->ldapManagement;?></span>
+        </a>
+      </div>
     </div>
   </div>
 </div>
