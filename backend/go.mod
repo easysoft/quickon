@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	github.com/chartmuseum/helm-push v0.10.2
-	github.com/easysoft/quikon-api v0.0.0-20220718014548-545cd2ba9d90
+	github.com/easysoft/quikon-api v0.5.0
 	github.com/ergoapi/util v0.2.16
 	github.com/gin-gonic/gin v1.7.7
 	github.com/go-playground/locales v0.14.0

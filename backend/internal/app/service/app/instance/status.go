@@ -57,12 +57,13 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 	}
 
 	for _, c := range components.Items() {
+		status := c.Status(settingStopped)
 		resC := model.AppRespStatusComponent{
 			Name:       c.Name(),
 			Kind:       c.Kind(),
 			Replicas:   c.Replicas(),
-			StatusCode: c.Status(settingStopped),
-			Status:     constant.AppStatusMap[c.Status(settingStopped)],
+			StatusCode: status,
+			Status:     constant.AppStatusMap[status],
 			Age:        c.Age(),
 		}
 		data.Components = append(data.Components, resC)

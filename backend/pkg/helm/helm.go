@@ -106,6 +106,7 @@ func (h *Action) Upgrade(name, chart, version string, valueOpts *values.Options)
 	if version != "latest" {
 		client.ChartPathOptions.Version = version
 	}
+	client.MaxHistory = 3
 	//client.Atomic = true
 
 	cp, err := client.ChartPathOptions.LocateChart(chart, h.settings)

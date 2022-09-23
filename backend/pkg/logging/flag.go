@@ -23,7 +23,7 @@ func BingFlags(flags *pflag.FlagSet) error {
 	if err = viper.BindPFlag(flagLogFile, flags.Lookup(flagLogFile)); err != nil {
 		return err
 	}
-	
+
 	//flags.String(flagLogFileSize, "100m", "logging rotate file size")
 	//if err = viper.BindPFlag(flagLogFileSize, flags.Lookup(flagLogFileSize)); err != nil {
 	//	return err

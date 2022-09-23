@@ -2,15 +2,16 @@ package logging
 
 import (
 	"fmt"
-	"github.com/sirupsen/logrus"
-	"github.com/spf13/viper"
-	"gopkg.in/natefinch/lumberjack.v2"
 	"io"
 	"os"
 	"path"
 	"runtime"
 	"runtime/debug"
 	"strings"
+
+	"github.com/sirupsen/logrus"
+	"github.com/spf13/viper"
+	"gopkg.in/natefinch/lumberjack.v2"
 )
 
 var (

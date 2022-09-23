@@ -96,6 +96,7 @@ func Config(r *gin.Engine) {
 		api.GET("/system/app-full-list", FindAllApps)
 
 		api.GET("/snippet", ListSnippets)
+		api.GET("/snippet/read", ReadSnippet)
 		api.POST("/snippet/add", CreateSnippet)
 		api.POST("/snippet/update", UpdateSnippet)
 		api.POST("/snippet/remove", RemoveSnippet)

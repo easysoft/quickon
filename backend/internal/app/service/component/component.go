@@ -52,7 +52,7 @@ func (m *Manager) ListDbService(namespace string, onlyGlobal string) ([]model.Co
 			Release:       dbSvc.Labels["release"],
 			DbType:        string(dbSvc.Spec.Type),
 			Alias:         decodeDbSvcAlias(dbSvc),
-			Ready:         dbSvc.Status.Ready,
+			Ready:         fromBool(dbSvc.Status.Ready),
 		}
 		components = append(components, s)
 	}
@@ -69,7 +69,7 @@ func (m *Manager) ListDbService(namespace string, onlyGlobal string) ([]model.Co
 				Release:       dbSvc.Labels["release"],
 				DbType:        string(dbSvc.Spec.Type),
 				Alias:         decodeDbSvcAlias(dbSvc),
-				Ready:         dbSvc.Status.Ready,
+				Ready:         fromBool(dbSvc.Status.Ready),
 			}
 			components = append(components, s)
 		}
@@ -264,4 +264,11 @@ func decodeDbSvcAlias(dbsvc *quchengv1beta1.DbService) string {
 	}
 
 	return string(bs)
+}
+
+func fromBool(b *bool) bool {
+	if b == nil {
+		return false
+	}
+	return *b
 }
