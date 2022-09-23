@@ -99,5 +99,16 @@ class systemModel extends model
         $instanceID = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
         return boolval($instanceID);
     }
+
+    /**
+     * Get global LDAP snippet name.
+     *
+     * @access public
+     * @return string
+     */
+    public function ldapSnippetName()
+    {
+        return $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=snippetName');
+    }
 }
 

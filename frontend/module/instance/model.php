@@ -351,7 +351,8 @@ class InstanceModel extends model
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, $dbList, $app, $instance);
-        return $this->doCneInstall($app, $instance, $space, $settingMap);
+        $snippets   = zget($customData, 'snippets', array());
+        return $this->doCneInstall($app, $instance, $space, $settingMap, $snippets);
     }
 
     /**
@@ -359,12 +360,12 @@ class InstanceModel extends model
      *
      * @param  object $app
      * @param  string $thirdDomain
-     * @param  string $name
+     * @param  string $instanceName
      * @param  string $channel
      * @access public
      * @return bool|object
      */
-    public function installLDAP($app, $thirdDomain = '', $name = '', $k8name = '', $channel = 'stable')
+    public function installLDAP($app, $thirdDomain = '', $instanceName = '', $k8name = '', $channel = 'stable')
     {
         $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
 
@@ -372,7 +373,7 @@ class InstanceModel extends model
         $customData->dbType       = null;
         $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
 
-        $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $k8name, $channel);
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $instanceName, $k8name, $channel);
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, array(), $app, $instance);
@@ -387,7 +388,7 @@ class InstanceModel extends model
         {
             /* Post snippet to CNE.  */
             $snippetSettings = new stdclass;
-            $snippetSettings->name = 'snippet-ldap';
+            $snippetSettings->name = 'snippet-qucheng-ldap';
             $snippetSettings->values = new stdclass;
             $snippetSettings->values->auth = new stdclass;
             $snippetSettings->values->auth->ldap = new stdclass;
@@ -409,6 +410,7 @@ class InstanceModel extends model
             $settingMap->auth->password = openssl_encrypt($settingMap->auth->password, 'DES-ECB', $instance->createdAt);
             $this->dao->update(TABLE_INSTANCE)->set('ldapSettings')->eq(json_encode($settingMap))->where('id')->eq($instance->id)->exec();
             $this->loadModel('setting')->setItem('system.common.ldap.instanceID', $instance->id);
+            $this->loadModel('setting')->setItem('system.common.ldap.snippetName', $snippetSettings->name); // Parameter for App installation API.
         }
 
         return $instance;
@@ -495,20 +497,22 @@ class InstanceModel extends model
      * @param  object $instance
      * @param  object $space
      * @param  object $settingMap
+     * @param  array  $snippets
      * @access private
      * @return object|bool
      */
-    private function doCneInstall($app, $instance, $space, $settingMap)
+    private function doCneInstall($app, $instance, $space, $settingMap, $snippets = array())
     {
         $apiParams = new stdclass;
-        $apiParams->userame      = $instance->createdBy;
-        $apiParams->cluser       = '';
-        $apiParams->namespace    = $space->k8space;
-        $apiParams->name         = $instance->k8name;
-        $apiParams->chart        = $instance->chart;
-        $apiParams->version      = $instance->version;
-        $apiParams->channel      = $instance->channel;
-        $apiParams->settings_map = $settingMap;
+        $apiParams->userame           = $instance->createdBy;
+        $apiParams->cluser            = '';
+        $apiParams->namespace         = $space->k8space;
+        $apiParams->name              = $instance->k8name;
+        $apiParams->chart             = $instance->chart;
+        $apiParams->version           = $instance->version;
+        $apiParams->channel           = $instance->channel;
+        $apiParams->settings_map      = $settingMap;
+        $apiParams->settings_snippets = $snippets;
 
         if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas');
 

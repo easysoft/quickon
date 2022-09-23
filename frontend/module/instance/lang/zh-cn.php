@@ -13,6 +13,7 @@ $lang->instance->advanceOption    = '高级选项';
 $lang->instance->baseInfo         = '基本信息';
 $lang->instance->backupAndRestore = '备份';
 $lang->instance->advance          = '高级';
+$lang->instance->enableLDAP       = '启用LDAP';
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';

@@ -58,6 +58,17 @@
             <td></td>
           </tr>
           <?php endif;?>
+          <?php if(isset($cloudApp->features->ldap) && $this->loadModel('system')->hasSystemLDAP()):?>
+          <tr>
+            <th class='w-80px'></th>
+            <td class='w-250px'>
+              <div class='input-group'>
+                <?php echo html::checkbox('snippets', array($this->system->ldapSnippetName() => $lang->instance->enableLDAP));?>
+              </div>
+            </td>
+            <td></td>
+          </tr>
+          <?php endif;?>
           <?php if(isset($cloudApp->dependencies->mysql)):?>
           <tr>
             <th class='w-80px'><?php echo $lang->instance->dbType;?></th>
