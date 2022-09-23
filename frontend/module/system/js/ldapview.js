@@ -1,5 +1,20 @@
 $(function()
 {
+    $('.btn-visit').on('click', function(event)
+    {
+        $.get(createLink('system', 'ajaxLdapInfo'), function(response)
+        {
+            let res = JSON.parse(response);
+            if(res.result == 'success')
+            {
+                var ldapPage  = window.open(res.data.url);
+                var loginForm = ldapPage.$('form')[0];
+                $(loginForm).find('input[name=passwd]').val(res.pass);
+                $(loginForm).submit();
+            }
+        });
+    });
+
     $('.btn-stop').on('click', function(event)
     {
         bootbox.confirm(instanceNotices.confirmStop, function(result)

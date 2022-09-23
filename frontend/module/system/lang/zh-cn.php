@@ -27,5 +27,6 @@ $lang->system->notices->ldapInstallSuccess = 'LDAP安装成功';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB       = '找不到该数据库';
+$lang->system->errors->notFoundLDAP     = '找不到LDAP数据';
 $lang->system->errors->dbNameIsEmpty    = '数据库名为空';
 $lang->system->errors->notSupportedLDAP = '暂不支持该类型的LDAP';

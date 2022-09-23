@@ -118,5 +118,23 @@ class system extends control
         $url = '/adminer?'. http_build_query($dbAuth);
         $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $url)));
     }
+
+    /**
+     * Get LDAP info by ajax.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxLdapInfo()
+    {
+        $instanceID   = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
+        $ldapInstance = $this->loadModel('instance')->getByID($instanceID);
+        if(empty($ldapInstance)) return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->notFoundLDAP));
+
+        $ldapSetting = json_decode($ldapInstance->ldapSettings);
+
+        $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt);
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $ldapInstance->domain, 'pass' => $password)));
+    }
 }
 
