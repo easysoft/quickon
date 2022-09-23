@@ -57,7 +57,7 @@ class spaceModel extends model
         $spaceData->name      = $this->lang->space->systemSpace;
         $spaceData->owner     = $account;
         $spaceData->k8space   = $k8space;
-        $spaceData->default   = false;
+        $spaceData->default   = 0;
         $spaceData->createdAt = date('Y-m-d H:i:s');
 
         $this->dao->insert(TABLE_SPACE)->data($spaceData)->autoCheck()->exec();
