@@ -386,7 +386,7 @@ class InstanceModel extends model
         $instance = $this->doCneInstall($app, $instance, $space, $settingMap);
         if($instance)
         {
-            /* Post snippet to CNE.  */
+            /* Post snippet to CNE. */
             $snippetSettings = new stdclass;
             $snippetSettings->name = 'snippet-qucheng-ldap';
             $snippetSettings->values = new stdclass;

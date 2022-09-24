@@ -134,7 +134,7 @@ class system extends control
         $ldapSetting = json_decode($ldapInstance->ldapSettings);
 
         $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt);
-        $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $ldapInstance->domain, 'pass' => $password)));
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $ldapInstance->domain, 'pass' => $password)));
     }
 }
 

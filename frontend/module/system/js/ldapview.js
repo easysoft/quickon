@@ -7,7 +7,7 @@ $(function()
             let res = JSON.parse(response);
             if(res.result == 'success')
             {
-                var ldapPage  = window.open(res.data.url);
+                var ldapPage  = window.open('//' + res.data.domain);
                 var loginForm = ldapPage.$('form')[0];
                 $(loginForm).find('input[name=passwd]').val(res.pass);
                 $(loginForm).submit();
