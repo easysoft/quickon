@@ -14,8 +14,8 @@ import (
 )
 
 func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []string, logger logrus.FieldLogger) map[string]interface{} {
-	var data map[string]interface{}
-	var mergedSnippets map[string]interface{}
+	var data = make(map[string]interface{})
+	var mergedSnippets = make(map[string]interface{})
 	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
 
 	for _, name := range snippetNames {
