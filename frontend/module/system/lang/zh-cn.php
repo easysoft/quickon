@@ -17,6 +17,9 @@ $lang->system->ldapSource   = '来源';
 $lang->system->ldapUsername = '用户名';
 $lang->system->ldapRoot     = '根节点';
 $lang->system->ldapInstall  = '安装并启用';
+$lang->system->accountInfo  = '账号信息';
+$lang->system->account      = '账号';
+$lang->system->password     = '密码';
 
 $lang->system->ldapTypeList = array();
 $lang->system->ldapTypeList['qucheng'] = '渠成内置';

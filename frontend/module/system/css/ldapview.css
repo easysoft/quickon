@@ -1,2 +1,4 @@
 .btn-visit.btn {background-color: #ffffff!important;}
 .btn-visit.btn:hover, .btn-visit.btn:focus {background-color: #e5fbf3!important;}
+#ldapAccountModal .modal-content {padding-bottom: 20px;}
+

@@ -46,5 +46,21 @@
       </table>
   </div>
 </div>
+<div class="modal fade" id="ldapAccountModal" tabindex="-1" role="dialog" aria-hidden="true">
+  <div class="modal-dialog w-400px">
+    <div class="modal-content">
+      <div class="modal-body">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+        <h2 class="text-center"><?php echo $lang->system->accountInfo;?></h2>
+        <div class=""><?php echo $lang->system->account;?>:<span id='ldapAccount'></span></div>
+        <div class=""><?php echo $lang->system->password;?>:<span id='ldapPassword'></span></div>
+      </div>
+      <div class="text-center">
+        <?php echo html::commonButton($lang->cancel, "data-dismiss='modal'", 'btn btn-wide');?>
+        <?php echo html::a('#', $lang->system->visit, '_blank', "id='ldapVisitUrl' class='btn btn-primary btn-wide'");?>
+      </div>
+    </div>
+  </div>
+</div>
 <?php include $this->app->getModuleRoot() . '/common/view/footer.html.php';?>
 

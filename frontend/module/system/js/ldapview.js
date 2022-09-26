@@ -7,10 +7,10 @@ $(function()
             let res = JSON.parse(response);
             if(res.result == 'success')
             {
-                var ldapPage  = window.open('//' + res.data.domain);
-                var loginForm = ldapPage.$('form')[0];
-                $(loginForm).find('input[name=passwd]').val(res.pass);
-                $(loginForm).submit();
+                $('#ldapAccount').text(res.data.account);
+                $('#ldapPassword').text(res.data.pass);
+                $('#ldapVisitUrl').attr('href', '//' + res.data.domain);
+                $('#ldapAccountModal').modal('show');
             }
         });
     });
