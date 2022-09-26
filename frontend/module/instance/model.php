@@ -403,10 +403,10 @@ class InstanceModel extends model
         $snippetSettings->values = new stdclass;
         $snippetSettings->values->auth = new stdclass;
         $snippetSettings->values->auth->ldap = new stdclass;
-        $snippetSettings->values->auth->ldap->enabled   = true;
+        $snippetSettings->values->auth->ldap->enabled   = false;
         $snippetSettings->values->auth->ldap->type      = 'ldap';
         $snippetSettings->values->auth->ldap->host      = $instance->domain;
-        $snippetSettings->values->auth->ldap->port      = 1389;
+        $snippetSettings->values->auth->ldap->port      = '1389';
         $snippetSettings->values->auth->ldap->bindDN    = "cn={$settingMap->auth->username},dc=quickon,dc=org";
         $snippetSettings->values->auth->ldap->bindPass  = $settingMap->auth->password;
         $snippetSettings->values->auth->ldap->baseDN    = $settingMap->auth->root;
