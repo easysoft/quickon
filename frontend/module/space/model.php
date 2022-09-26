@@ -96,9 +96,10 @@ class spaceModel extends model
      */
     public function getSpaceInstances($spaceID, $status = 'all', $searchName = '', $pager = null)
     {
-        $deadline     = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+        $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
 
-        $space     = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->eq($spaceID)->fetch();
+        $space = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->eq($spaceID)->fetch();
+
         $instances = $this->dao->select('*')->from(TABLE_INSTANCE)
             ->where('deleted')->eq(0)
             ->andWhere('space')->eq($spaceID)

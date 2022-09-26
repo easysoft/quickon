@@ -27,6 +27,7 @@ $lang->system->ldapTypeList['qucheng'] = '渠成内置';
 $lang->system->notices = new stdclass;
 $lang->system->notices->noLDAP             = '找不到LDAP配置数据';
 $lang->system->notices->ldapInstallSuccess = 'LDAP安装成功';
+$lang->system->notices->ldapUsed           = '已经有服务关联了LDAP';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB        = '找不到该数据库';

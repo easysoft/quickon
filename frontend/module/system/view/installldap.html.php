@@ -42,9 +42,8 @@
           <tr>
         </tbody>
       </table>
-      <div class="text-center form-actions"><?php echo html::submitButton($lang->system->ldapInstall);?></div>
+      <div class='text-center form-actions'><?php echo html::submitButton($lang->system->ldapInstall);?></div>
     </form>
   </div>
 </div>
 <?php include $this->app->getModuleRoot() . '/common/view/footer.html.php';?>
-

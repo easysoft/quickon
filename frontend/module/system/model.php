@@ -36,7 +36,7 @@ class systemModel extends model
     public function printAction($db)
     {
         $disabled = strtolower($db->status) == 'running' ? '' : 'disabled';
-        $btnHtml = html::commonButton($this->lang->system->management, "{$disabled} data-db-name='{$db->name}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
+        $btnHtml  = html::commonButton($this->lang->system->management, "{$disabled} data-db-name='{$db->name}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
 
         echo $btnHtml;
     }
@@ -58,11 +58,22 @@ class systemModel extends model
         if($ldapInstance->domain)
         {
             $disableVisit = !$this->instance->canDo('visit', $ldapInstance);
-            $buttonHtml  .= html::commonButton($this->lang->instance->visit, "instance-id='{$ldapInstance->id}' title='{$this->lang->instance->stop}'" . ($disableVisit ? ' disabled ' : ''), 'btn-visit btn label label-outline label-primary label-lg');
+            $buttonHtml  .= html::commonButton($this->lang->instance->visit, "instance-id='{$ldapInstance->id}' title='{$this->lang->instance->visit}'" . ($disableVisit ? ' disabled ' : ''), 'btn-visit btn label label-outline label-primary label-lg');
         }
 
-        $disableStop = !$this->instance->canDo('stop', $ldapInstance);
-        $buttonHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$ldapInstance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-danger label-lg');
+        $title       = $this->lang->instance->stop;
+        $toolTips    = '';
+        $count       = $this->instance->countLDAP();
+        $disableStop = $count > 0 || !$this->instance->canDo('stop', $ldapInstance);
+        if($disableStop)
+        {
+            $title    = $this->lang->system->notices->ldapUsed;
+            $toolTips = "data-toggle='tooltip' data-placement='bottom' runat='server'";
+        }
+
+        $buttonHtml .= "<span {$toolTips} title='{$title}'>";
+        $buttonHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$ldapInstance->id}' title='{$title}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-danger label-lg');
+        $buttonHtml .= "</span>";
 
         echo $buttonHtml;
 

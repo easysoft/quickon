@@ -137,4 +137,3 @@ class system extends control
         $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $ldapInstance->domain, 'account' => $ldapSetting->auth->username, 'pass' => $password)));
     }
 }
-

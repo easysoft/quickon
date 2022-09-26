@@ -81,9 +81,12 @@ class InstanceModel extends model
     {
         $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
 
+        $defaultSpace = $this->loadModel('space')->defaultSpace($account ? $account : $this->app->user->account);
+
         $instances = $this->dao->select('instance.*')->from(TABLE_INSTANCE)->alias('instance')
             ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
             ->where('instance.deleted')->eq(0)
+            ->andWhere('space.id')->eq($defaultSpace->id)
             ->beginIF($account)->andWhere('space.owner')->eq($account)->fi()
             ->beginIF($pinned)->andWhere('instance.pinned')->eq((int)$pinned)->fi()
             ->beginIF($searchParam)->andWhere('instance.name')->like("%{$searchParam}%")->fi()
@@ -101,6 +104,18 @@ class InstanceModel extends model
         foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
 
         return $instances;
+    }
+
+    /**
+     * Count instance which is enabled LDAP.
+     *
+     * @access public
+     * @return int
+     */
+    public function countLDAP()
+    {
+        $count = $this->dao->select('count(*) as ldapQty')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('ldapSnippetName is not null')->fetch();
+        return $count->ldapQty;
     }
 
     /**
