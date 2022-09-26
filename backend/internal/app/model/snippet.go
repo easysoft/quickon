@@ -5,7 +5,7 @@ type SnippetConfig struct {
 	Namespace  string                 `json:"namespace"`
 	Category   string                 `json:"category"`
 	Values     map[string]interface{} `json:"values"`
-	AutoImport bool                   `json:"auto_import"`
+	AutoImport bool                   `json:"auto_import,omitempty"`
 }
 
 type SnippetQuery struct {
