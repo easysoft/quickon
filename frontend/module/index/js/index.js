@@ -588,7 +588,8 @@
         {
             document.addEventListener(visibleChange, function()
             {
-                if(document[vibibleState] == 'visible') showTab($('#bars>li.active').data('app'));
+                /* Fix bug: #27537 */
+                //if(document[vibibleState] == 'visible') showTab($('#bars>li.active').data('app'));
             });
         }
     });
