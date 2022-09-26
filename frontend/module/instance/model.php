@@ -374,7 +374,11 @@ class InstanceModel extends model
         $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
 
         $instance = $this->createInstance($app, $space, $customData->customDomain, $instanceName, $k8name, $channel);
-        if(!$instance) return false;
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            return false;
+        }
 
         $settingMap = $this->installationSettingsMap($customData, array(), $app, $instance);
 
@@ -384,34 +388,45 @@ class InstanceModel extends model
         $settingMap->auth->root     = 'dc=quickon,dc=org';
 
         $instance = $this->doCneInstall($app, $instance, $space, $settingMap);
-        if($instance)
+        if(!$instance)
         {
-            /* Post snippet to CNE. */
-            $snippetSettings = new stdclass;
-            $snippetSettings->name = 'snippet-qucheng-ldap';
-            $snippetSettings->values = new stdclass;
-            $snippetSettings->values->auth = new stdclass;
-            $snippetSettings->values->auth->ldap = new stdclass;
-            $snippetSettings->values->auth->ldap->enabled   = 'true';
-            $snippetSettings->values->auth->ldap->type      = 'ldap';
-            $snippetSettings->values->auth->ldap->host      = $instance->domain;
-            $snippetSettings->values->auth->ldap->port      = 1389;
-            $snippetSettings->values->auth->ldap->bindDN    = "cn={$settingMap->auth->username},dc=quickon,dc=org";
-            $snippetSettings->values->auth->ldap->bindPass  = $settingMap->auth->password;
-            $snippetSettings->values->auth->ldap->baseDN    = $settingMap->auth->root;
-            $snippetSettings->values->auth->ldap->filter    = "&(objectClass=posixAccount)(cn=%s)";
-            $snippetSettings->values->auth->ldap->attrUser  = 'uid';
-            $snippetSettings->values->auth->ldap->attrEmail = 'mail';
-
-            $this->loadModel('cne')->addSnippet($snippetSettings);
-            //@todo How to handle failure?
-
-            /* Save LDAP account. */
-            $settingMap->auth->password = openssl_encrypt($settingMap->auth->password, 'DES-ECB', $instance->createdAt);
-            $this->dao->update(TABLE_INSTANCE)->set('ldapSettings')->eq(json_encode($settingMap))->where('id')->eq($instance->id)->exec();
-            $this->loadModel('setting')->setItem('system.common.ldap.instanceID', $instance->id);
-            $this->loadModel('setting')->setItem('system.common.ldap.snippetName', $snippetSettings->name); // Parameter for App installation API.
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            return false;
         }
+
+        /* Post snippet to CNE. */
+        $snippetSettings = new stdclass;
+        $snippetSettings->name        = 'snippet-qucheng-ldap';
+        $snippetSettings->namespace   = $space->k8space;
+        $snippetSettings->auto_import = 'true';
+
+        $snippetSettings->values = new stdclass;
+        $snippetSettings->values->auth = new stdclass;
+        $snippetSettings->values->auth->ldap = new stdclass;
+        $snippetSettings->values->auth->ldap->enabled   = 'true';
+        $snippetSettings->values->auth->ldap->type      = 'ldap';
+        $snippetSettings->values->auth->ldap->host      = $instance->domain;
+        $snippetSettings->values->auth->ldap->port      = 1389;
+        $snippetSettings->values->auth->ldap->bindDN    = "cn={$settingMap->auth->username},dc=quickon,dc=org";
+        $snippetSettings->values->auth->ldap->bindPass  = $settingMap->auth->password;
+        $snippetSettings->values->auth->ldap->baseDN    = $settingMap->auth->root;
+        $snippetSettings->values->auth->ldap->filter    = "&(objectClass=posixAccount)(cn=%s)";
+        $snippetSettings->values->auth->ldap->attrUser  = 'uid';
+        $snippetSettings->values->auth->ldap->attrEmail = 'mail';
+
+        $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
+        if($snippetResult->code != 200)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            $this->uninstall($instance);
+            return false;
+        }
+
+        /* Save LDAP account. */
+        $settingMap->auth->password = openssl_encrypt($settingMap->auth->password, 'DES-ECB', $instance->createdAt);
+        $this->dao->update(TABLE_INSTANCE)->set('ldapSettings')->eq(json_encode($settingMap))->where('id')->eq($instance->id)->exec();
+        $this->loadModel('setting')->setItem('system.common.ldap.instanceID', $instance->id);
+        $this->loadModel('setting')->setItem('system.common.ldap.snippetName', $snippetSettings->name); // Parameter for App installation API.
 
         return $instance;
     }
