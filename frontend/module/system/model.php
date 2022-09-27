@@ -61,6 +61,9 @@ class systemModel extends model
             $buttonHtml  .= html::commonButton($this->lang->instance->visit, "instance-id='{$ldapInstance->id}' title='{$this->lang->instance->visit}'" . ($disableVisit ? ' disabled ' : ''), 'btn-visit btn label label-outline label-primary label-lg');
         }
 
+        $disableStart = !$this->instance->canDo('start', $ldapInstance);
+        $buttonHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$ldapInstance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn label label-outline label-primary label-lg");
+
         $title       = $this->lang->instance->stop;
         $toolTips    = '';
         $count       = $this->instance->countLDAP();

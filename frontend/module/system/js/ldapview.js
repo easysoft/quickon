@@ -15,6 +15,40 @@ $(function()
         });
     });
 
+    $('.btn-start').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.confirmStart, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.starting + '</div>',
+            });
+
+            let id  = $(event.target).closest('button').attr('instance-id');
+            let url = createLink('instance', 'ajaxStart', 'id=' + id, 'json');
+            $.post(url).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                let res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    window.location.reload();
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
+        });
+    });
+
     $('.btn-stop').on('click', function(event)
     {
         bootbox.confirm(instanceNotices.confirmStop, function(result)

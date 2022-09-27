@@ -13,7 +13,6 @@
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <?php js::set('instanceNotices', $lang->instance->notices);?>
 <?php js::set('instanceIdList',  array($ldapInstance->id));?>
-<?php js::set('demoAppLife',     $config->demoAppLife);?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left'>
     <?php echo html::a($this->createLink('system', 'index'), "<i class='icon icon-back icon-sm'></i>" . $lang->goback, '', "class='btn btn-secondary'");?>
