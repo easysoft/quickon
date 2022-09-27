@@ -95,7 +95,7 @@ class systemModel extends model
 
         if($setting->source == 'qucheng' && $setting->enableLDAP)
         {
-            return $this->loadModel('instance')->installLDAP($ldapApp, 'ldap', 'OpenLDAP', $k8name = '', $channel);
+            return $this->loadModel('instance')->installLDAP($ldapApp, '', 'OpenLDAP', $k8name = '', $channel);
         }
 
         dao::$errors[] = $this->lang->system->notSupportedLDAP;
