@@ -360,8 +360,9 @@ class InstanceModel extends model
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
-        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
-        $instance = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, '',$channel);
+        $ldapSnippet = isset($customData->snippets[0]) ? $customData->snippets[0] : null;
+        $channel     = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $instance    = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, '', $channel, $ldapSnippet);
 
         if(!$instance) return false;
 
@@ -490,28 +491,30 @@ class InstanceModel extends model
      * @access public
      * @return bool|object
      */
-    public function createInstance($app, $space, $thirdDomain, $name = '', $k8name = '', $channel = 'stable')
+    public function createInstance($app, $space, $thirdDomain, $name = '', $k8name = '', $channel = 'stable', $ldapSnippet = null)
     {
         if(empty($k8name)) $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
 
         $instanceData = new stdclass;
-        $instanceData->appId        = $app->id;
-        $instanceData->appName      = $app->alias;
-        $instanceData->name         = !empty($name)   ? $name : $app->alias;
-        $instanceData->domain       = !empty($thirdDomain) ? $this->fullDomain($thirdDomain) : '';
-        $instanceData->logo         = $app->logo;
-        $instanceData->desc         = $app->desc;
-        $instanceData->introduction = isset($app->introduction) ? $app->introduction : $app->desc;
-        $instanceData->source       = 'cloud';
-        $instanceData->channel      = $channel;
-        $instanceData->chart        = $app->chart;
-        $instanceData->appVersion   = $app->app_version;
-        $instanceData->version      = $app->version;
-        $instanceData->space        = $space->id;
-        $instanceData->k8name       = $k8name;
-        $instanceData->status       = 'creating';
-        $instanceData->createdBy    = $this->app->user->account;
-        $instanceData->createdAt    = date('Y-m-d H:i:s');
+        $instanceData->appId           = $app->id;
+        $instanceData->appName         = $app->alias;
+        $instanceData->name            = !empty($name)   ? $name : $app->alias;
+        $instanceData->domain          = !empty($thirdDomain) ? $this->fullDomain($thirdDomain) : '';
+        $instanceData->logo            = $app->logo;
+        $instanceData->desc            = $app->desc;
+        $instanceData->introduction    = isset($app->introduction) ? $app->introduction : $app->desc;
+        $instanceData->source          = 'cloud';
+        $instanceData->channel         = $channel;
+        $instanceData->chart           = $app->chart;
+        $instanceData->appVersion      = $app->app_version;
+        $instanceData->version         = $app->version;
+        $instanceData->space           = $space->id;
+        $instanceData->k8name          = $k8name;
+        $instanceData->status          = 'creating';
+        $instanceData->createdBy       = $this->app->user->account;
+        $instanceData->createdAt       = date('Y-m-d H:i:s');
+
+        if($ldapSnippet) $instanceData->ldapSnippetName = $ldapSnippet;
 
         $this->dao->insert(TABLE_INSTANCE)->data($instanceData)->autoCheck()->exec();
         if(dao::isError()) return false;
@@ -661,9 +664,9 @@ class InstanceModel extends model
     {
         $statusList = $this->cne->batchQueryStatus($instances);
 
-        $newStatusList  = array();
+        $newStatusList = array();
 
-        foreach($instances  as $instance)
+        foreach($instances as $instance)
         {
             $statusData = zget($statusList, $instance->k8name, '');
             if($statusData)
@@ -900,7 +903,7 @@ class InstanceModel extends model
             $instance->spaceData = zget($spaceList, $instance->space);
             if(empty($instance->spaceData)) continue;
 
-            $result = $this->uninstall($instance);
+            $this->uninstall($instance);
         }
     }
 
@@ -971,7 +974,7 @@ class InstanceModel extends model
     {
         $actionHtml = '';
 
-            $disableStart = !$this->canDo('start', $instance);
+        $disableStart = !$this->canDo('start', $instance);
         $actionHtml  .= html::commonButton("<i class='icon-play'></i>", "instance-id='{$instance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn btn-lg btn-action");
 
         $disableStop = !$this->canDo('stop', $instance);
@@ -1062,7 +1065,7 @@ class InstanceModel extends model
     public function printDBAction($db, $instance)
     {
         $disabled = $db->ready ? '' : 'disabled';
-        $btnHtml = html::commonButton($this->lang->instance->management, "{$disabled} data-db-name='{$db->name}' data-id='{$instance->id}'", 'db-login btn btn-primary');
+        $btnHtml  = html::commonButton($this->lang->instance->management, "{$disabled} data-db-name='{$db->name}' data-id='{$instance->id}'", 'db-login btn btn-primary');
 
         echo $btnHtml;
     }

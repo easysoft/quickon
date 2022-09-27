@@ -64,16 +64,16 @@ class systemModel extends model
         $disableStart = !$this->instance->canDo('start', $ldapInstance);
         $buttonHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$ldapInstance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn label label-outline label-primary label-lg");
 
-        $title       = $this->lang->instance->stop;
-        $toolTips    = '';
-        $count       = $this->instance->countLDAP();
-        $disableStop = $count > 0 || !$this->instance->canDo('stop', $ldapInstance);
-        if($disableStop)
+        $title    = $this->lang->instance->stop;
+        $toolTips = '';
+        $count    = $this->instance->countLDAP();
+        if($count)
         {
             $title    = $this->lang->system->notices->ldapUsed;
             $toolTips = "data-toggle='tooltip' data-placement='bottom' runat='server'";
         }
 
+        $disableStop = $count > 0 || !$this->instance->canDo('stop', $ldapInstance);
         $buttonHtml .= "<span {$toolTips} title='{$title}'>";
         $buttonHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$ldapInstance->id}' title='{$title}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-danger label-lg');
         $buttonHtml .= "</span>";
