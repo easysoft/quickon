@@ -25,25 +25,8 @@ func SystemUpdate(c *gin.Context) {
 		return
 	}
 
-	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
-
-	qcApp, err := service.Apps(ctx, "", runtimeNs).GetApp("qucheng")
-	if err != nil {
-		logger.WithError(err).Error("get qucheng app failed")
-		renderError(c, http.StatusInternalServerError, err)
-		return
-	}
-
 	blankSnippet := make(map[string]interface{})
-	if err = qcApp.PatchSettings(qcApp.ChartName, model.AppCreateOrUpdateModel{
-		Version: body.Version, Channel: body.Channel,
-	}, blankSnippet); err != nil {
-		logger.WithError(err).WithField("channel", body.Channel).Errorf("update qucheng chart to version %s failed", body.Version)
-		renderError(c, http.StatusInternalServerError, err)
-		return
-	}
-
-	logger.WithField("channel", body.Channel).Infof("update qucheng chart to version %s success", body.Version)
+	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
 
 	opApp, err := service.Apps(ctx, "", runtimeNs).GetApp("cne-operator")
 	if err != nil {
@@ -59,8 +42,24 @@ func SystemUpdate(c *gin.Context) {
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
-
 	logger.WithField("channel", body.Channel).Info("update operator chart success")
+
+	qcApp, err := service.Apps(ctx, "", runtimeNs).GetApp("qucheng")
+	if err != nil {
+		logger.WithError(err).Error("get qucheng app failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	if err = qcApp.PatchSettings(qcApp.ChartName, model.AppCreateOrUpdateModel{
+		Version: body.Version, Channel: body.Channel,
+	}, blankSnippet); err != nil {
+		logger.WithError(err).WithField("channel", body.Channel).Errorf("update qucheng chart to version %s failed", body.Version)
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	logger.WithField("channel", body.Channel).Infof("update qucheng chart to version %s success", body.Version)
+
 	renderSuccess(c, http.StatusOK)
 }
 
