@@ -132,10 +132,10 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 		}
 	}
 	if rel, err := h.Upgrade(i.name, helm.GenChart(body.Channel, chart), version, options); err != nil {
-		analysis.Upgrade(body.Chart, version).Fail(err)
+		analysis.Upgrade(chart, version).Fail(err)
 		return err
 	} else {
-		analysis.Upgrade(body.Chart, version).Success()
+		analysis.Upgrade(chart, version).Success()
 		return i.updateSecretMeta(rel)
 	}
 }
