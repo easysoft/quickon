@@ -248,6 +248,12 @@ class instance extends control
             if(!validater::checkLength($customData->customDomain, 20, 2))      return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->domainLength));
             if(!validater::checkREG($customData->customDomain, '/^[\w\d]+$/')) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->wrongDomainCharacter));
 
+            /* If select the version, replace the latest version of App by selected version. */
+            if($customData->version)
+            {
+                $cloudApp->version     = $customData->version;
+                $cloudApp->app_version = $customData->app_version;
+            }
             $result = $this->instance->install($cloudApp, $dbList, $customData);
             if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
 
