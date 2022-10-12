@@ -414,7 +414,7 @@ class InstanceModel extends model
         $snippetSettings = new stdclass;
         $snippetSettings->name        = 'snippet-qucheng-ldap';
         $snippetSettings->namespace   = $space->k8space;
-        $snippetSettings->auto_import = true;
+        $snippetSettings->auto_import = false;
 
         $snippetSettings->values = new stdclass;
         $snippetSettings->values->auth = new stdclass;
