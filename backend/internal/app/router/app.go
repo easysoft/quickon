@@ -61,7 +61,7 @@ func AppInstall(c *gin.Context) {
 		return
 	}
 
-	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+	snippetSettings, _ := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
 
 	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body, snippetSettings); err != nil {
 		logger.WithError(err).Error("install app failed")
@@ -207,9 +207,9 @@ func AppPatchSettings(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	snippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+	snippetSettings, delSnippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
 
-	err = i.PatchSettings(body.Chart, body, snippetSettings)
+	err = i.PatchSettings(body.Chart, body, snippetSettings, delSnippetSettings)
 	if err != nil {
 		logger.WithError(err).Error(errPatchAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errPatchAppFailed))

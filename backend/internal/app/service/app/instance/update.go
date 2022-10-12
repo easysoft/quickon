@@ -2,6 +2,8 @@ package instance
 
 import (
 	"os"
+	"reflect"
+	"strings"
 	"time"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
@@ -68,18 +70,29 @@ func (i *Instance) Start(chart, channel string) error {
 	}
 }
 
-func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel, snippetSettings map[string]interface{}) error {
+func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel, snippetSettings, delSettings map[string]interface{}) error {
 	var (
 		err     error
 		vals    map[string]interface{}
 		version = i.CurrentChartVersion
 	)
 
+	i.logger.Debugf("delSettings is %+v", delSettings)
+
 	h, _ := helm.NamespaceScope(i.namespace)
 	vals, err = h.GetValues(i.name)
 	if err != nil {
 		return err
 	}
+
+	// remove values from the release's current values
+	if delSettings != nil {
+		deleteValues("", delSettings, func(path string) {
+			deletePath(vals, path)
+		})
+	}
+
+	i.logger.Debugf("vals is %+v", vals)
 
 	lastValFile, err := writeValuesFile(vals)
 	if err != nil {
@@ -179,4 +192,46 @@ func (i *Instance) updateSecretMeta(rel *release.Release) error {
 
 	err := completeAppLabels(i.Ctx, rel, i.Ks, i.logger, secretMeta)
 	return err
+}
+
+func deleteValues(root string, delData map[string]interface{}, f func(path string)) {
+	for key, value := range delData {
+		var path string
+		if root == "" {
+			path = key
+		} else {
+			path = root + "." + key
+		}
+
+		vType := reflect.TypeOf(value)
+		if vType.Kind() != reflect.Map {
+			f(path)
+		} else {
+			deleteValues(path, value.(map[string]interface{}), f)
+		}
+	}
+}
+
+func deletePath(node map[string]interface{}, path string) bool {
+	var deleted = false
+	frames := strings.Split(path, ".")
+	if len(frames) > 1 {
+		for _, frame := range frames[0 : len(frames)-1] {
+			n, ok := node[frame]
+			if !ok {
+				break
+			}
+			ntype := reflect.TypeOf(n)
+			if ntype.Kind() != reflect.Map {
+				break
+			}
+			node = n.(map[string]interface{})
+		}
+		delete(node, frames[len(frames)-1])
+		deleted = true
+	} else {
+		delete(node, path)
+		deleted = true
+	}
+	return deleted
 }

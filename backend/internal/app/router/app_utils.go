@@ -13,9 +13,10 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 )
 
-func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []string, logger logrus.FieldLogger) map[string]interface{} {
+func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []string, logger logrus.FieldLogger) (map[string]interface{}, map[string]interface{}) {
 	var data = make(map[string]interface{})
 	var mergedSnippets = make(map[string]interface{})
+	var deleteData = make(map[string]interface{})
 	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
 
 	for _, name := range snippetNames {
@@ -23,6 +24,12 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		if !strings.HasPrefix(name, snippet.NamePrefix) {
 			name = snippet.NamePrefix + name
 			logger.Debugf("use internal snippet name '%s'", name)
+		}
+
+		deleteFlag := false
+		if strings.HasSuffix(name, "-") {
+			deleteFlag = true
+			name = name[0 : len(name)-1]
 		}
 
 		s, err := service.Snippets(ctx, "").Get(namespace, name)
@@ -39,10 +46,18 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 			continue
 		}
 
-		err = mergo.Merge(&data, s.Values(), mergo.WithOverride)
-		if err != nil {
-			logger.WithError(err).WithField("snippet", name).Error("merge snippet config failed")
+		if deleteFlag {
+			logger.WithField("snippet", name).Infof("snippet '%s' will be removed")
+			if err = mergo.Merge(&deleteData, s.Values(), mergo.WithOverride); err != nil {
+				logger.WithError(err).WithField("snippet", name).Error("merge delete snippet config failed")
+			}
+		} else {
+			if err = mergo.Merge(&data, s.Values(), mergo.WithOverride); err != nil {
+				logger.WithError(err).WithField("snippet", name).Error("merge snippet config failed")
+			}
 		}
+
+		// deleted snippet will not auto import.
 		mergedSnippets[name] = true
 	}
 
@@ -52,7 +67,7 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 	} else {
 		for _, sp := range systemSnippets {
 			if _, ok := mergedSnippets[sp.Name]; ok {
-				logger.Debugf("snippet %s already merged")
+				logger.Debugf("snippet %s already merged", sp.Name)
 				continue
 			}
 
@@ -66,5 +81,5 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		}
 	}
 
-	return data
+	return data, deleteData
 }
