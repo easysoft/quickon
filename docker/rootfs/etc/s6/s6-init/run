@@ -62,7 +62,7 @@ if [ ! -f "/data/.initdb" ];then
     mysql_init_db "$MYSQL_DB" || exit 1
 
     # Import qucheng data
-    mysql_import_to_db "$MYSQL_DB" "/apps/qucheng/db/data.sql" && touch /data/.initdb
+    mysql_import_to_db "$MYSQL_DB" "/apps/qucheng/db/data.sql" && touch /data/.initdb || exit 1
 fi
 
 # Try upgrade
