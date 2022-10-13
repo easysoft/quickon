@@ -16,8 +16,5 @@
     <div class="panel"><?php include 'overviewblock.html.php';?></div>
     <div class="panel"><?php include 'instancesblock.html.php';?></div>
   </div>
-  <div class="side-col col-3">
-    <?php include 'dynamicblock.html.php';?>
-  </div>
 </div>
 <?php include $this->app->getModuleRoot() . '/common/view/footer.html.php';?>
