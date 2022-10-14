@@ -19,6 +19,8 @@ class system extends control
      */
     public function index()
     {
+        $this->view->title = $this->lang->system->common;
+
         $this->display();
     }
 

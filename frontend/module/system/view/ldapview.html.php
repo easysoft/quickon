@@ -51,8 +51,8 @@
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h2 class="text-center"><?php echo $lang->system->accountInfo;?></h2>
-        <div><?php echo $lang->system->account;?>:<span id='ldapAccount'></span></div>
-        <div><?php echo $lang->system->password;?>:<span id='ldapPassword'></span></div>
+        <div><?php echo $lang->system->account;?>：<span id='ldapAccount'></span></div>
+        <div><?php echo $lang->system->password;?>：<span id='ldapPassword'></span></div>
       </div>
       <div class="text-center">
         <?php echo html::commonButton($lang->cancel, "data-dismiss='modal'", 'btn btn-wide');?>
