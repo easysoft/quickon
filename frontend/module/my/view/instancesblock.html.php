@@ -13,7 +13,6 @@
       <tr>
         <th><?php echo $lang->instance->name;?></th>
         <th><?php echo $lang->instance->version;?></th>
-        <th><?php echo $lang->instance->space?></th>
         <th class='w-180px'><?php echo $lang->instance->status?></th>
         <th><?php echo $lang->instance->cpu;?></th>
         <th><?php echo $lang->instance->mem;?></th>
@@ -24,7 +23,6 @@
       <tr>
         <td><?php echo html::a($this->createLink('instance', 'view', "id=$instance->id"), $instance->name);?></td>
         <td><?php echo $instance->appVersion;?></td>
-        <td><?php echo html::a($this->createLink('space', 'browse', "id=$instance->space"), $instance->spaceData->name);?></td>
         <td class="instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
           <?php echo $this->instance->printStatus($instance, false);?>
           <?php if(commonModel::isDemoAccount()):?>
