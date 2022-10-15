@@ -1,13 +1,13 @@
 <?php
 /**
- * The install ldap view file of system module of QuCheng.
+ * The edit LDAP view file of system module of chandao.net.
  *
- * @copyright Copyright 2021-2022 北京渠成软件有限公司(BeiJing QurCheng Software Co,LTD, www.qucheng.com)
- * @license   ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)
+ * @copyright Copyright 2009-2022 青岛易软天创网络科技有限公司(QingDao Nature Easy Soft Network Technology Co,LTD, www.cnezsoft.com)
+ * @license   ZPL (http://zpl.pub/page/zplv12.html)
  * @author    Jianhua Wang <wangjianhua@easycorp.ltd>
  * @package   system
  * @version   $Id$
- * @link      https://www.qucheng.com
+ * @link      https://www.chandao.net
  */
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
@@ -23,53 +23,28 @@
       <h2><?php echo $lang->system->ldapManagement;?></h2>
     </div>
     <form id='installLDAP' class='cell load-indicator main-form form-ajax'>
-      <h4>
-        <?php echo html::checkbox('enableLDAP', array('true' => $lang->system->ldapEnabled), ''); ?>
-      </h4>
-      <table class='table table-form'>
-        <tbody>
-          <tr>
-            <th><?php echo $lang->system->ldapSource;?></th>
-            <td><?php echo html::select('source', $lang->system->ldapTypeList, 'qucheng', "class='form-control'");?></td>
-            <td></td>
-          </tr>
-        </tbody>
-      </table>
-      <table id='quchengLDAP' class='table table-form'>
-        <tbody>
-          <tr>
-            <th><?php echo $lang->system->ldapUsername?></th>
-            <td><?php echo $ldapApp->account->username;?></td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->system->ldapRoot;?></th>
-            <td><?php echo 'dc=quickon,dc=org';?></td>
-          <tr>
-        </tbody>
-      </table>
-
-      <div id='extraLDAP' style='display: none;'>
+      <div id='extraLDAP'>
         <table class='table table-form'>
           <tbody>
             <tr>
               <th><?php echo $lang->system->host;?></th>
-              <td><?php echo html::input('extra[host]', '', "class='form-control' placeholder='192.168.1.1'");?></td>
+              <td><?php echo html::input('extra[host]', zget($ldapSettings, 'host', ''), "class='form-control' placeholder='192.168.1.1'");?></td>
             </tr>
             <tr>
               <th><?php echo $lang->system->port;?></th>
-              <td><?php echo html::input('extra[port]', '', "class='form-control' placeholder='389'");?></td>
+              <td><?php echo html::input('extra[port]',  zget($ldapSettings, 'port', ''), "class='form-control' placeholder='389'");?></td>
             </tr>
             <tr>
               <th><?php echo $lang->system->ldapUsername;?></th>
-              <td><?php echo html::input('extra[bindDN]', '', "class='form-control' placeholder='admin'");?></td>
+              <td><?php echo html::input('extra[bindDN]', zget($ldapSettings, 'bindDN', ''), "class='form-control' placeholder='admin'");?></td>
             </tr>
             <tr>
               <th><?php echo $lang->system->password;?></th>
-              <td><?php echo html::input('extra[bindPass]', '', "class='form-control' placeholder='******'");?></td>
+              <td><?php echo html::input('extra[bindPass]', zget($ldapSettings, 'bindPass', ''), "class='form-control' placeholder='******'");?></td>
             </tr>
             <tr>
               <th><?php echo $lang->system->ldapRoot;?></th>
-              <td><?php echo html::input('extra[baseDN]', '', "class='form-control' placeholder='dc=quickon,dc=org'");?></td>
+              <td><?php echo html::input('extra[baseDN]', zget($ldapSettings, 'baseDN', ''), "class='form-control' placeholder='dc=quickon,dc=org'");?></td>
             </tr>
           </tbody>
         </table>
@@ -78,15 +53,15 @@
           <tbody>
               <tr>
                 <th><?php echo $lang->system->filterUser;?></th>
-                <td><?php echo html::input('extra[filter]', '', "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
+                <td><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', ''), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
               </tr>
               <tr>
                 <th><?php echo $lang->system->email;?></th>
-                <td><?php echo html::input('extra[attrEmail]', '', "class='form-control' placeholder='mail'");?></td>
+                <td><?php echo html::input('extra[attrEmail]', zget($ldapSettings, 'attrEmail', ''), "class='form-control' placeholder='mail'");?></td>
               </tr>
               <tr>
                 <th><?php echo $lang->system->extraAccount;?></th>
-                <td><?php echo html::input('extra[attrUser]', '', "class='form-control' placeholder='uid'");?></td>
+                <td><?php echo html::input('extra[attrUser]', zget($ldapSettings, 'attrUser', ''), "class='form-control' placeholder='uid'");?></td>
               </tr>
           </tbody>
         </table>
@@ -100,8 +75,9 @@
           </tbody>
         </table>
       </div>
-      <div class='text-center form-actions'><?php echo html::submitButton($lang->system->ldapInstall);?></div>
+      <div class='text-center form-actions'><?php echo html::submitButton($lang->system->ldapUpdate);?></div>
     </form>
   </div>
 </div>
 <?php include $this->app->getModuleRoot() . '/common/view/footer.html.php';?>
+

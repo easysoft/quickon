@@ -12,7 +12,7 @@
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <div id="mainContent" class="main-row">
-  <div class="main-col col-9">
+  <div class="main-col col-12">
     <div class="panel"><?php include 'overviewblock.html.php';?></div>
     <div class="panel"><?php include 'instancesblock.html.php';?></div>
   </div>

@@ -69,6 +69,53 @@ class system extends control
     }
 
     /**
+     * Test the connection of LDAP by post parameters.
+     *
+     * @access public
+     * @return void
+     */
+    public function testLDAPConnection()
+    {
+        $settings = fixer::input('post')
+            ->setDefault('host', '')
+            ->setDefault('port', '')
+            ->setDefault('bindDN', '')
+            ->setDefault('bindPass', '')
+            ->setDefault('baseDN', '')
+            ->get();
+
+        $success = $this->system->testLDAPConnection($settings);
+        if($success) return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->verifyLDAPSuccess));
+
+        return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->verifyLDAPFailed));
+    }
+
+    /**
+     * Edit extra LDAP
+     *
+     * @access public
+     * @return void
+     */
+    public function editLDAP()
+    {
+        if($_POST)
+        {
+            $settings = fixer::input('post')->get();
+
+            $this->system->installExtraLDAP((object) $settings->extra, 'update');
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
+        }
+
+        $this->view->title = $this->lang->system->editLDAP;
+
+        $this->view->ldapSettings = $this->system->getExtraLDAPSettings();
+
+        $this->display();
+    }
+
+    /**
      * LDAP view.
      *
      * @access public
@@ -79,18 +126,32 @@ class system extends control
         $this->loadModel('instance');
         $this->app->loadLang('instance');
 
+        $ldapInstance = new stdclass;
         $instanceID   = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
-        $ldatInstance = $this->instance->getByID($instanceID);
-        if(empty($ldatInstance)) return print js::alert($this->lang->system->notices->noLDAP);
+        if($instanceID > 0)
+        {
+            $ldapInstance = $this->instance->getByID($instanceID);
+            if(empty($ldapInstance)) return print js::alert($this->lang->system->notices->noLDAP);
 
-        $ldatInstance = $this->instance->freshStatus($ldatInstance);
+            $ldapInstance = $this->instance->freshStatus($ldapInstance);
+            $ldapSettings = json_decode($ldapInstance->ldapSettings);
+        }
+        else if($instanceID == -1)
+        {
+            $ldapSettings = $this->system->getExtraLDAPSettings();
+        }
+        else
+        {
+            return print js::alert($this->lang->system->notices->noLDAP);
+        }
 
         $this->lang->switcherMenu = $this->system->getLDAPSwitcher();
 
         $this->view->title = $this->lang->system->ldapManagement;
 
-        $this->view->ldapInstance = $ldatInstance;
-        $this->view->ldapSettings = json_decode($ldatInstance->ldapSettings);
+        $this->view->instanceID   = $instanceID;
+        $this->view->ldapInstance = $ldapInstance;
+        $this->view->ldapSettings = $ldapSettings;
 
         $this->display();
     }
