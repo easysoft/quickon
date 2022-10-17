@@ -109,6 +109,9 @@ func (m *Manager) Update(name, namespace, category string, values map[string]int
 		return err
 	}
 	cm.Data[snippetContentKey] = string(content)
+	if cm.Annotations == nil {
+		cm.Annotations = make(map[string]string)
+	}
 	cm.Annotations[annotationSnippetConfigAutoImport] = fmt.Sprintf("%v", autoImport)
 	if category != "" {
 		cm.Annotations[annotationSnippetConfigCategory] = category
