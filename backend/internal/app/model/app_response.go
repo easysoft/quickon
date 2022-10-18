@@ -144,3 +144,10 @@ type AppRespAppDetail struct {
 	Username  string                 `json:"username"`
 	Values    map[string]interface{} `json:"values"`
 }
+
+type AppCustomSetting struct {
+	Name    string      `json:"name"`
+	Default interface{} `json:"default"`
+	Label   string      `json:"label"`
+	Desc    string      `json:"desc"`
+}

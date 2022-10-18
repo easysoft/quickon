@@ -1,9 +1,13 @@
 package instance
 
 import (
+	"encoding/json"
 	"reflect"
 	"strconv"
 	"strings"
+
+	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 
 	"github.com/imdario/mergo"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
@@ -29,11 +33,13 @@ type Settings struct {
 	app    *Instance
 	layout settingLayout
 	mode   settingMode
+	logger logrus.FieldLogger
 }
 
 func newSettings(app *Instance) *Settings {
 	return &Settings{
 		app: app, mode: listMode,
+		logger: app.logger,
 	}
 }
 
@@ -91,6 +97,43 @@ func (s *Settings) getMergedVals() (map[string]interface{}, error) {
 		return nil, err
 	}
 	return dst, nil
+}
+
+func (s *Settings) Custom() ([]model.AppCustomSetting, error) {
+	vals, err := s.getMergedVals()
+	if err != nil {
+		return nil, err
+	}
+	settings := make([]model.AppCustomSetting, 0)
+	if _customVals, ok := vals["_custom"]; ok {
+		_cusVals, err := json.Marshal(_customVals)
+		if err != nil {
+			return nil, err
+		}
+		if err = json.Unmarshal(_cusVals, &settings); err != nil {
+			return nil, err
+		}
+
+		customVals := make(map[string]interface{})
+		if d, ok := vals["custom"]; ok {
+			customVals = d.(map[string]interface{})
+		}
+
+		for id, setting := range settings {
+			if setting.Label == "" {
+				setting.Label = setting.Name
+			}
+
+			if currentValue, ok := customVals[setting.Name]; ok {
+				setting.Default = currentValue
+			}
+
+			settings[id] = setting
+		}
+
+	}
+
+	return settings, nil
 }
 
 func (s *Settings) Simple() *Settings {
