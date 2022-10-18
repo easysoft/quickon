@@ -6,7 +6,7 @@
 
 # Constants
 CACHE_ROOT="/tmp/easysoft/pkg/cache"
-DOWNLOAD_URL="https://pkg.qucheng.com/files/stacksmith"
+DOWNLOAD_URL="https://pkg-hk.qucheng.com/files/stacksmith"
 ZENTAO_URL="https://www.zentao.net/dl/zentao"
 ZDOO_URL="https://www.zdoo.com/dl/zdoo"
 
@@ -32,7 +32,7 @@ z_download() {
     local directory="/apps/"
 
     echo "Downloading $name:$version package"
-    case $name in 
+    case $name in
     "zentao")
         wget --no-check-certificate --quiet --output-document=/tmp/"${1}" "${ZENTAO_URL}/${version}/${zentao_base_name}"
         unzip -qq -d ${directory} /tmp/"${1}" && mv /apps/zentaopms /apps/zentao && rm -rf /apps/zentao/www/data
