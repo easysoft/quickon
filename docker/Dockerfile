@@ -67,10 +67,10 @@ RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "render-template
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mysql-client" "10.5.15-20220817" -c c4f82cb5b66724dd608f0bafaac400fc0d15528599e8b42be5afe8cedfd16488
 
 # Install mongodb
-RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mongodb" "1.14.1" -c 31473ef5f47d19a2ae66280d67157587ba03f65f89c26c00208c2ebf3295a8cc
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mongodb" "1.14.1-202210181821" -c 98cf5863978893c5c193868acc5eafbb60ad6f0cc9425082ca800414f26933cc
 
 # Install postgresql
-RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "postgresql" "7.4" -c fd367f9b25435bd516e5f7de581928780c912494d841114adb70bbda8b4967a2
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "postgresql" "7.4-202210181821" -c 1f909dba9ec152cacdaa5fe5c045bfec3a0eb6e67dbdabaf857f97938ea20ab5
 
 # Install wait-for-port
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "wait-for-port" "1.01" -c 2ad97310f0ecfbfac13480cabf3691238fdb3759289380262eb95f8660ebb8d1
