@@ -29,7 +29,7 @@ ARG GIT_BRANCH
 RUN make build && cp ${WORKDIR}/_output/bin/cne-api /usr/bin/cne-api && upx -9 /usr/bin/cne-api
 
 # Build qucheng image
-FROM hub.qucheng.com/library/debian:11.3-slim
+FROM hub.qucheng.com/library/debian:11.5-slim
 
 LABEL maintainer "zhouyueqiu <zhouyueqiu@easycorp.ltd>"
 
@@ -58,13 +58,19 @@ RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "php-ext-ioncube
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "apache" "2.4.53-02" -c 0df3a5e53ef078b75dd43facd6e1473d9ff3c4c5e5b865c4dc066e4e2ece6b07
 
 # Install su-exec
-RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "su-exec" "0.2" --checksum 687d29fd97482f493efec73a9103da232ef093b2936a341d85969bc9b9498910
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "su-exec" "0.2" -c 687d29fd97482f493efec73a9103da232ef093b2936a341d85969bc9b9498910
 
 # Install render-template
-RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "render-template" "1.0.1-10" --checksum 5e410e55497aa79a6a0c5408b69ad4247d31098bdb0853449f96197180ed65a4
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "render-template" "1.0.1-10" -c 5e410e55497aa79a6a0c5408b69ad4247d31098bdb0853449f96197180ed65a4
 
 # Install mysql-client
-RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mysql-client" "10.5.15" -c 31182985daa1a2a959b5197b570961cdaacf3d4e58e59a192c610f8c8f1968a8
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mysql-client" "10.5.15-20220817" -c c4f82cb5b66724dd608f0bafaac400fc0d15528599e8b42be5afe8cedfd16488
+
+# Install mongodb
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "mongodb" "1.14.1" -c 31473ef5f47d19a2ae66280d67157587ba03f65f89c26c00208c2ebf3295a8cc
+
+# Install postgresql
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "postgresql" "7.4" -c fd367f9b25435bd516e5f7de581928780c912494d841114adb70bbda8b4967a2
 
 # Install wait-for-port
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "wait-for-port" "1.01" -c 2ad97310f0ecfbfac13480cabf3691238fdb3759289380262eb95f8660ebb8d1
