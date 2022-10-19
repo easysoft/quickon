@@ -737,6 +737,19 @@ const docTemplate = `{
                         "$ref": "#/definitions/model.stringSetting"
                     }
                 },
+                "settings_map": {
+                    "type": "object",
+                    "additionalProperties": true
+                },
+                "settings_snippets": {
+                    "type": "array",
+                    "items": {
+                        "type": "string"
+                    }
+                },
+                "username": {
+                    "type": "string"
+                },
                 "version": {
                     "type": "string"
                 }

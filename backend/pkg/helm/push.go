@@ -6,7 +6,7 @@ package helm
 
 import (
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/push"
 )
@@ -23,7 +23,7 @@ func Push(path, repo string) error {
 	}
 
 	if res.StatusCode > 300 {
-		bodyByte, _ := ioutil.ReadAll(res.Body)
+		bodyByte, _ := io.ReadAll(res.Body)
 		e := &PushErr{status: res.StatusCode, content: string(bodyByte)}
 		return e
 	}

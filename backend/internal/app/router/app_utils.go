@@ -1,3 +1,7 @@
+// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
+// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
+// license that can be found in the LICENSE file.
+
 package router
 
 import (
@@ -47,7 +51,7 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		}
 
 		if deleteFlag {
-			logger.WithField("snippet", name).Infof("snippet '%s' will be removed")
+			logger.WithField("snippet", name).Info("snippet will be removed")
 			if err = mergo.Merge(&deleteData, s.Values(), mergo.WithOverride); err != nil {
 				logger.WithError(err).WithField("snippet", name).Error("merge delete snippet config failed")
 			}

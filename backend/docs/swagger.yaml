@@ -15,6 +15,15 @@ definitions:
         items:
           $ref: '#/definitions/model.stringSetting'
         type: array
+      settings_map:
+        additionalProperties: true
+        type: object
+      settings_snippets:
+        items:
+          type: string
+        type: array
+      username:
+        type: string
       version:
         type: string
     required:

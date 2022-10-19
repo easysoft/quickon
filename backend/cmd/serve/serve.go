@@ -51,6 +51,6 @@ func serve(cmd *cobra.Command, args []string) {
 
 	logger.Info("start server")
 	if err := gins.Serve(ctx, logger); err != nil {
-		logger.Fatal("run serve: %v", err)
+		logger.Fatalf("run serve: %v", err)
 	}
 }

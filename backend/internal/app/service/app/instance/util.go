@@ -1,19 +1,23 @@
+// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
+// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
+// license that can be found in the LICENSE file.
+
 package instance
 
 import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"os"
 	"strconv"
 
 	"github.com/sirupsen/logrus"
-	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/types"
+	"sigs.k8s.io/yaml"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 )
@@ -49,7 +53,7 @@ func loadAppSecret(ctx context.Context, name, namespace string, revision int, ks
 }
 
 func writeValuesFile(data map[string]interface{}) (string, error) {
-	f, err := ioutil.TempFile("/tmp", "values.******.yaml")
+	f, err := os.CreateTemp("/tmp", "values.******.yaml")
 	if err != nil {
 		return "", err
 	}

@@ -20,7 +20,7 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
-//Cors cors middleware
+// Cors cors middleware
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		method := c.Request.Method
@@ -56,7 +56,7 @@ func getToken(c *gin.Context) string {
 	return c.Query(constant.Token)
 }
 
-//auth auth middleware
+// auth auth middleware
 func Auth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		uri := c.Request.RequestURI

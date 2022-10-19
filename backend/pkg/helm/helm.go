@@ -11,7 +11,6 @@ import (
 	"os"
 
 	"github.com/pkg/errors"
-	"gopkg.in/yaml.v3"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
 	"helm.sh/helm/v3/pkg/chart/loader"
@@ -20,6 +19,7 @@ import (
 	"helm.sh/helm/v3/pkg/getter"
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/strvals"
+	"sigs.k8s.io/yaml"
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/schema"
@@ -184,9 +184,9 @@ func ParseForm(files []*chart.File) (*form.DynamicForm, error) {
 
 	err = yaml.Unmarshal(formFile.Data, &dynForm)
 
-	if &dynForm == nil {
-		err = errors.New("no dynamic form found")
-	}
+	// if &dynForm == nil {
+	// 	err = errors.New("no dynamic form found")
+	// }
 	return &dynForm, err
 }
 
