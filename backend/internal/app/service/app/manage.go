@@ -11,7 +11,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
+	"io"
 
 	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/releaseutil"
@@ -77,7 +77,7 @@ func (m *Manager) Upgrade() error {
 		m.logger.Infof("patch app label for secret %s", s.Name)
 		_, err = m.ks.Clients.Base.CoreV1().Secrets(s.Namespace).Patch(m.ctx, s.Name, types.MergePatchType, []byte(patchContent), metav1.PatchOptions{})
 		if err != nil {
-			m.logger.WithError(err).Error("patch app label failed, secret is %s", s.Name)
+			m.logger.WithError(err).Errorf("patch app label failed, secret is %s", s.Name)
 		}
 	}
 	return nil
@@ -202,7 +202,7 @@ func decodeRelease(data string) (*release.Release, error) {
 			return nil, err
 		}
 		defer r.Close()
-		b2, err := ioutil.ReadAll(r)
+		b2, err := io.ReadAll(r)
 		if err != nil {
 			return nil, err
 		}

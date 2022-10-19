@@ -1,10 +1,14 @@
+// Copyright (c) 2022 北京渠成软件有限公司 All rights reserved.
+// Use of this source code is governed by Z PUBLIC LICENSE 1.2 (ZPL 1.2)
+// license that can be found in the LICENSE file.
+
 package snippet
 
 import (
 	"context"
 	"fmt"
 
-	"gopkg.in/yaml.v3"
+	"sigs.k8s.io/yaml"
 
 	"github.com/sirupsen/logrus"
 	v1 "k8s.io/api/core/v1"

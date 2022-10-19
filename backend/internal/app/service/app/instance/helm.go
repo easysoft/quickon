@@ -9,7 +9,7 @@ import (
 	"compress/gzip"
 	"encoding/base64"
 	"encoding/json"
-	"io/ioutil"
+	"io"
 
 	"helm.sh/helm/v3/pkg/release"
 	"helm.sh/helm/v3/pkg/releaseutil"
@@ -79,7 +79,7 @@ func decodeRelease(data string) (*release.Release, error) {
 			return nil, err
 		}
 		defer r.Close()
-		b2, err := ioutil.ReadAll(r)
+		b2, err := io.ReadAll(r)
 		if err != nil {
 			return nil, err
 		}

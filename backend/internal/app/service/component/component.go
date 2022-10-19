@@ -103,7 +103,7 @@ func (m *Manager) GetDbServiceDetail(name, namespace string) (interface{}, error
 	}
 
 	data := model.ComponentDbServiceDetail{
-		ComponentBase: model.ComponentBase{dbSvc.Name, dbSvc.Namespace},
+		ComponentBase: model.ComponentBase{Name: dbSvc.Name, NameSpace: dbSvc.Namespace},
 		Host:          hp.Host,
 		Port:          hp.Port,
 		UserName:      user,
@@ -191,7 +191,7 @@ func (m *Manager) ValidDbService(name, namespace, dbname, username string) (inte
 	}
 
 	dbValid := model.DbValidation{User: true, Database: true}
-	allDbs, err := m.ks.Store.ListDb("", labels.Everything())
+	allDbs, _ := m.ks.Store.ListDb("", labels.Everything())
 	for _, db := range allDbs {
 		dbNs := db.Spec.TargetService.Namespace
 		if dbNs == "" {
