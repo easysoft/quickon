@@ -12,7 +12,7 @@
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <?php js::set('instanceNotices', $lang->instance->notices);?>
-<?php js::set('instanceIdList',  array($ldapInstance->id));?>
+<?php js::set('instanceIdList',  array($instanceID));?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left'>
     <?php echo html::a($this->createLink('system', 'index'), "<i class='icon icon-back icon-sm'></i>" . $lang->goback, '', "class='btn btn-secondary'");?>
@@ -23,26 +23,81 @@
     <div class='main-header'>
       <h2><?php echo $lang->system->ldapManagement;?></h2>
       <div class='btn-toolbar pull-right'>
+        <?php echo html::a(inLink('editLDAP', 'source=extra'), $lang->system->editLDAP, '', "class='btn-edit btn label label-outline label-primary label-lg'");?>
+        <?php if($activeLDAP == 'qucheng'):?>
         <?php $this->system->printLDAPButtons($ldapInstance);?>
+        <?php else:?>
+        <?php echo html::a('#', $lang->system->visit, '', "disabled class='btn label label-outline label-primary label-lg'");?>
+        <?php echo html::a('#', $lang->system->close, '', "disabled class='btn label label-outline label-primary label-lg'");?>
+        <?php endif?>
       </div>
     </div>
+    <?php if($activeLDAP == 'qucheng'):?>
     <table class='table table-form instance-status' instance-id='<?php echo $ldapInstance->id;?>' data-status='<?php echo $ldapInstance->status;?>'>
-        <tbody>
-          <tr>
-            <th><?php echo $lang->system->ldapSource;?></th>
-            <td><?php echo zget($lang->system->ldapTypeList, 'qucheng');?></td>
-            <td></td >
-          </tr>
-          <tr>
-            <th><?php echo $lang->system->ldapUsername?></th>
-            <td><?php echo zget($ldapSettings->auth, 'username', '');?></td>
-          </tr>
-          <tr>
-            <th><?php echo $lang->system->ldapRoot;?></th>
-            <td><?php echo zget($ldapSettings->auth, 'root', '');?></td>
-          <tr>
-        </tbody>
-      </table>
+      <tbody>
+        <tr>
+          <th><?php echo $lang->system->ldapSource;?></th>
+          <td><?php echo zget($lang->system->ldapTypeList,  $activeLDAP, '');?></td>
+          <td></td >
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->ldapUsername?></th>
+          <td><?php echo zget($ldapSettings->auth, 'username', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->ldapRoot;?></th>
+          <td><?php echo zget($ldapSettings->auth, 'root', '');?></td>
+        <tr>
+      </tbody>
+    </table>
+    <?php elseif($activeLDAP == 'extra'):?>
+    <table class='table table-form instance-status'>
+      <tbody>
+        <tr>
+          <th><?php echo $lang->system->ldapSource;?></th>
+          <td><?php echo zget($lang->system->ldapTypeList, $activeLDAP, '');?></td>
+          <td></td >
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->host;?></th>
+          <td><?php echo zget($ldapSettings, 'host', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->port;?></th>
+          <td><?php echo zget($ldapSettings, 'port', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->ldapUsername;?></th>
+          <td><?php echo zget($ldapSettings, 'bindDN', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->password;?></th>
+          <td><?php echo zget($ldapSettings, 'bindPass', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->ldapRoot;?></th>
+          <td><?php echo zget($ldapSettings, 'baseDN', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->filterUser;?></th>
+          <td><?php echo zget($ldapSettings, 'filter', '');?></td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+          <td></td>
+          <th class='text-left'><?php echo $lang->system->ldapAdvance;?></th>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->email;?></th>
+          <td><?php echo zget($ldapSettings, 'attrEmail', '');?></td>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->extraAccount;?></th>
+          <td><?php echo zget($ldapSettings, 'attrUser', '');?></td>
+        </tr>
+      </tbody>
+    </table>
+    <?php endif?>
   </div>
 </div>
 <div class="modal fade" id="ldapAccountModal" tabindex="-1" role="dialog" aria-hidden="true">

@@ -345,6 +345,48 @@ func AppSimpleSettings(c *gin.Context) {
 	renderJson(c, http.StatusOK, settings)
 }
 
+func AppCommonSettings(c *gin.Context) {
+	var (
+		query model.AppModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	settings, err := i.Settings().Common()
+	if err != nil {
+		logger.WithError(err).Error("get common settings failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	renderJson(c, http.StatusOK, settings)
+}
+
+func AppCustomSettings(c *gin.Context) {
+	var (
+		query model.AppModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	settings, err := i.Settings().Custom()
+	if err != nil {
+		logger.WithError(err).Error("get custom settings failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	renderJson(c, http.StatusOK, settings)
+}
+
 func AppMetric(c *gin.Context) {
 	var (
 		query model.AppModel

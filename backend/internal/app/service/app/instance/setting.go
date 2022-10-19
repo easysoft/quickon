@@ -5,13 +5,18 @@
 package instance
 
 import (
+	"encoding/json"
 	"reflect"
+	"strconv"
 	"strings"
 
-	"github.com/imdario/mergo"
+	"github.com/sirupsen/logrus"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 
+	"github.com/imdario/mergo"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
+	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type settingLayout int
@@ -32,12 +37,107 @@ type Settings struct {
 	app    *Instance
 	layout settingLayout
 	mode   settingMode
+	logger logrus.FieldLogger
 }
 
 func newSettings(app *Instance) *Settings {
 	return &Settings{
 		app: app, mode: listMode,
+		logger: app.logger,
 	}
+}
+
+func (s *Settings) Common() (map[string]interface{}, error) {
+	vals, err := s.getMergedVals()
+	if err != nil {
+		s.app.logger.WithError(err).Error("prepare release values failed")
+		return nil, err
+	}
+	data := make(map[string]interface{})
+	data["replicas"] = vals["replicas"]
+
+	resources, ok := vals["resources"]
+	if ok {
+		resourceData := make(map[string]interface{})
+		res := resources.(map[string]interface{})
+		if cpu, ok := res["cpu"]; ok {
+			typeCPU := reflect.TypeOf(cpu)
+			var cpuStr string
+			if typeCPU.Kind() == reflect.Float64 {
+				cpuStr = strconv.Itoa(int(cpu.(float64)))
+			} else {
+				cpuStr = cpu.(string)
+			}
+			quanCpu, err := resource.ParseQuantity(cpuStr)
+			if err == nil {
+				resourceData["cpu"] = float32(quanCpu.AsApproximateFloat64())
+			}
+		}
+
+		if memory, ok := res["memory"]; ok {
+			quanMemory, err := resource.ParseQuantity(memory.(string))
+			if err == nil {
+				resourceData["memory"], _ = quanMemory.AsInt64()
+			}
+		}
+		data["resources"] = resourceData
+	}
+
+	ingress, ok := vals["ingress"]
+	if ok {
+		ingressData := make(map[string]interface{})
+		ing := ingress.(map[string]interface{})
+		ingressData["enabled"] = ing["enabled"]
+		ingressData["host"] = ing["host"]
+		data["ingress"] = ingressData
+	}
+
+	return data, nil
+}
+
+func (s *Settings) getMergedVals() (map[string]interface{}, error) {
+	dst := s.app.release.Chart.Values
+	if err := mergo.Merge(&dst, s.app.release.Config, mergo.WithOverride); err != nil {
+		return nil, err
+	}
+	return dst, nil
+}
+
+func (s *Settings) Custom() ([]model.AppCustomSetting, error) {
+	vals, err := s.getMergedVals()
+	if err != nil {
+		return nil, err
+	}
+	settings := make([]model.AppCustomSetting, 0)
+	if _customVals, ok := vals["_custom"]; ok {
+		_cusVals, err := json.Marshal(_customVals)
+		if err != nil {
+			return nil, err
+		}
+		if err = json.Unmarshal(_cusVals, &settings); err != nil {
+			return nil, err
+		}
+
+		customVals := make(map[string]interface{})
+		if d, ok := vals["custom"]; ok {
+			customVals = d.(map[string]interface{})
+		}
+
+		for id, setting := range settings {
+			if setting.Label == "" {
+				setting.Label = setting.Name
+			}
+
+			if currentValue, ok := customVals[setting.Name]; ok {
+				setting.Default = currentValue
+			}
+
+			settings[id] = setting
+		}
+
+	}
+
+	return settings, nil
 }
 
 func (s *Settings) Simple() *Settings {

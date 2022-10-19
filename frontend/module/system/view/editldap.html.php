@@ -21,8 +21,8 @@
   <div class='main-col main-content'>
     <div class='main-header'>
       <h2><?php echo $lang->system->ldapManagement;?></h2>
-      <?php include('./ldapform.html.php');?>
     </div>
+    <?php include('./ldapform.html.php');?>
   </div>
 </div>
 <?php include $this->app->getModuleRoot() . '/common/view/footer.html.php';?>

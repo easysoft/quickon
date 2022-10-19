@@ -423,6 +423,36 @@ class cneModel extends model
     }
 
     /**
+     * Update snippet.
+     *
+     * @param  object $apiParams
+     * @access public
+     * @return mixed
+     */
+    public function updateSnippet($apiParams)
+    {
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/snippet/update";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Remove snippet
+     *
+     * @param  object $apiParams
+     * @access public
+     * @return object
+     */
+    public function removeSnippet($apiParams)
+    {
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/snippet/remove";
+        return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
      * Install app.
      *
      * @param  object $apiParams
