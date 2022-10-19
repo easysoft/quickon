@@ -1,5 +1,35 @@
 $(function()
 {
+    $('#LDAPForm input[type=checkbox]').on('change', function(event)
+    {
+        if($(event.target).is(':checked'))
+        {
+            $('#LDAPForm button[type=submit]').attr('disabled', false);
+        }
+        else
+        {
+            $('#LDAPForm button[type=submit]').attr('disabled', true);
+        }
+    });
+
+    $('#LDAPForm input[type=checkbox]').change();
+
+    $('select[name=source]').on('change', function(event)
+    {
+        if($(event.target).val() == 'qucheng')
+        {
+            $('#quchengLDAP').show();
+            $('#extraLDAP').hide();
+        }
+        else
+        {
+            $('#quchengLDAP').hide();
+            $('#extraLDAP').show();
+        }
+
+    });
+    $('select[name=source]').change();
+
     $('#testConnectBtn').on('click', function(event)
     {
         var settings = {};

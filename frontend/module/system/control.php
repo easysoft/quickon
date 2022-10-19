@@ -41,34 +41,6 @@ class system extends control
     }
 
     /**
-     * Install LDAP
-     *
-     * @access public
-     * @return void
-     */
-    public function installLDAP()
-    {
-        if($this->system->hasSystemLDAP()) return print(js::locate($this->inLink('ldapView')));
-
-        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
-        $ldapApp = $this->loadModel('store')->getAppInfoByChart('openldap', $channel, false);
-        if($_POST)
-        {
-            $this->system->installLDAP($ldapApp, $channel);
-
-            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
-
-            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapInstallSuccess, 'locate' => $this->inLink('ldapView')));
-        }
-
-        $this->lang->switcherMenu = $this->system->getLDAPSwitcher();
-
-        $this->view->title   = $this->lang->system->ldapManagement;
-        $this->view->ldapApp = $ldapApp;
-        $this->display();
-    }
-
-    /**
      * Test the connection of LDAP by post parameters.
      *
      * @access public
@@ -91,6 +63,50 @@ class system extends control
     }
 
     /**
+     * Install LDAP
+     *
+     * @access public
+     * @return void
+     */
+    public function installLDAP()
+    {
+        if($this->system->hasSystemLDAP()) return print(js::locate($this->inLink('ldapView')));
+
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $ldapApp = $this->loadModel('store')->getAppInfoByChart('openldap', $channel, false);
+        if($_POST)
+        {
+            $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
+            if($postData->source == 'qucheng')
+            {
+                $this->system->installQuchengLDAP($ldapApp, $channel);
+            }
+            else if($postData->source == 'extra')
+            {
+                $this->system->installExtraLDAP((object)$postData->extra);
+            }
+            else
+            {
+                dao::$errors[] = $this->lang->system->notSupportedLDAP;
+                return false;
+            }
+
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapInstallSuccess, 'locate' => $this->inLink('ldapView')));
+        }
+
+        $this->lang->switcherMenu = $this->system->getLDAPSwitcher();
+
+        $this->view->title        = $this->lang->system->ldapManagement;
+        $this->view->ldapApp      = $ldapApp;
+        $this->view->activeLDAP   = $this->system->getActiveLDAP();
+        $this->view->ldapSettings = $this->system->getExtraLDAPSettings();
+
+        $this->display();
+    }
+
+    /**
      * Edit extra LDAP
      *
      * @access public
@@ -98,11 +114,20 @@ class system extends control
      */
     public function editLDAP()
     {
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $ldapApp = $this->loadModel('store')->getAppInfoByChart('openldap', $channel, false);
         if($_POST)
         {
-            $settings = fixer::input('post')->get();
+            $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
+            if($postData->source == 'qucheng')
+            {
+                $this->system->updateQuchengLDAP($ldapApp, $channel);
+            }
+            else if($postData->source == 'extra')
+            {
+                $this->system->installExtraLDAP((object)$postData->extra, 'update');
+            }
 
-            $this->system->installExtraLDAP((object) $settings->extra, 'update');
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
@@ -110,8 +135,10 @@ class system extends control
 
         $this->view->title = $this->lang->system->editLDAP;
 
-        $this->view->ldapSettings = $this->system->getExtraLDAPSettings();
 
+        $this->view->ldapApp      = $ldapApp;
+        $this->view->activeLDAP   = $this->system->getActiveLDAP();
+        $this->view->ldapSettings = $this->system->getExtraLDAPSettings();
         $this->display();
     }
 
@@ -127,16 +154,19 @@ class system extends control
         $this->app->loadLang('instance');
 
         $ldapInstance = new stdclass;
-        $instanceID   = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
-        if($instanceID > 0)
+        $ldapInstance->id = 0;
+
+        $activeLDAP = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=active');
+        if($activeLDAP == 'qucheng')
         {
+            $instanceID   = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
             $ldapInstance = $this->instance->getByID($instanceID);
             if(empty($ldapInstance)) return print js::alert($this->lang->system->notices->noLDAP);
 
             $ldapInstance = $this->instance->freshStatus($ldapInstance);
             $ldapSettings = json_decode($ldapInstance->ldapSettings);
         }
-        else if($instanceID == -1)
+        else if($activeLDAP == 'extra')
         {
             $ldapSettings = $this->system->getExtraLDAPSettings();
         }
@@ -149,11 +179,31 @@ class system extends control
 
         $this->view->title = $this->lang->system->ldapManagement;
 
-        $this->view->instanceID   = $instanceID;
+        $this->view->activeLDAP   = $activeLDAP;
+        $this->view->instanceID   = $ldapInstance->id;
         $this->view->ldapInstance = $ldapInstance;
         $this->view->ldapSettings = $ldapSettings;
 
         $this->display();
+    }
+
+    /**
+     * Uninstall all LDAP in system. (This function is only for debug and test.)
+     *
+     * @access public
+     * @return void
+     */
+    public function uninstallLDAP()
+    {
+        if(!$this->config->debug) return; // Only run in debug mode.
+
+        /* 1. uninstall QuCheng LDAP. */
+        $this->system->uninstallQuChengLDAP();
+
+        /* 2. uninstall extra LDAP. */
+        $this->system->uninstallExtraLDAP();
+
+        echo date('Y-m-d H:i:s') . ': Uninstall LDAP success';
     }
 
     /**

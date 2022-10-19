@@ -23,21 +23,21 @@
     <div class='main-header'>
       <h2><?php echo $lang->system->ldapManagement;?></h2>
       <div class='btn-toolbar pull-right'>
-        <?php if($instanceID > 0):?>
+        <?php echo html::a(inLink('editLDAP', 'source=extra'), $lang->system->editLDAP, '', "class='btn-edit btn label label-outline label-primary label-lg'");?>
+        <?php if($activeLDAP == 'qucheng'):?>
         <?php $this->system->printLDAPButtons($ldapInstance);?>
         <?php else:?>
-        <?php echo html::a(inLink('editLDAP', 'source=extra'), $lang->system->editLDAP, '', "class='btn label label-outline label-primary label-lg-default'");?>
-        <?php echo html::a('#', $lang->system->visit, '', "disabled class='btn label label-outline label-primary label-lg-default'");?>
-        <?php echo html::a('#', $lang->system->close, '', "disabled class='btn label label-outline label-primary label-lg-default'");?>
+        <?php echo html::a('#', $lang->system->visit, '', "disabled class='btn label label-outline label-primary label-lg'");?>
+        <?php echo html::a('#', $lang->system->close, '', "disabled class='btn label label-outline label-primary label-lg'");?>
         <?php endif?>
       </div>
     </div>
-    <?php if($instanceID > 0 ):?>
+    <?php if($activeLDAP == 'qucheng'):?>
     <table class='table table-form instance-status' instance-id='<?php echo $ldapInstance->id;?>' data-status='<?php echo $ldapInstance->status;?>'>
       <tbody>
         <tr>
           <th><?php echo $lang->system->ldapSource;?></th>
-          <td><?php echo zget($lang->system->ldapTypeList, 'qucheng');?></td>
+          <td><?php echo zget($lang->system->ldapTypeList,  $activeLDAP, '');?></td>
           <td></td >
         </tr>
         <tr>
@@ -50,9 +50,14 @@
         <tr>
       </tbody>
     </table>
-    <?php elseif($instanceID == -1):?>
+    <?php elseif($activeLDAP == 'extra'):?>
     <table class='table table-form instance-status'>
       <tbody>
+        <tr>
+          <th><?php echo $lang->system->ldapSource;?></th>
+          <td><?php echo zget($lang->system->ldapTypeList, $activeLDAP, '');?></td>
+          <td></td >
+        </tr>
         <tr>
           <th><?php echo $lang->system->host;?></th>
           <td><?php echo zget($ldapSettings, 'host', '');?></td>
@@ -76,6 +81,11 @@
         <tr>
           <th><?php echo $lang->system->filterUser;?></th>
           <td><?php echo zget($ldapSettings, 'filter', '');?></td>
+        </tr>
+        <tr><td></td></tr>
+        <tr>
+          <td></td>
+          <th class='text-left'><?php echo $lang->system->ldapAdvance;?></th>
         </tr>
         <tr>
           <th><?php echo $lang->system->email;?></th>

@@ -12,6 +12,18 @@
 class systemModel extends model
 {
     /**
+     * Construct function: load setting model.
+     *
+     * @access public
+     * @return mixed
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        $this->loadModel('setting');
+    }
+
+    /**
      * Get switcher of LDAP view page of store.
      *
      * @access public
@@ -83,28 +95,29 @@ class systemModel extends model
     }
 
     /**
-     * Install LDAP.
+     * Install QuCheng LDAP.
      *
      * @param  string   $channel
      * @access public
      * @return bool|object
      */
-    public function installLDAP($ldapApp, $channel)
+    public function installQuchengLDAP($ldapApp, $channel)
     {
-        $settings = fixer::input('post')->setDefault('source', 'qucheng')->get();
+        return $this->loadModel('instance')->installLDAP($ldapApp, '', 'OpenLDAP', $k8name = '', $channel);
+    }
 
-        if($settings->source == 'qucheng' and $settings->enableLDAP)
+    public function updateQuchengLDAP($ldapApp, $channel)
+    {
+        $instanceID = $this->setting->getItem('owner=system&module=common&section=ldap&key=instanceID');
+        if($instanceID)
         {
-            return $this->loadModel('instance')->installLDAP($ldapApp, '', 'OpenLDAP', $k8name = '', $channel);
-        }
-        else if($settings->source == 'extra' and $settings->enableLDAP)
-        {
-            return $this->installExtraLDAP((object) $settings->extra);
+            /* If QuCheng internal LDAP has been installed. Set QuCheng LDAP to be active. */
+            return $this->setting->setItem('system.common.ldap.active', 'qucheng');
         }
         else
         {
-            dao::$errors[] = $this->lang->system->notSupportedLDAP;
-            return false;
+            /* If QuCheng internal LDAP has not been installed. */
+            return $this->installQuchengLDAP($ldapApp, $channel);
         }
     }
 
@@ -164,11 +177,96 @@ class systemModel extends model
             }
         }
 
-
         /* Save extra LDAP setting to database. */
-        $this->loadModel('setting')->setItem('system.common.ldap.instanceID', -1);
-        $this->loadModel('setting')->setItem('system.common.ldap.snippetName', $snippetSettings->name); // Parameter for App installation API.
-        $this->loadModel('setting')->setItem('system.common.ldap.extra', json_encode($settings));
+        $this->setting->setItem('system.common.ldap.active', 'extra');
+        $this->setting->setItem('system.common.ldap.extraSnippetName', $snippetSettings->name); // Parameter for App installation API.
+        $this->setting->setItem('system.common.ldap.extraSettings', json_encode($settings));
+
+        return true;
+    }
+
+    /**
+     * Uninstall QuCheng LDAP.
+     *
+     * @access public
+     * @return bool
+     */
+    public function uninstallQuChengLDAP()
+    {
+        $ldapLinked = $this->loadModel('instance')->countLDAP();
+        if($ldapLinked)
+        {
+            dao::$errors[] = $this->system->errors->LDAPLinkded;
+            return false;
+        }
+
+        $instanceID = $this->setting->getItem('owner=system&module=common&section=ldap&key=instanceID');
+        $instance   = $this->loadModel('instance')->getByID($instanceID);
+        if($instance)
+        {
+            /* 1. Uninstall QuCheng LDAP service. */
+            if(!$this->loadModel('instance')->uninstall($instance))
+            {
+                dao::$errors[] = $this->system->errors->failToUninstallQuChengLDAP;
+                return false;
+            }
+
+            /* 2. Remove snippet config map from CNE. */
+            $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+            $apiParams = new stdclass;
+            $apiParams->name      = $this->ldapSnippetName();
+            $apiParams->namespace = $space->k8space;
+
+            $result = $this->loadModel('cne')->removeSnippet($apiParams);
+            if($result->code != 200)
+            {
+                dao::$errors[] = $this->system->errors->failToUninstallQuChengLDAP;
+                return false;
+            }
+        }
+
+        /* 3. Delete LDAP settings in database. */
+        $this->setting->deleteItems('owner=system&module=common&section=ldap&key=instanceID');
+        $this->setting->deleteItems('owner=system&module=common&section=ldap&key=snippetName');
+        if($this->getActiveLDAP() == 'qucheng') $this->setting->deleteItems('owner=system&module=common&section=ldap&key=active');
+
+        return true;
+    }
+
+    /**
+     * Uninstall extra LDAP.
+     *
+     * @access public
+     * @return bool
+     */
+    public function uninstallExtraLDAP()
+    {
+        $ldapLinked = $this->loadModel('instance')->countLDAP();
+        if($ldapLinked)
+        {
+            dao::$errors[] = $this->system->errors->LDAPLinkded;
+            return false;
+        }
+
+        /* 1. Remove snippet config map from CNE. */
+        $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+        $apiParams = new stdclass;
+        $apiParams->name      = $this->ldapSnippetName();
+        $apiParams->namespace = $space->k8space;
+
+        $result = $this->loadModel('cne')->removeSnippet($apiParams);
+        if($result->code != 200)
+        {
+            dao::$errors[] = $this->system->errors->failToUninstallExtraLDAP;
+            return false;
+        }
+
+        /* 2. Delete extra LDAP settings in database. */
+        $this->setting->deleteItems('owner=system&module=common&section=ldap&key=extraSettings');
+        $this->setting->deleteItems('owner=system&module=common&section=ldap&key=extraSnippetName');
+        if($this->getActiveLDAP() == 'extra') $this->setting->deleteItems('owner=system&module=common&section=ldap&key=active');
 
         return true;
     }
@@ -181,7 +279,7 @@ class systemModel extends model
      */
     public function getExtraLDAPSettings()
     {
-        $settings = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=extra');
+        $settings = $this->setting->getItem('owner=system&module=common&section=ldap&key=extraSettings');
         $settings = @json_decode($settings);
         return $settings ? $settings : new stdclass;
     }
@@ -210,9 +308,8 @@ class systemModel extends model
      */
     public function hasSystemLDAP()
     {
-        $instanceID = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=instanceID');
-        /* instnace ID = -1 means extra LDAP, ID > 0 means interal LDAP of qucheng. */
-        return boolval($instanceID);
+        $activeLDAP = $this->setting->getItem('owner=system&module=common&section=ldap&key=active');
+        return $activeLDAP == 'extra' or $activeLDAP == 'qucheng'; // LDAP has been installed.
     }
 
     /**
@@ -223,7 +320,22 @@ class systemModel extends model
      */
     public function ldapSnippetName()
     {
-        return $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=snippetName');
+        $activeLDAP = $this->setting->getItem('owner=system&module=common&section=ldap&key=active');
+
+        if($activeLDAP == 'extra') return $this->setting->getItem('owner=system&module=common&section=ldap&key=extraSnippetName');
+
+        return $this->setting->getItem('owner=system&module=common&section=ldap&key=snippetName');
+    }
+
+    /**
+     * Get active LDAP type.
+     *
+     * @access public
+     * @return string|null
+     */
+    public function getActiveLDAP()
+    {
+        return $this->setting->getItem('owner=system&module=common&section=ldap&key=active');
     }
 }
 
