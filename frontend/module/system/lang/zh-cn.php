@@ -10,7 +10,9 @@ $lang->system->action         = '操作';
 $lang->system->management     = '管理';
 $lang->system->visit          = '访问';
 $lang->system->close          = '关闭';
+$lang->system->installLDAP    = '安装LDAP';
 $lang->system->editLDAP       = '编辑';
+$lang->system->LDAPInfo       = 'LDAP信息';
 $lang->system->advance        = '高级';
 
 /* LDAP */

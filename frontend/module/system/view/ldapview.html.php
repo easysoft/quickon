@@ -21,7 +21,7 @@
 <div id='mainContent' class='main-row'>
   <div class='main-col main-content'>
     <div class='main-header'>
-      <h2><?php echo $lang->system->ldapManagement;?></h2>
+      <h2><?php echo $lang->system->LDAPInfo;?></h2>
       <div class='btn-toolbar pull-right'>
         <?php echo html::a(inLink('editLDAP', 'source=extra'), $lang->system->editLDAP, '', "class='btn-edit btn label label-outline label-primary label-lg'");?>
         <?php if($activeLDAP == 'qucheng'):?>
