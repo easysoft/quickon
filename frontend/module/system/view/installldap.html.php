@@ -11,6 +11,7 @@
  */
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
+<?php $ldapLinked = $this->loadModel('instance')->countLDAP();?>
 <?php js::set('errors', $lang->system->errors);?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left'>

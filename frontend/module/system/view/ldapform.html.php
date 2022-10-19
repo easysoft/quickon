@@ -1,5 +1,4 @@
  <form id='LDAPForm' class='cell load-indicator main-form form-ajax'>
-   <?php $ldapLinked = $this->loadModel('instance')->countLDAP();?>
    <h4>
      <?php echo html::checkbox('enableLDAP', array('true' => $lang->system->ldapEnabled), 'true', (($ldapLinked or $activeLDAP) ? "onclick='return false;'" : '')); ?>
    </h4>

@@ -61,4 +61,11 @@ $(function()
             }
         });
     });
+
+  if(disableEdit)
+  {
+      $('#LDAPForm input').attr('disabled', true);
+      $('#LDAPForm select').attr('disabled', true);
+      $('#LDAPForm button').attr('disabled', true);
+  }
 });

@@ -11,7 +11,9 @@
  */
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
+<?php $ldapLinked = $this->loadModel('instance')->countLDAP();?>
 <?php js::set('errors', $lang->system->errors);?>
+<?php js::set('disableEdit', ($ldapLinked ? true : false));?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left'>
     <?php echo html::a($this->createLink('system', 'index'), "<i class='icon icon-back icon-sm'></i>" . $lang->goback, '', "class='btn btn-secondary'");?>
