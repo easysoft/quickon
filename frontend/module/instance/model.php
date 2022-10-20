@@ -934,6 +934,26 @@ class InstanceModel extends model
     }
 
     /**
+     * Filter memory options that smaller then current memory size.
+     *
+     * @param  object $resources
+     * @access public
+     * @return array
+     */
+    public function filterMemOptions($resources)
+    {
+        $currentMemory = intval($resources->min->memory / 1024);
+
+        $options = [];
+        foreach($this->lang->instance->memOptions as $size => $text)
+        {
+            if($size > $currentMemory) $options[$size] = $text;
+        }
+
+        return $options;
+    }
+
+    /**
      * Print suggested memory size by current memory usage. Show suggested messge when memory usage more than 90%.
      *
      * @param  object $memUsage

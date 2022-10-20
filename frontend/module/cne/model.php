@@ -552,7 +552,7 @@ class cneModel extends model
      *
      * @param  int    $instance
      * @access public
-     * @return bool
+     * @return bool|object
      */
     public function getAppConfig($instance)
     {
@@ -565,9 +565,11 @@ class cneModel extends model
 
         $apiUrl = "/api/cne/app/settings/common";
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
-        if($result && $result->code == 200) return $result->data;
+        if($result && $result->code != 200) return false;
 
-        return false;
+        $result->data->min = $result->data->oversold;
+        $result->data->max = $result->data->resources;
+        return $result->data;
     }
 
     /**

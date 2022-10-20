@@ -3,15 +3,18 @@
     <div class='panel-title'><?php echo $lang->instance->mem;?></span></div>
   </div>
   <div class='panel-body'>
-    <form id='LDAPForm' class='cell not-watch load-indicator'>
+    <form id='memoryForm' class='cell not-watch load-indicator'>
       <table class='table table-form'>
         <tr>
           <th></th>
-          <td><?php $this->instance->printSuggestedMemory($instanceMetric->memory, $lang->instance->memOptions);?></td>
+          <td colspan="3">
+            <span class='label label-info'><?php echo $lang->instance->currentMemory;?>：<?php echo helper::formatKB($currentResource->resources->memory / 1024);?></span>
+            <span class='label label-warning'><?php $this->instance->printSuggestedMemory($instanceMetric->memory, $lang->instance->memOptions);?></span>
+          </td>
         </tr>
         <tr>
           <th><?php echo $lang->instance->adjustMem;?></th>
-          <td class='w-100px'><?php echo html::select('memory_kb', $lang->instance->memOptions, '', "class='form-control'");?></td>
+          <td class='w-100px'><?php echo html::select('memory_kb', $this->instance->filterMemOptions($currentResource), '', "class='form-control'");?></td>
           <td></td>
           <td></td>
         </tr>

@@ -69,19 +69,23 @@ class instance extends control
         }
 
         $dbList = new stdclass;
-        if($tab == 'advance') $dbList = $this->cne->appDBList($instance);
+        $currentResource = new stdclass;
+        if($tab == 'advance')
+        {
+            $dbList          = $this->cne->appDBList($instance);
+            $currentResource = $this->cne->getAppConfig($instance);
+        }
 
-        $this->view->position[] = $instance->appName;
-
-        $this->view->title          = $instance->appName;
-        $this->view->instance       = $instance;
-        $this->view->logs           = $this->action->getList('instance', $id, 'date desc', $pager);
-        $this->view->defaultAccount = $this->cne->getDefaultAccount($instance);
-        $this->view->instanceMetric = $instanceMetric;
-        $this->view->backupList     = $backupList;
-        $this->view->dbList         = $dbList;
-        $this->view->tab            = $tab;
-        $this->view->pager          = $pager;
+        $this->view->title           = $instance->appName;
+        $this->view->instance        = $instance;
+        $this->view->logs            = $this->action->getList('instance', $id, 'date desc', $pager);
+        $this->view->defaultAccount  = $this->cne->getDefaultAccount($instance);
+        $this->view->instanceMetric  = $instanceMetric;
+        $this->view->currentResource = $currentResource;
+        $this->view->backupList      = $backupList;
+        $this->view->dbList          = $dbList;
+        $this->view->tab             = $tab;
+        $this->view->pager           = $pager;
 
         $this->display();
     }

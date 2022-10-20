@@ -27,6 +27,7 @@ $lang->instance->installedService = '已安装服务';
 $lang->instance->installApp       = '安装应用';
 $lang->instance->cpuUsage         = 'CPU';
 $lang->instance->memUsage         = '内存';
+$lang->instance->currentMemory    = '当前内存';
 $lang->instance->adjustMem        = '调整内存';
 $lang->instance->saveSetting      = '保存设置';
 $lang->instance->leftTime         = '剩余';
@@ -143,13 +144,15 @@ $lang->instance->htmlStatuses['installationFail'] = $lang->instance->htmlStatuse
 $lang->instance->htmlStatuses['busy']             = "<span class='label label-warning label-success label-outline'>%s</span>";
 
 $lang->instance->memOptions = array();
-$lang->instance->memOptions[128 * 1024]  = '128MB';
-$lang->instance->memOptions[256 * 1024]  = '256MB';
-$lang->instance->memOptions[512 * 1024]  = '512MB';
-$lang->instance->memOptions[1024 * 1024] = '1GB';
-$lang->instance->memOptions[2048 * 1024] = '2GB';
-$lang->instance->memOptions[4096 * 1024] = '4GB';
-$lang->instance->memOptions[8192 * 1024] = '8GB';
+$lang->instance->memOptions[128 * 1024]   = '128MB';
+$lang->instance->memOptions[256 * 1024]   = '256MB';
+$lang->instance->memOptions[512 * 1024]   = '512MB';
+$lang->instance->memOptions[1024 * 1024]  = '1GB';
+$lang->instance->memOptions[2048 * 1024]  = '2GB';
+$lang->instance->memOptions[4096 * 1024]  = '4GB';
+$lang->instance->memOptions[8192 * 1024]  = '8GB';
+$lang->instance->memOptions[16384 * 1024] = '16GB';
+$lang->instance->memOptions[32768 * 1024] = '32GB';
 
 $lang->instance->componentFields = array();
 $lang->instance->componentFields['replicas']  = '副本数';
