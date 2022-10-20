@@ -53,6 +53,28 @@ class systemModel extends model
         echo $btnHtml;
     }
 
+    public function printEditLDAPBtn()
+    {
+        $this->loadModel('instance');
+
+        $disableEdit = false;
+        $title       = $this->lang->system->editLDAP;
+        $toolTips    = '';
+        $count       = $this->instance->countLDAP();
+        if($count)
+        {
+            $disableEdit = true;
+            $title       = $this->lang->system->notices->ldapUsed;
+            $toolTips    = "data-toggle='tooltip' data-placement='bottom'";
+        }
+
+        $buttonHtml = '';
+        $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
+        $buttonHtml .= html::a(inLink('editLDAP'), $this->lang->system->editLDAP, '', ($disableEdit ? 'disabled' : '') . " title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
+        $buttonHtml .= "</span>";
+
+        echo $buttonHtml;
+    }
     /**
      * Print LDAP buttons.
      *

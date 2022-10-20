@@ -6,7 +6,7 @@
      <tbody>
        <tr>
          <th><?php echo $lang->system->ldapSource;?></th>
-         <td><?php echo html::select('source', $lang->system->ldapTypeList, $activeLDAP,  ($ldapLinked ? 'disabled' : '') . " class='form-control'");?></td>
+         <td class='required w-300px'><?php echo html::select('source', $lang->system->ldapTypeList, $activeLDAP,  ($ldapLinked ? 'disabled' : '') . " class='form-control'");?></td>
          <td></td>
        </tr>
      </tbody>
@@ -28,23 +28,28 @@
        <tbody>
          <tr>
            <th><?php echo $lang->system->host;?></th>
-           <td><?php echo html::input('extra[host]', zget($ldapSettings, 'host', ''), "class='form-control required' placeholder='192.168.1.1'");?></td>
+           <td class='required w-300px'><?php echo html::input('extra[host]', zget($ldapSettings, 'host', ''), "class='form-control required' placeholder='192.168.1.1'");?></td>
+             <td></td>
          </tr>
          <tr>
            <th><?php echo $lang->system->port;?></th>
-           <td><?php echo html::input('extra[port]',  zget($ldapSettings, 'port', ''), "class='form-control' placeholder='389'");?></td>
+           <td class='required'><?php echo html::input('extra[port]',  zget($ldapSettings, 'port', ''), "class='form-control' placeholder='389'");?></td>
+             <td></td>
          </tr>
          <tr>
            <th><?php echo $lang->system->ldapUsername;?></th>
-           <td><?php echo html::input('extra[bindDN]', zget($ldapSettings, 'bindDN', ''), "class='form-control' placeholder='admin'");?></td>
+           <td class='required'><?php echo html::input('extra[bindDN]', zget($ldapSettings, 'bindDN', ''), "class='form-control' placeholder='admin'");?></td>
+             <td></td>
          </tr>
          <tr>
            <th><?php echo $lang->system->password;?></th>
-           <td><?php echo html::input('extra[bindPass]', zget($ldapSettings, 'bindPass', ''), "class='form-control' placeholder='******'");?></td>
+           <td class='required'><?php echo html::input('extra[bindPass]', zget($ldapSettings, 'bindPass', ''), "class='form-control' placeholder='******'");?></td>
+             <td></td>
          </tr>
          <tr>
            <th><?php echo $lang->system->ldapRoot;?></th>
-           <td><?php echo html::input('extra[baseDN]', zget($ldapSettings, 'baseDN', ''), "class='form-control' placeholder='dc=quickon,dc=org'");?></td>
+           <td class='required'><?php echo html::input('extra[baseDN]', zget($ldapSettings, 'baseDN', ''), "class='form-control' placeholder='dc=quickon,dc=org'");?></td>
+             <td></td>
          </tr>
        </tbody>
      </table>
@@ -53,15 +58,18 @@
        <tbody>
            <tr>
              <th><?php echo $lang->system->filterUser;?></th>
-             <td><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', ''), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
+             <td class='w-300px'><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', ''), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
+             <td></td>
            </tr>
            <tr>
              <th><?php echo $lang->system->email;?></th>
-             <td><?php echo html::input('extra[attrEmail]', zget($ldapSettings, 'attrEmail', ''), "class='form-control' placeholder='mail'");?></td>
+             <td class='w-300px'><?php echo html::input('extra[attrEmail]', zget($ldapSettings, 'attrEmail', ''), "class='form-control' placeholder='mail'");?></td>
+             <td></td>
            </tr>
            <tr>
              <th><?php echo $lang->system->extraAccount;?></th>
-             <td><?php echo html::input('extra[attrUser]', zget($ldapSettings, 'attrUser', ''), "class='form-control' placeholder='uid'");?></td>
+             <td class='w-300px'><?php echo html::input('extra[attrUser]', zget($ldapSettings, 'attrUser', ''), "class='form-control' placeholder='uid'");?></td>
+             <td></td>
            </tr>
        </tbody>
      </table>

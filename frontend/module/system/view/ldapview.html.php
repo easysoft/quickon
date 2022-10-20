@@ -22,8 +22,8 @@
   <div class='main-col main-content'>
     <div class='main-header'>
       <h2><?php echo $lang->system->LDAPInfo;?></h2>
-      <div class='btn-toolbar pull-right'>
-        <?php echo html::a(inLink('editLDAP', 'source=extra'), $lang->system->editLDAP, '', "class='btn-edit btn label label-outline label-primary label-lg'");?>
+      <div class='ldap-button-group btn-toolbar pull-right'>
+        <?php $this->system->printEditLDAPBtn();?>
         <?php if($activeLDAP == 'qucheng'):?>
         <?php $this->system->printLDAPButtons($ldapInstance);?>
         <?php else:?>

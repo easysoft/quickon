@@ -233,4 +233,4 @@ $lang->instance->errors->wrongRequestData     = '提交的数据有误，请刷�
 $lang->instance->errors->noDBList             = '无数据库或不可访问';
 $lang->instance->errors->notFoundDB           = '找不到该数据库';
 $lang->instance->errors->dbNameIsEmpty        = '数据库名为空';
-$lang->instance->errors->failToAdjustMemory   = '调整内存的失败';
+$lang->instance->errors->failToAdjustMemory   = '调整内存失败';
