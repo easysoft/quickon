@@ -83,6 +83,33 @@ func (s *Settings) Common() (map[string]interface{}, error) {
 		data["resources"] = resourceData
 	}
 
+	oversold, ok := vals["oversold"]
+	if ok {
+		oversoldData := make(map[string]interface{})
+		res := oversold.(map[string]interface{})
+		if cpu, ok := res["cpu"]; ok {
+			typeCPU := reflect.TypeOf(cpu)
+			var cpuStr string
+			if typeCPU.Kind() == reflect.Float64 {
+				cpuStr = strconv.Itoa(int(cpu.(float64)))
+			} else {
+				cpuStr = cpu.(string)
+			}
+			quanCpu, err := resource.ParseQuantity(cpuStr)
+			if err == nil {
+				oversoldData["cpu"] = float32(quanCpu.AsApproximateFloat64())
+			}
+		}
+
+		if memory, ok := res["memory"]; ok {
+			quanMemory, err := resource.ParseQuantity(memory.(string))
+			if err == nil {
+				oversoldData["memory"], _ = quanMemory.AsInt64()
+			}
+		}
+		data["oversold"] = oversoldData
+	}
+
 	ingress, ok := vals["ingress"]
 	if ok {
 		ingressData := make(map[string]interface{})
