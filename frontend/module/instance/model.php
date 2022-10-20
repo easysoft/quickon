@@ -133,6 +133,31 @@ class InstanceModel extends model
     }
 
     /**
+     * Update instance memory size.
+     *
+     * @param  object $instnace
+     * @param  int    $size
+     * @access public
+     * @return bool
+     */
+    public function updateMemorySize($instnace, $size = '')
+    {
+        $settingsMap = new stdclass;
+        $settingsMap->resources = new stdclass;
+        $settingsMap->resources->memory = $size;
+
+        $success = $this->cne->updateResource($instnace, $settingsMap);
+        if($success)
+        {
+            $this->loadModel('action')->create('instance', $instnace->id, 'adjustMemory', helper::formatKB(intval($size / 1024)));
+            return true;
+        }
+
+        dao::$errors[] = $this->lang->instance->errors->failToAdjustMemory;
+        return false;
+    }
+
+    /**
      * Update instance status.
      *
      * @param  int    $int
@@ -909,6 +934,28 @@ class InstanceModel extends model
     }
 
     /**
+     * Print suggested memory size by current memory usage. Show suggested messge when memory usage more than 90%.
+     *
+     * @param  object $memUsage
+     * @param  array  $memoryOptions
+     * @access public
+     * @return void
+     */
+    public function printSuggestedMemory($memUsage, $memoryOptions)
+    {
+        if($memUsage->rate < 90) return;
+
+        foreach($memoryOptions as  $size => $memText)
+        {
+            if($size > ($memUsage->limit / 1024))
+            {
+                printf($this->lang->instance->adjustMemorySize, $memText);
+                return ;
+            }
+        }
+    }
+
+    /**
      * Print instance status.
      *
      * @param  object $instance
@@ -1083,7 +1130,7 @@ class InstanceModel extends model
     {
         $action = zget($this->lang->instance->actionList, $log->action, $this->lang->actions);
 
-        $logText = $log->actorName  . ' ' . sprintf($action, $instance->name);
+        $logText = $log->actorName  . ' ' . sprintf($action, $instance->name, $log->comment);
 
         $extra = json_decode($log->extra);
         if(!empty($extra))

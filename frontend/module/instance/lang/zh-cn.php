@@ -27,6 +27,8 @@ $lang->instance->installedService = '已安装服务';
 $lang->instance->installApp       = '安装应用';
 $lang->instance->cpuUsage         = 'CPU';
 $lang->instance->memUsage         = '内存';
+$lang->instance->adjustMem        = '调整内存';
+$lang->instance->saveSetting      = '保存设置';
 $lang->instance->leftTime         = '剩余';
 
 $lang->instance->dbTypes = array();
@@ -96,14 +98,15 @@ $lang->instance->log->date    = '日期';
 $lang->instance->log->message = '内容';
 
 $lang->instance->actionList = array();
-$lang->instance->actionList['install']   = '安装了%s';
-$lang->instance->actionList['uninstall'] = '卸载了%s';
-$lang->instance->actionList['start']     = '启动了%s';
-$lang->instance->actionList['stop']      = '关闭了%s';
-$lang->instance->actionList['editname']  = '修改了名称';
-$lang->instance->actionList['upgrade']   = '升级了%s';
-$lang->instance->actionList['backup']    = '备份了%s';
-$lang->instance->actionList['restore']   = '回滚了%s';
+$lang->instance->actionList['install']      = '安装了%s';
+$lang->instance->actionList['uninstall']    = '卸载了%s';
+$lang->instance->actionList['start']        = '启动了%s';
+$lang->instance->actionList['stop']         = '关闭了%s';
+$lang->instance->actionList['editname']     = '修改了名称';
+$lang->instance->actionList['upgrade']      = '升级了%s';
+$lang->instance->actionList['backup']       = '备份了%s';
+$lang->instance->actionList['restore']      = '回滚了%s';
+$lang->instance->actionList['adjustmemory'] = '调整 %s 的内存到 %s';
 
 $lang->instance->sourceList = array();
 $lang->instance->sourceList['cloud'] = '渠成公共市场';
@@ -138,6 +141,15 @@ $lang->instance->htmlStatuses['stopped']          = "<span class='label label-de
 $lang->instance->htmlStatuses['abnormal']         = "<span class='label label-danger label-outline'>%s</span>";
 $lang->instance->htmlStatuses['installationFail'] = $lang->instance->htmlStatuses['abnormal'];
 $lang->instance->htmlStatuses['busy']             = "<span class='label label-warning label-success label-outline'>%s</span>";
+
+$lang->instance->memOptions = array();
+$lang->instance->memOptions[128 * 1024]  = '128MB';
+$lang->instance->memOptions[256 * 1024]  = '256MB';
+$lang->instance->memOptions[512 * 1024]  = '512MB';
+$lang->instance->memOptions[1024 * 1024] = '1GB';
+$lang->instance->memOptions[2048 * 1024] = '2GB';
+$lang->instance->memOptions[4096 * 1024] = '4GB';
+$lang->instance->memOptions[8192 * 1024] = '8GB';
 
 $lang->instance->componentFields = array();
 $lang->instance->componentFields['replicas']  = '副本数';
@@ -186,14 +198,17 @@ $lang->instance->notices['upgrading']        = '升级中，请稍候...';
 $lang->instance->notices['backuping']        = '备份中，请稍候...';
 $lang->instance->notices['restoring']        = '回滚中，请稍候...';
 $lang->instance->notices['deleting']         = '删除中，请稍候...';
+$lang->instance->notices['adjusting']        = '调整中，请稍候...';
 $lang->instance->notices['confirmInstall']   = '确定要安装(%s)?';
 $lang->instance->notices['confirmUpgrade']   = '确定要升级到最新版吗?';
 $lang->instance->notices['confirmBackup']    = '确定要备份吗？';
 $lang->instance->notices['confirmRestore']   = '本操作将用备份的数据覆盖当前的数据，确定要回滚吗？';
 $lang->instance->notices['confirmDelete']    = '确定要删除该备份数据吗？';
+$lang->instance->notices['adjustMemory']     = '调整内存会重启服务，确定要调整吗？';
 
-$lang->instance->nameChangeTo    = ' %s 修改为 %s  。';
-$lang->instance->versionChangeTo = ' %s 升级为 %s  。';
+$lang->instance->nameChangeTo     = ' %s 修改为 %s  。';
+$lang->instance->versionChangeTo  = ' %s 升级为 %s  。';
+$lang->instance->adjustMemorySize = '建议调整内存到 %s 。';
 
 $lang->instance->instanceNotExists  = '服务不存在';
 $lang->instance->caplicasTooSmall   = '副本数不能小于1';
@@ -218,3 +233,4 @@ $lang->instance->errors->wrongRequestData     = '提交的数据有误，请刷�
 $lang->instance->errors->noDBList             = '无数据库或不可访问';
 $lang->instance->errors->notFoundDB           = '找不到该数据库';
 $lang->instance->errors->dbNameIsEmpty        = '数据库名为空';
+$lang->instance->errors->failToAdjustMemory   = '调整内存的失败';

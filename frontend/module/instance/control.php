@@ -46,7 +46,6 @@ class instance extends control
 
         $instanceMetric = $this->cne->instancesMetrics(array($instance));
         $instanceMetric = $instanceMetric[$instance->id];
-
         $this->lang->switcherMenu = $this->instance->getSwitcher($instance);
 
         $this->app->loadClass('pager', true);
@@ -67,7 +66,6 @@ class instance extends control
                     $backup->latest_restore_status = $restore->status;
                 }
             }
-
         }
 
         $dbList = new stdclass;
@@ -443,6 +441,32 @@ class instance extends control
 
         $url = '/adminer?' . http_build_query($dbAuth);
         $this->send(array('result' => 'success', 'message' => '', 'data' => array('url' => $url)));
+    }
+
+    /**
+     * Adjust instance memory size by ajax.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function ajaxAdjustMemory($instanceID)
+    {
+        $postData = fixer::input('post')->get();
+
+        /* Check free memory size is enough or not. */
+        $clusterResource = $this->cne->cneMetrics();
+        $freeMemory      = intval($clusterResource->metrics->memory->allocatable * 0.9); // Remain 10% memory for system.
+        if($postData->memory_kb * 1024 > $freeMemory) $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notEnoughResource));
+
+        /* Request CNE to adjust memory size. */
+        $instance = $this->instance->getByID($instanceID);
+        if(!$this->instance->updateMemorySize($instance, $postData->memory_kb * 1024))
+        {
+            $this->send(array('result' => 'fail', 'message' => dao::getError()));
+        }
+
+        $this->send(array('result' => 'success', 'message' => ''));
     }
 
     /**

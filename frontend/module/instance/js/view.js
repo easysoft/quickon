@@ -1,5 +1,41 @@
 $(function()
 {
+    $('#memBtn').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.adjustMemory, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.adjusting + '</div>',
+            });
+
+            var id         = $(event.target).closest('button').attr('instance-id');
+            var url        = createLink('instance', 'ajaxAdjustMemory', 'id=' + id, 'json');
+            var adjustData = {memory_kb: $('select[name=memory_kb]').val()};
+            $.post(url, adjustData).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                var res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    window.parent.$.apps.open(createLink('instance', 'view', 'id=' + id), 'space');
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
+
+        });
+    });
+
     $('.btn-uninstall').on('click', function(event)
     {
         bootbox.confirm(instanceNotices.confirmUninstall, function(result)
@@ -11,13 +47,13 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.uninstalling + '</div>',
             });
 
-            let id  = $(event.target).closest('button').attr('instance-id');
-            let url = createLink('instance', 'ajaxUninstall', 'id=' + id, 'json');
+            var id  = $(event.target).closest('button').attr('instance-id');
+            var url = createLink('instance', 'ajaxUninstall', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
                 loadingDialog.modal('hide');
 
-                let res = JSON.parse(response);
+                var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     window.parent.$.apps.open(createLink('space', 'browse'), 'space');
@@ -45,13 +81,13 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.starting + '</div>',
             });
 
-            let id  = $(event.target).closest('button').attr('instance-id');
-            let url = createLink('instance', 'ajaxStart', 'id=' + id, 'json');
+            var id  = $(event.target).closest('button').attr('instance-id');
+            var url = createLink('instance', 'ajaxStart', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
                 loadingDialog.modal('hide');
 
-                let res = JSON.parse(response);
+                var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     window.location.reload();
@@ -79,13 +115,13 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.stopping + '</div>',
             });
 
-            let id  = $(event.target).closest('button').attr('instance-id');
-            let url = createLink('instance', 'ajaxStop', 'id=' + id, 'json');
+            var id  = $(event.target).closest('button').attr('instance-id');
+            var url = createLink('instance', 'ajaxStop', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
                 loadingDialog.modal('hide');
 
-                let res = JSON.parse(response);
+                var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     window.location.reload();
@@ -113,13 +149,13 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.backuping + '</div>',
             });
 
-            let id  = $(event.target).closest('button').attr('instance-id');
-            let url = createLink('instance', 'ajaxBackup', 'id=' + id, 'json');
+            var id  = $(event.target).closest('button').attr('instance-id');
+            var url = createLink('instance', 'ajaxBackup', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
                 loadingDialog.modal('hide');
 
-                let res = JSON.parse(response);
+                var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     bootbox.alert(
@@ -152,14 +188,14 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.restoring + '</div>',
             });
 
-            let instanceID = $(event.target).closest('button').attr('instance-id');
-            let backupName = $(event.target).closest('button').attr('backup-name');
-            let url = createLink('instance', 'ajaxRestore', '', 'json');
+            var instanceID = $(event.target).closest('button').attr('instance-id');
+            var backupName = $(event.target).closest('button').attr('backup-name');
+            var url = createLink('instance', 'ajaxRestore', '', 'json');
             $.post(url, { instanceID, backupName }).done(function(response)
             {
                 loadingDialog.modal('hide');
 
-                let res = JSON.parse(response);
+                var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     bootbox.alert(
@@ -192,13 +228,13 @@ $(function()
                 message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.deleting + '</div>',
             });
 
-            let id  = $(event.target).closest('button').attr('backup-id');
-            let url = createLink('instance', 'ajaxDeleteBackup', 'id=' + id, 'json');
+            var id  = $(event.target).closest('button').attr('backup-id');
+            var url = createLink('instance', 'ajaxDeleteBackup', 'id=' + id, 'json');
             $.post(url).done(function(response)
             {
                 loadingDialog.modal('hide');
 
-                let res = JSON.parse(response);
+                var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     bootbox.alert(
@@ -222,12 +258,12 @@ $(function()
 
     $('button.db-login').on('click', function(event)
     {
-        let dbName = $(event.target).data('db-name');
-        let id     = $(event.target).data('id');
+        var dbName = $(event.target).data('db-name');
+        var id     = $(event.target).data('id');
 
         $.post(createLink('instance', 'ajaxDBAuthUrl'), {dbName, id}).done(function(res)
         {
-            let response = JSON.parse(res);
+            var response = JSON.parse(res);
             if(response.result == 'success')
             {
                 window.parent.open(response.data.url, 'Adminer');
@@ -252,7 +288,7 @@ $(function()
         var statusURL = createLink('instance', 'ajaxStatus');
         $.post(statusURL, {idList: instanceIdList}).done(function(response)
         {
-            let res = JSON.parse(response);
+            var res = JSON.parse(response);
             if(res.result == 'success' && res.data instanceof Array)
             {
                 res.data.forEach(function(instance)
@@ -269,12 +305,12 @@ $(function()
     /* Count down for demo instance. */
     setInterval(function()
     {
-        let nowSeconds = Math.round((new Date).getTime() / 1000);
+        var nowSeconds = Math.round((new Date).getTime() / 1000);
         $('.count-down').each(function(index, item)
         {
-            let createdAt = $(item).data('created-at');
-            let passSeconds = nowSeconds - createdAt;
-            let leftSeconds = (demoAppLife ? demoAppLife : 30) * 60 - passSeconds;
+            var createdAt   = $(item).data('created-at');
+            var passSeconds = nowSeconds - createdAt;
+            var leftSeconds = (demoAppLife ? demoAppLife : 30) * 60 - passSeconds;
 
             if(leftSeconds < 0)
             {
@@ -282,8 +318,8 @@ $(function()
             }
             else
             {
-                let minutes = Math.floor(leftSeconds / 60);
-                let seconds = Math.round(leftSeconds % 60);
+                var minutes = Math.floor(leftSeconds / 60);
+                var seconds = Math.round(leftSeconds % 60);
                 $(item).find('.left-time').text(('0' + minutes).slice(-2) + ':' + ('0' + seconds).slice(-2));
             }
 

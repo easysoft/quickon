@@ -114,6 +114,31 @@ class cneModel extends model
     }
 
     /**
+     * Update resource of app instance. For example: cpu, memory size...
+     *
+     * @param  object $instance
+     * @param  object $settingsMap
+     * @access public
+     * @return bool
+     */
+    public function updateResource($instance, $settingsMap)
+    {
+        $setting = array();
+        $setting['cluster']      = '';
+        $setting['namespace']    = $instance->spaceData->k8space;
+        $setting['name']         = $instance->k8name;
+        $setting['channel']      = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
+        $setting['chart']        = $instance->chart;
+        $setting['settings_map'] = $settingsMap;
+
+        $apiUrl = "/api/cne/app/settings";
+        $result = $this->apiPost($apiUrl, $setting, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
      * Get default username and password of app.
      *
      * @param  object $instance
@@ -520,6 +545,29 @@ class cneModel extends model
             $transformedSettings[] = array('key' => str_replace('_', '.', $key), 'value' => $value);
         }
         return $transformedSettings;
+    }
+
+    /**
+     * Get app config and resource.
+     *
+     * @param  int    $instance
+     * @access public
+     * @return bool
+     */
+    public function getAppConfig($instance)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->name      = $instance->k8name;
+
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/settings/common";
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result->data;
+
+        return false;
     }
 
     /**
