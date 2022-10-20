@@ -117,22 +117,24 @@ class cneModel extends model
      * Update resource of app instance. For example: cpu, memory size...
      *
      * @param  object $instance
-     * @param  object $settingsMap
+     * @param  object $settings
      * @access public
      * @return bool
      */
-    public function updateResource($instance, $settingsMap)
+    public function updateResource($instance, $settings)
     {
-        $setting = array();
-        $setting['cluster']      = '';
-        $setting['namespace']    = $instance->spaceData->k8space;
-        $setting['name']         = $instance->k8name;
-        $setting['channel']      = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
-        $setting['chart']        = $instance->chart;
-        $setting['settings_map'] = $settingsMap;
+        $apiParams = array();
+        $apiParams['cluster']   = '';
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['channel']   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
+        $apiParams['chart']     = $instance->chart;
+
+        if(isset($settings->settings_map))      $apiParams['settings_map']      = $settings->settings_map;
+        if(isset($settings->settings_snippets)) $apiParams['settings_snippets'] = $settings->settings_snippets;
 
         $apiUrl = "/api/cne/app/settings";
-        $result = $this->apiPost($apiUrl, $setting, $this->config->CNE->api->headers);
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
         if($result && $result->code == 200) return true;
 
         return false;

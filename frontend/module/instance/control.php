@@ -39,6 +39,9 @@ class instance extends control
      */
     public function view($id, $recTotal = 0, $recPerPage = 20, $pageID = 1, $tab ='baseinfo' )
     {
+        $this->loadModel('system');
+        $this->app->loadLang('system');
+
         $instance = $this->instance->getByID($id);
         if(empty($instance))return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
 
@@ -78,6 +81,7 @@ class instance extends control
 
         $this->view->title           = $instance->appName;
         $this->view->instance        = $instance;
+        $this->view->cloudApp        = $this->loadModel('store')->getAppInfoByChart($instance->chart, $instance->channel, false);
         $this->view->logs            = $this->action->getList('instance', $id, 'date desc', $pager);
         $this->view->defaultAccount  = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric  = $instanceMetric;
@@ -471,6 +475,27 @@ class instance extends control
         }
 
         $this->send(array('result' => 'success', 'message' => ''));
+    }
+
+
+    /**
+     * Switch  LDAP between enable and disable by ajax.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function ajaxSwitchLDAP($instanceID)
+    {
+        $instance = $this->instance->getByID($instanceID);
+        $postData = fixer::input('post')->get();
+
+        if($this->instance->switchLDAP($instance, $postData->enableLDAP == 'true'))
+        {
+            $this->send(array('result' => 'success', 'message' => ''));
+        }
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->switchLDAPFailed));
     }
 
     /**

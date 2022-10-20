@@ -133,6 +133,50 @@ class InstanceModel extends model
     }
 
     /**
+     * Switch LDAP between enable and disable.
+     *
+     * @param  object $instance
+     * @param  bool   $enableLDAP
+     * @access public
+     * @return bool
+     */
+    public function switchLDAP($instance, $enableLDAP)
+    {
+        $this->loadModel('system');
+        $snippetName = $this->system->ldapSnippetName();
+
+        $settings = new stdclass;
+        if($enableLDAP)
+        {
+            $settings->settings_snippets = [$snippetName];
+        }
+        else
+        {
+            $settings->settings_snippets = [$snippetName . '-'];
+        }
+
+        $success = $this->cne->updateResource($instance, $settings);
+        if(!$success)
+        {
+            dao::$errors[] = $this->lang->instance->errors->failToAdjustMemory;
+            return false;
+        }
+
+        if($enableLDAP)
+        {
+            $this->dao->update(TABLE_INSTANCE)->set('ldapSnippetName')->eq($snippetName)->where('id')->eq($instance->id)->exec();
+            $this->loadModel('action')->create('instance', $instance->id, 'enableLDAP');
+        }
+        else
+        {
+            $this->dao->update(TABLE_INSTANCE)->set('ldapSnippetName')->eq('')->where('id')->eq($instance->id)->exec();
+            $this->loadModel('action')->create('instance', $instance->id, 'disableLDAP');
+        }
+
+        return true;
+    }
+
+    /**
      * Update instance memory size.
      *
      * @param  object $instnace
@@ -142,11 +186,12 @@ class InstanceModel extends model
      */
     public function updateMemorySize($instnace, $size = '')
     {
-        $settingsMap = new stdclass;
-        $settingsMap->resources = new stdclass;
-        $settingsMap->resources->memory = $size;
+        $settings = new stdclass;
+        $settings->settings_map = new stdclass;
+        $settings->settings_map->resources = new stdclass;
+        $settings->settings_map->resources->memory = $size;
 
-        $success = $this->cne->updateResource($instnace, $settingsMap);
+        $success = $this->cne->updateResource($instnace, $settings);
         if($success)
         {
             $this->loadModel('action')->create('instance', $instnace->id, 'adjustMemory', helper::formatKB(intval($size / 1024)));
