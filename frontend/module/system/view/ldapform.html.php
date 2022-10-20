@@ -28,7 +28,7 @@
        <tbody>
          <tr>
            <th><?php echo $lang->system->host;?></th>
-           <td><?php echo html::input('extra[host]', zget($ldapSettings, 'host', ''), "class='form-control' placeholder='192.168.1.1'");?></td>
+           <td><?php echo html::input('extra[host]', zget($ldapSettings, 'host', ''), "class='form-control required' placeholder='192.168.1.1'");?></td>
          </tr>
          <tr>
            <th><?php echo $lang->system->port;?></th>

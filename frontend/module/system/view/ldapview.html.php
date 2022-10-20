@@ -78,14 +78,14 @@
           <th><?php echo $lang->system->ldapRoot;?></th>
           <td><?php echo zget($ldapSettings, 'baseDN', '');?></td>
         </tr>
-        <tr>
-          <th><?php echo $lang->system->filterUser;?></th>
-          <td><?php echo zget($ldapSettings, 'filter', '');?></td>
-        </tr>
         <tr><td></td></tr>
         <tr>
           <td></td>
           <th class='text-left'><?php echo $lang->system->ldapAdvance;?></th>
+        </tr>
+        <tr>
+          <th><?php echo $lang->system->filterUser;?></th>
+          <td><?php echo zget($ldapSettings, 'filter', '');?></td>
         </tr>
         <tr>
           <th><?php echo $lang->system->email;?></th>

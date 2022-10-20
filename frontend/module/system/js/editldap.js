@@ -1,15 +1,27 @@
 $(function()
 {
-    $('#LDAPForm input[type=checkbox]').on('change', function(event)
+    function freshSubmitBtn()
     {
-        if($(event.target).is(':checked'))
+        var enableLDAP    = $('#LDAPForm input[type=checkbox]:checked').length > 0;
+        var ldapCheckPass =  true;
+        if($('#LDAPForm select[name=source]').val() == 'extra')
         {
-            $('#LDAPForm button[type=submit]').attr('disabled', false);
+            ldapCheckPass = $('#testConnectBtn').attr('pass') == 'true';
+        }
+
+        if(enableLDAP && ldapCheckPass)
+        {
+          $('#LDAPForm button[type=submit]').attr('disabled', false);
         }
         else
         {
-            $('#LDAPForm button[type=submit]').attr('disabled', true);
+          $('#LDAPForm button[type=submit]').attr('disabled', true);
         }
+    }
+
+    $('#LDAPForm input[type=checkbox]').on('change', function(event)
+    {
+        freshSubmitBtn();
     });
 
     $('#LDAPForm input[type=checkbox]').change();
@@ -27,6 +39,7 @@ $(function()
             $('#extraLDAP').show();
         }
 
+        freshSubmitBtn();
     });
     $('select[name=source]').change();
 
@@ -41,31 +54,36 @@ $(function()
 
         $.post(createLink('system', 'testLDAPConnection'), settings).done(function(response)
         {
-            console.log(response);
             try
             {
-              var res = JSON.parse(response);
+                var res = JSON.parse(response);
             }
             catch(error)
             {
-              var res = {result: 'fail', message: errors.verifyLDAPFailed,};
+                var res = {result: 'fail', message: errors.verifyLDAPFailed,};
             }
             $('#connectResult').html(res.message);
             if(res.result == 'success')
             {
-              $('#connectResult').removeClass('text-red').addClass('text-success');
+                $('#testConnectBtn').attr('pass', 'true');
+                $('#connectResult').removeClass('text-red').addClass('text-success');
+                freshSubmitBtn();
             }
             else
             {
-              $('#connectResult').removeClass('text-success').addClass('text-red');
+                $('#testConnectBtn').attr('pass', 'false');
+                $('#connectResult').removeClass('text-success').addClass('text-red');
+                freshSubmitBtn();
             }
         });
     });
 
-  if(disableEdit)
-  {
-      $('#LDAPForm input').attr('disabled', true);
-      $('#LDAPForm select').attr('disabled', true);
-      $('#LDAPForm button').attr('disabled', true);
-  }
+    freshSubmitBtn();
+
+    if(disableEdit)
+    {
+        $('#LDAPForm input').attr('disabled', true);
+        $('#LDAPForm select').attr('disabled', true);
+        $('#LDAPForm button').attr('disabled', true);
+    }
 });
