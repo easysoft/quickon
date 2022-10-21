@@ -75,7 +75,14 @@ func (s *Settings) Common() (map[string]interface{}, error) {
 		}
 
 		if memory, ok := res["memory"]; ok {
-			quanMemory, err := resource.ParseQuantity(memory.(string))
+			typeMEM := reflect.TypeOf(memory)
+			var memStr string
+			if typeMEM.Kind() == reflect.Float64 {
+				memStr = strconv.Itoa(int(memory.(float64)))
+			} else {
+				memStr = memory.(string)
+			}
+			quanMemory, err := resource.ParseQuantity(memStr)
 			if err == nil {
 				resourceData["memory"], _ = quanMemory.AsInt64()
 			}
@@ -102,7 +109,14 @@ func (s *Settings) Common() (map[string]interface{}, error) {
 		}
 
 		if memory, ok := res["memory"]; ok {
-			quanMemory, err := resource.ParseQuantity(memory.(string))
+			typeMEM := reflect.TypeOf(memory)
+			var memStr string
+			if typeMEM.Kind() == reflect.Float64 {
+				memStr = strconv.Itoa(int(memory.(float64)))
+			} else {
+				memStr = memory.(string)
+			}
+			quanMemory, err := resource.ParseQuantity(memStr)
 			if err == nil {
 				oversoldData["memory"], _ = quanMemory.AsInt64()
 			}
