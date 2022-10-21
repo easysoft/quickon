@@ -139,11 +139,13 @@ func RemoveSnippet(c *gin.Context) {
 		return
 	}
 
-	err = service.Snippets(ctx, body.Cluster).Remove(body.Name, body.Namespace)
-	if err != nil {
-		logger.WithError(err).Error("failed to remove snippet")
-		renderError(c, http.StatusInternalServerError, err)
-		return
+	if service.Snippets(ctx, body.Cluster).Has(body.Name, body.Namespace) {
+		err = service.Snippets(ctx, body.Cluster).Remove(body.Name, body.Namespace)
+		if err != nil {
+			logger.WithError(err).Error("failed to remove snippet")
+			renderError(c, http.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	renderSuccess(c, http.StatusOK)

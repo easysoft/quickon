@@ -73,6 +73,11 @@ func (m *Manager) Get(name, namespace string) (*Snippet, error) {
 	return s, err
 }
 
+func (m *Manager) Has(name, namespace string) bool {
+	_, err := m.ks.Store.GetConfigMap(namespace, name)
+	return err == nil
+}
+
 func (m *Manager) Create(name, namespace, category string, values map[string]interface{}, autoImport bool) error {
 	content, err := yaml.Marshal(values)
 	if err != nil {
