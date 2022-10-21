@@ -58,17 +58,17 @@
        <tbody>
            <tr>
              <th><?php echo $lang->system->filterUser;?></th>
-             <td class='w-300px'><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', ''), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
+             <td class='w-300px'><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', '&(objectClass=posixAccount)(cn=%s)'), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
              <td></td>
            </tr>
            <tr>
              <th><?php echo $lang->system->email;?></th>
-             <td class='w-300px'><?php echo html::input('extra[attrEmail]', zget($ldapSettings, 'attrEmail', ''), "class='form-control' placeholder='mail'");?></td>
+             <td class='w-300px'><?php echo html::input('extra[attrEmail]', zget($ldapSettings, 'attrEmail', 'mail'), "class='form-control' placeholder='mail'");?></td>
              <td></td>
            </tr>
            <tr>
              <th><?php echo $lang->system->extraAccount;?></th>
-             <td class='w-300px'><?php echo html::input('extra[attrUser]', zget($ldapSettings, 'attrUser', ''), "class='form-control' placeholder='uid'");?></td>
+             <td class='w-300px'><?php echo html::input('extra[attrUser]', zget($ldapSettings, 'attrUser', 'uid'), "class='form-control' placeholder='uid'");?></td>
              <td></td>
            </tr>
        </tbody>

@@ -58,5 +58,6 @@ $lang->system->errors->failToInstallExtraLDAP     = '安装外部LDAP失败';
 $lang->system->errors->failToUpdateExtraLDAP      = '更新外部LDAP失败';
 $lang->system->errors->failToUninstallQuChengLDAP = '卸载渠成内部LDAP失败';
 $lang->system->errors->failToUninstallExtraLDAP   = '卸载外部LDAP失败';
+$lang->system->errors->failToDeleteLDAPSnippet    = '删除LDAP片段失败';
 $lang->system->errors->verifyLDAPFailed           = '校验LDAP失败';
-$lang->system->errors->LDAPLinkded                = '有服务已经关联了LDAP';
+$lang->system->errors->LDAPLinked                 = '有服务已经关联了LDAP';

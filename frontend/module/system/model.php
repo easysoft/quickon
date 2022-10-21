@@ -218,7 +218,7 @@ class systemModel extends model
         $ldapLinked = $this->loadModel('instance')->countLDAP();
         if($ldapLinked)
         {
-            dao::$errors[] = $this->system->errors->LDAPLinkded;
+            dao::$errors[] = $this->lang->system->errors->LDAPLinked;
             return false;
         }
 
@@ -229,7 +229,7 @@ class systemModel extends model
             /* 1. Uninstall QuCheng LDAP service. */
             if(!$this->loadModel('instance')->uninstall($instance))
             {
-                dao::$errors[] = $this->system->errors->failToUninstallQuChengLDAP;
+                dao::$errors[] = $this->lang->system->errors->failToUninstallQuChengLDAP;
                 return false;
             }
 
@@ -237,13 +237,13 @@ class systemModel extends model
             $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
 
             $apiParams = new stdclass;
-            $apiParams->name      = $this->ldapSnippetName();
+            $apiParams->name      = 'snippet-qucheng-ldap';
             $apiParams->namespace = $space->k8space;
 
             $result = $this->loadModel('cne')->removeSnippet($apiParams);
             if($result->code != 200)
             {
-                dao::$errors[] = $this->system->errors->failToUninstallQuChengLDAP;
+                dao::$errors[] = $this->lang->system->errors->failToUninstallQuChengLDAP;
                 return false;
             }
         }
@@ -267,7 +267,7 @@ class systemModel extends model
         $ldapLinked = $this->loadModel('instance')->countLDAP();
         if($ldapLinked)
         {
-            dao::$errors[] = $this->system->errors->LDAPLinkded;
+            dao::$errors[] = $this->lang->system->errors->LDAPLinked;
             return false;
         }
 
@@ -275,13 +275,13 @@ class systemModel extends model
         $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
 
         $apiParams = new stdclass;
-        $apiParams->name      = $this->ldapSnippetName();
+        $apiParams->name      = 'snippet-extra-ldap';
         $apiParams->namespace = $space->k8space;
 
         $result = $this->loadModel('cne')->removeSnippet($apiParams);
         if($result->code != 200)
         {
-            dao::$errors[] = $this->system->errors->failToUninstallExtraLDAP;
+            dao::$errors[] = $this->lang->system->errors->failToDeleteLDAPSnippet;
             return false;
         }
 

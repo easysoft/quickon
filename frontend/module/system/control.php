@@ -198,12 +198,27 @@ class system extends control
         if(!$this->config->debug) return; // Only run in debug mode.
 
         /* 1. uninstall QuCheng LDAP. */
-        $this->system->uninstallQuChengLDAP();
+        if($this->system->uninstallQuChengLDAP())
+        {
+            echo date('Y-m-d H:i:s') . ": Uninstall QuCheng LDAP success.<br/>";
+        }
+        else
+        {
+            echo date('Y-m-d H:i:s') . ": Uninstall QuCheng LDAP fail.<br/>";
+            $errors = dao::getError();
+            foreach($errors as $error) echo $error . '<br/>';
+        }
 
         /* 2. uninstall extra LDAP. */
-        $this->system->uninstallExtraLDAP();
-
-        echo date('Y-m-d H:i:s') . ': Uninstall LDAP success';
+        if($this->system->uninstallExtraLDAP())
+        {
+            echo date('Y-m-d H:i:s') . ": Uninstall extra LDAP success.<br/>";
+        }
+        else{
+            echo date('Y-m-d H:i:s') . ": Uninstall extra LDAP fail.<br/>";
+            $errors = dao::getError();
+            foreach($errors as $error) echo $error . '<br/>';
+        }
     }
 
     /**
