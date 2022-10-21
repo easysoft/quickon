@@ -172,7 +172,7 @@ class systemModel extends model
         $snippetSettings->values->auth->ldap->enabled   = true;
         $snippetSettings->values->auth->ldap->type      = 'ldap';
         $snippetSettings->values->auth->ldap->host      = $settings->host;
-        $snippetSettings->values->auth->ldap->port      = intval($settings->port);
+        $snippetSettings->values->auth->ldap->port      = strval($settings->port);
         $snippetSettings->values->auth->ldap->bindDN    = "cn={$settings->bindDN},{$settings->baseDN}";
         $snippetSettings->values->auth->ldap->bindPass  = $settings->bindPass;
         $snippetSettings->values->auth->ldap->baseDN    = $settings->baseDN;

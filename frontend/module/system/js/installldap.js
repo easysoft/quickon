@@ -51,6 +51,15 @@ $(function()
         settings.bindDN   = $('input[name="extra[bindDN]"]').val();
         settings.bindPass = $('input[name="extra[bindPass]"]').val();
         settings.baseDN   = $('input[name="extra[baseDN]"]').val();
+        if(!settings.host || !settings.port || !settings.bindDN || !settings.bindPass || !settings.baseDN)
+        {
+            bootbox.alert(
+            {
+                title:   notices.attention,
+                message: notices.fillAllRequiredFields,
+            });
+            return;
+        }
 
         $.post(createLink('system', 'testLDAPConnection'), settings).done(function(response)
         {

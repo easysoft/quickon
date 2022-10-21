@@ -42,11 +42,13 @@ $lang->system->ldapTypeList['qucheng'] = '渠成内置';
 $lang->system->ldapTypeList['extra']   = '外部映射';
 
 $lang->system->notices = new stdclass;
-$lang->system->notices->noLDAP             = '找不到LDAP配置数据';
-$lang->system->notices->ldapUsed           = '已经有服务关联了LDAP';
-$lang->system->notices->ldapInstallSuccess = 'LDAP安装成功';
-$lang->system->notices->ldapUpdateSuccess  = 'LDAP更新成功';
-$lang->system->notices->verifyLDAPSuccess  = '校验LDAP成功！';
+$lang->system->notices->attention             = '注意';
+$lang->system->notices->noLDAP                = '找不到LDAP配置数据';
+$lang->system->notices->ldapUsed              = '已经有服务关联了LDAP';
+$lang->system->notices->ldapInstallSuccess    = 'LDAP安装成功';
+$lang->system->notices->ldapUpdateSuccess     = 'LDAP更新成功';
+$lang->system->notices->verifyLDAPSuccess     = '校验LDAP成功！';
+$lang->system->notices->fillAllRequiredFields = '请填写全部必填项！';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB                 = '找不到该数据库';
