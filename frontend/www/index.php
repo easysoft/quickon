@@ -38,7 +38,7 @@ $app = router::createApp('pms', dirname(dirname(__FILE__)), 'router');
 
 /* Check for need upgrade. */
 $config->installedVersion = $app->getInstalledVersion();
-if($config->version != $config->installedVersion)
+if(version_compare(strtolower($config->version), strtolower($config->installedVersion), '>'))
 {
     $upgradeHtml = <<<UPGRADE
 <html><head><meta charset='utf-8'></head>
