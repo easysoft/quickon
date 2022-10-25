@@ -662,5 +662,4 @@ class instance extends control
         $token = zget($_SERVER, 'HTTP_TOKEN');
         return $token == $this->config->CNE->api->token;
     }
-
 }

@@ -8,6 +8,10 @@ table tr td.app-action {vertical-align: top; text-align: center;}
 #appInfoHeader {height: 60px;}
 #appInfoHeader button .icon{color: #70c0fb;}
 #appInfoHeader .btn {display: inline-block; margin: 0 10px;}
+#appInfoHeader .icon:before {padding-right: 5px; font-size: 18px;}
+#appInfoHeader .icon-docker:before {color: #2196f3;}
+#appInfoHeader .icon-forum:before {color: #ff9800;}
+#appInfoHeader .dropdown .icon {padding-right: 5px;}
 #appInfoBody h3 {margin-top: 40px;}
 .dynamicContainer {padding: 10px; border: solid 1px #ddd;}
 .dynamicContainer table {margin-bottom: 0;}

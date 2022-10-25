@@ -33,9 +33,9 @@
           <button class="btn" type="button" data-toggle="dropdown"><i class='icon icon-info-sign'></i>&nbsp;<?php echo $lang->store->support;?><span class="caret"></span></button>
           <ul class="dropdown-menu">
             <li><?php echo html::a(zget($cloudApp, 'git_url', '#'), $lang->store->gitUrl, '_blank', "class='icon icon-github'");?></li>
-            <li><?php echo html::a(zget($cloudApp, 'dockerfile_url', '#'), $lang->store->dockerfileUrl, '_blank', "class='icon icon-dockerhub'");?></li>
-            <li class='hidden'><?php echo html::a(zget($cloudApp, 'forum_url', '#'), $lang->store->forumUrl, '_blank', "class='icon icon-comments-alt'");?></li>
-            <li><?php echo html::a('https://www.qucheng.com/forum/usage.html', $lang->store->forumUrl, '_blank', "class='icon icon-comments-alt'");?></li>
+            <li><?php echo html::a(zget($cloudApp, 'dockerfile_url', '#'), $lang->store->dockerfileUrl, '_blank', "class='icon icon-docker'");?></li>
+            <li class='hidden'><?php echo html::a(zget($cloudApp, 'forum_url', '#'), $lang->store->forumUrl, '_blank', "class='icon icon-forum'");?></li>
+            <li><?php echo html::a('https://www.qucheng.com/forum/usage.html', $lang->store->forumUrl, '_blank', "class='icon icon-forum'");?></li>
           </ul>
         </div>
       </div>
