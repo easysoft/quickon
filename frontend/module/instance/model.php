@@ -852,8 +852,20 @@ class InstanceModel extends model
 
         foreach($backupList as &$backup)
         {
+            $backup->latest_restore_time   = 0;
+            $backup->latest_restore_status = '';
             $backup->username = zget($users, $backup->creator);
-            foreach($backup->restores as &$restore) $restore->username = zget($users, $restore->creator);
+            /* Mount backup operator info and latest restore info. */
+            foreach($backup->restores as &$restore)
+            {
+                $restore->username = zget($users, $restore->creator);
+
+                if($restore->create_time > $backup->latest_restore_time)
+                {
+                    $backup->latest_restore_time   = $restore->create_time;
+                    $backup->latest_restore_status = $restore->status;
+                }
+            }
         }
 
         return $backupList;

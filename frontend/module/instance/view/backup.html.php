@@ -4,7 +4,10 @@
   </div>
   <?php if(empty($backupList)):?>
     <div class="table-empty-tip">
-      <p><?php echo $lang->instance->errors->noBackup; $this->instance->printBackupBtn($instance);?></p>
+      <p>
+        <?php echo $lang->instance->errors->noBackup;?>
+        <?php $this->instance->printBackupBtn($instance);?>
+      </p>
     </div>
   <?php else:?>
   <table class="table table-bordered text-center">
@@ -54,5 +57,26 @@
     <?php endforeach;?>
     </tbody>
   </table>
+  <div class="modal fade" id="confirmRestore" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog w-400px">
+      <div class="modal-content">
+        <div class="modal-body">
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
+          <h2 class="text-center"><?php echo $lang->instance->backup->restore;?></h2>
+          <div class="text-center confirm-text">
+            <p class='modal-message text-center'><?php echo $lang->instance->backup->backupBeforeRestore;?></p>
+            <p class='modal-message text-center'>
+            <?php echo $lang->instance->backup->latestBackupAt;?>：
+            <?php echo date('Y-m-d H:i:s', $latestBackup->create_time);?>
+            </p>
+          </div>
+          <div class="text-center">
+            <?php echo html::commonButton($lang->instance->backup->common, "instance-id='{$instance->id}'", 'btn-backup btn btn-wide');?>
+            <?php echo html::commonButton($lang->instance->backup->restore, "id='submitRestore'", 'btn btn-primary btn-wide');?>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
   <?php endif;?>
 </div>

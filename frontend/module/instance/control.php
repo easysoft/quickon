@@ -43,7 +43,7 @@ class instance extends control
         $this->app->loadLang('system');
 
         $instance = $this->instance->getByID($id);
-        if(empty($instance))return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
+        if(empty($instance)) return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
 
         $instance = $this->instance->freshStatus($instance);
 
@@ -54,8 +54,10 @@ class instance extends control
         $this->app->loadClass('pager', true);
         $pager = new pager($recTotal, $recPerPage, $pageID);
 
-        $backupList = array();
+        $backupList   = array();
+        $latestBackup = new stdclass;
         if($tab == 'backup') $backupList = $this->instance->backupList($instance);
+        if(count($backupList)) $latestBackup = reset($backupList);
 
         foreach($backupList as $backup)
         {
@@ -90,6 +92,7 @@ class instance extends control
         $this->view->currentResource = $currentResource;
         $this->view->customItems     = $customItems;
         $this->view->backupList      = $backupList;
+        $this->view->latestBackup    = $latestBackup;
         $this->view->dbList          = $dbList;
         $this->view->tab             = $tab;
         $this->view->pager           = $pager;
@@ -164,8 +167,6 @@ class instance extends control
 
         $this->view->title       = $this->lang->instance->upgrade . $instance->name;
         $this->view->instance    = $instance;
-
-        $this->view->position[] = $this->lang->instance->upgrade;
 
         $this->display();
     }
@@ -397,7 +398,6 @@ class instance extends control
         $instance = $this->instance->getByID($postData->instanceID);
         if(empty($instance))return print(js::alert($this->lang->instance->instanceNotExists) . js::locate($this->createLink('space', 'browse')));
 
-        $this->instance->backup($instance, $this->app->user); // Backup automatically before restroe.
         $success = $this->instance->restore($instance, $this->app->user, $postData->backupName);
         if(!$success)
         {

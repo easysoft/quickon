@@ -217,6 +217,7 @@ $(function()
 
     $('.btn-backup').on('click', function(event)
     {
+        $('#confirmRestore').modal('hide');
         bootbox.confirm(instanceNotices.confirmBackup, function(result)
         {
             if(!result) return;
@@ -254,43 +255,48 @@ $(function()
         });
     });
 
-    $('.btn-restore').on('click', function(event)
+    $('.btn-restore').click(function()
     {
-        bootbox.confirm(instanceNotices.confirmRestore, function(result)
+        let backupName = $(this).attr('backup-name');
+        let instanceID = $(this).attr('instance-id');
+        $('#confirmRestore #submitRestore').data('backup-name', backupName);
+        $('#confirmRestore #submitRestore').data('instance-id', instanceID);
+        $('#confirmRestore').modal('show');
+    });
+
+    $('#submitRestore').on('click', function(event)
+    {
+        $('#confirmRestore').modal('hide');
+        var loadingDialog = bootbox.dialog(
         {
-            if(!result) return;
+            message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.restoring + '</div>',
+        });
 
-            var loadingDialog = bootbox.dialog(
+        var instanceID = $(event.target).closest('button').data('instance-id');
+        var backupName = $(event.target).closest('button').data('backup-name');
+        var url        = createLink('instance', 'ajaxRestore', '', 'json');
+        $.post(url, { instanceID, backupName }).done(function(response)
+        {
+            loadingDialog.modal('hide');
+
+            var res = JSON.parse(response);
+            if(res.result == 'success')
             {
-                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.restoring + '</div>',
-            });
-
-            var instanceID = $(event.target).closest('button').attr('instance-id');
-            var backupName = $(event.target).closest('button').attr('backup-name');
-            var url        = createLink('instance', 'ajaxRestore', '', 'json');
-            $.post(url, { instanceID, backupName }).done(function(response)
+                bootbox.alert(
+                {
+                    title:   instanceNotices.success,
+                    message: res.message,
+                    callback: function(){window.location.reload();}
+                });
+            }
+            else
             {
-                loadingDialog.modal('hide');
-
-                var res = JSON.parse(response);
-                if(res.result == 'success')
+                bootbox.alert(
                 {
-                    bootbox.alert(
-                    {
-                        title:   instanceNotices.success,
-                        message: res.message,
-                        callback: function(){window.location.reload();}
-                    });
-                }
-                else
-                {
-                    bootbox.alert(
-                    {
-                        title:   instanceNotices.fail,
-                        message: res.message,
-                    });
-                }
-            });
+                    title:   instanceNotices.fail,
+                    message: res.message,
+                });
+            }
         });
     });
 
