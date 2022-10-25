@@ -522,7 +522,7 @@ class instance extends control
 
         if($this->cne->updateConfig($instance, $settings))
         {
-            $this->action->create('instance', $instanceID, 'updateenv', '', json_encode($settings));
+            $this->action->create('instance', $instanceID, 'updatecustom', '', json_encode($settings));
             $this->send(array('result' => 'success', 'message' => ''));
         }
 
