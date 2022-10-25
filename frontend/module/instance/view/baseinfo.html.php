@@ -50,11 +50,11 @@
         <div class='col col-8 usage-box'>
           <div class='col col-6'>
             <div class="c-title"><?php echo $lang->instance->cpuUsage;?></div>
-            <?php $this->instance->printCpuUsage($instanceMetric->cpu, 'pie');?>
+            <?php $this->instance->printCpuUsage($instance, $instanceMetric->cpu, 'pie');?>
           </div>
           <div class='col col-6'>
             <div class="c-title"><?php echo $lang->instance->memUsage;?></div>
-            <?php $this->instance->printMemUsage($instanceMetric->memory, 'pie');?>
+            <?php $this->instance->printMemUsage($instance, $instanceMetric->memory, 'pie');?>
           </div>
         </div>
       </div>

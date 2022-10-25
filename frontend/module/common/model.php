@@ -1326,22 +1326,28 @@ EOD;
      * @param  int    $percent percent 0-100
      * @param  string $color color theme: gray, red, orange, green
      * @param  string $tip
+     * @param  string $showValue possible values: '', 'percent', 'tip'
      * @static
      * @access public
      * @return void
      */
-    public static function printProgressBar($percent, $color = '', $tip = '')
+    public static function printProgressBar($percent, $color = '', $tip = '', $showValue = '')
     {
         if(empty($color) && $percent == 0)                  $color = 'gray';
         if(empty($color) && $percent > 0 && $percent < 60)  $color = 'green';
         if(empty($color) && $percent >= 0 && $percent < 80) $color = 'orange';
         if(empty($color) && $percent >= 80)                 $color = 'red';
 
-        $title = $tip ? $tip : $percent . '%';
+        $title     = $tip ? $tip : $percent . '%';
+        $valueHtml = '';
+        if($showValue == 'tip')     $valueHtml = "<div style='position: absolute; width:100%; text-align: center; line-height: 20px;'>{$title}</div>";
+        if($showValue == 'percent') $valueHtml = "<div style='position: absolute; width:100%; text-align: center; line-height: 20px;'>{$percent}%</div>";
+
         echo <<<EOT
             <div class='progress-group'>
-              <div  title='{$title}' data-toggle='tooltip' class='progress bg-light-{$color}'>
+              <div title='{$title}' data-toggle='tooltip' style='height: 20px;' class='progress bg-light-{$color}'>
                 <div class='progress-bar bg-{$color}' role='progressbar' aria-valuenow='82' aria-valuemin='0' aria-valuemax='100' style='width: {$percent}%;'></div>
+                {$valueHtml}
               </div>
             </div>
 EOT;

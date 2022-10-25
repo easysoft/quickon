@@ -114,7 +114,7 @@ class InstanceModel extends model
      */
     public function countLDAP()
     {
-        $count = $this->dao->select('count(*) as ldapQty')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('ldapSnippetName is not null')->fetch();
+        $count = $this->dao->select('count(*) as ldapQty')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('length(ldapSnippetName) > 0')->fetch();
         return $count->ldapQty;
     }
 
@@ -1038,32 +1038,37 @@ class InstanceModel extends model
     /**
      * Print CPU usage.
      *
+     * @param  object $instance
      * @param  object $metrics
      * @param  string $type    'bar' is progress bar, 'pie' is progress pie.
      * @static
      * @access public
      * @return viod
      */
-    public static function printCpuUsage($metrics, $type = 'bar')
+    public static function printCpuUsage($instance, $metrics, $type = 'bar')
     {
         $rate = $metrics->rate;
         $tip  = "{$rate}% = {$metrics->usage} / {$metrics->limit}";
 
         if(strtolower($type) == 'pie') return commonModel::printProgressPie($rate, '', $tip);
 
-        return commonModel::printProgressBar($rate, '', $tip);
+        $valueType = 'percent';
+        if($instance->status == 'stopped') $valueType = '';
+
+        return commonModel::printProgressBar($rate, '', $tip, $valueType);
     }
 
     /**
      * Print memory usage.
      *
+     * @param  object $instance
      * @param  object $metrics
      * @param  string $type    'bar' is progress bar, 'pie' is progress pie.
      * @static
      * @access public
      * @return viod
      */
-    public static function printMemUsage($metrics, $type = 'bar')
+    public static function printMemUsage($instnace, $metrics, $type = 'bar')
     {
         $rate = $metrics->rate;
         $tip  = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->limit / 1024);
@@ -1073,7 +1078,10 @@ class InstanceModel extends model
             return commonModel::printProgressPie($rate, '', $tip);
         }
 
-        return commonModel::printProgressBar($rate, '', $tip);
+        $valueType = 'tip';
+        if($instnace->status == 'stopped') $valueType = '';
+
+        return commonModel::printProgressBar($rate, '', $tip, $valueType);
     }
 
     /*

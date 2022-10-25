@@ -33,8 +33,8 @@
           <?php endif;?>
         </td>
         <?php $metrics= zget($instancesMetrics, $instance->id);?>
-        <td><?php $this->instance->printCpuUsage($metrics->cpu);?></td>
-        <td><?php $this->instance->printMemUsage($metrics->memory);?></td>
+        <td><?php $this->instance->printCpuUsage($instance, $metrics->cpu);?></td>
+        <td><?php $this->instance->printMemUsage($instance, $metrics->memory);?></td>
       </tr>
       <?php endforeach;?>
     </tbody>
