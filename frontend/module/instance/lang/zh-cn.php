@@ -15,6 +15,7 @@ $lang->instance->backupAndRestore = '备份';
 $lang->instance->advance          = '高级';
 $lang->instance->enableLDAP       = '启用LDAP';
 $lang->instance->linkLDAP         = '集成LDAP';
+$lang->instance->customSetting    = '自定义配置';
 
 $lang->instance->systemLDAPInactive = '未开启系统LDAP';
 $lang->instance->toSystemLDAP       = '去启用';
@@ -114,6 +115,7 @@ $lang->instance->actionList['restore']      = '回滚了%s';
 $lang->instance->actionList['adjustmemory'] = '调整 %s 的内存到 %s';
 $lang->instance->actionList['enableldap']   = '启用了LDAP';
 $lang->instance->actionList['disableldap']  = '禁用了LDAP';
+$lang->instance->actionList['updatecustom'] = '修改了自定义配置';
 
 $lang->instance->sourceList = array();
 $lang->instance->sourceList['cloud'] = '渠成公共市场';
@@ -209,6 +211,7 @@ $lang->instance->notices['restoring']          = '回滚中，请稍候...';
 $lang->instance->notices['deleting']           = '删除中，请稍候...';
 $lang->instance->notices['adjusting']          = '调整中，请稍候...';
 $lang->instance->notices['switching']          = '提交中，请稍候...';
+$lang->instance->notices['setting']            = '提交中，请稍候...';
 $lang->instance->notices['confirmInstall']     = '确定要安装(%s)?';
 $lang->instance->notices['confirmUpgrade']     = '确定要升级到最新版吗?';
 $lang->instance->notices['confirmBackup']      = '确定要备份吗？';
@@ -220,6 +223,7 @@ $lang->instance->notices['enableLDAPFailed']   = '启用LDAP失败';
 $lang->instance->notices['disableLDAPFailed']  = '禁用LDAP失败';
 $lang->instance->notices['enableLDAPSuccess']  = '启用LDAP成功';
 $lang->instance->notices['disableLDAPSuccess'] = '禁用LDAP成功';
+$lang->instance->notices['confirmCustom']      = '修改自定义配置需要重启服务，确定修改并重启吗？';
 
 $lang->instance->nameChangeTo     = ' %s 修改为 %s  。';
 $lang->instance->versionChangeTo  = ' %s 升级为 %s  。';
@@ -250,3 +254,4 @@ $lang->instance->errors->notFoundDB           = '找不到该数据库';
 $lang->instance->errors->dbNameIsEmpty        = '数据库名为空';
 $lang->instance->errors->failToAdjustMemory   = '调整内存失败';
 $lang->instance->errors->switchLDAPFailed     = '启用LDAP失败';
+$lang->instance->errors->updateCustomFailed   = '修改自定义配置失败';

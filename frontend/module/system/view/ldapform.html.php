@@ -59,7 +59,7 @@
       <tbody>
           <tr>
             <th><?php echo $lang->system->filterUser;?></th>
-            <td class='w-300px'><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', '&(objectClass=posixAccount)(cn=%s)'), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
+            <td class='w-300px'><?php echo html::input('extra[filter]', zget($ldapSettings, 'filter', '&(objectClass=posixAccount)(uid=%s)'), "class='form-control' placeholder='&(objectClass=posixAccount)(cn=%s)'");?></td>
             <td></td>
           </tr>
           <tr>

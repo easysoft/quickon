@@ -10,6 +10,7 @@
           <td colspan="3">
             <span class='label label-info'><?php echo $lang->instance->currentMemory;?>：<?php echo helper::formatKB($currentResource->resources->memory / 1024);?></span>
             <span class='label label-warning'><?php $this->instance->printSuggestedMemory($instanceMetric->memory, $lang->instance->memOptions);?></span>
+          </td>
         </tr>
         <tr>
           <th><?php echo $lang->instance->adjustMem;?></th>
@@ -20,7 +21,8 @@
         <tr>
           <th></th>
           <td class='text-center'>
-            <?php echo html::commonButton($lang->instance->saveSetting, "id='memBtn' instance-id='$instance->id'", 'btn btn-primary'); ?>
+            <?php $disableMemBtn = $instance->status == 'running' ? '' : 'disabled';?>
+            <?php echo html::commonButton($lang->instance->saveSetting, "{$disableMemBtn} id='memBtn' instance-id='$instance->id'", 'btn btn-primary'); ?>
           </td>
           <td></td>
           <td></td>
@@ -52,6 +54,35 @@
           <td class='w-100px text-center'>
             <?php echo html::commonButton($lang->instance->saveSetting, "id='ldapBtn' instance-id='$instance->id'" . ($LDAPInstalled ? '' : 'disabled'), 'btn btn-primary'); ?>
           </td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <?php endif?>
+  <?php if(count($customItems)):?>
+  <div class='panel-heading'>
+    <div class='panel-title'><?php echo $lang->instance->customSetting;?></span></div>
+  </div>
+  <div class='panel-body'>
+    <form id='customForm' class='cell not-watch load-indicator'>
+      <table class='table table-form'>
+        <?php foreach($customItems as $item):?>
+        <tr>
+          <th><?php echo $item->label;?></th>
+          <td>
+            <?php echo html::input($item->name, $item->default, "class='form-control'");?>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+        <?php endforeach?>
+        <tr>
+          <th></th>
+          <td class='text-center'>
+            <?php echo html::commonButton($lang->instance->saveSetting, "id='customBtn' instance-id='$instance->id'", 'btn btn-primary'); ?>
+           </td>
           <td></td>
           <td></td>
         </tr>

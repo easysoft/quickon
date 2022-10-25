@@ -155,7 +155,7 @@ class InstanceModel extends model
             $settings->settings_snippets = [$snippetName . '-'];
         }
 
-        $success = $this->cne->updateResource($instance, $settings);
+        $success = $this->cne->updateConfig($instance, $settings);
         if(!$success)
         {
             dao::$errors[] = $this->lang->instance->errors->failToAdjustMemory;
@@ -191,7 +191,7 @@ class InstanceModel extends model
         $settings->settings_map->resources = new stdclass;
         $settings->settings_map->resources->memory = $size;
 
-        $success = $this->cne->updateResource($instnace, $settings);
+        $success = $this->cne->updateConfig($instnace, $settings);
         if($success)
         {
             $this->loadModel('action')->create('instance', $instnace->id, 'adjustMemory', helper::formatKB(intval($size / 1024)));
@@ -265,7 +265,7 @@ class InstanceModel extends model
             case 'stop':
                 return !($busy || in_array($instance->status, array('stopped', 'installationFail')));
             case 'uninstall':
-                return !$busy;
+                return !in_array($instance->status, array('destroying'));
             case 'visit':
                 return $instance->status == 'running';
             default:

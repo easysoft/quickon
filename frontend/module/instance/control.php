@@ -71,12 +71,14 @@ class instance extends control
             }
         }
 
-        $dbList = new stdclass;
+        $dbList          = new stdclass;
         $currentResource = new stdclass;
+        $customItems     = array();
         if($tab == 'advance')
         {
             $dbList          = $this->cne->appDBList($instance);
             $currentResource = $this->cne->getAppConfig($instance);
+            $customItems     = $this->cne->getCustomItems($instance);
         }
 
         $this->view->title           = $instance->appName;
@@ -86,6 +88,7 @@ class instance extends control
         $this->view->defaultAccount  = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric  = $instanceMetric;
         $this->view->currentResource = $currentResource;
+        $this->view->customItems     = $customItems;
         $this->view->backupList      = $backupList;
         $this->view->dbList          = $dbList;
         $this->view->tab             = $tab;
@@ -496,6 +499,34 @@ class instance extends control
         }
 
         $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->switchLDAPFailed));
+    }
+
+
+    /**
+     * Update custom settings by ajax. For example: env variables.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function ajaxUpdateCustom($instanceID)
+    {
+        $instance = $this->instance->getByID($instanceID);
+        if(!$instance) $this->send(array('result' => 'fail', 'message' => $this->lang->instance->instanceNotExists));
+
+        $postData = fixer::input('post')->get();
+
+        $settings = new stdclass;
+        $settings->settings_map = new stdclass;
+        $settings->settings_map->custom = $postData;
+
+        if($this->cne->updateConfig($instance, $settings))
+        {
+            $this->action->create('instance', $instanceID, 'updateenv', '', json_encode($settings));
+            $this->send(array('result' => 'success', 'message' => ''));
+        }
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->setEnvFailed));
     }
 
     /**

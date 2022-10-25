@@ -72,6 +72,47 @@ $(function()
         });
     });
 
+    $('#customBtn').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.confirmCustom, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.setting + '</div>',
+            });
+
+            var id         = $(event.target).closest('button').attr('instance-id');
+            var url        = createLink('instance', 'ajaxUpdateCustom', 'id=' + id, 'json');
+            var formData   = $('#customForm').serializeArray();
+            var customData = {};
+            formData.forEach(function(item, index){
+              customData[item.name] = item.value;
+            });
+
+            $.post(url, customData).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                var res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    window.parent.location.reload();
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
+
+        });
+    });
+
     $('.btn-uninstall').on('click', function(event)
     {
         bootbox.confirm(instanceNotices.confirmUninstall, function(result)

@@ -114,14 +114,14 @@ class cneModel extends model
     }
 
     /**
-     * Update resource of app instance. For example: cpu, memory size...
+     * Update instance config. For example: cpu, memory size, LDAP settings...
      *
      * @param  object $instance
      * @param  object $settings
      * @access public
      * @return bool
      */
-    public function updateResource($instance, $settings)
+    public function updateConfig($instance, $settings)
     {
         $apiParams = array();
         $apiParams['cluster']   = '';
@@ -523,7 +523,7 @@ class cneModel extends model
     {
         if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
 
-        $apiParams->settings = $this->transformedSettings($settings);
+        $apiParams->settings = $this->transformSettings($settings);
         $apiUrl = "/api/cne/app/settings";
         $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
         if($result && $result->code == 200) return true;
@@ -532,13 +532,13 @@ class cneModel extends model
     }
 
     /**
-     * Trasform setting format.
+     * Transform setting format.
      *
      * @param  array  $settings
      * @access private
      * @return aray
      */
-    private function trasformSettings($settings)
+    private function transformSettings($settings)
     {
         $transformedSettings = array();
         foreach($settings as $key => $value)
@@ -552,7 +552,7 @@ class cneModel extends model
     /**
      * Get app config and resource.
      *
-     * @param  int    $instance
+     * @param  object      $instance
      * @access public
      * @return bool|object
      */
@@ -571,6 +571,29 @@ class cneModel extends model
 
         $result->data->min = $result->data->oversold;
         $result->data->max = $result->data->resources;
+        return $result->data;
+    }
+
+    /**
+     * Get custom items of app.
+     *
+     * @param  object      $instance
+     * @access public
+     * @return bool|object
+     */
+    public function getCustomItems($instance)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->name      = $instance->k8name;
+
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/app/settings/custom";
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code != 200) return false;
+
         return $result->data;
     }
 
