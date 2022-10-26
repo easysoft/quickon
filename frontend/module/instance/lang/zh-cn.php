@@ -29,6 +29,7 @@ $lang->instance->defaultAccount   = '默认用户';
 $lang->instance->defaultPassword  = '默认密码';
 $lang->instance->operationLog     = '操作记录';
 $lang->instance->installedService = '已安装服务';
+$lang->instance->runningService   = '运行中的服务';
 $lang->instance->installApp       = '安装应用';
 $lang->instance->cpuUsage         = 'CPU';
 $lang->instance->memUsage         = '内存';

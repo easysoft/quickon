@@ -119,6 +119,28 @@ class InstanceModel extends model
     }
 
     /**
+     * Get quantity of total installed services.
+     *
+     * @access public
+     * @return int
+     */
+    public function totalServices()
+    {
+        $deadline = date('Y-m-d H:i:s', strtotime("-{$this->config->demoAppLife} minutes"));
+
+        $defaultSpace = $this->loadModel('space')->defaultSpace($this->app->user->account);
+
+        $count = $this->dao->select('count(*) as qty')->from(TABLE_INSTANCE)->alias('instance')
+            ->leftJoin(TABLE_SPACE)->alias('space')->on('space.id=instance.space')
+            ->where('instance.deleted')->eq(0)
+            ->andWhere('space.id')->eq($defaultSpace->id)
+            ->beginIF(commonModel::isDemoAccount())->andWhere('instance.createdAt')->gt($deadline)->fi()
+            ->fetch();
+
+        return $count->qty;
+    }
+
+    /**
      * Pin instance to navigation page or Unpin instance.
      *
      * @param  int    $instanceID

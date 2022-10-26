@@ -15,7 +15,7 @@
           </div>
           <div class="col tile">
             <div class="tile-title"><?php echo $lang->my->serviceQuantity;?></div>
-            <div class="tile-amount"><?php echo intval($pager->recTotal);?></div>
+            <div class="tile-amount"><?php echo $this->instance->totalServices();?></div>
           </div>
           <div class="col tile">
             <div class="tile-title"><?php echo $lang->my->cpuUsage;?></div>

@@ -39,7 +39,7 @@ class my extends control
         $this->app->loadClass('pager', true);
         $pager = new pager($total, $recPerPage, $pageID);
 
-        $instances = $this->loadModel('instance')->getByAccount($this->app->user->account, $pager);
+        $instances = $this->loadModel('instance')->getByAccount($this->app->user->account, $pager, '', '', 'running');
 
         $account = commonModel::isDemoAccount() ? $this->app->user->account : 'all';
         $actions = $this->loadModel('action')->getDynamic($account, 'today');
