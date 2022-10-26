@@ -287,7 +287,7 @@ class InstanceModel extends model
             case 'stop':
                 return !($busy || in_array($instance->status, array('stopped', 'installationFail')));
             case 'uninstall':
-                return !in_array($instance->status, array('destroying'));
+                return !in_array($instance->status, array('running','destroying'));
             case 'visit':
                 return $instance->status == 'running';
             default:
