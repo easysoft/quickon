@@ -60,7 +60,7 @@
       </table>
     </form>
   </div>
-  <?php endif?>
+  <?php endif;?>
   <?php if(count($customItems)):?>
   <div class='panel-heading'>
     <div class='panel-title'><?php echo $lang->instance->customSetting;?></span></div>
@@ -77,7 +77,7 @@
           <td></td>
           <td></td>
         </tr>
-        <?php endforeach?>
+        <?php endforeach;?>
         <tr>
           <th></th>
           <td class='text-center'>
@@ -89,7 +89,7 @@
       </table>
     </form>
   </div>
-  <?php endif?>
+  <?php endif;?>
   <?php if(!empty($dbList)):?>
   <hr/>
   <div class='panel-heading'>
