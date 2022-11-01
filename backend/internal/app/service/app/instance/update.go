@@ -47,7 +47,7 @@ func (i *Instance) Stop(chart, channel string) error {
 	}
 }
 
-func (i *Instance) Start(chart, channel string) error {
+func (i *Instance) Start(chart, channel string, snippetSettings map[string]interface{}) error {
 	h, _ := helm.NamespaceScope(i.namespace)
 	vals := i.release.Config
 
@@ -61,6 +61,16 @@ func (i *Instance) Start(chart, channel string) error {
 	options := &values.Options{
 		Values:     startSettings,
 		ValueFiles: []string{lastValFile},
+	}
+
+	if len(snippetSettings) > 0 {
+		snippetValueFile, err := writeValuesFile(snippetSettings)
+		if err != nil {
+			i.logger.WithError(err).Error("write values file failed")
+		} else {
+			defer os.Remove(snippetValueFile)
+			options.ValueFiles = append(options.ValueFiles, snippetValueFile)
+		}
 	}
 
 	if err = helm.RepoUpdate(); err != nil {
