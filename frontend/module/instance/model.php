@@ -354,13 +354,13 @@ class InstanceModel extends model
      * Mount installation settings by custom data.
      *
      * @param  object  $customData
-     * @param  array   $dbList
+     * @param  object  $dbInfo
      * @param  object  $app
      * @param  object  $instance
      * @access private
      * @return object
      */
-    private function installationSettingsMap($customData, $dbList, $app, $instance)
+    private function installationSettingsMap($customData, $dbInfo, $app, $instance)
     {
         $settingsMap = new stdclass;
         if($customData->customDomain)
@@ -378,15 +378,13 @@ class InstanceModel extends model
         if(empty($customData->dbType) || $customData->dbType == 'unsharedDB' || empty($customData->dbService)) return $settingsMap;
 
         /* Set DB settings. */
-        $selectedDB = zget($dbList, $customData->dbService, '');
-
         $dbSettings = new stdclass;
-        $dbSettings->service   = $customData->dbService;
-        $dbSettings->namespace = $selectedDB->namespace;
-        $dbSettings->host      = $selectedDB->host;
-        $dbSettings->port      = $selectedDB->port;
-        $dbSettings->name      = $app->dependencies->mysql->database . '_' . $instance->id;
-        $dbSettings->user      = $app->dependencies->mysql->user . '_' . $instance->id;
+        $dbSettings->service   = $dbInfo->name;
+        $dbSettings->namespace = $dbInfo->namespace;
+        $dbSettings->host      = $dbInfo->host;
+        $dbSettings->port      = $dbInfo->port;
+        $dbSettings->name      = 'db_' . $instance->id;
+        $dbSettings->user      = 'user_' . $instance->id;
 
         $dbSettings = $this->getValidDBSettings($dbSettings, $dbSettings->user, $dbSettings->name);
 
@@ -434,13 +432,13 @@ class InstanceModel extends model
      * Install app by request from Web page.
      *
      * @param  object $app
-     * @param  array  $dbList
+     * @param  object $dbInfo
      * @param  object $customData
      * @param  int    $spaceID
      * @access public
      * @return false|object Failure: return false, Success: return instance
      */
-    public function install($app, $dbList, $customData, $spaceID = null)
+    public function install($app, $dbInfo, $customData, $spaceID = null)
     {
         $this->loadModel('space');
         if($spaceID)
@@ -458,7 +456,7 @@ class InstanceModel extends model
 
         if(!$instance) return false;
 
-        $settingMap = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+        $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
         $snippets   = zget($customData, 'snippets', array());
         return $this->doCneInstall($app, $instance, $space, $settingMap, $snippets);
     }
@@ -559,17 +557,20 @@ class InstanceModel extends model
         $customData->dbType       = null;
         $customData->customDomain = $thirdDomain ? $thirdDomain : $this->randThirdDomain();
 
+        $dbInfo = new stdclass;
         $dbList = $this->cne->sharedDBList();
         if(count($dbList) > 0)
         {
+            $dbInfo = reset($dbList);
+
             $customData->dbType    = 'sharedDB';
-            $customData->dbService = reset($dbList)->name; // Use first shared database.
+            $customData->dbService = $dbInfo->name; // Use first shared database.
         }
 
         $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $k8name, $channel);
         if(!$instance) return false;
 
-        $settingMap = $this->installationSettingsMap($customData, $dbList, $app, $instance);
+        $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
         return $this->doCneInstall($app, $instance, $space, $settingMap);
     }
 

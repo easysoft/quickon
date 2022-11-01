@@ -206,7 +206,6 @@ class cneModel extends model
         return $statistics;
     }
 
-
     /**
      * Get instance metrics.
      *

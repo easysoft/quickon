@@ -239,7 +239,8 @@ class instance extends control
         }
 
         $versionList = $this->store->appVersionList($cloudApp->id);
-        $dbList      = $this->cne->sharedDBList();
+        $mysqlList   = $this->cne->sharedDBList('mysql');
+        $pgList      = $this->cne->sharedDBList('postgresql');
         $customData  = new stdclass;
         if(!empty($_POST))
         {
@@ -264,7 +265,17 @@ class instance extends control
                 $cloudApp->version     = $customData->version;
                 $cloudApp->app_version = $customData->app_version;
             }
-            $result = $this->instance->install($cloudApp, $dbList, $customData);
+
+            $sharedDB = new stdclass;
+            if(isset($cloudApp->dependencies->mysql))
+            {
+                $sharedDB = zget($mysqlList, $customData->dbService);
+            }
+            elseif(isset($cloudApp->dependencies->postgresql))
+            {
+                $sharedDB = zget($pgList, $customData->dbService);
+            }
+            $result = $this->instance->install($cloudApp, $sharedDB, $customData);
             if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => 'parent'));
@@ -281,7 +292,8 @@ class instance extends control
         foreach($versionList as $version) $this->view->versionList[$version->version] = $version->app_version . " ({$version->version})";
 
         $this->view->thirdDomain = $this->instance->randThirdDomain();
-        $this->view->dbList      = $this->instance->dbListToOptions($dbList);
+        $this->view->mysqlList   = $this->instance->dbListToOptions($mysqlList);
+        $this->view->pgList      = $this->instance->dbListToOptions($pgList);
 
         $this->display();
     }

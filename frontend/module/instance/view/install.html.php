@@ -69,7 +69,7 @@
             <td></td>
           </tr>
           <?php endif;?>
-          <?php if(isset($cloudApp->dependencies->mysql)):?>
+          <?php if(isset($cloudApp->dependencies->mysql) or isset($cloudApp->dependencies->postgresql)):?>
           <tr>
             <th class='w-80px'><?php echo $lang->instance->dbType;?></th>
             <td class='w-250px'>
@@ -79,11 +79,23 @@
             </td>
             <td><?php echo html::a('https://www.qucheng.com/book/Installation-manual/app-install-33.html',$lang->instance->howToSelectDB, '_blank');?></td>
           </tr>
+          <?php endif;?>
+          <?php if(isset($cloudApp->dependencies->mysql)):?>
           <tr>
             <th></th>
             <td>
               <div class='input-group'>
-                <?php echo html::select('dbService', $dbList, '', "class='form-control'");?>
+                <?php echo html::select('dbService', $mysqlList, '', "class='form-control'");?>
+              </div>
+            </td>
+            <td></td>
+          </tr>
+          <?php elseif(isset($cloudApp->dependencies->postgresql)):?>
+          <tr>
+            <th></th>
+            <td>
+              <div class='input-group'>
+                <?php echo html::select('dbService', $pgList, '', "class='form-control'");?>
               </div>
             </td>
             <td></td>
