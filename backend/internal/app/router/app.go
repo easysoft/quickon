@@ -127,7 +127,7 @@ func AppStart(c *gin.Context) {
 		body model.AppManageModel
 	)
 
-	_, i, code, err := LookupApp(c, &body)
+	ctx, i, code, err := LookupApp(c, &body)
 	if err != nil {
 		renderError(c, code, err)
 		return
@@ -135,7 +135,9 @@ func AppStart(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	err = i.Start(body.Chart, body.Channel)
+	// start app with auto-import snippet settings
+	snippetSettings, _ := MergeSnippetConfigs(ctx, body.Namespace, []string{}, logger)
+	err = i.Start(body.Chart, body.Channel, snippetSettings)
 	if err != nil {
 		logger.WithError(err).Error(errStartAppFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errStartAppFailed))
