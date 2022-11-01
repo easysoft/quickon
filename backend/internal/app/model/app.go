@@ -50,10 +50,15 @@ type AppComponentModel struct {
 	Component string `json:"component" form:"component" binding:"required"`
 }
 
-type AppSchemaModel struct {
-	AppComponentModel
-	Category string `json:"category" form:"category" binding:"required"`
+type AppWithComponentModel struct {
+	AppModel
+	Component string `json:"component" form:"component"`
 }
+
+//type AppSchemaModel struct {
+//	AppComponentModel
+//	Category string `json:"category" form:"category" binding:"required"`
+//}
 
 type AppWithUserModel struct {
 	AppModel

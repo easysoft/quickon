@@ -66,8 +66,8 @@ func Config(r *gin.Engine) {
 		api.GET("/test", AppTest)
 
 		api.GET("/app/components", AppComponents)
-		api.GET("/app/component/categories", AppComCategory)
-		api.GET("/app/component/schema", AppComSchema)
+		//api.GET("/app/component/categories", AppComCategory)
+		//api.GET("/app/component/schema", AppComSchema)
 
 		api.POST("/app/backup", AppBackupCreate)
 		api.GET("/app/backups", AppBackupList)

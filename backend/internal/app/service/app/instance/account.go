@@ -10,7 +10,7 @@ import (
 	"github.com/imdario/mergo"
 )
 
-func (i *Instance) GetAccountInfo() map[string]string {
+func (i *Instance) GetAccountInfo(component string) map[string]string {
 	data := map[string]string{
 		"username": "", "password": "",
 	}
@@ -18,7 +18,20 @@ func (i *Instance) GetAccountInfo() map[string]string {
 	values := i.release.Chart.Values
 	mergo.Merge(&values, i.release.Config, mergo.WithOverwriteWithEmptyValue)
 
-	if auth, ok := values["auth"]; ok {
+	base := values
+	if component != "" {
+		if vals, ok := values[component]; ok {
+			base, ok = vals.(map[string]interface{})
+			if !ok {
+				i.logger.Errorf("convert component values to map failed")
+				return data
+			}
+		} else {
+			return data
+		}
+	}
+
+	if auth, ok := base["auth"]; ok {
 		username := lookupFields(auth.(map[string]interface{}), "username", "user")
 		password := lookupFields(auth.(map[string]interface{}), "password", "passwd")
 		data["username"] = username

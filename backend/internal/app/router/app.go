@@ -459,35 +459,35 @@ func AppComponents(c *gin.Context) {
 	renderJson(c, http.StatusOK, data)
 }
 
-func AppComCategory(c *gin.Context) {
-	var (
-		query model.AppComponentModel
-	)
-
-	_, i, code, err := LookupApp(c, &query)
-	if err != nil {
-		renderError(c, code, err)
-		return
-	}
-
-	data := i.GetSchemaCategories(query.Component)
-	renderJson(c, http.StatusOK, data)
-}
-
-func AppComSchema(c *gin.Context) {
-	var (
-		query model.AppSchemaModel
-	)
-
-	_, i, code, err := LookupApp(c, &query)
-	if err != nil {
-		renderError(c, code, err)
-		return
-	}
-
-	data := i.GetSchema(query.Component, query.Category)
-	renderJson(c, http.StatusOK, data)
-}
+//func AppComCategory(c *gin.Context) {
+//	var (
+//		query model.AppComponentModel
+//	)
+//
+//	_, i, code, err := LookupApp(c, &query)
+//	if err != nil {
+//		renderError(c, code, err)
+//		return
+//	}
+//
+//	data := i.GetSchemaCategories(query.Component)
+//	renderJson(c, http.StatusOK, data)
+//}
+//
+//func AppComSchema(c *gin.Context) {
+//	var (
+//		query model.AppSchemaModel
+//	)
+//
+//	_, i, code, err := LookupApp(c, &query)
+//	if err != nil {
+//		renderError(c, code, err)
+//		return
+//	}
+//
+//	data := i.GetSchema(query.Component, query.Category)
+//	renderJson(c, http.StatusOK, data)
+//}
 
 func AppPvcList(c *gin.Context) {
 	var (
@@ -506,7 +506,7 @@ func AppPvcList(c *gin.Context) {
 
 func AppAccountInfo(c *gin.Context) {
 	var (
-		query model.AppModel
+		query model.AppWithComponentModel
 	)
 
 	_, i, code, err := LookupApp(c, &query)
@@ -515,7 +515,7 @@ func AppAccountInfo(c *gin.Context) {
 		return
 	}
 
-	data := i.GetAccountInfo()
+	data := i.GetAccountInfo(query.Component)
 	renderJson(c, http.StatusOK, data)
 }
 

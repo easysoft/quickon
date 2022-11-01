@@ -17,6 +17,12 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 )
 
+/*
+MergeSnippetConfigs can load snippet settings, return merged values and deletable values.
+snippet has two scopes, current namespace & the system namespace.
+if snippet not found in current namespace, try to load it in the system namespace.
+some snippets in the system namespace has auto import switch, will be merged for switch open.
+*/
 func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []string, logger logrus.FieldLogger) (map[string]interface{}, map[string]interface{}) {
 	var data = make(map[string]interface{})
 	var mergedSnippets = make(map[string]interface{})
