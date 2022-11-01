@@ -42,7 +42,12 @@
             </span>
             <?php endif;?>
           </td>
-          <td><?php $this->instance->printIconActions($instance);?></td>
+          <td>
+            <?php $this->instance->printIconActions($instance);?>
+            <?php if(!empty($instance->latestVersion)):?>
+            <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>", '', "class='btn btn-action iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
+            <?php endif;?>
+          </td>
         </tr>
       <?php endforeach;?>
       </tbody>
