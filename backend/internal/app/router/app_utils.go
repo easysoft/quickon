@@ -28,9 +28,14 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 	var mergedSnippets = make(map[string]interface{})
 	var deleteData = make(map[string]interface{})
 	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
+	logger.Infof("the runtime namespace is %s", runtimeNs)
 
+	// try to load specified snippets,
+	// if the snippet name not start with 'snippet-', rewrite with the prefix.
+	// if the snippet name end with '-',
+	// the content should be deleted from current release values.
 	for _, name := range snippetNames {
-		logger.Debugf("try to parse snippet '%s'", name)
+		logger.Debugf("try to deal with snippet '%s'", name)
 		if !strings.HasPrefix(name, snippet.NamePrefix) {
 			name = snippet.NamePrefix + name
 			logger.Debugf("use internal snippet name '%s'", name)
@@ -40,13 +45,14 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		if strings.HasSuffix(name, "-") {
 			deleteFlag = true
 			name = name[0 : len(name)-1]
+			logger.Infof("snippet %s market be remove", name)
 		}
 
 		s, err := service.Snippets(ctx, "").Get(namespace, name)
 		if err != nil {
 			logger.WithError(err).Debugf("get snippet '%s' from namespace '%s' failed", name, namespace)
 
-			logger.Infof("try to load snippet '%s' from namespace '%s'", name, runtimeNs)
+			logger.Infof("try to load snippet '%s' in namespace '%s'", name, runtimeNs)
 			s, err = service.Snippets(ctx, "").Get(name, runtimeNs)
 			if err != nil {
 				logger.WithError(err).Errorf("failed to get snippet '%s'", name)
@@ -68,6 +74,7 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		}
 
 		// deleted snippet will not auto import.
+		logger.Debugf("snippet '%s' is processed", name)
 		mergedSnippets[name] = true
 	}
 
@@ -76,6 +83,8 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		logger.WithError(err).Error("list system snippets failed")
 	} else {
 		for _, sp := range systemSnippets {
+			logger.Debugf("try to deal with snippet '%s'", sp.Name)
+			logger.Debugf("snippet info: %+v", sp)
 			if _, ok := mergedSnippets[sp.Name]; ok {
 				logger.Debugf("snippet %s already merged", sp.Name)
 				continue
