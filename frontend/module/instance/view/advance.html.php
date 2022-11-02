@@ -109,7 +109,7 @@
         <?php foreach($dbList as $db):?>
         <tr>
           <td><?php echo $db->db_name;?></td>
-          <td><?php echo $db->db_type?></td>
+          <td><?php echo $db->db_type;?></td>
           <td><?php echo $db->ready ? $lang->instance->dbReady : $lang->instance->dbWaiting;?></td>
           <td><?php $this->instance->printDBAction($db, $instance);?></td>
         <tr>
@@ -119,4 +119,3 @@
   </div>
   <?php endif;?>
 </div>
-

@@ -1,6 +1,6 @@
 <?php
 /**
- * The custom install view file of instance module of QuCheng.
+ * The install view file of instance module of QuCheng.
  *
  * @copyright Copyright 2021-2022 北京渠成软件有限公司(BeiJing QurCheng Software Co,LTD, www.qucheng.cn)
  * @license   ZPL (http://zpl.pub/page/zplv12.html) or AGPL(https://www.gnu.org/licenses/agpl-3.0.en.html)

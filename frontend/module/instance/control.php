@@ -86,6 +86,7 @@ class instance extends control
         $this->view->title           = $instance->appName;
         $this->view->instance        = $instance;
         $this->view->cloudApp        = $this->loadModel('store')->getAppInfoByChart($instance->chart, $instance->channel, false);
+        $this->view->seniorAppList   = $tab == 'baseinfo' ? $this->instance->seniorAppList($instance, $instance->channel) :  array();
         $this->view->logs            = $this->action->getList('instance', $id, 'date desc', $pager);
         $this->view->defaultAccount  = $this->cne->getDefaultAccount($instance);
         $this->view->instanceMetric  = $instanceMetric;
@@ -129,6 +130,36 @@ class instance extends control
         $this->view->instance = $instance;
 
         $this->view->position[] = $this->lang->instance->editName;
+
+        $this->display();
+    }
+
+    /**
+     * Upgrade to senior serial.
+     *
+     * @param  int    $instanceID
+     * @param  int    $seniorAppID
+     * @param  string $confirm
+     * @access public
+     * @return void
+     */
+    public function toSenior($instanceID, $seniorAppID, $confirm = 'no')
+    {
+        $instance = $this->instance->getByID($instanceID);
+        $cloudApp = $this->store->getAppInfo($seniorAppID, $instance->channel, false);
+        if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->noAppInfo));
+
+        if($confirm == 'yes')
+        {
+            $success = $this->instance->upgradeToSenior($instance, $cloudApp);
+            if($success) $this->send(array('result' => 'success', 'message' => '', 'locate' => $this->inLink('view', "id=$instance->id")));
+
+            $this->send(array('result' => 'fail', 'message' => dao::getError()));
+        }
+
+        $this->view->title    = $this->lang->instance->upgradeToSenior;
+        $this->view->instance = $instance;
+        $this->view->cloudApp = $cloudApp;
 
         $this->display();
     }
@@ -221,7 +252,7 @@ class instance extends control
     public function install($appID)
     {
         $cloudApp = $this->store->getAppInfo($appID);
-        if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->noAppInfo));
+        if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->noAppInfo));
 
         if(empty($this->config->demoAccounts))
         {

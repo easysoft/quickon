@@ -129,6 +129,7 @@ class cneModel extends model
         $apiParams['name']      = $instance->k8name;
         $apiParams['channel']   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
         $apiParams['chart']     = $instance->chart;
+        $apiParams['version']   = $instance->version;
 
         if(isset($settings->settings_map))      $apiParams['settings_map']      = $settings->settings_map;
         if(isset($settings->settings_snippets)) $apiParams['settings_snippets'] = $settings->settings_snippets;
@@ -148,10 +149,16 @@ class cneModel extends model
      * @access public
      * @return object|null
      */
-    public function getDefaultAccount($instance, $cluster = '')
+    public function getDefaultAccount($instance, $cluster = '', $component = '')
     {
         $apiUrl = '/api/cne/app/account?channel='. (empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel);
-        $result = $this->apiGet($apiUrl, array('name' => $instance->k8name, 'namespace' => $instance->spaceData->k8space, 'cluster' => $cluster), $this->config->CNE->api->headers, $this->config->CNE->api->host);
+        $apiParams = array();
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['cluster']   = $cluster;
+        if($component) $apiParams['component'] = $component;
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers, $this->config->CNE->api->host);
         if(!isset($result->code) || $result->code != 200) return null;
 
         $account = $result->data;

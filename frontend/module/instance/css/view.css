@@ -6,6 +6,8 @@
 .instance-status span {display: inline-block; margin-right: 10px; padding-bottom: 1px;}
 .instance-status i {font-size: 18px;}
 .instance-source span {display: inline-block; margin-right: 10px; width: 100px;}
+#senior-app-desc a {color: #61be68}
+a#serialDiff {color: #ff9800;}
 .instance-log .panel-body {padding-bottom: 8px; padding-left: 10px;}
 .instance-log .panel-body table {margin-bottom: 0;}
 .usage-box {border-radius: 3px;}

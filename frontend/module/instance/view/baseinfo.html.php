@@ -61,6 +61,34 @@
     </div>
   </div>
 </div>
+<?php if(array_key_exists(strtolower($instance->chart), $this->config->instance->seniorChartList)):?>
+<div class="panel">
+  <div class="panel-heading">
+    <div class="panel-title"><?php echo $lang->instance->upgradeToSenior;?></div>
+  </div>
+  <div class="panel-body">
+    <p id='senior-app-desc'>
+      <?php $seniorAppHtml = '';?>
+      <?php foreach($seniorAppList as $number => $seniorApp):?>
+        <?php if($number > 0) $seniorAppHtml .= $lang->instance->or;?>
+        <?php $seniorAppHtml .= html::a(helper::createLink('store', 'appview', "id=$seniorApp->id"), $seniorApp->alias, '', "");?>
+      <?php endforeach;?>
+      <?php printf($lang->instance->descOfSwitchSerial, $instance->appName, $seniorAppHtml);?>
+      <?php echo html::a('https://www.zentao.net/page/enterprise.html', $lang->instance->serialDiff, '_blank', "id='serialDiff' class=''");?>
+    </p>
+    <div>
+      <?php $disabled = $instance->status == 'stopped' ? '' : 'disabled';?>
+      <?php foreach($seniorAppList as $seniorApp):?>
+        <?php $toSeniorUrl = $this->inLink('toSenior', "id={$instance->id}&seniorAppID={$seniorApp->id}", '',  true);?>
+        <?php echo html::a($toSeniorUrl, $lang->instance->switchTo . $seniorApp->alias, '', $disabled . " class='iframe btn btn-primary' title='{$lang->instance->upgrade}' data-width='520' data-app='space'");?>
+      <?php endforeach;?>
+      <?php if($disabled == 'disabled'):?>
+      <span class='label label-info'><?php echo $lang->instance->stopInstanceTips;?></span>
+      <?php endif;?>
+    </div>
+  </div>
+</div>
+<?php endif;?>
 <div class="panel instance-log">
   <div class="panel-heading">
     <div class="panel-title"><?php echo $lang->instance->operationLog;?></div>

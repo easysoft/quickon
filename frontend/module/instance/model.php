@@ -747,6 +747,50 @@ class InstanceModel extends model
         return true;
     }
 
+    /**
+     * Upgrade to senior App.
+     *
+     * @param  object $instance
+     * @param  object $seniorApp
+     * @access public
+     * @return bool
+     */
+    public function upgradeToSenior($instance, $seniorApp)
+    {
+        $instance->chart   = $seniorApp->chart;
+        $instance->version = $seniorApp->version;
+
+        $settings = new stdclass;
+        $settings->settings_map = new stdclass;
+        $settings->settings_map->nameOverride = $this->parseK8Name($instance->k8name)->chart;
+
+        if(!$this->cne->updateConfig($instance, $settings))
+        {
+            dao::$errors[] = $this->lang->instance->errors->failToSenior;
+            return false;
+        }
+
+        $seniorData = new stdclass;
+        $seniorData->chart      = $seniorApp->chart;
+        $seniorData->version    = $seniorApp->version;
+        $seniorData->appVersion = $seniorApp->app_version;
+        $seniorData->appID      = $seniorApp->id;
+        $seniorData->appName    = $seniorApp->alias;
+        $seniorData->name       = $instance->name . "($seniorApp->alias)";
+
+        $this->dao->update(TABLE_INSTANCE)->data($seniorData)->where('id')->eq($instance->id)->exec();
+
+        $logExtra = new stdclass;
+        $logExtra->result = 'success';
+        $logExtra->data = new stdclass;
+        $logExtra->data->oldAppName = $instance->appName;
+        $logExtra->data->newAppName = $seniorApp->alias;
+
+        $this->loadModel('action')->create('instance', $instance->id, 'tosenior', '', json_encode($logExtra));
+
+        return true;
+    }
+
     /*
      * Query and update instances status.
      *
@@ -963,9 +1007,9 @@ class InstanceModel extends model
     /**
      * Parse K8Name to get more data: chart, created time, user name.
      *
-     * @param  string    $k8Name
+     * @param  string $k8Name
      * @access public
-     * @return mixed
+     * @return object
      */
     public function parseK8Name($k8Name)
     {
@@ -1249,11 +1293,17 @@ class InstanceModel extends model
                 $newName  = zget($extra->data, 'newName', '');
                 $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName);
             }
-            if($log->action == 'upgrade' && isset($extra->data))
+            elseif($log->action == 'upgrade' && isset($extra->data))
             {
                 $oldVersion = zget($extra->data, 'oldVersion', '');
                 $newVersion = zget($extra->data, 'newVersion', '');
-                $logText .= ', ' . sprintf($this->lang->instance->versionChangeTo, $oldVersion, $newVersion);
+                $logText   .= ', ' . sprintf($this->lang->instance->versionChangeTo, $oldVersion, $newVersion);
+            }
+            elseif($log->action == 'tosenior' && isset($extra->data))
+            {
+                $oldAppName = zget($extra->data, 'oldAppName', '');
+                $newAppName = zget($extra->data, 'newAppName', '');
+                $logText   .= ', ' . sprintf($this->lang->instance->toSeniorSerial, $oldAppName, $newAppName);
             }
         }
 
@@ -1338,5 +1388,25 @@ class InstanceModel extends model
         $output .= "</div>";
 
         return $output;
+    }
+
+    /**
+     * Get senior app list. The instance can be switched to senior App.
+     *
+     * @param  object $instance
+     * @param  string $channel
+     * @access public
+     * @return array
+     */
+    public function seniorAppList($instance, $channel)
+    {
+        $appList = array();
+        foreach(zget($this->config->instance->seniorChartList, $instance->chart, array()) as $chart)
+        {
+            $cloudApp = $this->loadModel('store')->getAppInfoByChart($chart, $channel, false);
+            if($cloudApp) $appList[] = $cloudApp;
+        }
+
+        return $appList;
     }
 }

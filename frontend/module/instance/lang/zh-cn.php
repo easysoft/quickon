@@ -16,6 +16,7 @@ $lang->instance->advance          = '高级';
 $lang->instance->enableLDAP       = '启用LDAP';
 $lang->instance->linkLDAP         = '集成LDAP';
 $lang->instance->customSetting    = '自定义配置';
+$lang->instance->upgradeToSenior  = '升级到高级版';
 
 $lang->instance->systemLDAPInactive = '未开启系统LDAP';
 $lang->instance->toSystemLDAP       = '去启用';
@@ -37,6 +38,10 @@ $lang->instance->currentMemory    = '当前内存';
 $lang->instance->adjustMem        = '调整内存';
 $lang->instance->saveSetting      = '保存设置';
 $lang->instance->leftTime         = '剩余';
+$lang->instance->switchTo         = '升级到';
+$lang->instance->or               = '或';
+$lang->instance->hasRead          = '已阅读';
+$lang->instance->stopInstanceTips = '关闭服务后才能升级到高级版！';
 
 $lang->instance->dbTypes = array();
 $lang->instance->dbTypes['sharedDB']   = '共享数据库';
@@ -120,6 +125,7 @@ $lang->instance->actionList['adjustmemory'] = '调整 %s 的内存到 %s';
 $lang->instance->actionList['enableldap']   = '启用了LDAP';
 $lang->instance->actionList['disableldap']  = '禁用了LDAP';
 $lang->instance->actionList['updatecustom'] = '修改了自定义配置';
+$lang->instance->actionList['tosenior']     = '升级服务到高级版';
 
 $lang->instance->sourceList = array();
 $lang->instance->sourceList['cloud'] = '渠成公共市场';
@@ -231,6 +237,7 @@ $lang->instance->notices['confirmCustom']      = '修改自定义配置需要重
 
 $lang->instance->nameChangeTo     = ' %s 修改为 %s  。';
 $lang->instance->versionChangeTo  = ' %s 升级为 %s  。';
+$lang->instance->toSeniorSerial   = '从 %s 升级到 %s 。';
 $lang->instance->adjustMemorySize = '建议调整内存到 %s 。';
 
 $lang->instance->instanceNotExists  = '服务不存在';
@@ -242,6 +249,11 @@ $lang->instance->backupOnlyRunning  = '运行状态才能备份';
 $lang->instance->restoreOnlyRunning = '运行状态才能回滚';
 $lang->instance->howToSelectDB      = '如何选择?';
 $lang->instance->appLifeTip         = 'demo账号安装的应用有30分钟限制，30分钟后自动删除。';
+$lang->instance->serialDiff         = '查看版本区别';
+$lang->instance->descOfSwitchSerial = '您当前使用的是<strong>%s</strong>，想要体验更多高级功能，可升级至%s。';
+$lang->instance->toSeniorAttention  = '重要提示';
+$lang->instance->toSeniorTips       = "<ul class='text-danger'><li>版本升级后，无法回退到原版本。</li><li>企业版、旗舰版自安装后免费试用6个月。</li><li>开源版升级到企业版或旗舰版后，试用期最大支持3个用户，
+    请检查开源版用户数量。超出限制将不可用。</li><li>升级成功后，服务将自动重启。</li><li>为避免造成数据丢失，请您在升级前务必做好数据备份。</li></ul>";
 
 $lang->instance->errors = new stdclass;
 $lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';
@@ -259,3 +271,4 @@ $lang->instance->errors->dbNameIsEmpty        = '数据库名为空';
 $lang->instance->errors->failToAdjustMemory   = '调整内存失败';
 $lang->instance->errors->switchLDAPFailed     = '启用LDAP失败';
 $lang->instance->errors->updateCustomFailed   = '修改自定义配置失败';
+$lang->instance->errors->failToSenior         = '升级到高级版失败';
