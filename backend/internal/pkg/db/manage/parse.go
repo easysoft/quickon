@@ -74,6 +74,8 @@ func ParseDbService(ctx context.Context, c *store.Storer, dbSvc *quchengv1beta1.
 	switch meta.Type {
 	case quchengv1beta1.DbTypeMysql:
 		return newMysqlManager(meta)
+	case quchengv1beta1.DbTypePostgresql:
+		return newPostgresqlManager(meta)
 	default:
 		return nil, errors.New("dbType is not supported")
 	}
