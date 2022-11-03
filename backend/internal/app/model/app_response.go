@@ -151,3 +151,9 @@ type AppCustomSetting struct {
 	Label   string      `json:"label"`
 	Desc    string      `json:"desc"`
 }
+
+type AppResDomain struct {
+	InternalHost string            `json:"internal_host"`
+	AccessHost   string            `json:"access_host"`
+	ExtraHosts   map[string]string `json:"extra_hosts"`
+}
