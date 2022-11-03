@@ -40,7 +40,6 @@ func (i *Instance) getComponents() *component.Components {
 
 func (i *Instance) ParseStatus() *model.AppRespStatus {
 	var settingStopped = false
-	components := i.getComponents()
 
 	data := &model.AppRespStatus{
 		Components: make([]model.AppRespStatusComponent, 0),
@@ -49,15 +48,20 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 		Age:        0,
 	}
 
-	if len(components.Items()) == 0 {
-		return data
-	}
-
 	stopped, err := i.settingParse("global.stopped")
 	if err == nil {
 		if stop, ok := stopped.(bool); ok {
 			settingStopped = stop
 		}
+	}
+
+	if settingStopped {
+		data.Status = constant.AppStatusMap[constant.AppStatusStopped]
+	}
+
+	components := i.getComponents()
+	if len(components.Items()) == 0 {
+		return data
 	}
 
 	for _, c := range components.Items() {
@@ -88,20 +92,6 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 	data.Status = constant.AppStatusMap[minStatusCode]
 	data.Age = maxAge
 	return data
-}
-
-func (i *Instance) ListIngressHosts() []string {
-	var hosts []string
-	ingresses, err := i.Ks.Store.ListIngresses(i.namespace, i.selector)
-	if err != nil {
-		return hosts
-	}
-	for _, ing := range ingresses {
-		for _, rule := range ing.Spec.Rules {
-			hosts = append(hosts, rule.Host)
-		}
-	}
-	return hosts
 }
 
 func (i *Instance) ParseNodePort() int32 {

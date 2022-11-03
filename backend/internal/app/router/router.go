@@ -57,6 +57,7 @@ func Config(r *gin.Engine) {
 		api.GET("/app/settings/custom", AppCustomSettings)
 		api.GET("/app/status", AppStatus)
 		api.POST("/app/status/multi", AppListStatus)
+		api.GET("/app/domain", AppDomain)
 		api.GET("/app/metric", AppMetric)
 		api.GET("/app/pvc", AppPvcList)
 		api.GET("/app/account", AppAccountInfo)

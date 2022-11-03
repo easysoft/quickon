@@ -269,6 +269,26 @@ func AppStatus(c *gin.Context) {
 	renderJson(c, http.StatusOK, data)
 }
 
+func AppDomain(c *gin.Context) {
+	var (
+		query model.AppWithComponentModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	data, err := i.GetDomains(query.Component)
+	if err != nil {
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, data)
+}
+
 func AppListStatus(c *gin.Context) {
 	var (
 		ctx  = c.Request.Context()
