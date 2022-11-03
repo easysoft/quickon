@@ -28,7 +28,7 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 
 	var extraHosts = make(map[string]string, 0)
 	var accessHost string
-	var internalDomain string
+	var internalHost string
 
 	filterComponentName := i.ChartName
 	if component != "" {
@@ -76,14 +76,14 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 		}
 
 		if componentName == filterComponentName {
-			internalDomain = strings.Join([]string{svc.Name, svc.Namespace, "svc"}, ".")
+			internalHost = strings.Join([]string{svc.Name, svc.Namespace, "svc"}, ".")
 		}
 	}
 
 	data := model.AppResDomain{
-		InternalDomain: internalDomain,
-		AccessHost:     accessHost,
-		ExtraHosts:     extraHosts,
+		InternalHost: internalHost,
+		AccessHost:   accessHost,
+		ExtraHosts:   extraHosts,
 	}
 
 	return data, nil
