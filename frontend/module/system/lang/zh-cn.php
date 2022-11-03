@@ -36,10 +36,22 @@ $lang->system->email        = '邮件字段';
 $lang->system->extraAccount = '用户名字段';
 $lang->system->ldapAdvance  = '高级设置';
 $lang->system->connectLdap  = '校验';
+$lang->system->copy         = '复制';
+$lang->system->copySuccess  = '已复制到剪切板';
 
 $lang->system->ldapTypeList = array();
 $lang->system->ldapTypeList['qucheng'] = '渠成内置';
 $lang->system->ldapTypeList['extra']   = '外部映射';
+
+/* OSS */
+$lang->system->oss = new stdclass;
+$lang->system->oss->common    = '对象存储';
+$lang->system->oss->user      = '用户名';
+$lang->system->oss->password  = '密码';
+$lang->system->oss->manage    = '管理';
+$lang->system->oss->apiURL    = 'API地址';
+$lang->system->oss->accessKey = 'Access Key';
+$lang->system->oss->secretKey = 'Secret Key';
 
 $lang->system->notices = new stdclass;
 $lang->system->notices->attention             = '注意';
@@ -63,3 +75,4 @@ $lang->system->errors->failToUninstallExtraLDAP   = '卸载外部LDAP失败';
 $lang->system->errors->failToDeleteLDAPSnippet    = '删除LDAP片段失败';
 $lang->system->errors->verifyLDAPFailed           = '校验LDAP失败';
 $lang->system->errors->LDAPLinked                 = '有服务已经关联了LDAP';
+$lang->system->errors->failGetOssAccount          = '获取对象存储账号失败';

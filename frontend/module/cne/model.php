@@ -168,6 +168,31 @@ class cneModel extends model
     }
 
     /**
+     * Get domain.
+     *
+     * @param  object $instance
+     * @param  string $cluster
+     * @param  string $component
+     * @access public
+     * @return object|null
+     */
+    public function getDomain($instance, $cluster = '', $component = '')
+    {
+        $apiUrl = '/api/cne/app/domain?channel='. (empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel);
+        $apiParams = array();
+        $apiParams['name']      = $instance->k8name;
+        $apiParams['namespace'] = $instance->spaceData->k8space;
+        $apiParams['cluster']   = $cluster;
+        if($component) $apiParams['component'] = $component;
+
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers, $this->config->CNE->api->host);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return $result->data;
+
+    }
+
+    /**
      * Get cluster metrics of CNE platform.
      *
      * @param  string $cluster

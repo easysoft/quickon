@@ -8,11 +8,18 @@ $(function()
             if(res.result == 'success')
             {
                 $('#ldapAccount').text(res.data.account);
-                $('#ldapPassword').text(res.data.pass);
+                $('#ldapPassword').val(res.data.pass);
                 $('#ldapVisitUrl').attr('href', '//' + res.data.domain);
                 $('#ldapAccountModal').modal('show');
             }
         });
+    });
+
+    $('#copyPassBtn').on('click', function(event)
+    {
+        $('#ldapPassword').select();
+        document.execCommand('copy');
+        bootbox.alert(copySuccess);
     });
 
     $('.btn-start').on('click', function(event)

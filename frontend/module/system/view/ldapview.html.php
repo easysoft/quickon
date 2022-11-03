@@ -12,7 +12,8 @@
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <?php js::set('instanceNotices', $lang->instance->notices);?>
-<?php js::set('instanceIdList',  array($instanceID));?>
+<?php js::set('instanceIdList', array($instanceID));?>
+<?php js::set('copySuccess', $lang->system->copySuccess);?>
 <div id='mainMenu' class='clearfix'>
   <div class='btn-toolbar pull-left'>
     <?php echo html::a($this->createLink('system', 'index'), "<i class='icon icon-back icon-sm'></i>" . $lang->goback, '', "class='btn btn-secondary'");?>
@@ -38,7 +39,7 @@
         <tr>
           <th><?php echo $lang->system->ldapSource;?></th>
           <td><?php echo zget($lang->system->ldapTypeList,  $activeLDAP, '');?></td>
-          <td></td >
+          <td></td>
         </tr>
         <tr>
           <th><?php echo $lang->system->ldapUsername?></th>
@@ -56,7 +57,7 @@
         <tr>
           <th><?php echo $lang->system->ldapSource;?></th>
           <td><?php echo zget($lang->system->ldapTypeList, $activeLDAP, '');?></td>
-          <td></td >
+          <td></td>
         </tr>
         <tr>
           <th><?php echo $lang->system->host;?></th>
@@ -107,7 +108,10 @@
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
         <h2 class="text-center"><?php echo $lang->system->accountInfo;?></h2>
         <div><?php echo $lang->system->account;?>：<span id='ldapAccount'></span></div>
-        <div><?php echo $lang->system->password;?>：<span id='ldapPassword'></span></div>
+        <div>
+          <?php echo $lang->system->password;?>：<input id='ldapPassword' readonly />
+          <?php echo html::commonButton($lang->system->copy, "id='copyPassBtn'", "btn bnt-link");?>
+        </div>
       </div>
       <div class="text-center">
         <?php echo html::commonButton($lang->cancel, "data-dismiss='modal'", 'btn btn-wide');?>

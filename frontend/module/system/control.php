@@ -188,6 +188,34 @@ class system extends control
     }
 
     /**
+     * OSS view.
+     *
+     * @access public
+     * @return void
+     */
+    public function ossView()
+    {
+        $this->loadModel('cne');
+
+        $minioInstance = new stdclass;
+        $minioInstance->k8name    = 'cne-operator';
+        $minioInstance->spaceData = new stdclass;
+        $minioInstance->spaceData->k8space = 'cne-system';
+
+        $ossAccount = $this->cne->getDefaultAccount($minioInstance, '', 'minio');
+        $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
+
+        $this->lang->switcherMenu = $this->system->getOssSwitcher();
+
+        $this->view->title = $this->lang->system->oss->common;
+
+        $this->view->ossAccount = $ossAccount;
+        $this->view->ossDomain  = $ossDomain;
+
+        $this->display();
+    }
+
+    /**
      * Uninstall all LDAP in system. (This function is only for debug and test.)
      *
      * @access public
@@ -263,5 +291,25 @@ class system extends control
 
         $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt);
         $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $ldapInstance->domain, 'account' => $ldapSetting->auth->username, 'pass' => $password)));
+    }
+
+    /**
+     * Get oss account and domain by ajax.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxOssInfo()
+    {
+        $minioInstance = new stdclass;
+        $minioInstance->k8name    = 'cne-operator';
+        $minioInstance->spaceData = new stdclass;
+        $minioInstance->spaceData->k8space = 'cne-system';
+
+        $ossAccount = $this->loadModel('cne')->getDefaultAccount($minioInstance, '', 'minio');
+        $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
+        if($ossAccount and $ossAccount) return  $this->send(array('result' => 'success', 'message' => '', 'data' => array('account' => $ossAccount, 'domain' => $ossDomain)));
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->failGetOssAccount));
     }
 }

@@ -38,6 +38,15 @@ class systemModel extends model
         return $output;
     }
 
+    public function getOssSwitcher()
+    {
+        $output  = "<div class='btn-group header-btn'>";
+        $output .= "<span class='btn'>{$this->lang->system->oss->common}</span>";
+        $output .= "</div>";
+
+        return $output;
+    }
+
     /**
      * Print action buttons.
      *
