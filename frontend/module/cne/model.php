@@ -189,7 +189,6 @@ class cneModel extends model
         if(!isset($result->code) || $result->code != 200) return null;
 
         return $result->data;
-
     }
 
     /**

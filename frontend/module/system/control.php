@@ -207,8 +207,7 @@ class system extends control
 
         $this->lang->switcherMenu = $this->system->getOssSwitcher();
 
-        $this->view->title = $this->lang->system->oss->common;
-
+        $this->view->title      = $this->lang->system->oss->common;
         $this->view->ossAccount = $ossAccount;
         $this->view->ossDomain  = $ossDomain;
 
