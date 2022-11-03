@@ -50,9 +50,12 @@ const (
 	AnnotationResourceAlias = "easycorp.io/resource_alias"
 	AnnotationAppCreator    = "easycorp.io/app_creator"
 	AnnotationAppChannel    = "easycorp.io/app_channel"
+	AnnotationAppDomainKey  = "easycorp.io/app_domain_key"
 )
 
 const (
+	LabelApp            = "app"
+	LabelComponent      = "component"
 	LabelApplication    = "easycorp.io/application"
 	LabelBackupName     = "easycorp.io/backup_name"
 	LabelGlobalDatabase = "easycorp.io/global_database"
