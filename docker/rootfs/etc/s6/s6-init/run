@@ -66,5 +66,4 @@ if [ ! -f "/data/.initdb" ];then
 fi
 
 # Try upgrade
-php /apps/qucheng/www/upgrade-cli.php && chown -R www-data:www-data /apps/qucheng/tmp/log/
-chown -R www-data:www-data /data/qucheng/backup
+su-exec www-data php /apps/qucheng/www/upgrade-cli.php
