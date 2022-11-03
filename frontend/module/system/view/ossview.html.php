@@ -29,7 +29,7 @@
       <tbody>
         <tr>
           <th><?php echo $lang->system->oss->apiURL;?></th>
-          <td><?php echo $ossDomain->extra_hosts->api;?></td>
+          <td><?php echo zget($ossDomain->extra_hosts, 'api', '');?></td>
           <td></td>
         </tr>
         <tr>

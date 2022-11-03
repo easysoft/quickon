@@ -144,6 +144,7 @@
                     'style="width: 100%; height: 100%; left: 0px;"',
                 '/>'
             ].join(' '));
+            $('#app-' + appCode).remove();
             var $app = $('<div class="app-container" id="app-' + appCode + '"></div>')
                 .append($iframe)
                 .appendTo('#apps');
