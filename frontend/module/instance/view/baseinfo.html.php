@@ -83,7 +83,7 @@
         <?php echo html::a($toSeniorUrl, $lang->instance->switchTo . $seniorApp->alias, '', $disabled . " class='iframe btn btn-primary' title='{$lang->instance->upgrade}' data-width='520' data-app='space'");?>
       <?php endforeach;?>
       <?php if($disabled == 'disabled'):?>
-      <span class='label label-info'><?php echo $lang->instance->stopInstanceTips;?></span>
+      <span class='text-info'><?php echo $lang->instance->stopInstanceTips;?></span>
       <?php endif;?>
     </div>
   </div>
