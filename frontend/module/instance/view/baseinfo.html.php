@@ -62,7 +62,7 @@
   </div>
 </div>
 <?php if(array_key_exists(strtolower($instance->chart), $this->config->instance->seniorChartList)):?>
-<div class="panel">
+<div id='seniorAppPanel' class="panel">
   <div class="panel-heading">
     <div class="panel-title"><?php echo $lang->instance->upgradeToSenior;?></div>
   </div>
@@ -71,9 +71,10 @@
       <?php $seniorAppHtml = '';?>
       <?php foreach($seniorAppList as $number => $seniorApp):?>
         <?php if($number > 0) $seniorAppHtml .= $lang->instance->or;?>
-        <?php $seniorAppHtml .= html::a(helper::createLink('store', 'appview', "id=$seniorApp->id"), $seniorApp->alias, '', "");?>
+        <?php $seniorAppHtml .= html::a(helper::createLink('store', 'appview', "id=$seniorApp->id"), $seniorApp->alias, '_blank');?>
       <?php endforeach;?>
-      <?php printf($lang->instance->descOfSwitchSerial, $instance->appName, $seniorAppHtml);?>
+      <?php $currentAppUrl = html::a(helper::createLink('store', 'appview', "id=$instance->appID"), $instance->appName, '_blank');?>
+      <?php printf($lang->instance->descOfSwitchSerial, $currentAppUrl, $seniorAppHtml);?>
       <?php echo html::a('https://www.zentao.net/page/enterprise.html', $lang->instance->serialDiff, '_blank', "id='serialDiff' class=''");?>
     </p>
     <div>
