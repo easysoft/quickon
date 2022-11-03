@@ -20,6 +20,15 @@ func (i *Instance) ListIngressHosts() []string {
 	return hosts
 }
 
+/*
+GetDomains support parse multi ingress of a release.
+parse the internal host, web access host, and the other hosts.
+parameter component default to the chart's Name,
+if the chart contains multi component, or have subCharts, use component to filter.
+if a component has multi ingresses, only one ingress without the special annotation will be parsed as access host,
+the others should define ingress.annotations.
+currently, only support one ingress with one host.
+*/
 func (i *Instance) GetDomains(component string) (interface{}, error) {
 	ingresses, err := i.Ks.Store.ListIngresses(i.namespace, i.selector)
 	if err != nil {
@@ -30,11 +39,13 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 	var accessHost string
 	var internalHost string
 
+	// use chart name as default component
 	filterComponentName := i.ChartName
 	if component != "" {
 		filterComponentName = component
 	}
 
+	// parse access host and extra hosts.
 	for _, ing := range ingresses {
 		componentName := ing.Labels[constant.LabelApp]
 		if labelComponent, exist := ing.ObjectMeta.Labels[constant.LabelComponent]; exist {
@@ -64,6 +75,7 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 		}
 	}
 
+	// parse internal host
 	services, err := i.getServices()
 	if err != nil {
 		return nil, err
@@ -80,6 +92,7 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 		}
 	}
 
+	// build response
 	data := model.AppResDomain{
 		InternalHost: internalHost,
 		AccessHost:   accessHost,

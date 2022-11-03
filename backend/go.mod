@@ -3,6 +3,7 @@ module gitlab.zcorp.cc/pangu/cne-api
 go 1.19
 
 require (
+	github.com/Masterminds/semver v1.5.0
 	github.com/chartmuseum/helm-push v0.10.2
 	github.com/easysoft/quikon-api v0.5.0
 	github.com/ergoapi/util v0.2.23
@@ -14,6 +15,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/imdario/mergo v0.3.12
 	github.com/kelseyhightower/envconfig v1.4.0
+	github.com/lib/pq v1.10.6
 	github.com/parnurzeal/gorequest v0.2.16
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.13.0
@@ -97,7 +99,6 @@ require (
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
 	github.com/lann/ps v0.0.0-20150810152359-62de8c46ede0 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
-	github.com/lib/pq v1.10.6 // indirect
 	github.com/liggitt/tabwriter v0.0.0-20181228230101-89fcab3d43de // indirect
 	github.com/magiconair/properties v1.8.6 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect

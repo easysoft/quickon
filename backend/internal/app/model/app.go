@@ -19,12 +19,12 @@ type AppCreateOrUpdateModel struct {
 	Chart            string                 `json:"chart" binding:"required"`
 	Version          string                 `json:"version" binding:"version_format"`
 	Username         string                 `json:"username,omitempty"`
-	Settings         []stringSetting        `json:"settings"`
+	Settings         []StringSetting        `json:"settings"`
 	SettingsMap      map[string]interface{} `json:"settings_map"`
 	SettingsSnippets []string               `json:"settings_snippets"`
 }
 
-type stringSetting struct {
+type StringSetting struct {
 	Key string `json:"key"`
 	Val string `json:"value"`
 }

@@ -7,6 +7,7 @@ package serve
 import (
 	"context"
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/patch"
 	"net/http"
 	"os"
 	"time"
@@ -17,8 +18,6 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 
 	"github.com/sirupsen/logrus"
-
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 
 	"github.com/gin-gonic/gin"
 
@@ -61,7 +60,8 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 	})
 	cr.Start()
 
-	service.Apps(ctx, "", "").Upgrade()
+	// apply patches
+	_ = patch.Run(ctx)
 
 	logger.Info("Starting cne-api...")
 

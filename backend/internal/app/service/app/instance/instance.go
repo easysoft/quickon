@@ -93,3 +93,7 @@ func (i *Instance) isApp() bool {
 func (i *Instance) GetLogger() logrus.FieldLogger {
 	return i.logger
 }
+
+func (i *Instance) GetRelease() *release.Release {
+	return i.release
+}
