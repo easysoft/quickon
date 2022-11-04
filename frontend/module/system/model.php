@@ -156,11 +156,10 @@ class systemModel extends model
      * Install or update extra LDAP: it is creating a snippet in k8s system in fact.
      *
      * @param  object    $settings
-     * @param  string    $action install, update
      * @access protected
      * @return bool
      */
-    public function installExtraLDAP($settings, $action='install')
+    public function installExtraLDAP($settings)
     {
         if(!$this->testLDAPConnection($settings))
         {
@@ -189,7 +188,8 @@ class systemModel extends model
         $snippetSettings->values->auth->ldap->attrUser  = $settings->attrUser;
         $snippetSettings->values->auth->ldap->attrEmail = $settings->attrEmail;
 
-        if($action == 'install')
+        $exists = $this->getExtraLDAPSettings();
+        if(empty($exists))
         {
             $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
             if($snippetResult->code != 200)
@@ -209,6 +209,10 @@ class systemModel extends model
         }
 
         /* Save extra LDAP setting to database. */
+        $secretKey          = helper::readKey();
+        $encryptedPassword  = openssl_encrypt($snippetSettings->values->auth->ldap->bindPass, 'DES-ECB', $secretKey);
+        $settings->bindPass = $encryptedPassword;
+
         $this->setting->setItem('system.common.ldap.active', 'extra');
         $this->setting->setItem('system.common.ldap.extraSnippetName', $snippetSettings->name); // Parameter for App installation API.
         $this->setting->setItem('system.common.ldap.extraSettings', json_encode($settings));
@@ -306,13 +310,17 @@ class systemModel extends model
      * Get extra LDAP settings.
      *
      * @access public
-     * @return object
+     * @return object|array
      */
     public function getExtraLDAPSettings()
     {
         $settings = $this->setting->getItem('owner=system&module=common&section=ldap&key=extraSettings');
         $settings = @json_decode($settings);
-        return $settings ? $settings : new stdclass;
+        if(empty($settings)) return array();
+
+        $secretKey          = helper::readKey();
+        $settings->bindPass = openssl_decrypt($settings->bindPass, 'DES-ECB', $secretKey);
+        return $settings;
     }
 
     /**

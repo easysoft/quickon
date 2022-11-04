@@ -529,7 +529,8 @@ class InstanceModel extends model
         }
 
         /* Save LDAP account. */
-        $settingMap->auth->password = openssl_encrypt($settingMap->auth->password, 'DES-ECB', $instance->createdAt);
+        $secretKey = helper::readKey();
+        $settingMap->auth->password = openssl_encrypt($settingMap->auth->password, 'DES-ECB', $secretKey);
         $this->dao->update(TABLE_INSTANCE)->set('ldapSettings')->eq(json_encode($settingMap))->where('id')->eq($instance->id)->exec();
         $this->loadModel('setting')->setItem('system.common.ldap.active', 'qucheng');
         $this->loadModel('setting')->setItem('system.common.ldap.instanceID', $instance->id);

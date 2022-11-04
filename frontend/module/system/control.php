@@ -125,7 +125,7 @@ class system extends control
             }
             else if($postData->source == 'extra')
             {
-                $this->system->installExtraLDAP((object)$postData->extra, 'update');
+                $this->system->installExtraLDAP((object)$postData->extra);
             }
 
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));

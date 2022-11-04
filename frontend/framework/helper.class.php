@@ -256,6 +256,43 @@ class helper extends baseHelper
     }
 
     /**
+     * Read key string from file.
+     *
+     * @static
+     * @access public
+     * @return string
+     */
+    static public function readKey()
+    {
+        global $app, $config;
+        $app->loadConfig('backup');
+
+        $keyPath = $config->backup->settingDir . '/.key';
+        if(!file_exists($keyPath)) static::generateKey();
+
+        return file_get_contents($keyPath);
+    }
+
+    /**
+     * Generate Key.
+     *
+     * @static
+     * @access public
+     * @return bool
+     */
+    static public function generateKey()
+    {
+        global $app, $config;
+        $app->loadConfig('backup');
+
+        $keyPath = $config->backup->settingDir;
+        if(!file_exists($keyPath)) mkdir($keyPath);
+
+        $key = self::randStr(32);
+        return file_put_contents($keyPath . '/.key', $key);
+    }
+
+    /**
      * Request API.
      *
      * @param  string    $url
