@@ -764,6 +764,9 @@ class InstanceModel extends model
         $settings->settings_map = new stdclass;
         $settings->settings_map->nameOverride = $this->parseK8Name($instance->k8name)->chart;
 
+        $settings->settings_map->global = new stdclass;
+        $settings->settings_map->global->stopped = false;
+
         if(!$this->cne->updateConfig($instance, $settings))
         {
             dao::$errors[] = $this->lang->instance->errors->failToSenior;
