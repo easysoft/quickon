@@ -15,6 +15,7 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/analysis"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/job"
 
 	"github.com/sirupsen/logrus"
 
@@ -50,6 +51,7 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 
 	logger.Info("Setup cron tasks")
 	_ = helm.RepoUpdate()
+	go job.LoadJob()
 
 	cr := cron.New()
 	defer cr.Stop()
@@ -58,6 +60,9 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 		if err != nil {
 			logger.WithError(err).Warning("cron helm repo update failed")
 		}
+	})
+	cr.Add("@midnight", func() {
+		job.LoadJob()
 	})
 	cr.Start()
 
