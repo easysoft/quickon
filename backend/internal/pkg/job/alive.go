@@ -26,6 +26,7 @@ type alive struct {
 }
 
 func CheckOSSAlive() error {
+	logger := logging.DefaultLogger().WithField("job", "checkossalive")
 	t := time.Now()
 	kid := ""
 	kubeCluster := cluster.Get("primary")
@@ -39,7 +40,7 @@ func CheckOSSAlive() error {
 		Channel:  os.Getenv("CLOUD_DEFAULT_CHANNEL"),
 		KID:      kid,
 	}
-	logging.DefaultLogger().WithField("job", "checkossalive").Infof("start send alive domain %s", aliveBody.Domain)
+	logger.Infof("start send alive domain %s", aliveBody.Domain)
 	client := req.C()
 	resp, err := client.R().
 		SetHeader("accept", "application/json").
@@ -51,7 +52,6 @@ func CheckOSSAlive() error {
 	if !resp.IsSuccess() {
 		return fmt.Errorf("bad response status: %s", resp.Status)
 	}
-	logging.DefaultLogger().WithField("job", "checkossalive").
-		Infof("send alive domain %s success, cost: %v", aliveBody.Domain, time.Since(t))
+	logger.Infof("send alive domain %s success, cost: %v", aliveBody.Domain, time.Since(t))
 	return nil
 }

@@ -13,6 +13,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/ergoapi/util/ptr"
 	"github.com/spf13/viper"
 	batchv1 "k8s.io/api/batch/v1"
@@ -26,24 +28,26 @@ import (
 
 // CheckReNewCertificate 检查证书是否过期
 func CheckReNewCertificate() error {
+	logger := logging.DefaultLogger().WithField("job", "renewtls")
 	domain := os.Getenv("APP_DOMAIN")
+
 	if strings.HasSuffix(domain, "haogs.cn") || strings.HasSuffix(domain, "corp.cc") {
-		needRenew, err := checkCertificate(domain)
+		needRenew, err := checkCertificate(domain, logger)
 		if err != nil {
-			logging.DefaultLogger().WithField("job", "renewtls").Errorf("check domain %s tls err: %v", domain, err)
+			logger.Errorf("check domain %s tls err: %v", domain, err)
 			return err
 		}
 		if needRenew {
-			return renewCertificate(domain)
+			return renewCertificate(domain, logger)
 		}
-		logging.DefaultLogger().WithField("job", "renewtls").Infof("skip domain %s renew tls", domain)
+		logger.Infof("skip domain %s renew tls", domain)
 		return nil
 	}
-	logging.DefaultLogger().WithField("job", "renewtls").Warnf("custom domain %s skip", domain)
+	logger.Warnf("custom domain %s skip", domain)
 	return nil
 }
 
-func checkCertificate(domain string) (bool, error) {
+func checkCertificate(domain string, logger logrus.FieldLogger) (bool, error) {
 	client := &http.Client{
 		Transport: &http.Transport{
 			// nolint:gosec
@@ -58,19 +62,19 @@ func checkCertificate(domain string) (bool, error) {
 	defer func() { _ = resp.Body.Close() }()
 	for _, cert := range resp.TLS.PeerCertificates {
 		if !cert.NotAfter.After(time.Now()) {
-			logging.DefaultLogger().WithField("job", "renewtls").Warnf("domain %s tls expired", domain)
+			logger.Warnf("domain %s tls expired", domain)
 			return true, nil
 		}
 		// nolint:gosimple
 		if cert.NotAfter.Sub(time.Now()).Hours() < 7*24 {
-			logging.DefaultLogger().WithField("job", "renewtls").Warnf("domain %s tls expire after %fh", domain, cert.NotAfter.Sub(time.Now()).Hours())
+			logger.Warnf("domain %s tls expire after %fh", domain, cert.NotAfter.Sub(time.Now()).Hours())
 			return true, nil
 		}
 	}
 	return false, nil
 }
 
-func renewCertificate(domain string) error {
+func renewCertificate(domain string, logger logrus.FieldLogger) error {
 	logging.DefaultLogger().WithField("job", "renewtls").Info("try create renewtls job")
 	// renew default tls certificate
 	// renew ingress tls certificate
@@ -111,7 +115,7 @@ func renewCertificate(domain string) error {
 	}
 	_, err := jobclient.Create(context.TODO(), object, metav1.CreateOptions{})
 	if err != nil {
-		logging.DefaultLogger().WithField("job", "renewtls").Errorf("create renewtls job err: %v", err)
+		logger.Errorf("create renewtls job err: %v", err)
 		return err
 	}
 	count := 1
@@ -119,14 +123,14 @@ func renewCertificate(domain string) error {
 		if count > 30 {
 			break
 		}
-		if needrenew, _ := checkCertificate(domain); needrenew {
+		if needrenew, _ := checkCertificate(domain, logger); needrenew {
 			return nil
 		}
 		time.Sleep(time.Second * 10)
 		count++
 	}
 	if count > 30 {
-		logging.DefaultLogger().WithField("job", "renewtls").Error("create renewtls job timeout")
+		logger.Error("create renewtls job timeout")
 		return fmt.Errorf("renew tls timeout")
 	}
 	return nil
