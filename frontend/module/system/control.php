@@ -290,7 +290,10 @@ class system extends control
 
         $ldapSetting = json_decode($ldapInstance->ldapSettings);
 
-        $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt);
+        $secretKey = helper::readKey();
+        $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $secretKey);
+        if(!$password) $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt); // Secret key was createdAt field value less v2.2.
+
         $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $ldapInstance->domain, 'account' => $ldapSetting->auth->username, 'pass' => $password)));
     }
 

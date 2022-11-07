@@ -298,11 +298,11 @@ class instance extends control
             }
 
             $sharedDB = new stdclass;
-            if(isset($cloudApp->dependencies->mysql))
+            if(isset($cloudApp->dependencies->mysql) && $customData->dbType == 'sharedDB')
             {
                 $sharedDB = zget($mysqlList, $customData->dbService);
             }
-            elseif(isset($cloudApp->dependencies->postgresql))
+            elseif(isset($cloudApp->dependencies->postgresql)  && $customData->dbType == 'sharedDB')
             {
                 $sharedDB = zget($pgList, $customData->dbService);
             }
