@@ -11,12 +11,14 @@ import (
 	"strings"
 
 	"github.com/sirupsen/logrus"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 
 	"github.com/imdario/mergo"
+	"k8s.io/apimachinery/pkg/api/resource"
+
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm/form"
-	"k8s.io/apimachinery/pkg/api/resource"
 )
 
 type settingLayout int
