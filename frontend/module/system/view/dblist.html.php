@@ -33,7 +33,7 @@
         <td><?php echo $db->name;?></td>
         <td><?php echo $db->db_type?></td>
         <td><?php echo zget($lang->instance->statusList, $db->status);?></td>
-        <td><?php $this->system->printAction($db);?></td>
+        <td><?php $this->system->printDBAction($db);?></td>
       <tr>
       <?php endforeach;?>
     </table>

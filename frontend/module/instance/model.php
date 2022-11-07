@@ -1269,7 +1269,7 @@ class InstanceModel extends model
     public function printDBAction($db, $instance)
     {
         $disabled = $db->ready ? '' : 'disabled';
-        $btnHtml  = html::commonButton($this->lang->instance->management, "{$disabled} data-db-name='{$db->name}' data-id='{$instance->id}'", 'db-login btn btn-primary');
+        $btnHtml  = html::commonButton($this->lang->instance->management, "{$disabled} data-db-name='{$db->name}' data-db-type='{$db->db_type}' data-id='{$instance->id}'", 'db-login btn btn-primary');
 
         echo $btnHtml;
     }

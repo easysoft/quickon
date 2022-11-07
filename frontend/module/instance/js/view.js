@@ -341,10 +341,11 @@ $(function()
 
     $('button.db-login').on('click', function(event)
     {
-        var dbName = $(event.target).data('db-name');
-        var id     = $(event.target).data('id');
+        var dbName     = $(event.target).data('db-name');
+        var dbType     = $(event.target).data('db-type');
+        var instanceID = $(event.target).data('id');
 
-        $.post(createLink('instance', 'ajaxDBAuthUrl'), {dbName, id}).done(function(res)
+        $.post(createLink('instance', 'ajaxDBAuthUrl'), {dbName, dbType, instanceID}).done(function(res)
         {
             var response = JSON.parse(res);
             if(response.result == 'success')

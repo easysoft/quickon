@@ -264,7 +264,9 @@ class system extends control
         $detail = $this->loadModel('cne')->dbDetail($post->dbName, $post->namespace);
         if(empty($detail)) return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->notFoundDB));
 
+        $this->app->loadConfig('instance');
         $dbAuth = array();
+        $dbAuth['driver']   = zget($this->config->instance->adminer->dbTypes, $post->dbType, '');
         $dbAuth['server']   = $detail->host . ':' . $detail->port;
         $dbAuth['username'] = $detail->username;
         $dbAuth['db']       = $detail->database;

@@ -54,10 +54,10 @@ class systemModel extends model
      * @access public
      * @return void
      */
-    public function printAction($db)
+    public function printDBAction($db)
     {
         $disabled = strtolower($db->status) == 'running' ? '' : 'disabled';
-        $btnHtml  = html::commonButton($this->lang->system->management, "{$disabled} data-db-name='{$db->name}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
+        $btnHtml  = html::commonButton($this->lang->system->management, "{$disabled} data-db-name='{$db->name}' data-db-type='{$db->db_type}' data-namespace='{$db->namespace}'", 'db-login btn btn-primary');
 
         echo $btnHtml;
     }

@@ -477,17 +477,19 @@ class instance extends control
     {
         $post = fixer::input('post')
             ->setDefault('namespace', 'default')
-            ->setDefault('id', 0)
+            ->setDefault('instanceID', 0)
+            ->setDefault('dbType', '')
             ->get();
         if(empty($post->dbName)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->dbNameIsEmpty));
 
-        $instance = $this->instance->getByID($post->id);
+        $instance = $this->instance->getByID($post->instanceID);
         if(empty($instance)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->instanceNotExists));
 
         $detail = $this->loadModel('cne')->appDBDetail($instance, $post->dbName);
         if(empty($detail)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->notFoundDB));
 
         $dbAuth = array();
+        $dbAuth['driver']   = zget($this->config->instance->adminer->dbTypes, $post->dbType, '');
         $dbAuth['server']   = $detail->host . ':' . $detail->port;
         $dbAuth['username'] = $detail->username;
         $dbAuth['db']       = $detail->database;
