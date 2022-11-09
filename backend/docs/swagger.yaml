@@ -13,7 +13,7 @@ definitions:
         type: string
       settings:
         items:
-          $ref: '#/definitions/model.stringSetting'
+          $ref: '#/definitions/model.StringSetting'
         type: array
       settings_map:
         additionalProperties: true
@@ -82,7 +82,7 @@ definitions:
     required:
     - name
     type: object
-  model.stringSetting:
+  model.StringSetting:
     properties:
       key:
         type: string

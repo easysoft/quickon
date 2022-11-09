@@ -734,7 +734,7 @@ const docTemplate = `{
                 "settings": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.stringSetting"
+                        "$ref": "#/definitions/model.StringSetting"
                     }
                 },
                 "settings_map": {
@@ -831,7 +831,7 @@ const docTemplate = `{
                 }
             }
         },
-        "model.stringSetting": {
+        "model.StringSetting": {
             "type": "object",
             "properties": {
                 "key": {

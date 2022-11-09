@@ -29,7 +29,9 @@ import (
 // CheckReNewCertificate 检查证书是否过期
 func CheckReNewCertificate() error {
 	logger := logging.DefaultLogger().WithField("job", "renewtls")
-	domain := os.Getenv("APP_DOMAIN")
+	kubeCluster := cluster.Get("primary")
+	// 兼容老版本域名, 域名从ingress获取
+	domain := domainGet(kubeCluster, logger)
 
 	if strings.HasSuffix(domain, "haogs.cn") || strings.HasSuffix(domain, "corp.cc") {
 		needRenew, err := checkCertificate(domain, logger)
@@ -38,13 +40,26 @@ func CheckReNewCertificate() error {
 			return err
 		}
 		if needRenew {
-			return renewCertificate(domain, logger)
+			return renewCertificate(kubeCluster, domain, logger)
 		}
 		logger.Infof("skip domain %s renew tls", domain)
 		return nil
 	}
 	logger.Warnf("custom domain %s skip", domain)
 	return nil
+}
+
+func domainGet(kubeCluster *cluster.Cluster, logger logrus.FieldLogger) string {
+	defaultDomain := os.Getenv("APP_DOMAIN")
+	ingressClient := kubeCluster.Clients.Base.NetworkingV1().Ingresses(viper.GetString(constant.FlagRuntimeNamespace))
+	ingress, err := ingressClient.Get(context.TODO(), "qucheng", metav1.GetOptions{})
+	if err != nil {
+		return defaultDomain
+	}
+	if ingress != nil && len(ingress.Spec.Rules) > 0 {
+		return ingress.Spec.Rules[0].Host
+	}
+	return defaultDomain
 }
 
 func checkCertificate(domain string, logger logrus.FieldLogger) (bool, error) {
@@ -74,11 +89,12 @@ func checkCertificate(domain string, logger logrus.FieldLogger) (bool, error) {
 	return false, nil
 }
 
-func renewCertificate(domain string, logger logrus.FieldLogger) error {
+func renewCertificate(kubeCluster *cluster.Cluster, domain string, logger logrus.FieldLogger) error {
 	logging.DefaultLogger().WithField("job", "renewtls").Info("try create renewtls job")
+	ds := strings.Split(domain, ".")
+	coreDomain := fmt.Sprintf("%s.%s.%s", ds[len(ds)-3], ds[len(ds)-2], ds[len(ds)-1])
 	// renew default tls certificate
 	// renew ingress tls certificate
-	kubeCluster := cluster.Get("primary")
 	jobclient := kubeCluster.Clients.Base.BatchV1().Jobs(viper.GetString(constant.FlagRuntimeNamespace))
 	object := &batchv1.Job{
 		TypeMeta: metav1.TypeMeta{
@@ -103,7 +119,7 @@ func renewCertificate(domain string, logger logrus.FieldLogger) error {
 							Env: []corev1.EnvVar{
 								{
 									Name:  "DOMAIN",
-									Value: domain,
+									Value: coreDomain,
 								},
 							},
 						},

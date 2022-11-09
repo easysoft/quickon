@@ -725,7 +725,7 @@
                 "settings": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/model.stringSetting"
+                        "$ref": "#/definitions/model.StringSetting"
                     }
                 },
                 "settings_map": {
@@ -822,7 +822,7 @@
                 }
             }
         },
-        "model.stringSetting": {
+        "model.StringSetting": {
             "type": "object",
             "properties": {
                 "key": {
