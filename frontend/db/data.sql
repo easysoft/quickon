@@ -1,4 +1,4 @@
-DROP TABLE IF EXISTS `q_space`;
+-- DROP TABLE IF EXISTS `q_space`;
 CREATE TABLE `q_space` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `name` varchar(200) NOT NULL,
@@ -11,7 +11,7 @@ CREATE TABLE `q_space` (
   KEY `name` (`name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `q_instance`;
+-- DROP TABLE IF EXISTS `q_instance`;
 CREATE TABLE IF NOT EXISTS `q_instance` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `space` mediumint(8) unsigned NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   KEY `k8name` (`k8name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-DROP TABLE IF EXISTS `q_action`;
+-- DROP TABLE IF EXISTS `q_action`;
 CREATE TABLE `q_action` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `objectType` varchar(30) NOT NULL DEFAULT '',
@@ -62,7 +62,7 @@ CREATE TABLE `q_action` (
   KEY `objectID` (`objectID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_company`;
+-- DROP TABLE IF EXISTS `q_company`;
 CREATE TABLE `q_company` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `name` char(120) DEFAULT NULL,
@@ -78,7 +78,7 @@ CREATE TABLE `q_company` (
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_config`;
+-- DROP TABLE IF EXISTS `q_config`;
 CREATE TABLE `q_config` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `owner` char(30) NOT NULL DEFAULT '',
@@ -90,7 +90,7 @@ CREATE TABLE `q_config` (
   UNIQUE KEY `unique` (`owner`,`module`,`section`,`key`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_file`;
+-- DROP TABLE IF EXISTS `q_file`;
 CREATE TABLE `q_file` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `pathname` char(100) NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE `q_file` (
   KEY `objectID` (`objectID`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_lang`;
+-- DROP TABLE IF EXISTS `q_lang`;
 CREATE TABLE `q_lang` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `lang` varchar(30) NOT NULL,
@@ -123,7 +123,7 @@ CREATE TABLE `q_lang` (
   UNIQUE KEY `lang` (`lang`,`module`,`section`,`key`,`vision`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_user`;
+-- DROP TABLE IF EXISTS `q_user`;
 CREATE TABLE `q_user` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `company` mediumint unsigned NOT NULL,
@@ -176,7 +176,7 @@ CREATE TABLE `q_user` (
   KEY `deleted` (`deleted`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_usergroup`;
+-- DROP TABLE IF EXISTS `q_usergroup`;
 CREATE TABLE `q_usergroup` (
   `account` char(30) NOT NULL DEFAULT '',
   `group` mediumint unsigned NOT NULL DEFAULT '0',
@@ -184,7 +184,7 @@ CREATE TABLE `q_usergroup` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 
-DROP TABLE IF EXISTS `q_group`;
+-- DROP TABLE IF EXISTS `q_group`;
 CREATE TABLE `q_group` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
   `vision` varchar(10) NOT NULL DEFAULT 'rnd',
@@ -197,7 +197,7 @@ CREATE TABLE `q_group` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
 
-DROP TABLE IF EXISTS `q_grouppriv`;
+-- DROP TABLE IF EXISTS `q_grouppriv`;
 CREATE TABLE `q_grouppriv` (
   `group` mediumint unsigned NOT NULL DEFAULT '0',
   `module` char(30) NOT NULL DEFAULT '',
@@ -205,7 +205,7 @@ CREATE TABLE `q_grouppriv` (
   UNIQUE KEY `group` (`group`,`module`,`method`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-DROP TABLE IF EXISTS `q_navinstance`;
+-- DROP TABLE IF EXISTS `q_navinstance`;
 CREATE TABLE IF NOT EXISTS `q_navinstance` (
   `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
   `title` char(50),
@@ -223,6 +223,6 @@ REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('
 REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '2.2.0');
 
 set sql_mode = '';
-REPLACE INTO `q_company` (`name`, `admins`) VALUES ('', ',qadmin,');
-REPLACE INTO `q_user` (`company`, `type`, `dept`, `account`, `password`, `role`, `realname`, `pinyin`, `nickname`, `commiter`, `avatar`, `birthday`, `gender`, `email`, `skype`, `qq`, `mobile`, `phone`, `weixin`, `dingding`, `slack`, `whatsapp`, `address`, `zipcode`, `nature`, `analysis`, `strategy`, `join`, `visits`, `visions`, `ip`, `last`, `fails`, `locked`, `feedback`, `ranzhi`, `ldap`, `score`, `scoreLevel`, `deleted`, `clientStatus`, `clientLang`) VALUES (0,'inside',0,'qadmin',md5('pass4Quickon'),'','qadmin','','','','','1970-01-01','f','','','','','','','','','','','','','','','1970-01-01',406,'','10.10.16.8',1660699163,0,'0000-00-00 00:00:00','0','','',0,0,'0','offline','zh-cn');
-REPLACE INTO `q_space` (`name`,`k8space`,`owner`,`default`,`createdAt`) VALUES ('default space', 'default', 'qadmin', 1, current_date());
+REPLACE INTO `q_company` (`id`, `name`, `admins`) VALUES (1, '', ',qadmin,');
+REPLACE INTO `q_user` (`id`, `company`, `type`, `dept`, `account`, `password`, `role`, `realname`, `pinyin`, `nickname`, `commiter`, `avatar`, `birthday`, `gender`, `email`, `skype`, `qq`, `mobile`, `phone`, `weixin`, `dingding`, `slack`, `whatsapp`, `address`, `zipcode`, `nature`, `analysis`, `strategy`, `join`, `visits`, `visions`, `ip`, `last`, `fails`, `locked`, `feedback`, `ranzhi`, `ldap`, `score`, `scoreLevel`, `deleted`, `clientStatus`, `clientLang`) VALUES (1, 0,'inside',0,'qadmin',md5('pass4Quickon'),'','qadmin','','','','','1970-01-01','f','','','','','','','','','','','','','','','1970-01-01',406,'','10.10.16.8',1660699163,0,'0000-00-00 00:00:00','0','','',0,0,'0','offline','zh-cn');
+REPLACE INTO `q_space` (`id`, `name`,`k8space`,`owner`,`default`,`createdAt`) VALUES (1, 'default space', 'default', 'qadmin', 1, current_date());
