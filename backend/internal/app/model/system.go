@@ -8,3 +8,10 @@ type ReqSystemUpdate struct {
 	Channel string `json:"channel"`
 	Version string `json:"version"`
 }
+
+type ReqSmtpAuth struct {
+	Host string `json:"host"`
+	Port string `json:"port"`
+	User string `json:"user"`
+	Pass string `json:"pass"`
+}
