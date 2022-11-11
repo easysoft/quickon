@@ -5,7 +5,11 @@
 package router
 
 import (
+	"crypto/tls"
+	"fmt"
+	"net"
 	"net/http"
+	"net/smtp"
 
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -83,4 +87,72 @@ func FindAllApps(c *gin.Context) {
 	}
 
 	renderJson(c, http.StatusOK, data)
+}
+
+func AuthMailServer(c *gin.Context) {
+	var (
+		err  error
+		ctx  = c.Request.Context()
+		body model.ReqSmtpAuth
+
+		conn       net.Conn
+		tlsSupport bool
+	)
+
+	if err = c.ShouldBindJSON(&body); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if body.Port != "25" {
+		tlsSupport = true
+	}
+
+	logger := getLogger(ctx)
+
+	addr := fmt.Sprintf("%s:%s", body.Host, body.Port)
+	if tlsSupport {
+		tlsConfig := tls.Config{ServerName: body.Host}
+		conn, err = tls.Dial("tcp", addr, &tlsConfig)
+	} else {
+		conn, err = net.Dial("tcp", addr)
+	}
+	if err != nil {
+		logger.WithError(err).Errorf("diag connect for %s failed", addr)
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	s, err := smtp.NewClient(conn, body.Host)
+	if err != nil {
+		logger.WithError(err).Errorf("make smtp client for %s failed", addr)
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+	defer s.Close()
+	if err = s.Hello("localhost"); err != nil {
+		logger.WithError(err).Errorf("say helo failed")
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if ok, _ := s.Extension("STARTTLS"); ok && !tlsSupport {
+		config := &tls.Config{ServerName: body.Host}
+		if err = s.StartTLS(config); err != nil {
+			logger.WithError(err).Errorf("starttls failed")
+			renderError(c, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	if ok, _ := s.Extension("AUTH"); ok {
+		authInfo := smtp.PlainAuth("", body.User, body.Pass, body.Host)
+		if err = s.Auth(authInfo); err != nil {
+			logger.WithError(err).Errorf("auth for user %s failed", body.User)
+			renderError(c, http.StatusBadRequest, err)
+			return
+		}
+	}
+
+	renderSuccess(c, http.StatusOK)
 }
