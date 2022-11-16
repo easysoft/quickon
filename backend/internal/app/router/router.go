@@ -51,6 +51,7 @@ func Config(r *gin.Engine) {
 		api.POST("/app/uninstall", AppUnInstall)
 		api.POST("/app/start", AppStart)
 		api.POST("/app/stop", AppStop)
+		api.POST("/app/suspend", AppSuspend)
 		api.POST("/app/settings", AppPatchSettings)
 		api.GET("/app/settings/simple", AppSimpleSettings)
 		api.GET("/app/settings/common", AppCommonSettings)

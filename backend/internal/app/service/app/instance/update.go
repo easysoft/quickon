@@ -47,6 +47,30 @@ func (i *Instance) Stop(chart, channel string) error {
 	}
 }
 
+func (i *Instance) Suspend(chart, channel string) error {
+
+	vals := i.release.Config
+
+	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(lastValFile)
+
+	stopSettings := []string{"global.stopped=true", "global.suspended=true"}
+	options := &values.Options{
+		Values:     stopSettings,
+		ValueFiles: []string{lastValFile},
+	}
+
+	h, _ := helm.NamespaceScope(i.namespace)
+	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+		return err
+	} else {
+		return i.updateSecretMeta(rel)
+	}
+}
+
 func (i *Instance) Start(chart, channel string, snippetSettings map[string]interface{}) error {
 	h, _ := helm.NamespaceScope(i.namespace)
 	vals := i.release.Config
@@ -57,7 +81,7 @@ func (i *Instance) Start(chart, channel string, snippetSettings map[string]inter
 	}
 	defer os.Remove(lastValFile)
 
-	startSettings := []string{"global.stopped=null"}
+	startSettings := []string{"global.stopped=null", "global.suspended=null"}
 	options := &values.Options{
 		Values:     startSettings,
 		ValueFiles: []string{lastValFile},

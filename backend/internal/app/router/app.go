@@ -183,6 +183,29 @@ func AppStop(c *gin.Context) {
 	renderSuccess(c, http.StatusOK)
 }
 
+func AppSuspend(c *gin.Context) {
+	var (
+		body model.AppManageModel
+	)
+
+	_, i, code, err := LookupApp(c, &body)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+
+	err = i.Suspend(body.Chart, body.Channel)
+	if err != nil {
+		logger.WithError(err).Error(errStopAppFailed)
+		renderError(c, http.StatusInternalServerError, errors.New(errStopAppFailed))
+		return
+	}
+	logger.Info("suspend app successful")
+	renderSuccess(c, http.StatusOK)
+}
+
 // AppStop 设置应用
 // @Summary 设置应用
 // @Tags 应用管理

@@ -10,14 +10,13 @@ const (
 	AppStatusUnknown    AppStatusType = iota + 1 // 未知
 	AppStatusAbnormal                            // 异常
 	AppStatusInit                                // 初始化
+	AppStatusSuspending                          // 暂停中
+	AppStatusSuspended                           // 暂停
 	AppStatusStopping                            // 关闭中
 	AppStatusStopped                             // 停止
 	AppStatusPulling                             // 下载中
 	AppStatusStarting                            // 启动中
-	AppStatusSuspending                          // 暂停中
-	AppStatusSuspended                           // 暂停
 	AppStatusRunning                             // 运行中
-
 )
 
 type ClusterStatusType int
@@ -31,12 +30,12 @@ var AppStatusMap = map[AppStatusType]string{
 	AppStatusUnknown:    "unknown",
 	AppStatusAbnormal:   "abnormal",
 	AppStatusInit:       "initializing",
+	AppStatusSuspending: "suspending",
+	AppStatusSuspended:  "suspended",
 	AppStatusStopping:   "stopping",
 	AppStatusStopped:    "stopped",
 	AppStatusPulling:    "pulling",
 	AppStatusStarting:   "starting",
-	AppStatusSuspending: "suspending",
-	AppStatusSuspended:  "suspended",
 	AppStatusRunning:    "running",
 }
 
