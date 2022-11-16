@@ -40,12 +40,21 @@ func (i *Instance) getComponents() *component.Components {
 
 func (i *Instance) ParseStatus() *model.AppRespStatus {
 	var settingStopped = false
+	var settingSuspended = false
+	var minStatusCode constant.AppStatusType
 
 	data := &model.AppRespStatus{
 		Components: make([]model.AppRespStatusComponent, 0),
 		Status:     constant.AppStatusMap[constant.AppStatusUnknown],
 		Version:    i.CurrentChartVersion,
 		Age:        0,
+	}
+
+	suspended, err := i.settingParse("global.suspended")
+	if err == nil {
+		if s, ok := suspended.(bool); ok {
+			settingSuspended = s
+		}
 	}
 
 	stopped, err := i.settingParse("global.stopped")
@@ -55,11 +64,16 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 		}
 	}
 
-	if settingStopped {
-		data.Status = constant.AppStatusMap[constant.AppStatusStopped]
+	if settingSuspended {
+		minStatusCode = constant.AppStatusSuspended
+		data.Status = constant.AppStatusMap[minStatusCode]
+	} else if settingStopped {
+		minStatusCode = constant.AppStatusStopped
+		data.Status = constant.AppStatusMap[minStatusCode]
 	}
 
 	components := i.getComponents()
+	// some apps will destroy workflows while stopped
 	if len(components.Items()) == 0 {
 		return data
 	}
@@ -77,7 +91,10 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 		data.Components = append(data.Components, resC)
 	}
 
-	minStatusCode := data.Components[0].StatusCode
+	if &minStatusCode == nil {
+		minStatusCode = data.Components[0].StatusCode
+	}
+
 	maxAge := data.Components[0].Age
 	for _, comp := range data.Components {
 		if comp.StatusCode < minStatusCode {
