@@ -279,7 +279,7 @@ class InstanceModel extends model
      */
     public function canDo($action, $instance)
     {
-        $busy = in_array($instance->status, array('creating', 'initializing', 'starting', 'stopping', 'suspending', 'destroying'));
+        $busy = in_array($instance->status, array('creating', 'initializing', 'starting', 'stopping', 'suspending', 'pulling', 'destroying'));
         switch($action)
         {
             case 'start':
@@ -287,7 +287,7 @@ class InstanceModel extends model
             case 'stop':
                 return !($busy || in_array($instance->status, array('stopped', 'installationFail')));
             case 'uninstall':
-                return !in_array($instance->status, array('running','destroying'));
+                return !in_array($instance->status, array('destroying'));
             case 'visit':
                 return $instance->status == 'running';
             default:
