@@ -50,17 +50,17 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 		Age:        0,
 	}
 
-	suspended, err := i.settingParse("global.suspended")
-	if err == nil {
-		if s, ok := suspended.(bool); ok {
-			settingSuspended = s
-		}
-	}
-
 	stopped, err := i.settingParse("global.stopped")
 	if err == nil {
 		if stop, ok := stopped.(bool); ok {
 			settingStopped = stop
+		}
+	}
+
+	suspended, err := i.settingParse("global.suspended")
+	if err == nil {
+		if s, ok := suspended.(bool); ok && settingStopped {
+			settingSuspended = s
 		}
 	}
 
@@ -91,7 +91,7 @@ func (i *Instance) ParseStatus() *model.AppRespStatus {
 		data.Components = append(data.Components, resC)
 	}
 
-	if &minStatusCode == nil {
+	if minStatusCode == 0 {
 		minStatusCode = data.Components[0].StatusCode
 	}
 
