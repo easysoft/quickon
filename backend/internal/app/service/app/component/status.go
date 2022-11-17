@@ -26,6 +26,19 @@ func parseStatus(replicas, availableReplicas, updatedReplicas, readyReplicas int
 		return
 	}
 
+	/*
+		If pods count is greater than replicas, set to upgrading status.
+	*/
+	if replicas > 0 {
+		if availableReplicas > replicas {
+			appStatus = constant.AppStatusUpgrading
+			return
+		} else if len(pods) > int(replicas) {
+			appStatus = constant.AppStatusUpgrading
+			return
+		}
+	}
+
 	if replicas > 0 && updatedReplicas == replicas && readyReplicas == replicas {
 		appStatus = constant.AppStatusRunning
 		return

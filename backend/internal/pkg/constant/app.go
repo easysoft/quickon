@@ -16,6 +16,7 @@ const (
 	AppStatusStopped                             // 停止
 	AppStatusPulling                             // 下载中
 	AppStatusStarting                            // 启动中
+	AppStatusUpgrading                           // 升级中
 	AppStatusRunning                             // 运行中
 )
 
@@ -36,6 +37,7 @@ var AppStatusMap = map[AppStatusType]string{
 	AppStatusStopped:    "stopped",
 	AppStatusPulling:    "pulling",
 	AppStatusStarting:   "starting",
+	AppStatusUpgrading:  "upgrading",
 	AppStatusRunning:    "running",
 }
 
