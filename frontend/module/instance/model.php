@@ -283,13 +283,13 @@ class InstanceModel extends model
         switch($action)
         {
             case 'start':
-                return !($busy || in_array($instance->status, array('running', 'abnormal', 'destroyed')));
+                return !($busy or in_array($instance->status, array('running', 'abnormal', 'destroyed')));
             case 'stop':
-                return !($busy || in_array($instance->status, array('stopped', 'installationFail')));
+                return !($busy or in_array($instance->status, array('stopped', 'installationFail')));
             case 'uninstall':
                 return !in_array($instance->status, array('destroying'));
             case 'visit':
-                return $instance->status == 'running';
+                return $instance->status == 'running' or $instance->status == 'upgrading';
             default:
                 return false;
         }

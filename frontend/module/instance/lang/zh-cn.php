@@ -152,6 +152,7 @@ $lang->instance->statusList['stopped']          = '已关闭';
 $lang->instance->statusList['destroying']       = '销毁中';
 $lang->instance->statusList['destroyed']        = '已销毁';
 $lang->instance->statusList['abnormal']         = '异常';
+$lang->instance->statusList['upgrading']        = '更新中';
 $lang->instance->statusList['unknown']          = '未知';
 
 $lang->instance->htmlStatuses = array();
