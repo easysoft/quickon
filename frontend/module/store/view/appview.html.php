@@ -72,8 +72,10 @@
             <?php if(empty(array_filter($cloudApp->screenshot_urls))):?>
             <div class='col-sm-12'><div class='errorBox'><?php echo $lang->store->noScreenshot;?></div></div>
             <?php else:?>
-            <?php foreach(array_filter($cloudApp->screenshot_urls) as $imgUrl):?>
-            <div class='col-xs-6 col-sm-4'>
+            <?php $imgUrlList = array_filter($cloudApp->screenshot_urls);?>
+            <?php $cols = (count($imgUrlList) % 4) ? 4 : 3;?>
+            <?php foreach($imgUrlList as $imgUrl):?>
+            <div class='col-xs-6 col-sm-<?php echo $cols;?>'>
               <a href="<?php echo $imgUrl;?>" target="_blank"><?php echo html::image($imgUrl, "class='img-thumbnail'");?></a>
             </div>
             <?php endforeach;?>
