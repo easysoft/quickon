@@ -119,6 +119,18 @@ class InstanceModel extends model
     }
 
     /**
+     * Count instance which is enabled SMTP.
+     *
+     * @access public
+     * @return int
+     */
+    public function countSMTP()
+    {
+        $count = $this->dao->select('count(*) as Qty')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('length(smtpSnippetName) > 0')->fetch();
+        return $count->Qty;
+    }
+
+    /**
      * Get quantity of total installed services.
      *
      * @access public
@@ -152,6 +164,50 @@ class InstanceModel extends model
         $instance = $this->getByID($instanceID);
         $pinned = $instance->pinned == '0' ? '1' : '0';
         $this->dao->update(TABLE_INSTANCE)->set('pinned')->eq($pinned)->where('id')->eq($instanceID)->exec();
+    }
+
+    /**
+     * Switch LDAP between enable and disable.
+     *
+     * @param  object $instance
+     * @param  bool   $enableSMTP
+     * @access public
+     * @return bool
+     */
+    public function switchSMTP($instance, $enableSMTP)
+    {
+        $this->loadModel('system');
+        $snippetName = $this->system->smtpSnippetName();
+
+        $settings = new stdclass;
+        if($enableSMTP)
+        {
+            $settings->settings_snippets = [$snippetName];
+        }
+        else
+        {
+            $settings->settings_snippets = [$snippetName . '-'];
+        }
+
+        $success = $this->cne->updateConfig($instance, $settings);
+        if(!$success)
+        {
+            dao::$errors[] = $this->lang->instance->errors->failToAdjustMemory;
+            return false;
+        }
+
+        if($enableSMTP)
+        {
+            $this->dao->update(TABLE_INSTANCE)->set('smtpSnippetName')->eq($snippetName)->where('id')->eq($instance->id)->exec();
+            $this->loadModel('action')->create('instance', $instance->id, 'enableSMTP');
+        }
+        else
+        {
+            $this->dao->update(TABLE_INSTANCE)->set('smtpSnippetName')->eq('')->where('id')->eq($instance->id)->exec();
+            $this->loadModel('action')->create('instance', $instance->id, 'disableSMTP');
+        }
+
+        return true;
     }
 
     /**
@@ -450,15 +506,100 @@ class InstanceModel extends model
             $space = $this->space->defaultSpace($this->app->user->account);
         }
 
-        $ldapSnippet = isset($customData->snippets[0]) ? $customData->snippets[0] : null;
-        $channel     = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
-        $instance    = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, '', $channel, $ldapSnippet);
+        $snippets = array();
+        $snippets['ldapSnippetName'] = isset($customData->ldapSnippet[0]) ? $customData->ldapSnippet[0] : null;
+        $snippets['smtpSnippetName'] = isset($customData->smtpSnippet[0]) ? $customData->smtpSnippet[0] : null;
 
+        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, '', $channel, $snippets);
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        $snippets   = zget($customData, 'snippets', array());
         return $this->doCneInstall($app, $instance, $space, $settingMap, $snippets);
+    }
+
+    /**
+     * install global SMTP proxy service.
+     *
+     * @param  object $app
+     * @param  object $smtpSettings
+     * @param  string $instanceName
+     * @param  string $k8name
+     * @param  string $channel
+     * @access public
+     * @return object
+     */
+    public function installSysSMTP($app, $smtpSettings, $instanceName = '', $k8name = '', $channel = 'stable')
+    {
+        $this->app->loadLang('system');
+
+        $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+        $customData = new stdclass;
+        $customData->dbType       = null;
+        $customData->customDomain = $this->randThirdDomain();
+
+        $instance = $this->createInstance($app, $space, $customData->customDomain, $instanceName, $k8name, $channel);
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
+            return false;
+        }
+
+        $settingsMap = $this->installationSettingsMap($customData, array(), $app, $instance);
+
+        $settingsMap->env = new stdclass;
+        $settingsMap->env->SMTP_HOST         = $smtpSettings->host;
+        $settingsMap->env->SMTP_PORT         = strval($smtpSettings->port);
+        $settingsMap->env->SMTP_USER         = $smtpSettings->user;
+        $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
+        $settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
+
+        $instance = $this->doCneInstall($app, $instance, $space, $settingsMap);
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
+            return false;
+        }
+
+        /* Post snippet to CNE. */
+        $snippetSettings = new stdclass;
+        $snippetSettings->name        = 'snippet-smtp-proxy';
+        $snippetSettings->namespace   = $space->k8space;
+        $snippetSettings->auto_import = false;
+
+        $snippetSettings->values = new stdclass;
+        $snippetSettings->values->mail = new stdclass;
+        $snippetSettings->values->mail->enabled = true;
+        $snippetSettings->values->mail->smtp    = new stdclass;
+        $snippetSettings->values->mail->smtp->host = "{$instance->k8name}.{$snippetSettings->namespace}.svc";
+        $snippetSettings->values->mail->smtp->port = '1025';
+        $snippetSettings->values->mail->smtp->user = $settingsMap->env->SMTP_USER;
+        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+
+        $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
+        if($snippetResult->code != 200)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
+            $this->uninstall($instance);
+            return false;
+        }
+
+        /* Save SMTP settings. */
+        $secretKey = helper::readKey();
+        $settingsMap->env->SMTP_PASS         = openssl_encrypt($settingsMap->env->SMTP_PASS, 'DES-ECB', $secretKey);
+        $settingsMap->env->AUTHENTICATE_CODE = openssl_encrypt($settingsMap->env->AUTHENTICATE_CODE, 'DES-ECB', $secretKey);
+
+        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+
+        $this->loadModel('setting');
+        $this->setting->setItem('system.common.smtp.enabled', true);
+        $this->setting->setItem('system.common.smtp.instanceID', $instance->id);
+        $this->setting->setItem('system.common.smtp.snippetName', $snippetSettings->name);
+        $this->setting->setItem('system.common.smtp.settingsMap', json_encode($settingsMap));
+        $this->setting->setItem('system.common.smtp.snippetSettings', json_encode($snippetSettings));
+
+        return $instance;
     }
 
     /**
@@ -473,6 +614,8 @@ class InstanceModel extends model
      */
     public function installLDAP($app, $thirdDomain = '', $instanceName = '', $k8name = '', $channel = 'stable')
     {
+        $this->app->loadLang('system');
+
         $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
 
         $customData = new stdclass;
@@ -583,10 +726,11 @@ class InstanceModel extends model
      * @param  object $thirdDomain
      * @param  string $name
      * @param  string $channel
+     * @param  array  $snippets
      * @access public
      * @return bool|object
      */
-    public function createInstance($app, $space, $thirdDomain, $name = '', $k8name = '', $channel = 'stable', $ldapSnippet = null)
+    public function createInstance($app, $space, $thirdDomain, $name = '', $k8name = '', $channel = 'stable', $snippets = array())
     {
         if(empty($k8name)) $k8name = "{$app->chart}-{$this->app->user->account}-" . date('YmdHis'); //name rule: chartName-userAccount-YmdHis;
 
@@ -609,7 +753,7 @@ class InstanceModel extends model
         $instanceData->createdBy       = $this->app->user->account;
         $instanceData->createdAt       = date('Y-m-d H:i:s');
 
-        if($ldapSnippet) $instanceData->ldapSnippetName = $ldapSnippet;
+        foreach($snippets as $fieldName => $snippetName) $instanceData->$fieldName = $snippetName;
 
         $this->dao->insert(TABLE_INSTANCE)->data($instanceData)->autoCheck()->exec();
         if(dao::isError()) return false;
@@ -640,7 +784,7 @@ class InstanceModel extends model
         $apiParams->version           = $instance->version;
         $apiParams->channel           = $instance->channel;
         $apiParams->settings_map      = $settingMap;
-        $apiParams->settings_snippets = $snippets;
+        $apiParams->settings_snippets = array_values($snippets);
 
         if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas');
 

@@ -68,7 +68,41 @@ $(function()
                     });
                 }
             });
+        });
+    });
 
+    $('#smtpBtn').on('click', function(event)
+    {
+        bootbox.confirm(instanceNotices.switchSMTP, function(result)
+        {
+            if(!result) return;
+
+            var loadingDialog = bootbox.dialog(
+            {
+                message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.switching + '</div>',
+            });
+
+            var id       = $(event.target).closest('button').attr('instance-id');
+            var url      = createLink('instance', 'ajaxSwitchSMTP', 'id=' + id, 'json');
+            var postData = {enableSMTP: $("[name='enableSMTP[]']:checked").length > 0};
+            $.post(url, postData).done(function(response)
+            {
+                loadingDialog.modal('hide');
+
+                var res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    window.parent.location.reload();
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   instanceNotices.fail,
+                        message: res.message,
+                    });
+                }
+            });
         });
     });
 

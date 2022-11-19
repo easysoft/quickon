@@ -42,13 +42,17 @@
           <td></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->ldapUsername?></th>
+          <th><?php echo $lang->system->ldapUsername;?></th>
           <td><?php echo zget($ldapSettings->auth, 'username', '');?></td>
         </tr>
         <tr>
           <th><?php echo $lang->system->ldapRoot;?></th>
           <td><?php echo zget($ldapSettings->auth, 'root', '');?></td>
         <tr>
+        <tr>
+          <th><?php echo $lang->instance->status;?></th>
+          <td><span><?php echo zget($lang->instance->statusList, $ldapInstance->status, '');?></span></td>
+        </tr>
       </tbody>
     </table>
     <?php elseif($activeLDAP == 'extra'):?>

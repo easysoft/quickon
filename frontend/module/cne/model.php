@@ -542,6 +542,24 @@ class cneModel extends model
     }
 
     /**
+     * Validate SMTP settings.
+     *
+     * @param  object $apiParams
+     * @access public
+     * @return bool
+     */
+    public function validateSMTP($apiParams)
+    {
+        if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
+
+        $apiUrl = "/api/cne/system/smtp/validator";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
      * Config app instance.
      *
      * @param  object $apiParams

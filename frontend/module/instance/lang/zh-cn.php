@@ -15,11 +15,17 @@ $lang->instance->backupAndRestore = '备份';
 $lang->instance->advance          = '高级';
 $lang->instance->enableLDAP       = '启用LDAP';
 $lang->instance->linkLDAP         = '集成LDAP';
+$lang->instance->enableSMTP       = '启用SMTP';
 $lang->instance->customSetting    = '自定义配置';
 $lang->instance->upgradeToSenior  = '升级到高级版';
 
 $lang->instance->systemLDAPInactive = '未开启系统LDAP';
 $lang->instance->toSystemLDAP       = '去启用';
+
+$lang->instance->enableSMTP         = '启用SMTP';
+$lang->instance->systemSMTPInactive = '未开启系统SMTP';
+$lang->instance->toSystemSMTP       = '去启用';
+
 
 $lang->instance->serviceInfo      = '服务信息';
 $lang->instance->appTemplate      = '应用模板';
@@ -124,6 +130,8 @@ $lang->instance->actionList['restore']      = '回滚了%s';
 $lang->instance->actionList['adjustmemory'] = '调整 %s 的内存到 %s';
 $lang->instance->actionList['enableldap']   = '启用了LDAP';
 $lang->instance->actionList['disableldap']  = '禁用了LDAP';
+$lang->instance->actionList['enablesmtp']   = '启用了SMTP';
+$lang->instance->actionList['disablesmtp']  = '禁用了SMTP';
 $lang->instance->actionList['updatecustom'] = '修改了自定义配置';
 $lang->instance->actionList['tosenior']     = '升级服务到高级版';
 
@@ -228,12 +236,16 @@ $lang->instance->notices['confirmUpgrade']     = '确定要升级到最新版吗
 $lang->instance->notices['confirmBackup']      = '确定要备份吗？';
 $lang->instance->notices['confirmRestore']     = '本操作将用备份的数据覆盖当前的数据，确定要回滚吗？';
 $lang->instance->notices['confirmDelete']      = '确定要删除该备份数据吗？';
-$lang->instance->notices['adjustMemory']       = '调整内存会重启服务，确定要调整吗？';
 $lang->instance->notices['switchLDAP']         = '修改LDAP会重启服务，确定要修改LDAP吗？';
 $lang->instance->notices['enableLDAPFailed']   = '启用LDAP失败';
 $lang->instance->notices['disableLDAPFailed']  = '禁用LDAP失败';
 $lang->instance->notices['enableLDAPSuccess']  = '启用LDAP成功';
 $lang->instance->notices['disableLDAPSuccess'] = '禁用LDAP成功';
+$lang->instance->notices['switchSMTP']         = '修改SMTP会重启服务，确定要修改SMTP吗？';
+$lang->instance->notices['enableSMTPFailed']   = '启用SMTP失败';
+$lang->instance->notices['disableSMTPFailed']  = '禁用SMTP失败';
+$lang->instance->notices['enableSMTPSuccess']  = '启用SMTP成功';
+$lang->instance->notices['disableSMTPSuccess'] = '禁用SMTP成功';
 $lang->instance->notices['confirmCustom']      = '修改自定义配置需要重启服务，确定修改并重启吗？';
 
 $lang->instance->nameChangeTo     = ' %s 修改为 %s  。';
@@ -270,6 +282,7 @@ $lang->instance->errors->noDBList             = '无数据库或不可访问';
 $lang->instance->errors->notFoundDB           = '找不到该数据库';
 $lang->instance->errors->dbNameIsEmpty        = '数据库名为空';
 $lang->instance->errors->failToAdjustMemory   = '调整内存失败';
-$lang->instance->errors->switchLDAPFailed     = '启用LDAP失败';
+$lang->instance->errors->switchLDAPFailed     = '修改LDAP设置失败';
+$lang->instance->errors->switchSMTPFailed     = '修改SMTP设置失败';
 $lang->instance->errors->updateCustomFailed   = '修改自定义配置失败';
 $lang->instance->errors->failToSenior         = '升级到高级版失败';
