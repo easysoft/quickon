@@ -63,7 +63,18 @@
             <th class='w-80px'></th>
             <td class='w-250px'>
               <div class='input-group'>
-                <?php echo html::checkbox('snippets', array($this->system->ldapSnippetName() => $lang->instance->enableLDAP));?>
+                <?php echo html::checkbox('ldapSnippet', array($this->system->ldapSnippetName() => $lang->instance->enableLDAP));?>
+              </div>
+            </td>
+            <td></td>
+          </tr>
+          <?php endif;?>
+          <?php if(true or isset($cloudApp->features->mail) && $this->loadModel('system')->isSMTPEnabled()):?>
+          <tr>
+            <th class='w-80px'></th>
+            <td class='w-250px'>
+              <div class='input-group'>
+                <?php echo html::checkbox('smtpSnippet', array($this->system->smtpSnippetName() => $lang->instance->enableSMTP));?>
               </div>
             </td>
             <td></td>

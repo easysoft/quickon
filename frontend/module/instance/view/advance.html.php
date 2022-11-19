@@ -52,7 +52,38 @@
         <tr>
           <th></th>
           <td class='w-100px text-center'>
-            <?php echo html::commonButton($lang->instance->saveSetting, "id='ldapBtn' instance-id='$instance->id'" . ($LDAPInstalled ? '' : 'disabled'), 'btn btn-primary'); ?>
+            <?php echo html::commonButton($lang->instance->saveSetting, "id='ldapBtn' instance-id='$instance->id'" . ($LDAPInstalled ? '' : 'disabled'), 'btn btn-primary');?>
+          </td>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <?php endif;?>
+  <?php if(true or isset($cloudApp->features->mail)):?>
+  <div class='panel-heading'>
+    <div class='panel-title'><?php echo $lang->system->SMTP->common;?></span></div>
+  </div>
+  <div class='panel-body'>
+    <form id='SMTPForm' class='cell not-watch load-indicator'>
+      <table class='table table-form'>
+        <tr>
+          <?php $SMTPInstalled =  $this->system->isSMTPEnabled();?>
+          <?php $enableSMTP    =  $instance->smtpSnippetName ? 'true' : '' ;?>
+          <td class='w-100px'><?php echo html::checkbox('enableSMTP', array('true' => $lang->instance->enableSMTP),  $enableSMTP, ($SMTPInstalled ? '' : 'disabled'));?></td>
+          <td colspan='2'>
+            <?php if(!$SMTPInstalled):?>
+            <?php echo $lang->instance->systemSMTPInactive;?>
+            <?php echo html::a(helper::createLink('system', 'installSMTP'), $lang->instance->toSystemSMTP, '', "class='btn btn-link'");?>
+            <?php endif?>
+          </td>
+          <td></td>
+        </tr>
+        <tr>
+          <th></th>
+          <td class='w-100px text-center'>
+            <?php echo html::commonButton($lang->instance->saveSetting, "id='smtpBtn' instance-id='$instance->id'" . ($SMTPInstalled ? '' : 'disabled'), 'btn btn-primary');?>
           </td>
           <td></td>
           <td></td>

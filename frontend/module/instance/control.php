@@ -525,9 +525,8 @@ class instance extends control
         $this->send(array('result' => 'success', 'message' => ''));
     }
 
-
     /**
-     * Switch  LDAP between enable and disable by ajax.
+     * Switch LDAP between enable and disable by ajax.
      *
      * @param  int    $instanceID
      * @access public
@@ -546,6 +545,25 @@ class instance extends control
         $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->switchLDAPFailed));
     }
 
+    /**
+     * Switch SMTP between enable and disable by ajax.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function ajaxSwitchSMTP($instanceID)
+    {
+        $instance = $this->instance->getByID($instanceID);
+        $postData = fixer::input('post')->get();
+
+        if($this->instance->switchSMTP($instance, $postData->enableSMTP == 'true'))
+        {
+            $this->send(array('result' => 'success', 'message' => ''));
+        }
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->switchSMTPFailed));
+    }
 
     /**
      * Update custom settings by ajax. For example: env variables.

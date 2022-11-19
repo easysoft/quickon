@@ -14,6 +14,7 @@ $lang->system->installLDAP    = '安装LDAP';
 $lang->system->editLDAP       = '编辑';
 $lang->system->LDAPInfo       = 'LDAP信息';
 $lang->system->advance        = '高级';
+$lang->system->verify         = '校验';
 
 /* LDAP */
 $lang->system->ldapEnabled  = '启用LDAP';
@@ -35,7 +36,6 @@ $lang->system->filterUser   = '用户过滤';
 $lang->system->email        = '邮件字段';
 $lang->system->extraAccount = '用户名字段';
 $lang->system->ldapAdvance  = '高级设置';
-$lang->system->connectLdap  = '校验';
 $lang->system->copy         = '复制';
 $lang->system->copySuccess  = '已复制到剪切板';
 
@@ -53,6 +53,20 @@ $lang->system->oss->apiURL    = 'API地址';
 $lang->system->oss->accessKey = 'Access Key';
 $lang->system->oss->secretKey = 'Secret Key';
 
+/* SMTP */
+$lang->system->SMTP = new stdclass;
+$lang->system->SMTP->common   = '邮箱配置';
+$lang->system->SMTP->enabled  = '启用SMTP';
+$lang->system->SMTP->install  = '安装';
+$lang->system->SMTP->update   = '更新';
+$lang->system->SMTP->edit     = '编辑';
+$lang->system->SMTP->editSMTP = '编辑SMTP';
+$lang->system->SMTP->account  = '发信邮箱';
+$lang->system->SMTP->password = '密码';
+$lang->system->SMTP->host     = 'SMTP服务器';
+$lang->system->SMTP->port     = 'SMTP端口';
+$lang->system->SMTP->save     = '保存';
+
 $lang->system->notices = new stdclass;
 $lang->system->notices->attention             = '注意';
 $lang->system->notices->noLDAP                = '找不到LDAP配置数据';
@@ -61,6 +75,13 @@ $lang->system->notices->ldapInstallSuccess    = 'LDAP安装成功';
 $lang->system->notices->ldapUpdateSuccess     = 'LDAP更新成功';
 $lang->system->notices->verifyLDAPSuccess     = '校验LDAP成功！';
 $lang->system->notices->fillAllRequiredFields = '请填写全部必填项！';
+$lang->system->notices->smtpInstallSuccess    = 'LDAP安装成功';
+$lang->system->notices->smtpUpdateSuccess     = 'LDAP更新成功';
+$lang->system->notices->smtpWhiteList         = '为防止邮件被屏蔽，请在邮件服务器里面将发信邮箱设为白名单';
+$lang->system->notices->smtpAuthCode          = '有些邮箱要填写单独申请的授权码，具体请到邮箱相关设置查询';
+$lang->system->notices->smtpUsed              = '已经有服务关联了SMTP';
+$lang->system->notices->verifySMTPSuccess     = '校验成功！';
+$lang->system->notices->pleaseCheckSMTPInfo   = '校验失败！请检查用户名和密码是否正确';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB                 = '找不到该数据库';
@@ -75,4 +96,10 @@ $lang->system->errors->failToUninstallExtraLDAP   = '卸载外部LDAP失败';
 $lang->system->errors->failToDeleteLDAPSnippet    = '删除LDAP片段失败';
 $lang->system->errors->verifyLDAPFailed           = '校验LDAP失败';
 $lang->system->errors->LDAPLinked                 = '有服务已经关联了LDAP';
+$lang->system->errors->SMTPLinked                 = '有服务已经关联了SMTP服务';
 $lang->system->errors->failGetOssAccount          = '获取对象存储账号失败';
+$lang->system->errors->failToInstallSMTP          = '安装SMTP失败';
+$lang->system->errors->failToUninstallSMTP        = '卸载SMTP失败';
+$lang->system->errors->verifySMTPFailed           = '校验SMTP失败';
+$lang->system->errors->notFoundSMTPApp            = '找不到SMTP代理应用';
+$lang->system->errors->notFoundSMTPService        = '找不到SMTP代理服务';

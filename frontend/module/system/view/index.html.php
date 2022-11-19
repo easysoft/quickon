@@ -38,6 +38,12 @@
           <span class='plug-title text-center'><?php echo $lang->system->oss->common;?></span>
         </a>
       </div>
+      <div class='text-center col-xs-6 col-sm-3 col-md-2 col-lg-2'>
+        <a class='cell' href='<?php echo helper::createLink('system', 'installSMTP');?>'>
+          <span class='logo'><i class='icon icon-envelope-o'></i></span><br/>
+          <span class='plug-title text-center'><?php echo $lang->system->SMTP->common;?></span>
+        </a>
+      </div>
     </div>
   </div>
 </div>

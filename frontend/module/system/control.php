@@ -107,7 +107,7 @@ class system extends control
     }
 
     /**
-     * Edit extra LDAP
+     * Edit extra LDAP.
      *
      * @access public
      * @return void
@@ -188,33 +188,6 @@ class system extends control
     }
 
     /**
-     * OSS view.
-     *
-     * @access public
-     * @return void
-     */
-    public function ossView()
-    {
-        $this->loadModel('cne');
-
-        $minioInstance = new stdclass;
-        $minioInstance->k8name    = 'cne-operator';
-        $minioInstance->spaceData = new stdclass;
-        $minioInstance->spaceData->k8space = 'cne-system';
-
-        $ossAccount = $this->cne->getDefaultAccount($minioInstance, '', 'minio');
-        $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
-
-        $this->lang->switcherMenu = $this->system->getOssSwitcher();
-
-        $this->view->title      = $this->lang->system->oss->common;
-        $this->view->ossAccount = $ossAccount;
-        $this->view->ossDomain  = $ossDomain;
-
-        $this->display();
-    }
-
-    /**
      * Uninstall all LDAP in system. (This function is only for debug and test.)
      *
      * @access public
@@ -246,6 +219,159 @@ class system extends control
             $errors = dao::getError();
             foreach($errors as $error) echo $error . '<br/>';
         }
+    }
+
+    /**
+     * OSS view.
+     *
+     * @access public
+     * @return void
+     */
+    public function ossView()
+    {
+        $this->loadModel('cne');
+
+        $minioInstance = new stdclass;
+        $minioInstance->k8name    = 'cne-operator';
+        $minioInstance->spaceData = new stdclass;
+        $minioInstance->spaceData->k8space = 'cne-system';
+
+        $ossAccount = $this->cne->getDefaultAccount($minioInstance, '', 'minio');
+        $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
+
+        $this->lang->switcherMenu = $this->system->getOssSwitcher();
+
+        $this->view->title      = $this->lang->system->oss->common;
+        $this->view->ossAccount = $ossAccount;
+        $this->view->ossDomain  = $ossDomain;
+
+        $this->display();
+    }
+
+    /**
+     * Install SMTP.
+     *
+     * @access public
+     * @return void
+     */
+    public function installSMTP()
+    {
+        if($this->system->smtpSnippetName()) return print(js::locate($this->inLink('smtpView')));
+
+        if($_POST)
+        {
+            $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+            $this->system->installSysSMTP($channel);
+
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->smtpInstallSuccess, 'locate' => $this->inLink('smtpView')));
+        }
+
+        $this->lang->switcherMenu = $this->system->getSMTPSwitcher();
+
+        $this->view->title        = $this->lang->system->SMTP->common;
+        $this->view->smtpSettings = $this->system->getSMTPSettings();
+        $this->view->smtpLinked   = false;
+        $this->view->activeSMTP   = false;
+
+        $this->display();
+    }
+
+    /**
+     * Edit SMTP.
+     *
+     * @access public
+     * @return void
+     */
+    public function editSMTP()
+    {
+        $this->loadModel('instance');
+        $this->app->loadLang('instance');
+
+        if($_POST)
+        {
+            $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+            $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
+            $this->system->updateSMTPSettings($ldapApp, $channel);
+
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
+        }
+
+        $this->lang->switcherMenu = $this->system->getSMTPSwitcher();
+
+        $this->view->title        = $this->lang->system->SMTP->editSMTP;
+        $this->view->smtpSettings = $this->system->getSMTPSettings();
+        $this->view->smtpLinked   = $this->instance->countSMTP();
+        $this->view->activeSMTP   = false;
+
+        $this->display();
+    }
+
+    /**
+     * Show SMTP setting detail.
+     *
+     * @access public
+     * @return void
+     */
+    public function smtpView()
+    {
+        $this->loadModel('instance');
+        $this->app->loadLang('instance');
+
+        $instanceID   = $this->loadModel('setting')->getItem('owner=system&module=common&section=smtp&key=instanceID');
+        $smtpInstance = $this->instance->getByID($instanceID);
+        if(empty($smtpInstance)) return print js::alert($this->lang->system->notices->notFoundSMTPService);
+
+
+        $this->lang->switcherMenu = $this->system->getSMTPSwitcher();
+
+        $this->view->title        = $this->lang->system->SMTP->common;
+        $this->view->smtpSettings = $this->system->getSMTPSettings();
+        $this->view->smtpInstance = $smtpInstance;
+
+        $this->display();
+    }
+
+    /**
+     * Uninstall SMTP. (This function is only for debug and test.)
+     *
+     * @access public
+     * @return void
+     */
+    public function uninstallSMTP()
+    {
+        if(!$this->config->debug) return; // Only run in debug mode.
+
+        /* Uninstall system SMTP proxy APP. */
+        if($this->system->uninstallSysSMTP())
+        {
+            echo date('Y-m-d H:i:s') . ": Uninstall system SMTP success.<br/>";
+        }
+        else
+        {
+            echo date('Y-m-d H:i:s') . ": Uninstall system SMTP fail.<br/>";
+            $errors = dao::getError();
+            foreach($errors as $error) echo $error . '<br/>';
+        }
+    }
+
+    /**
+     * Verify SMTP account by ajax.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxVerifySMTPAccount()
+    {
+        $accountInfo= fixer::input('post')->get();
+
+        $passed = $this->loadModel('cne')->validateSMTP($accountInfo);
+        if($passed) $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->verifySMTPSuccess));
+
+        $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->verifySMTPFailed));
     }
 
     /**

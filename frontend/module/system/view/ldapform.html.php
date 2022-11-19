@@ -77,7 +77,7 @@
     <table class='table table-form'>
       <tbody>
         <tr>
-          <td class='w-100px text-right'><?php echo html::commonButton($lang->system->connectLdap, "id='testConnectBtn'");?></td>
+          <td class='w-100px text-right'><?php echo html::commonButton($lang->system->verify, "id='testConnectBtn'");?></td>
           <td class='w-300px text-left'><span id='connectResult'></span></td>
           <td></td>
         </tr>

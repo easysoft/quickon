@@ -1,4 +1,4 @@
-<?php
+ <?php
 /**
  * The model file of system module of QuCheng.
  *
@@ -24,7 +24,7 @@ class systemModel extends model
     }
 
     /**
-     * Get switcher of LDAP view page of store.
+     * Get LDAP menu switcher.
      *
      * @access public
      * @return string
@@ -38,10 +38,31 @@ class systemModel extends model
         return $output;
     }
 
+    /**
+     * Get Oss menu switcher.
+     *
+     * @access public
+     * @return string
+     */
     public function getOssSwitcher()
     {
         $output  = "<div class='btn-group header-btn'>";
         $output .= "<span class='btn'>{$this->lang->system->oss->common}</span>";
+        $output .= "</div>";
+
+        return $output;
+    }
+
+    /**
+     * Get SMTP menu switcher.
+     *
+     * @access public
+     * @return string
+     */
+    public function getSMTPSwitcher()
+    {
+        $output  = "<div class='btn-group header-btn'>";
+        $output .= "<span class='btn'>{$this->lang->system->SMTP->common}</span>";
         $output .= "</div>";
 
         return $output;
@@ -137,6 +158,14 @@ class systemModel extends model
         return $this->loadModel('instance')->installLDAP($ldapApp, '', 'OpenLDAP', $k8name = '', $channel);
     }
 
+    /**
+     * Update Qucheng LDAP.
+     *
+     * @param  object $ldapApp
+     * @param  string $channel
+     * @access public
+     * @return string
+     */
     public function updateQuchengLDAP($ldapApp, $channel)
     {
         $instanceID = $this->setting->getItem('owner=system&module=common&section=ldap&key=instanceID');
@@ -375,6 +404,244 @@ class systemModel extends model
     public function getActiveLDAP()
     {
         return $this->setting->getItem('owner=system&module=common&section=ldap&key=active');
+    }
+
+    /**
+     * Check global SMTP is enabled or not.
+     *
+     * @access public
+     * @return bool
+     */
+    public function isSMTPEnabled()
+    {
+        $smtpSnippetName = $this->smtpSnippetName();
+        $enabled         = $this->setting->getItem('owner=system&module=common&section=smtp&key=enabled');
+
+        return $smtpSnippetName && $enabled;
+    }
+
+    /**
+     * Get SMTP snippet name.
+     *
+     * @access public
+     * @return string
+     */
+    public function smtpSnippetName()
+    {
+        return $this->setting->getItem('owner=system&module=common&section=smtp&key=snippetName');
+    }
+
+    /**
+     * Get SMTP settings.
+     *
+     * @access public
+     * @return object
+     */
+    public function getSMTPSettings()
+    {
+        $settingMap = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=settingsMap'));
+        if(empty($settingMap)) return new stdclass;
+
+        $settings = $settingMap->env;
+        $settings->SMTP_PASS = openssl_decrypt($settings->SMTP_PASS, 'DES-ECB', helper::readKey());
+
+        //$snippetSettings = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=snippetSettings'));
+
+        return $settings;
+    }
+
+    public function updateSMTPSettings()
+    {
+        $this->loadModel('cne');
+        $this->loadModel('instance');
+
+        $smtpSettings = fixer::input('pos')->get();
+
+        $instanceID = $this->setting->getItem('owner=system&module=common&section=smtp&key=instanceID');
+        $instance   = $this->instance->getByID($instanceID);
+        if($instance)
+        {
+
+        }
+
+        /* 1. Update SMTP service settings. */
+        $settingsMap = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=settingsMap'));
+
+        $settingsMap->env->SMTP_HOST         = $smtpSettings->host;
+        $settingsMap->env->SMTP_PORT         = strval($smtpSettings->port);
+        $settingsMap->env->SMTP_USER         = $smtpSettings->user;
+        $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
+        //$settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
+
+        $this->
+
+        /* 2. Update SMTP snippet settings. */
+        $snippetSettings = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=snippetSettings'));
+
+        $snippetSettings->values->mail->smtp->user = $settingsMap->env->SMTP_USER;
+        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+
+        $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
+        if($snippetResult->code != 200)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
+            return false;
+        }
+
+        /* Save LDAP account. */
+        $secretKey = helper::readKey();
+        $settingsMap->env->SMTP_PASS         = openssl_encrypt($settingsMap->env->SMTP_PASS, 'DES-ECB', $secretKey);
+        $settingsMap->env->AUTHENTICATE_CODE = openssl_encrypt($settingsMap->env->AUTHENTICATE_CODE, 'DES-ECB', $secretKey);
+
+        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+
+        $this->loadModel('setting');
+        $this->setting->setItem('system.common.smtp.enabled', true);
+        $this->setting->setItem('system.common.smtp.instanceID', $instance->id);
+        $this->setting->setItem('system.common.smtp.snippetName', $snippetSettings->name);
+        $this->setting->setItem('system.common.smtp.settingsMap', json_encode($settingsMap));
+        $this->setting->setItem('system.common.smtp.snippetSettings', json_encode($snippetSettings));
+
+        $this->loadModel('cne')->updateSnippet();
+
+        return true;
+    }
+
+    /**
+     * Install global SMTP service.
+     *
+     * @param  string $channel
+     * @access public
+     * @return bool
+     */
+    public function installSysSMTP($channel = 'stable')
+    {
+        $settings = fixer::input('post')->get();
+
+        $smtpApp = $this->loadModel('store')->getAppInfoByChart('cne-courier', $channel, false);
+        if(empty($smtpApp))
+        {
+            dao::$errors[] = $this->lang->system->notFoundSMTPApp;
+            return false;
+        }
+
+        $result = $this->loadModel('instance')->installSysSMTP($smtpApp, $settings, 'cne-courier', '', $channel);
+        return $result;
+    }
+
+    /**
+     * Uninstall system SMTP.
+     *
+     * @access public
+     * @return bool
+     */
+    public function uninstallSysSMTP()
+    {
+        $smtpLinked = $this->loadModel('instance')->countSMTP();
+        if($smtpLinked)
+        {
+            dao::$errors[] = $this->lang->system->errors->SMTPLinked;
+            return false;
+        }
+
+        $instanceID = $this->setting->getItem('owner=system&module=common&section=smtp&key=instanceID');
+        $instance   = $this->instance->getByID($instanceID);
+        if($instance)
+        {
+            /* 1. Uninstall QuCheng LDAP service. */
+            if(!$this->loadModel('instance')->uninstall($instance))
+            {
+                dao::$errors[] = $this->lang->system->errors->failToUninstallSMTP;
+                return false;
+            }
+
+            /* 2. Remove snippet config map from CNE. */
+            $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+            $apiParams = new stdclass;
+            $apiParams->name      = 'snippet-smtp-proxy';
+            $apiParams->namespace = $space->k8space;
+
+            $result = $this->loadModel('cne')->removeSnippet($apiParams);
+            if($result->code != 200)
+            {
+                dao::$errors[] = $this->lang->system->errors->failToUninstallQuChengLDAP;
+                return false;
+            }
+        }
+
+        /* 3. Delete SMTP settings in database. */
+        $this->setting->deleteItems('owner=system&module=common&section=smtp&key=enabled');
+        $this->setting->deleteItems('owner=system&module=common&section=smtp&key=instanceID');
+        $this->setting->deleteItems('owner=system&module=common&section=smtp&key=snippetName');
+        $this->setting->deleteItems('owner=system&module=common&section=smtp&key=settingsMap');
+        $this->setting->deleteItems('owner=system&module=common&section=smtp&key=snippetSettings');
+
+        return true;
+    }
+
+    /**
+     * Print edit SMTP button.
+     *
+     * @access public
+     * @return string
+     */
+    public function printEditSMTPBtn()
+    {
+        $this->loadModel('instance');
+
+        $disableEdit = false;
+        $title       = $this->lang->system->SMTP->edit;
+        $toolTips    = '';
+        $count       = $this->instance->countSMTP();
+        if($count)
+        {
+            $disableEdit = true;
+            $title       = $this->lang->system->notices->smtpUsed;
+            $toolTips    = "data-toggle='tooltip' data-placement='bottom'";
+        }
+
+        $buttonHtml = '';
+        $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
+        $buttonHtml .= html::a(inLink('editSMTP'), $this->lang->system->SMTP->edit, '', ($disableEdit ? 'disabled' : '') . " title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
+        $buttonHtml .= "</span>";
+
+        echo $buttonHtml;
+    }
+
+    /**
+     * Print SMTP buttons.
+     *
+     * @param  objevt $smtpInstance
+     * @access public
+     * @return string
+     */
+    public function printSMTPButtons($smtpInstance)
+    {
+        $this->loadModel('instance');
+        $this->app->loadLang('instance');
+
+        $buttonHtml = '';
+
+        $disableStart = !$this->instance->canDo('start', $smtpInstance);
+        $buttonHtml  .= html::commonButton($this->lang->instance->start, "instance-id='{$smtpInstance->id}' title='{$this->lang->instance->start}'" . ($disableStart ? ' disabled ' : ''), "btn-start btn label label-outline label-primary label-lg");
+
+        $title    = $this->lang->instance->stop;
+        $toolTips = '';
+        $count    = $this->instance->countSMTP();
+        if($count)
+        {
+            $title    = $this->lang->system->notices->smtpUsed;
+            $toolTips = "data-toggle='tooltip' data-placement='bottom' runat='server'";
+        }
+
+        $disableStop = $count > 0 || !$this->instance->canDo('stop', $smtpInstance);
+        $buttonHtml .= "<span {$toolTips} title='{$title}'>";
+        $buttonHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$smtpInstance->id}' title='{$title}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-danger label-lg');
+        $buttonHtml .= "</span>";
+
+        echo $buttonHtml;
+
     }
 }
 
