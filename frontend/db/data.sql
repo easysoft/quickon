@@ -220,7 +220,7 @@ CREATE TABLE IF NOT EXISTS `q_navinstance` (
 
 REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'navigation', 'global', 'hideInaccessible', 'off');
 REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'allowAnonymousAccess', 'off');
-REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '2.2.0');
+REPLACE INTO `q_config` (`owner`, `module`, `section`, `key`, `value`) VALUES ('system', 'common', 'global', 'version', '2.3.0');
 
 set sql_mode = '';
 REPLACE INTO `q_company` (`id`, `name`, `admins`) VALUES (1, '', ',qadmin,');
