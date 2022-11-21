@@ -61,7 +61,7 @@
     </form>
   </div>
   <?php endif;?>
-  <?php if(true or isset($cloudApp->features->mail)):?>
+  <?php if(isset($cloudApp->features->mail)):?>
   <div class='panel-heading'>
     <div class='panel-title'><?php echo $lang->system->SMTP->common;?></span></div>
   </div>
