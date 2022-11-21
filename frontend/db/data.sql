@@ -30,6 +30,7 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   `status` char(20) NOT NULL,
   `pinned` enum('0', '1') NOT NULL DEFAULT '0',
   `domain` char(255) NOT NULL,
+  `smtpSnippetName` char(30) NULL,
   `ldapSnippetName` char(30) NULL,
   `ldapSettings` text,
   `dbSettings` text,
