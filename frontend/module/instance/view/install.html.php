@@ -69,7 +69,7 @@
             <td></td>
           </tr>
           <?php endif;?>
-          <?php if(true or isset($cloudApp->features->mail) && $this->loadModel('system')->isSMTPEnabled()):?>
+          <?php if(isset($cloudApp->features->mail) && $this->loadModel('system')->isSMTPEnabled()):?>
           <tr>
             <th class='w-80px'></th>
             <td class='w-250px'>
