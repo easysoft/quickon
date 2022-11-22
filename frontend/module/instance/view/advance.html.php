@@ -40,11 +40,11 @@
         <tr>
           <?php $LDAPInstalled =  $this->system->hasSystemLDAP();?>
           <?php $enableLDAP    =  $instance->ldapSnippetName ? 'true' : '' ;?>
-          <td class='w-100px'><?php echo html::checkbox('enableLDAP', array('true' => $lang->instance->enableLDAP),  $enableLDAP, ($LDAPInstalled ? '' : 'disabled'));?></td>
+          <td class='w-120px'><?php echo html::checkbox('enableLDAP', array('true' => $lang->instance->enableLDAP),  $enableLDAP, ($LDAPInstalled ? '' : 'disabled'));?></td>
           <td colspan='2'>
             <?php if(!$LDAPInstalled):?>
             <?php echo $lang->instance->systemLDAPInactive;?>
-            <?php echo html::a(helper::createLink('system', 'installLDAP'), $lang->instance->toSystemLDAP, '', "class='btn btn-link'");?>
+            <?php echo html::a(helper::createLink('system', 'installLDAP'), $lang->instance->toSystemLDAP, '', "class='btn btn-default'");?>
             <?php endif?>
           </td>
           <td></td>
@@ -71,11 +71,11 @@
         <tr>
           <?php $SMTPInstalled =  $this->system->isSMTPEnabled();?>
           <?php $enableSMTP    =  $instance->smtpSnippetName ? 'true' : '' ;?>
-          <td class='w-100px'><?php echo html::checkbox('enableSMTP', array('true' => $lang->instance->enableSMTP),  $enableSMTP, ($SMTPInstalled ? '' : 'disabled'));?></td>
+          <td class='w-120px'><?php echo html::checkbox('enableSMTP', array('true' => $lang->instance->enableSMTP),  $enableSMTP, ($SMTPInstalled ? '' : 'disabled'));?></td>
           <td colspan='2'>
             <?php if(!$SMTPInstalled):?>
             <?php echo $lang->instance->systemSMTPInactive;?>
-            <?php echo html::a(helper::createLink('system', 'installSMTP'), $lang->instance->toSystemSMTP, '', "class='btn btn-link'");?>
+            <?php echo html::a(helper::createLink('system', 'installSMTP'), $lang->instance->toSystemSMTP, '', "class='btn btn-default'");?>
             <?php endif?>
           </td>
           <td></td>
@@ -103,7 +103,7 @@
         <tr>
           <th><?php echo $item->label;?></th>
           <td>
-            <?php echo html::input($item->name, $item->default, "class='form-control'");?>
+            <?php echo html::input($item->name, $item->default, "class='form-control' placeholder='{$item->label}'");?>
           </td>
           <td></td>
           <td></td>

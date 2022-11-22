@@ -108,6 +108,24 @@ $(function()
 
     $('#customBtn').on('click', function(event)
     {
+        var errors = '';
+        $("#customForm").find("input[type=text]").each(function(index, item)
+        {
+            if($(item).val().trim().length == 0)
+            {
+                errors += $(item).attr('placeholder') + instanceNotices.required + '<br/>';
+            }
+        });
+        if(errors.length > 0)
+        {
+            bootbox.alert(
+            {
+                title:   instanceNotices.error,
+                message: errors,
+            });
+            return;
+        }
+
         bootbox.confirm(instanceNotices.confirmCustom, function(result)
         {
             if(!result) return;
