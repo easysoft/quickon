@@ -246,7 +246,7 @@ $lang->instance->notices['enableSMTPFailed']   = '启用SMTP失败';
 $lang->instance->notices['disableSMTPFailed']  = '禁用SMTP失败';
 $lang->instance->notices['enableSMTPSuccess']  = '启用SMTP成功';
 $lang->instance->notices['disableSMTPSuccess'] = '禁用SMTP成功';
-$lang->instance->notices['confirmCustom']      = '修改自定义配置需要重启服务，确定修改并重启吗？';
+$lang->instance->notices['confirmCustom']      = '修改自定义配置后请手动重启服务以使配置生效。';
 
 $lang->instance->nameChangeTo     = ' %s 修改为 %s  。';
 $lang->instance->versionChangeTo  = ' %s 升级为 %s  。';
