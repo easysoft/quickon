@@ -11,6 +11,17 @@ $(function()
         var enableSMTP   = $('#smtpForm input[type=checkbox]:checked').length > 0;
         var accountRight = $('#verifyAccountBtn').attr('pass') == 'true';
 
+        if(enableSMTP)
+        {
+          $('#smtpForm').find('table').show();
+          $('#smtpForm').find('button[type=submit]').show();
+        }
+        else
+        {
+          $('#smtpForm').find('table').hide();
+          $('#smtpForm').find('button[type=submit]').hide();
+        }
+
         if(enableSMTP && accountRight)
         {
           $('#smtpForm button[type=submit]').attr('disabled', false);
@@ -27,6 +38,13 @@ $(function()
     });
 
     $('#smtpForm input[type=checkbox]').change();
+
+    $('#smtpForm input[type=text]').on('change', function(event)
+    {
+        $('#verifyAccountBtn').attr('pass', 'false');
+        $('#verifyResult').text('');
+        freshSubmitBtn();
+    });
 
     $('#verifyAccountBtn').on('click', function(event)
     {
