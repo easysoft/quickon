@@ -273,7 +273,7 @@ $lang->instance->toSeniorTips       = "<ul class='text-danger'><li>版本升级�
 $lang->instance->errors = new stdclass;
 $lang->instance->errors->domainLength         = '域名长度必须介于2-20字符之间';
 $lang->instance->errors->domainExists         = '域名已被占用，请使用其它域名。';
-$lang->instance->errors->wrongDomainCharacter = '域名只能是英文字母和数字';
+$lang->instance->errors->wrongDomainCharacter = '域名只能是小写英文字母和数字';
 $lang->instance->errors->noAppInfo            = '获取应用数据失败，请稍候重试。';
 $lang->instance->errors->notEnoughResource    = '集群资源不足';
 $lang->instance->errors->notEnoughMemory      = '%s 应用需要 %s 内存，当前可用内存%s ，还需要 %s，请扩充内存资源或卸载其他服务后重试！';
