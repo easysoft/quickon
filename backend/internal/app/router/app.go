@@ -206,6 +206,29 @@ func AppSuspend(c *gin.Context) {
 	renderSuccess(c, http.StatusOK)
 }
 
+func AppRestart(c *gin.Context) {
+	var (
+		body model.AppManageModel
+	)
+
+	_, i, code, err := LookupApp(c, &body)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+
+	err = i.Restart(body.Chart, body.Channel)
+	if err != nil {
+		logger.WithError(err).Error(errStopAppFailed)
+		renderError(c, http.StatusInternalServerError, errors.New(errStopAppFailed))
+		return
+	}
+	logger.Info("restart app successful")
+	renderSuccess(c, http.StatusOK)
+}
+
 // AppStop 设置应用
 // @Summary 设置应用
 // @Tags 应用管理

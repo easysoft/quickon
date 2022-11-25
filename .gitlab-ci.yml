@@ -49,5 +49,6 @@ deploy:
   stage: deploy
   script:
     - kubectl rollout restart deploy/qucheng -n cne-system --kubeconfig=$HOME/.kube/pre.kubeconfig
+    - kubectl rollout restart deploy/cne-api -n cne-system --kubeconfig=$HOME/.kube/pre.kubeconfig
   only:
     - test

@@ -108,6 +108,31 @@ func (i *Instance) Start(chart, channel string, snippetSettings map[string]inter
 	}
 }
 
+func (i *Instance) Restart(chart, channel string) error {
+
+	vals := i.release.Config
+
+	lastValFile, err := writeValuesFile(vals)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(lastValFile)
+
+	uniqueStr := time.Now().Format(time.RFC3339)
+	stopSettings := []string{"env.RESTART_TIME=" + uniqueStr}
+	options := &values.Options{
+		Values:     stopSettings,
+		ValueFiles: []string{lastValFile},
+	}
+
+	h, _ := helm.NamespaceScope(i.namespace)
+	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
+		return err
+	} else {
+		return i.updateSecretMeta(rel)
+	}
+}
+
 func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel, snippetSettings, delSettings map[string]interface{}) error {
 	var (
 		err     error
