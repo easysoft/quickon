@@ -237,6 +237,7 @@ $lang->instance->notices['confirmUpgrade']     = '确定要升级到最新版吗
 $lang->instance->notices['confirmBackup']      = '确定要备份吗？';
 $lang->instance->notices['confirmRestore']     = '本操作将用备份的数据覆盖当前的数据，确定要回滚吗？';
 $lang->instance->notices['confirmDelete']      = '确定要删除该备份数据吗？';
+$lang->instance->notices['adjustMemory']       = '确定要调整中内存吗？';
 $lang->instance->notices['switchLDAP']         = '修改LDAP会重启服务，确定要修改LDAP吗？';
 $lang->instance->notices['enableLDAPFailed']   = '启用LDAP失败';
 $lang->instance->notices['disableLDAPFailed']  = '禁用LDAP失败';
