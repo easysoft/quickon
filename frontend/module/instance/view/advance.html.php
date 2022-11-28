@@ -21,8 +21,7 @@
         <tr>
           <th></th>
           <td class='text-center'>
-            <?php $disableMemBtn = $instance->status == 'running' ? '' : 'disabled';?>
-            <?php echo html::commonButton($lang->instance->saveSetting, "{$disableMemBtn} id='memBtn' instance-id='$instance->id'", 'btn btn-primary'); ?>
+            <?php echo html::commonButton($lang->instance->saveSetting, "id='memBtn' instance-id='$instance->id'", 'btn btn-primary'); ?>
           </td>
           <td></td>
           <td></td>
