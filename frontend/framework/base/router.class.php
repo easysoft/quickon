@@ -2652,6 +2652,21 @@ class baseRouter
     }
 
     /**
+     * Save message to error log file.
+     *
+     * @param  string $message
+     * @access public
+     * @return void
+     */
+    public function saveLog($message)
+    {
+        $errorFile = $this->logRoot . 'php.' . date('Ymd') . '.log.php';
+        if(!is_file($errorFile)) file_put_contents($errorFile, "<?php\n die();\n?>\n");
+
+        file_put_contents($errorFile, $message . "\n", FILE_APPEND);
+    }
+
+    /**
      * 保存错误信息。
      * Save error info.
      *

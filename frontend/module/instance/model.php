@@ -1011,6 +1011,137 @@ class InstanceModel extends model
     }
 
     /**
+     * Save auto backup settings.
+     *
+     * @param  object $instance
+     * @access public
+     * @return bool
+     */
+    public function saveAutoBackupSettings($instance)
+    {
+        /* Cycle days is always is 1 at present. */
+        $settings = fixer::input('post')
+            ->setDefault('backupTime', '1:00')
+            ->setDefault('cycleDays', '1')
+            ->setDefault('keepDays', '10')
+            ->setDefault('autoBackup', array())
+            ->get();
+        $settings->autoBackup = in_array('true', $settings->autoBackup);
+
+        if(!preg_match("/^([0-2][0-9]):([0-5][0-9])$/", $settings->backupTime, $parts))
+        {
+            dao::$errors[] = $this->lang->instance->backup->invalidTime;
+            return false;
+        }
+
+        /* Save cron task. */
+        list($hour, $minute) = explode(':', $settings->backupTime);
+        $cronData = new stdclass;
+        $cronData->m   = intval($minute);
+        $cronData->h   = intval($hour);
+        //$cronData['dom'] = intval($settings->cycleDays);
+        $cronData->dom = '*';
+        $cronData->mon = '*';
+        $cronData->dow = '*';
+
+        $cron = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->eq($instance->id)->fetch();
+        if($cron)
+        {
+            $this->dao->update(TABLE_CRON)->autoCheck()->data($cronData)->where('id')->eq($cron->id)->exec();
+        }
+        else
+        {
+            $cronData['objectID'] = $instance->id;
+            $this->dao->insert(TABLE_CRON)->data($cronData)->exec();
+        }
+        if($this->dao->isError()) return false;
+
+        /* Save instance backup settings. */
+        $this->dao->update(TABLE_INSTANCE)->set('autoBackup')->eq($settings->autoBackup)->set('backupKeepDays')->eq($settings->keepDays)->where('id')->eq($instance->id)->exec();
+        if($this->dao->isError()) return false;
+
+        return true;
+    }
+
+    /**
+     * Get auto backup settings.
+     *
+     * @param  int    $instnaceID
+     * @access public
+     * @return object
+     */
+    public function getAutoBackupSettings($instanceID)
+    {
+        $instance = $this->getByID($instanceID);
+
+        $cron = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->eq($instanceID)->limit(1)->fetch();
+        if(!$cron) $cron = new stdclass;
+
+        $hour   = substr('0' . zget($cron, 'h', '1'), -2, 2);
+        $minute = substr('0' . zget($cron, 'm', '00'), -2, 2);
+
+        $settings = new stdclass;
+        $settings->backupTime = "{$hour}:{$minute}";
+        $settings->autoBackup = boolval(zget($instance, 'autoBackup', false));
+        $settings->keepDays   = intval(zget($instance, 'backupKeepDays', 10));
+        $settings->cycleDays  = 1; /* Cycle days is always is 1 at present. */
+
+        return $settings;
+    }
+
+    /**
+     * Do auto backup cron task.
+     *
+     * @access public
+     * @return void
+     */
+    public function autoBackup()
+    {
+        /* Load all instances that is enable auto backup. */
+        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('autoBackup')->eq(true)->fetchAll('id');
+
+        $crons = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->in(array_keys($instanceList))->fetchAll('objectID');
+
+        $nowHour  = intval(date('H'));
+        $nowMiute = intval(date('i'));
+        foreach($crons as $cron)
+        {
+            $hour   = intval($cron->h);
+            $minute = intval($cron->m);
+            if(!($nowHour == $hour and $nowMiute == $minute)) continue;
+
+            // 1. create new backup of instance.
+            $system = new stdclass;
+            $system->account = 'auto';  // The string 'auto' should be kept for System.
+            $instance = zget($instanceList, $cron->objectID);
+            $this->backup($instance, $system);
+
+            // 2. delete expired backup. Get backup list of instance, then check every backup is expired or not.
+            $backupList = $this->backupList($instance);
+            foreach($backupList as $backup)
+            {
+                if($backup->creator != 'auto') continue;
+
+                $deadline = intval($backup->create_time) + $instance->keepDays * 24 * 3600;
+                if($deadline < time()) $this->deleteBackup($instance, $backup->name);
+            }
+        }
+    }
+
+    /**
+     * Delete backup.
+     *
+     * @param  object $instance
+     * @param  string $backupName
+     * @access public
+     * @return bool
+     */
+    public function deleteBackup($instance, $backupName)
+    {
+        return $this->cne->deleteBackup($instance, $backupName);
+    }
+
+    /**
      * Backup instance.
      *
      * @param  object $instance

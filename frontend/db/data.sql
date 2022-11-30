@@ -34,6 +34,8 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   `ldapSnippetName` char(30) NULL,
   `ldapSettings` text,
   `dbSettings` text,
+  `autoBackup` tinyint(1) NOT NULL DEFAULT 0,
+  `backupKeepDays` int unsigned NOT NULL DEFAULT 1,
   `env` text,
   `createdBy` char(30) NOT NULL,
   `createdAt` datetime NOT NULL,
