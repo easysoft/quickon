@@ -67,6 +67,7 @@ $config->openMethods[] = 'instance.apidetail';
 $config->openMethods[] = 'instance.apibrowse';
 $config->openMethods[] = 'instance.apiinstall';
 $config->openMethods[] = 'instance.deleteexpireddemoinstance';
+$config->openMethods[] = 'instance.autobackup';
 $config->openMethods[] = 'backup.ajaxupgradestatus';
 
 $config->anonymousOpenMethods = array();
@@ -89,6 +90,7 @@ $config->notIframeMethods[] = 'file.download';
 $config->notIframeMethods[] = 'misc.status';
 $config->notIframeMethods[] = 'backup.ajaxupgradestatus';
 $config->notIframeMethods[] = 'instance.deleteexpireddemoinstance';
+$config->notIframeMethods[] = 'instance.autobackup';
 
 /* Define the tables. */
 define('TABLE_USER',          '`' . $config->db->prefix . 'user`');
@@ -101,6 +103,7 @@ define('TABLE_USERGROUP',     '`' . $config->db->prefix . 'usergroup`');
 define('TABLE_SPACE',         '`' . $config->db->prefix . 'space`');
 define('TABLE_INSTANCE',      '`' . $config->db->prefix . 'instance`');
 define('TABLE_BACKUP',        '`' . $config->db->prefix . 'backup`');
+define('TABLE_CRON',          '`' . $config->db->prefix . 'cron`');
 
 define('TABLE_ACTION',        '`' . $config->db->prefix . 'action`');
 define('TABLE_FILE',          '`' . $config->db->prefix . 'file`');

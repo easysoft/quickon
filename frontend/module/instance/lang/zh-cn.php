@@ -84,6 +84,19 @@ $lang->instance->backup->lastRestore         = '上次回滚';
 $lang->instance->backup->restoreDate         = '回滚时间';
 $lang->instance->backup->latestBackupAt      = '上次备份时间';
 $lang->instance->backup->backupBeforeRestore = '回滚前建议您先备份!';
+$lang->instance->backup->enableAutoBackup    = '开启自动备份';
+$lang->instance->backup->autoBackup          = '自动备份';
+$lang->instance->backup->cycleDays           = '备份周期';
+$lang->instance->backup->backupTime          = '备份时间';
+$lang->instance->backup->keepDays            = '保留天数';
+$lang->instance->backup->keepDayRange        = '请输入1~30之间的整数';
+$lang->instance->backup->firstStartTime      = '%s 首次备份将于%s 执行';
+$lang->instance->backup->invalidTime         = '无效的时间';
+
+$lang->instance->backup->cycleList[1]  = '每日';
+
+$lang->instance->backup->operators = array();
+$lang->instance->backup->operators['auto'] = '自动备份';
 
 $lang->instance->backup->statusList = array();
 $lang->instance->backup->statusList['success']        = '成功';

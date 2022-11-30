@@ -356,7 +356,7 @@ class cneModel extends model
      * @param  object $instance
      * @param  object $backup
      * @access public
-     * @return mixed
+     * @return object
      */
     public function backupStatus($instance, $backup)
     {
@@ -376,7 +376,7 @@ class cneModel extends model
      *
      * @param  object $instance
      * @access public
-     * @return mixed
+     * @return object
      */
     public function backupList($instance)
     {
@@ -391,13 +391,36 @@ class cneModel extends model
     }
 
     /**
+     * (not Finish: waiting cne api) Delete backup.
+     *
+     * @param  object $instance
+     * @param  string $backupName
+     * @access public
+     * @return bool
+     */
+    public function deleteBackup($instance, $backupName)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster     = '';
+        $apiParams->namespace   = $instance->spaceData->k8space;
+        $apiParams->name        = $instance->k8name;
+        $apiParams->backup_name = $backupName;
+        $apiParams->channel     = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
+
+        //$apiUrl = "/api/cne/app/backup/delete";
+        //return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+
+        return true;
+    }
+
+    /**
      * Backup service in k8s cluster.
      *
      * @param  object $instance
      * @param  object $backupName
      * @param  string $account
      * @access public
-     * @return mixed
+     * @return object
      */
     public function restore($instance, $backupName, $account)
     {
@@ -484,7 +507,7 @@ class cneModel extends model
      *
      * @param  object $apiParams
      * @access public
-     * @return mixed
+     * @return object
      */
     public function updateSnippet($apiParams)
     {
@@ -707,7 +730,7 @@ class cneModel extends model
      *
      * @param  object  $instance
      * @access public
-     * @return mixed
+     * @return object
      */
     public function appDBList($instance)
     {
@@ -775,7 +798,7 @@ class cneModel extends model
      * @param  string  $namespace
      * @param  boolean $global true: global database
      * @access public
-     * @return mixed
+     * @return object
      */
     public function allDBList($global = true, $namespace = 'default')
     {

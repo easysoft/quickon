@@ -59,12 +59,14 @@ class instance extends control
         if($tab == 'backup') $backupList = $this->instance->backupList($instance);
         if(count($backupList)) $latestBackup = reset($backupList);
 
+        $hasRestoreLog = false;
         foreach($backupList as $backup)
         {
             $backup->latest_restore_time   = 0;
             $backup->latest_restore_status = '';
             foreach($backup->restores as $restore)
             {
+                $hasRestoreLog = true;
                 if($restore->create_time > $backup->latest_restore_time)
                 {
                     $backup->latest_restore_time   = $restore->create_time;
@@ -93,12 +95,62 @@ class instance extends control
         $this->view->currentResource = $currentResource;
         $this->view->customItems     = $customItems;
         $this->view->backupList      = $backupList;
+        $this->view->hasRestoreLog   =  $hasRestoreLog;
         $this->view->latestBackup    = $latestBackup;
         $this->view->dbList          = $dbList;
         $this->view->tab             = $tab;
         $this->view->pager           = $pager;
 
         $this->display();
+    }
+
+    /**
+     * Save auto backup settings.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function backupSettings($instanceID)
+    {
+        $instance = $this->instance->getByID($instanceID);
+
+        if($_POST)
+        {
+            $this->instance->saveAutoBackupSettings($instance);
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $backupSettings = $this->instance->getAutoBackupSettings($instanceID);
+
+            $startTime = strtotime($backupSettings->backupTime);
+            if($startTime < time()) $startTime = strtotime("+1 day $backupSettings->backupTime");
+
+            $startBackupMessage = sprintf($this->lang->instance->backup->firstStartTime, $instance->name, date('Y-m-d H:i:s', $startTime));
+            return $this->send(array('result' => 'success', 'message' => $startBackupMessage, 'locate' => $this->inLink('view', "id=$instance->id")));
+            return print(js::closeModal('parent', 'this', "function(){alert('$startBackupMessage');}"));
+        }
+
+        $backupSettings = $this->instance->getAutoBackupSettings($instanceID);
+
+        $this->view->title          = $this->lang->instance->backup->autoBackup;
+        $this->view->instance       = $instance;
+        $this->view->backupSettings = $backupSettings;
+
+        $this->display();
+    }
+
+    /**
+     * Cron task of auto backup.
+     *
+     * @param  string $key
+     * @access public
+     * @return void
+     */
+    public function autoBackup($key)
+    {
+        if($key != helper::readKey()) return;
+
+        $this->instance->autoBackup();
     }
 
     /**
