@@ -125,9 +125,13 @@ class instance extends control
             $startTime = strtotime($backupSettings->backupTime);
             if($startTime < time()) $startTime = strtotime("+1 day $backupSettings->backupTime");
 
-            $startBackupMessage = sprintf($this->lang->instance->backup->firstStartTime, $instance->name, date('Y-m-d H:i:s', $startTime));
-            return $this->send(array('result' => 'success', 'message' => $startBackupMessage, 'locate' => $this->inLink('view', "id=$instance->id")));
-            return print(js::closeModal('parent', 'this', "function(){alert('$startBackupMessage');}"));
+            if($backupSettings->autoBackup)
+            {
+                $startBackupMessage = sprintf($this->lang->instance->backup->firstStartTime, $instance->name, date('Y-m-d H:i:s', $startTime));
+                return $this->send(array('result' => 'success', 'message' => $startBackupMessage));
+            }
+
+            return $this->send(array('result' => 'success', 'message' => $this->lang->instance->backup->disableAutoBackup));
         }
 
         $backupSettings = $this->instance->getAutoBackupSettings($instanceID);

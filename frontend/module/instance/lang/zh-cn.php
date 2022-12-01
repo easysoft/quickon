@@ -92,6 +92,7 @@ $lang->instance->backup->keepDays            = '保留天数';
 $lang->instance->backup->keepDayRange        = '请输入1~30之间的整数';
 $lang->instance->backup->firstStartTime      = '%s 首次备份将于%s 执行';
 $lang->instance->backup->invalidTime         = '无效的时间';
+$lang->instance->backup->disableAutoBackup   = '自动备份已关闭';
 
 $lang->instance->backup->cycleList[1]  = '每日';
 
