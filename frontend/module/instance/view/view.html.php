@@ -43,10 +43,10 @@
       <?php include 'baseinfo.html.php';?>
     </div>
     <div class="tab-pane <?php echo $tab == 'backup' ? 'active' : '';?>" id="backup">
-      <?php include 'backup.html.php';?>
+      <?php if($tab == 'backup') include 'backup.html.php';?>
     </div>
     <div class="tab-pane <?php echo $tab == 'advance' ? 'active' : '';?>" id="advance">
-      <?php include 'advance.html.php';?>
+      <?php if($tab == 'advance') include 'advance.html.php';?>
     </div>
   </div>
 </div>
