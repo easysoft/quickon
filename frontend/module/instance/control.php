@@ -148,9 +148,14 @@ class instance extends control
      */
     public function autoBackup($key)
     {
+        $this->app->saveLog(date('Y-m-d H:i:s') . ' Key:'. $key);
+        $systemKey = helper::readKey();
+        $this->app->saveLog(date('Y-m-d H:i:s') . 'system Key:'. $systemKey);
+
         if($key != helper::readKey()) return;
 
         $this->instance->autoBackup();
+        echo 'auto backup';
     }
 
     /**
