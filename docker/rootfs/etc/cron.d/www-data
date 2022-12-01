@@ -1,4 +1,3 @@
-SHELL=bash
 PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/usr/sbin:/bin:/sbin
 
 * * * * * curl http://localhost/instance-deleteExpiredDemoInstance.html

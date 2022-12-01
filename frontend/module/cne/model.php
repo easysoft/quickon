@@ -409,7 +409,7 @@ class cneModel extends model
 
         //$apiUrl = "/api/cne/app/backup/delete";
         //return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
-
+        //$this->app->saveLog("Delete backup instance id: $instance->id"); // Debug codes.
         return true;
     }
 

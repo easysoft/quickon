@@ -24,7 +24,10 @@
         <th class='w-150px'><?php echo $lang->instance->backup->restoreDate;?></th>
         <th class='w-150px'><?php echo $lang->instance->backup->dbStatus;?></th>
         <?php endif;?>
-        <th class="w-150px actions"><?php echo $lang->instance->backup->action;?></th>
+        <th class="w-150px actions">
+          <?php echo $lang->instance->backup->action;?>
+          <?php echo html::a("javascript: parent.window.location.reload();", $lang->refresh, '', "class='btn'");?>
+        </th>
       </tr>
     </thead>
     <tbody>

@@ -1051,7 +1051,7 @@ class InstanceModel extends model
         }
         else
         {
-            $cronData['objectID'] = $instance->id;
+            $cronData->objectID = $instance->id;
             $this->dao->insert(TABLE_CRON)->data($cronData)->exec();
         }
         if($this->dao->isError()) return false;
@@ -1097,10 +1097,10 @@ class InstanceModel extends model
      */
     public function autoBackup()
     {
-        /* Load all instances that is enable auto backup. */
         $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('autoBackup')->eq(true)->fetchAll('id');
 
-        $crons = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->in(array_keys($instanceList))->fetchAll('objectID');
+        /* Load all crons that instance is enable auto backup. */
+        $crons = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->in(array_keys($instanceList))->fetchAll();
 
         $nowHour  = intval(date('H'));
         $nowMiute = intval(date('i'));
@@ -1113,8 +1113,12 @@ class InstanceModel extends model
             // 1. create new backup of instance.
             $system = new stdclass;
             $system->account = 'auto';  // The string 'auto' should be kept for System.
+
             $instance = zget($instanceList, $cron->objectID);
+            $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
             $this->backup($instance, $system);
+
+            $this->app->saveLog("Auto backup instance(id: {$instance->id}) at ". date('H-m-d H:i:s'));
 
             // 2. delete expired backup. Get backup list of instance, then check every backup is expired or not.
             $backupList = $this->backupList($instance);
@@ -1122,7 +1126,8 @@ class InstanceModel extends model
             {
                 if($backup->creator != 'auto') continue;
 
-                $deadline = intval($backup->create_time) + $instance->keepDays * 24 * 3600;
+                $deadline = intval($backup->create_time) + $instance->backupKeepDays * 24 * 3600;
+                //$deadline = intval($backup->create_time) + 300; // Debug codes: delete backup if it life is older 5 minuts.
                 if($deadline < time()) $this->deleteBackup($instance, $backup->name);
             }
         }
