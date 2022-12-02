@@ -1,6 +1,7 @@
 <div class='panel'>
   <div class='panel-heading'>
     <div class='btn-toolbar pull-right'>
+    <?php echo html::a(".", $lang->refresh, '', "class='btn'");?>
     <?php echo html::a(helper::createLink('instance', 'backupSettings', "id={$instance->id}", '', true), $lang->instance->backup->autoBackup, '', "class='iframe btn btn-primary' title='{$lang->instance->backup->autoBackup}' data-width='520' data-app='space'");?>
     <?php $this->instance->printBackupBtn($instance);?>
     </div>
@@ -26,7 +27,6 @@
         <?php endif;?>
         <th class="w-150px actions">
           <?php echo $lang->instance->backup->action;?>
-          <?php echo html::a("javascript: parent.window.location.reload();", $lang->refresh, '', "class='btn'");?>
         </th>
       </tr>
     </thead>
