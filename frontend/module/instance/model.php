@@ -21,6 +21,7 @@ class InstanceModel extends model
     {
         parent::__construct();
         $this->loadModel('cne');
+        $this->loadModel('action');
     }
 
     /**
@@ -199,12 +200,12 @@ class InstanceModel extends model
         if($enableSMTP)
         {
             $this->dao->update(TABLE_INSTANCE)->set('smtpSnippetName')->eq($snippetName)->where('id')->eq($instance->id)->exec();
-            $this->loadModel('action')->create('instance', $instance->id, 'enableSMTP');
+            $this->action->create('instance', $instance->id, 'enableSMTP');
         }
         else
         {
             $this->dao->update(TABLE_INSTANCE)->set('smtpSnippetName')->eq('')->where('id')->eq($instance->id)->exec();
-            $this->loadModel('action')->create('instance', $instance->id, 'disableSMTP');
+            $this->action->create('instance', $instance->id, 'disableSMTP');
         }
 
         return true;
@@ -243,12 +244,12 @@ class InstanceModel extends model
         if($enableLDAP)
         {
             $this->dao->update(TABLE_INSTANCE)->set('ldapSnippetName')->eq($snippetName)->where('id')->eq($instance->id)->exec();
-            $this->loadModel('action')->create('instance', $instance->id, 'enableLDAP');
+            $this->action->create('instance', $instance->id, 'enableLDAP');
         }
         else
         {
             $this->dao->update(TABLE_INSTANCE)->set('ldapSnippetName')->eq('')->where('id')->eq($instance->id)->exec();
-            $this->loadModel('action')->create('instance', $instance->id, 'disableLDAP');
+            $this->action->create('instance', $instance->id, 'disableLDAP');
         }
 
         return true;
@@ -272,7 +273,7 @@ class InstanceModel extends model
         $success = $this->cne->updateConfig($instnace, $settings);
         if($success)
         {
-            $this->loadModel('action')->create('instance', $instnace->id, 'adjustMemory', helper::formatKB(intval($size / 1024)));
+            $this->action->create('instance', $instnace->id, 'adjustMemory', helper::formatKB(intval($size / 1024)));
             return true;
         }
 
@@ -795,7 +796,7 @@ class InstanceModel extends model
             return false;
         }
 
-        $this->loadModel('action')->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'app' => $app)));
+        $this->action->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'app' => $app)));
 
         $instance->status     = 'initializing';
         $instance->dbSettings = json_encode($apiParams->settings_map);
@@ -934,7 +935,7 @@ class InstanceModel extends model
         $logExtra->data->oldAppName = $instance->appName;
         $logExtra->data->newAppName = $seniorApp->alias;
 
-        $this->loadModel('action')->create('instance', $instance->id, 'tosenior', '', json_encode($logExtra));
+        $this->action->create('instance', $instance->id, 'tosenior', '', json_encode($logExtra));
 
         return true;
     }
@@ -1060,6 +1061,7 @@ class InstanceModel extends model
         $this->dao->update(TABLE_INSTANCE)->set('autoBackup')->eq($settings->autoBackup)->set('backupKeepDays')->eq($settings->keepDays)->where('id')->eq($instance->id)->exec();
         if($this->dao->isError()) return false;
 
+        $this->action->create('instance', $instance->id, 'saveAutoBackupSettings', '', json_encode(array('data' => $settings)));
         return true;
     }
 
@@ -1118,7 +1120,7 @@ class InstanceModel extends model
             $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
             $this->backup($instance, $system);
 
-            $this->app->saveLog("Auto backup instance(id: {$instance->id}) at ". date('H-m-d H:i:s'));
+            $this->action->create('instance', $instance->id, 'autoBackup');
 
             // 2. delete expired backup. Get backup list of instance, then check every backup is expired or not.
             $backupList = $this->backupList($instance);
@@ -1128,7 +1130,11 @@ class InstanceModel extends model
 
                 $deadline = intval($backup->create_time) + $instance->backupKeepDays * 24 * 3600;
                 //$deadline = intval($backup->create_time) + 300; // Debug codes: delete backup if it life is older 5 minuts.
-                if($deadline < time()) $this->deleteBackup($instance, $backup->name);
+                if($deadline < time())
+                {
+                    $this->deleteBackup($instance, $backup->name);
+                    $this->action->create('instance', $instance->id, 'deleteExpiredBackup', '', json_encode(array('data' => $backup)));
+                }
             }
         }
     }
@@ -1569,26 +1575,33 @@ class InstanceModel extends model
         $logText = $log->actorName . ' ' . sprintf($action, $instance->name, $log->comment);
 
         $extra = json_decode($log->extra);
-        if(!empty($extra))
+        if(empty($extra) or !isset($extra->data))
         {
-            if($log->action == 'editname' && isset($extra->data))
-            {
+            echo $logText;
+            return;
+        }
+
+        switch($log->action)
+        {
+            case 'editname':
                 $oldName  = zget($extra->data, 'oldName', '');
                 $newName  = zget($extra->data, 'newName', '');
                 $logText .= ', ' . sprintf($this->lang->instance->nameChangeTo, $oldName, $newName);
-            }
-            elseif($log->action == 'upgrade' && isset($extra->data))
-            {
+                break;
+            case 'upgrade':
                 $oldVersion = zget($extra->data, 'oldVersion', '');
                 $newVersion = zget($extra->data, 'newVersion', '');
                 $logText   .= ', ' . sprintf($this->lang->instance->versionChangeTo, $oldVersion, $newVersion);
-            }
-            elseif($log->action == 'tosenior' && isset($extra->data))
-            {
+                break;
+            case 'tosenior':
                 $oldAppName = zget($extra->data, 'oldAppName', '');
                 $newAppName = zget($extra->data, 'newAppName', '');
                 $logText   .= ', ' . sprintf($this->lang->instance->toSeniorSerial, $oldAppName, $newAppName);
-            }
+                break;
+            case 'saveautobackupsettings':
+                $enableAutoBackup = zget($extra->data, 'autoBackup', 0);
+                $logText         .= ': ' . ($enableAutoBackup ? $this->lang->instance->enableAutoBackup : $this->lang->instance->disableAutoBackup);
+                break;
         }
 
         echo $logText;

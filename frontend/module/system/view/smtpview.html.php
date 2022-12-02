@@ -35,7 +35,12 @@
         </tr>
         <tr>
           <th><?php echo $lang->system->SMTP->password;?></th>
-          <td><?php echo zget($smtpSettings, 'SMTP_PASS', '');?></td>
+          <td>
+            <div class='w-250px input-group'>
+              <?php echo html::password('smtp_password', zget($smtpSettings, 'SMTP_PASS', ''), "readonly class='form-control'");?>
+              <span class='input-group-addon'><button id='smtpPassBtn'><i class='icon icon-eye-off'></i></button></span>
+            </div>
+          </td>
         </tr>
         <tr>
           <th><?php echo $lang->system->SMTP->host;?></th>

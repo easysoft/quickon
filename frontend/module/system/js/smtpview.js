@@ -1,5 +1,18 @@
 $(function()
 {
+    $('#smtpPassBtn').on('click', function(event){
+        var inputTyep = $('#smtp_password').attr('type');
+        if(inputTyep == 'text'){
+            $('#smtp_password').attr('type', 'password');
+            $('#smtpPassBtn').find('.icon').removeClass('icon-eye').addClass('icon-eye-off');
+        }
+        else
+        {
+            $('#smtp_password').attr('type', 'text');
+            $('#smtpPassBtn').find('.icon').addClass('icon-eye').removeClass('icon-eye-off');
+        }
+    });
+
     $('.btn-start').on('click', function(event)
     {
         bootbox.confirm(instanceNotices.confirmStart, function(result)
