@@ -638,7 +638,8 @@ class instance extends control
         $postData = fixer::input('post')->get();
 
         $settings = new stdclass;
-        $settings->settings_map = new stdclass;
+        $settings->force_restart = true;
+        $settings->settings_map  = new stdclass;
         $settings->settings_map->custom = $postData;
 
         if($this->cne->updateConfig($instance, $settings))

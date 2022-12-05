@@ -131,6 +131,7 @@ class cneModel extends model
         $apiParams['chart']     = $instance->chart;
         $apiParams['version']   = $instance->version;
 
+        if(isset($settings->force_restart))     $apiParams['force_restart']     = $settings->force_restart;
         if(isset($settings->settings_map))      $apiParams['settings_map']      = $settings->settings_map;
         if(isset($settings->settings_snippets)) $apiParams['settings_snippets'] = $settings->settings_snippets;
 
@@ -407,10 +408,11 @@ class cneModel extends model
         $apiParams->backup_name = $backupName;
         $apiParams->channel     = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
 
-        //$apiUrl = "/api/cne/app/backup/delete";
-        //return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
-        //$this->app->saveLog("Delete backup instance id: $instance->id"); // Debug codes.
-        return true;
+        $apiUrl = "/api/cne/app/backup/remove";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
     }
 
     /**
