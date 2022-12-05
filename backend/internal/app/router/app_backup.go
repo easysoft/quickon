@@ -92,6 +92,46 @@ func AppRestoreStatus(c *gin.Context) {
 	renderJson(c, http.StatusOK, data)
 }
 
+func AppBackupRemove(c *gin.Context) {
+	var (
+		query model.AppBackupModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	err = i.RemoveBackup(query.BackupName)
+	if err != nil {
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderSuccess(c, http.StatusOK)
+}
+
+func AppRestoreRemove(c *gin.Context) {
+	var (
+		query model.AppRestoreModel
+	)
+
+	_, i, code, err := LookupApp(c, &query)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	err = i.RemoveRestore(query.RestoreName)
+	if err != nil {
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	renderSuccess(c, http.StatusOK)
+}
+
 func AppBackupList(c *gin.Context) {
 	var (
 		query model.AppModel

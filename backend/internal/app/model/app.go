@@ -22,6 +22,7 @@ type AppCreateOrUpdateModel struct {
 	Settings         []StringSetting        `json:"settings"`
 	SettingsMap      map[string]interface{} `json:"settings_map"`
 	SettingsSnippets []string               `json:"settings_snippets"`
+	ForceRestart     bool                   `json:"force_restart"`
 }
 
 type StringSetting struct {

@@ -169,6 +169,11 @@ func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
 	return data, nil
 }
 
+func (i *Instance) RemoveBackup(backupName string) error {
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+	return i.Ks.Clients.Cne.QuchengV1beta1().Backups(ns).Delete(i.Ctx, backupName, metav1.DeleteOptions{})
+}
+
 func (i *Instance) CreateRestore(backupName string, username string) (interface{}, error) {
 	currTime := time.Now()
 	restoreName := fmt.Sprintf("%s-restore-%d", i.name, currTime.Unix())
@@ -221,4 +226,9 @@ func (i *Instance) GetDbList() []*quchengv1beta1.Db {
 		i.logger.WithError(err).Error("find dbs failed")
 	}
 	return l
+}
+
+func (i *Instance) RemoveRestore(restoreName string) error {
+	ns := viper.GetString(constant.FlagRuntimeNamespace)
+	return i.Ks.Clients.Cne.QuchengV1beta1().Restores(ns).Delete(i.Ctx, restoreName, metav1.DeleteOptions{})
 }

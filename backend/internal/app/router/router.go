@@ -76,10 +76,12 @@ func Config(r *gin.Engine) {
 		api.GET("/app/backups", AppBackupList)
 		api.GET("/app/backup/status", AppBackupStatus)
 		api.GET("/app/backup/detail")
+		api.POST("/app/backup/remove", AppBackupRemove)
 
 		api.POST("/app/restore", AppRestoreCreate)
 		api.GET("/app/restore")
 		api.GET("/app/restore/status", AppRestoreStatus)
+		api.POST("/app/restore/remove", AppRestoreRemove)
 
 		api.GET("/component/gdb", GDBList)
 		api.GET("/component/gdb/validation", GDBValidation)
