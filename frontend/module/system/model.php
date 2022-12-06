@@ -581,6 +581,59 @@ class systemModel extends model
     }
 
     /**
+     * Get customized domain settings.
+     *
+     * @access public
+     * @return object
+     */
+    public function getDomainSettings()
+    {
+        $settings = new stdclass;
+
+        $settings->customDomain = $this->setting->getItem('owner=system&module=common&section=domain&key=customDomain');
+        $settings->https        = $this->setting->getItem('owner=system&module=common&section=domain&key=https');
+        $settings->publicKey    = $this->setting->getItem('owner=system&module=common&section=domain&key=publicKey');
+        $settings->privateKey   = $this->setting->getItem('owner=system&module=common&section=domain&key=privateKey');
+
+        return $settings;
+    }
+
+    /**
+     * Save customized somain settings.
+     *
+     * @access public
+     * @return void
+     */
+    public function saveDomainSettings()
+    {
+        $settings = fixer::input('post')
+            ->setDefault('customDomain', '')
+            ->setDefault('https', 'false')
+            ->setIf(is_array($this->post->https) && in_array('true', $this->post->https), 'https', 'true')
+            ->setDefault('publicKey', '')
+            ->setDefault('privateKey', '')
+            ->get();
+
+        if(!validater::checkREG($settings->customDomain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
+        {
+            dao::$errors[] = $this->lang->system->errors->invalidDomain;
+            return;
+        }
+
+        $this->dao->from('system')->data($settings)
+            ->check('customDomain', 'notempty');
+            //->check('publicKey', '', )
+            //->check('privateKey', '', );
+
+        if(dao::isError()) return;
+
+        $this->setting->setItem('system.common.domain.customDomain', zget($settings, 'customDomain', ''));
+        $this->setting->setItem('system.common.domain.https', zget($settings, 'https', 'false'));
+        $this->setting->setItem('system.common.domain.publicKey', zget($settings, 'publicKey', ''));
+        $this->setting->setItem('system.common.domain.privateKey', zget($settings, 'privateKey', ''));
+    }
+
+    /**
      * Print edit SMTP button.
      *
      * @access public

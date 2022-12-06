@@ -359,6 +359,43 @@ class system extends control
     }
 
     /**
+     * Config customer's domain.
+     *
+     * @access public
+     * @return void
+     */
+    public function configDomain()
+    {
+        if($_POST)
+        {
+            $this->system->saveDomainSettings();
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::$errors));
+
+            return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->saveDomainSuccess, 'locate' => $this->inlink('domainView') ));
+        }
+
+        $this->view->title          = $this->lang->system->domain->common;
+        $this->view->domainSettings = $this->system->getDomainSettings();
+
+        $this->display();
+    }
+
+    /**
+     * Domain settings view.
+     *
+     * @access public
+     * @return void
+     */
+    public function domainView()
+    {
+
+        $this->view->title          = $this->lang->system->domain->common;
+        $this->view->domainSettings = $this->system->getDomainSettings();
+
+        $this->display();
+    }
+
+    /**
      * Verify SMTP account by ajax.
      *
      * @access public
