@@ -67,6 +67,26 @@ $lang->system->SMTP->host     = 'SMTP服务器';
 $lang->system->SMTP->port     = 'SMTP端口';
 $lang->system->SMTP->save     = '保存';
 
+/* Domain */
+$lang->system->customDomain = '新域名';
+$lang->system->publicKey    = '公钥';
+$lang->system->privateKey   = '私钥';
+
+$lang->system->domain = new stdclass;
+$lang->system->domain->common        = '域名管理';
+$lang->system->domain->editDomain    = '修改域名配置';
+$lang->system->domain->config        = '配置域名和证书';
+$lang->system->domain->currentDomain = '当前域名';
+$lang->system->domain->oldDomain     = '旧域名';
+$lang->system->domain->newDomain     = '新域名';
+$lang->system->domain->publicKey     = '公钥';
+$lang->system->domain->privateKey    = '私钥';
+$lang->system->domain->uploadCert    = '上传证书（仅支持泛域名证书）';
+
+$lang->system->domain->notReuseOldDomain = '使用自定义域名后无法改回默认域名';
+$lang->system->domain->setDNS            = '建议修改域名前请先进行DNS解析，';
+$lang->system->domain->dnsHelperLink     = '点击查看帮助文档';
+
 $lang->system->notices = new stdclass;
 $lang->system->notices->attention             = '注意';
 $lang->system->notices->noLDAP                = '找不到LDAP配置数据';
@@ -82,6 +102,7 @@ $lang->system->notices->smtpAuthCode          = '有些邮箱要填写单独申�
 $lang->system->notices->smtpUsed              = '已经有服务关联了SMTP';
 $lang->system->notices->verifySMTPSuccess     = '校验成功！';
 $lang->system->notices->pleaseCheckSMTPInfo   = '校验失败！请检查用户名和密码是否正确';
+$lang->system->notices->saveDomainSuccess     = '保存域名配置成功！';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB                 = '找不到该数据库';
@@ -103,3 +124,5 @@ $lang->system->errors->failToUninstallSMTP        = '卸载SMTP失败';
 $lang->system->errors->verifySMTPFailed           = '校验SMTP失败';
 $lang->system->errors->notFoundSMTPApp            = '找不到SMTP代理应用';
 $lang->system->errors->notFoundSMTPService        = '找不到SMTP代理服务';
+$lang->system->errors->domainIsRequired           = '必须填写域名';
+$lang->system->errors->invalidDomain              = '无效的域名';

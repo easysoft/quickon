@@ -9,7 +9,7 @@ import (
 	"encoding/base64"
 	"fmt"
 
-	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+	quchengv1beta1 "github.com/easysoft/quickon-api/qucheng/v1beta1"
 	"github.com/sirupsen/logrus"
 	"k8s.io/apimachinery/pkg/util/intstr"
 

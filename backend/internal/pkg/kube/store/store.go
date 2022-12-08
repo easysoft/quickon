@@ -10,10 +10,10 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
-	quchengclientset "github.com/easysoft/quikon-api/client/clientset/versioned"
-	quchenginf "github.com/easysoft/quikon-api/client/informers/externalversions"
-	quchenglister "github.com/easysoft/quikon-api/client/listers/qucheng/v1beta1"
-	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+	quchengclientset "github.com/easysoft/quickon-api/client/clientset/versioned"
+	quchenginf "github.com/easysoft/quickon-api/client/informers/externalversions"
+	quchenglister "github.com/easysoft/quickon-api/client/listers/qucheng/v1beta1"
+	quchengv1beta1 "github.com/easysoft/quickon-api/qucheng/v1beta1"
 
 	_ "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
 	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"

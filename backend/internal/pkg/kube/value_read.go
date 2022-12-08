@@ -13,7 +13,7 @@ import (
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/store"
 
-	"github.com/easysoft/quikon-api/qucheng/v1beta1"
+	"github.com/easysoft/quickon-api/qucheng/v1beta1"
 	v1 "k8s.io/api/core/v1"
 )
 

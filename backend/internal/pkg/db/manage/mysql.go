@@ -8,7 +8,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+	quchengv1beta1 "github.com/easysoft/quickon-api/qucheng/v1beta1"
 	_ "github.com/go-sql-driver/mysql"
 )
 
