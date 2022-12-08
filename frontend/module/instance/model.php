@@ -15,7 +15,7 @@ class InstanceModel extends model
      * Construct method: load CNE model, and set primaryDomain.
      *
      * @access public
-     * @return mixed
+     * @return void
      */
     public function __construct()
     {
@@ -256,6 +256,92 @@ class InstanceModel extends model
     }
 
     /**
+     * Count old domain.
+     *
+     * @access public
+     * @return int
+     */
+    public function countOldDomain()
+    {
+        /* REPLACE(domain, .$sysDomain, '') used for special case: new domain is a.com and old domain is b.a.com, domain of instance is c.b.a.com, */
+        $sysDomain = $this->loadModel('cne')->sysDomain();
+        $result = $this->dao->select('count(*) as qty')->from(TABLE_INSTANCE)
+            ->where('deleted')->eq(0)
+            ->andWhere("REPLACE(domain, '.$sysDomain', '')")->like("%.%")
+            ->fetch();
+
+        return $result->qty;
+    }
+
+    /**
+     * Update all instances domain by customized domain.
+     *
+     * @access public
+     * @return void
+     */
+    public function updateInstancesDomain()
+    {
+        /* REPLACE(domain, .$sysDomain, '') used for special case: new domain is a.com and old domain is b.a.com, domain of instance is c.b.a.com,  new domain of instance should be c.a.com */
+        $sysDomain = $this->loadModel('cne')->sysDomain();
+        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('deleted')->eq(0)
+            ->andWhere("REPLACE(domain, '.$sysDomain', '')")->like("%.%")
+            ->fetchAll('id');
+
+        $spaces = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->in(array_column($instanceList, 'space'))->fetchAll('id');
+
+        foreach($instanceList as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
+
+        foreach($instanceList as $instance) $this->updateDomain($instance);
+    }
+
+    /**
+     * Update domain.
+     *
+     * @param  object $instance
+     * @access public
+     * @return bool
+     */
+    public function updateDomain($instance)
+    {
+        /* If domain of instance is same with system domain, not need to update. */
+        $sysDomain = $this->cne->sysDomain();
+        if(stripos(str_replace($sysDomain, '', $instance->domain), '.') === false) return true;
+
+        $expiredDomains = $this->loadModel('setting')->getItem('owner=system&module=common&section=domain&key=expiredDomain');
+        $expiredDomains = json_decode($expiredDomains, true);
+        if(empty($expiredDomains)) return true;
+
+        $leftDomain = '';
+        foreach($expiredDomains as $expiredDomain)
+        {
+            if(stripos($instance->domain, $expiredDomain) === false) continue;
+
+            $leftDomain = trim(str_replace($expiredDomain, '', $instance->domain), '.'); // Pick left domain.
+            /* If left domain like a.b, skip it, because left domain must be letters without dot(.) . */
+            if(stripos($leftDomain, '.') !== false) continue; // Does not pick left domain.
+
+            $newDomain = $leftDomain . '.' . $sysDomain;
+
+            $settings = new stdclass;
+            $settings->settings_map = new stdclass;
+            $settings->settings_map->ingress = new stdclass;
+            $settings->settings_map->ingress->enabled = true;
+            $settings->settings_map->ingress->host    = $newDomain; //$this->fullDomain($leftDomain);
+
+            $settings->settings_map->global = new stdclass;
+            $settings->settings_map->global->ingress = $settings->settings_map->ingress;
+
+            if($this->cne->updateConfig($instance, $settings))
+            {
+                $this->dao->update(TABLE_INSTANCE)->set('domain')->eq($newDomain)->where('id')->eq($instance->id)->exec();
+            }
+        }
+
+        return true;
+    }
+
+    /**
      * Update instance memory size.
      *
      * @param  object $instnace
@@ -319,7 +405,7 @@ class InstanceModel extends model
      *
      * @param  int    $id
      * @access public
-     * @return mixed
+     * @return void
      */
     public function softDeleteByID($id)
     {
@@ -358,7 +444,7 @@ class InstanceModel extends model
      * @param  int    $length
      * @param  int    $triedTimes
      * @access public
-     * @return mixed
+     * @return string
      */
     public function randThirdDomain($length = 4, $triedTimes = 0)
     {
@@ -375,11 +461,11 @@ class InstanceModel extends model
      *
      * @param  string $thirdDomain
      * @access public
-     * @return mixed
+     * @return string
      */
     public function fullDomain($thirdDomain)
     {
-        return $thirdDomain . '.' . $this->config->CNE->app->domain;
+        return $thirdDomain . '.' . $this->cne->sysDomain();
     }
 
     /**

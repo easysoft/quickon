@@ -12,9 +12,6 @@ $config->db->password = getenv('MYSQL_PASSWORD');
 $config->db->prefix   = 'q_';
 $config->webRoot      = getWebRoot();
 
-
-$config->CNE->app->domain = getenv('APP_DOMAIN');
-
 $config->CNE->api->host   = getenv('CNE_API_HOST');
 if(getenv('CNE_API_TOKEN'))         $config->CNE->api->token   = getenv('CNE_API_TOKEN');
 if(getenv('CLOUD_DEFAULT_CHANNEL')) $config->CNE->api->channel = getenv('CLOUD_DEFAULT_CHANNEL');

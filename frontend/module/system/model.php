@@ -581,15 +581,13 @@ class systemModel extends model
     }
 
     /**
-     * Get customized domain settings.
-     *
+     * Get customized domain settings. *
      * @access public
      * @return object
      */
     public function getDomainSettings()
     {
         $settings = new stdclass;
-
         $settings->customDomain = $this->setting->getItem('owner=system&module=common&section=domain&key=customDomain');
         $settings->https        = $this->setting->getItem('owner=system&module=common&section=domain&key=https');
         $settings->publicKey    = $this->setting->getItem('owner=system&module=common&section=domain&key=publicKey');
@@ -614,23 +612,73 @@ class systemModel extends model
             ->setDefault('privateKey', '')
             ->get();
 
+        $this->dao->from('system')->data($settings)
+            ->check('customDomain', 'notempty');
+            //->check('publicKey', '', )
+            //->check('privateKey', '', );
+        if(dao::isError()) return;
+
         if(!validater::checkREG($settings->customDomain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
         {
             dao::$errors[] = $this->lang->system->errors->invalidDomain;
             return;
         }
 
-        $this->dao->from('system')->data($settings)
-            ->check('customDomain', 'notempty');
-            //->check('publicKey', '', )
-            //->check('privateKey', '', );
+        $oldSettings = $this->getDomainSettings();
+        if($settings->customDomain == $oldSettings->customDomain)
+        {
+            dao::$errors[] = $this->lang->system->errors->newDomainIsSameWithOld;
+            return;
+        }
 
-        if(dao::isError()) return;
+        if(stripos($settings->customDomain, 'haogs.cn') !== false)
+        {
+            dao::$errors[] = $this->lang->system->errors->forbiddenOriginalDomain;
+            return;
+        }
+
+        $expiredDomain   = $this->setting->getItem('owner=system&module=common&section=domain&key=expiredDomain');
+        $expiredDomain   = empty($expiredDomain ) ? array() : json_decode($expiredDomain, true);
+        $expiredDomain[] = zget($settings, 'customDomain', '');
+        $this->setting->setItem('system.common.domain.expiredDomain', json_encode($expiredDomain));
 
         $this->setting->setItem('system.common.domain.customDomain', zget($settings, 'customDomain', ''));
         $this->setting->setItem('system.common.domain.https', zget($settings, 'https', 'false'));
         $this->setting->setItem('system.common.domain.publicKey', zget($settings, 'publicKey', ''));
         $this->setting->setItem('system.common.domain.privateKey', zget($settings, 'privateKey', ''));
+
+        $this->loadModel('instance')->updateInstancesDomain();
+
+        $this->updateMinioDomain();
+    }
+
+    /**
+     * Update minio domain.
+     *
+     * @access public
+     * @return void
+     */
+    public function updateMinioDomain()
+    {
+        $this->loadModel('cne');
+        $sysDomain = $this->cne->sysDomain();
+
+        $minioInstance = new stdclass;
+        $minioInstance->k8name    = 'cne-operator';
+        $minioInstance->chart     = 'minio';
+        $minioInstance->spaceData = new stdclass;
+        $minioInstance->spaceData->k8space = 'cne-system';
+
+        $settings = new stdclass;
+        $settings->settings_map = new stdclass;
+        $settings->settings_map->ingress = new stdclass;
+        $settings->settings_map->ingress->enabled = true;
+        $settings->settings_map->ingress->host    = 's3.' . $sysDomain;
+
+        //$settings->settings_map->global = new stdclass;
+        //$settings->settings_map->global->ingress = $settings->settings_map->ingress;
+
+        $this->cne->updateConfig($minioInstance, $settings);
     }
 
     /**
