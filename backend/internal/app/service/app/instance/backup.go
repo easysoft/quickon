@@ -11,7 +11,7 @@ import (
 
 	"github.com/spf13/viper"
 
-	quchengv1beta1 "github.com/easysoft/quikon-api/qucheng/v1beta1"
+	quchengv1beta1 "github.com/easysoft/quickon-api/qucheng/v1beta1"
 	velerov1 "github.com/vmware-tanzu/velero/pkg/apis/velero/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -171,7 +171,23 @@ func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
 
 func (i *Instance) RemoveBackup(backupName string) error {
 	ns := viper.GetString(constant.FlagRuntimeNamespace)
-	return i.Ks.Clients.Cne.QuchengV1beta1().Backups(ns).Delete(i.Ctx, backupName, metav1.DeleteOptions{})
+	currTime := time.Now()
+	delName := fmt.Sprintf("%s-delete-%d", i.name, currTime.Unix())
+	delReq := quchengv1beta1.DeleteBackupRequest{
+		ObjectMeta: metav1.ObjectMeta{
+			Name: delName,
+			Labels: map[string]string{
+				"app":                    i.ChartName,
+				"release":                i.release.Name,
+				constant.LabelBackupName: backupName,
+			},
+		},
+		Spec: quchengv1beta1.DeleteBackupRequestSpec{
+			BackupName: backupName,
+		},
+	}
+	_, err := i.Ks.Clients.Cne.QuchengV1beta1().DeleteBackupRequests(ns).Create(i.Ctx, &delReq, metav1.CreateOptions{})
+	return err
 }
 
 func (i *Instance) CreateRestore(backupName string, username string) (interface{}, error) {
