@@ -54,6 +54,30 @@ class cneModel extends model
     }
 
     /**
+     * Update platform domain.
+     *
+     * @param  string $domain
+     * @access public
+     * @return bool
+     */
+    public function updatePlatformDomain($domain)
+    {
+        $instance = new stdclass;
+        $instance->k8name = 'qucheng';
+        $instance->chart  = 'qucheng';
+
+        $instance->spaceData = new stdclass;
+        $instance->spaceData->k8space = 'cne-system';
+
+        $settings = new stdclass;
+        $settings->settings_map = new stdclass;
+        $settings->settings_map->env = new stdclass;
+        $settings->settings_map->env->APP_DOMAIN = $domain;
+
+        return $this->updateConfig($instance, $settings);
+    }
+
+    /**
      * Upgrade platform.
      *
      * @param  string $toVersion
@@ -129,8 +153,8 @@ class cneModel extends model
         $apiParams['name']      = $instance->k8name;
         $apiParams['channel']   = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
         $apiParams['chart']     = $instance->chart;
-        $apiParams['version']   = $instance->version;
 
+        if(isset($instance->version))           $apiParams['version']           = $instance->version;
         if(isset($settings->force_restart))     $apiParams['force_restart']     = $settings->force_restart;
         if(isset($settings->settings_map))      $apiParams['settings_map']      = $settings->settings_map;
         if(isset($settings->settings_snippets)) $apiParams['settings_snippets'] = $settings->settings_snippets;
@@ -166,6 +190,20 @@ class cneModel extends model
         if(isset($account->username) && $account->username && isset($account->password) && $account->password) return $account;
 
         return null;
+    }
+
+    /**
+     * Get suffix domain.
+     *
+     * @access public
+     * @return string
+     */
+    public function sysDomain()
+    {
+        $customDomain = $this->loadModel('setting')->getItem('owner=system&module=common&section=domain&key=customDomain');
+        if($customDomain) return $customDomain;
+
+        return  getenv('APP_DOMAIN') ? getenv('APP_DOMAIN') : $this->config->CNE->app->domain;
     }
 
     /**

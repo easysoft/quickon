@@ -21,7 +21,7 @@
     <div class='main-header'>
       <h2><?php echo $lang->system->domain->common;?></h2>
       <div class='smtp-button-group btn-toolbar pull-right'>
-      <?php echo html::a($this->inLink('configDomain'), $lang->system->domain->editDomain, '', "class='btn btn-primary'");?>
+      <?php echo html::a($this->inLink('editDomain'), $lang->system->domain->editDomain, '', "class='btn btn-primary'");?>
       </div>
     </div>
     <table class='table table-form'>

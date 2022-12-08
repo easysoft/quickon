@@ -366,18 +366,49 @@ class system extends control
      */
     public function configDomain()
     {
+        $domainSettings = $this->system->getDomainSettings();
+        if($domainSettings->customDomain) return print(js::locate($this->inLink('domainView')));
+
+        return print(js::locate($this->inLink('editDomain')));
+    }
+
+    /**
+     * Edit customer's domain.
+     *
+     * @access public
+     * @return void
+     */
+    public function editDomain()
+    {
+        $this->loadModel('instance');
+
         if($_POST)
         {
+            session_write_close();
             $this->system->saveDomainSettings();
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::$errors));
 
-            return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->saveDomainSuccess, 'locate' => $this->inlink('domainView') ));
+            return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->updateDomainSuccess, 'locate' => $this->inlink('domainView')));
         }
 
         $this->view->title          = $this->lang->system->domain->common;
         $this->view->domainSettings = $this->system->getDomainSettings();
 
         $this->display();
+    }
+
+    /**
+     * Show progress of updating domains.
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxUpdatingDomainProgress()
+    {
+        session_write_close();
+
+        $oldDomainQty  = $this->loadModel('instance')->countOldDomain();
+        return print(sprintf($this->lang->system->domain->updatingProgress, $oldDomainQty));
     }
 
     /**
@@ -388,7 +419,6 @@ class system extends control
      */
     public function domainView()
     {
-
         $this->view->title          = $this->lang->system->domain->common;
         $this->view->domainSettings = $this->system->getDomainSettings();
 
