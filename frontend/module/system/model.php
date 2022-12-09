@@ -676,9 +676,6 @@ class systemModel extends model
         $settings->settings_map->minio->ingress->enabled = true;
         $settings->settings_map->minio->ingress->host    = 's3.' . $sysDomain;
 
-        //$settings->settings_map->global = new stdclass;
-        //$settings->settings_map->global->ingress = $settings->settings_map->ingress;
-
         $this->cne->updateConfig($minioInstance, $settings);
     }
 
