@@ -665,15 +665,16 @@ class systemModel extends model
 
         $minioInstance = new stdclass;
         $minioInstance->k8name    = 'cne-operator';
-        $minioInstance->chart     = 'minio';
+        $minioInstance->chart     = 'cne-operator';
         $minioInstance->spaceData = new stdclass;
         $minioInstance->spaceData->k8space = 'cne-system';
 
         $settings = new stdclass;
         $settings->settings_map = new stdclass;
-        $settings->settings_map->ingress = new stdclass;
-        $settings->settings_map->ingress->enabled = true;
-        $settings->settings_map->ingress->host    = 's3.' . $sysDomain;
+        $settings->settings_map->minio = new stdclass;
+        $settings->settings_map->minio->ingress = new stdclass;
+        $settings->settings_map->minio->ingress->enabled = true;
+        $settings->settings_map->minio->ingress->host    = 's3.' . $sysDomain;
 
         //$settings->settings_map->global = new stdclass;
         //$settings->settings_map->global->ingress = $settings->settings_map->ingress;
