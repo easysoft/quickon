@@ -638,7 +638,7 @@ class systemModel extends model
         }
 
         $expiredDomain   = $this->setting->getItem('owner=system&module=common&section=domain&key=expiredDomain');
-        $expiredDomain   = empty($expiredDomain ) ? array() : json_decode($expiredDomain, true);
+        $expiredDomain   = empty($expiredDomain ) ? array(getenv('APP_DOMAIN')) : json_decode($expiredDomain, true);
         $expiredDomain[] = zget($settings, 'customDomain', '');
         $this->setting->setItem('system.common.domain.expiredDomain', json_encode($expiredDomain));
 
