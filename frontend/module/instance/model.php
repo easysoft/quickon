@@ -1171,7 +1171,7 @@ class InstanceModel extends model
         $settings = new stdclass;
         $settings->backupTime = "{$hour}:{$minute}";
         $settings->autoBackup = boolval(zget($instance, 'autoBackup', false));
-        $settings->keepDays   = intval(zget($instance, 'backupKeepDays', 10));
+        $settings->keepDays   = intval(zget($instance, 'backupKeepDays', 7));
         $settings->cycleDays  = 1; /* Cycle days is always is 1 at present. */
 
         return $settings;

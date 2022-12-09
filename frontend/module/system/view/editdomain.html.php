@@ -33,12 +33,12 @@
             <td></td>
           </tr>
           <tr>
-            <th><?php echo $lang->system->domain->newDomain;?></th>
+            <th class='new-domain-label'><?php echo $lang->system->domain->newDomain;?></th>
             <td class='required w-400px'>
               <?php echo html::input('customDomain', zget($domainSettings, 'customDomain', ''), "class='form-control' placeholder=''");?>
               <div class='with-padding'>
                 <span><?php echo $lang->system->domain->setDNS;?></span>
-                <?php echo html::a('#', $lang->system->domain->dnsHelperLink, '', "class='text-primary'");?>
+                <?php echo html::a('https://www.qucheng.com/book/Installation-manual/47.html', $lang->system->domain->dnsHelperLink, '_blank', "class='text-primary'");?>
               </div>
             </td>
             <td></td>
