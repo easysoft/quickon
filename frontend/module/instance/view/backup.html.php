@@ -1,5 +1,6 @@
 <div class='panel'>
   <div class='panel-heading'>
+    <span class='text-blue'><?php echo $lang->instance->backup->keepBackupBySystem;?></span>
     <div class='btn-toolbar pull-right'>
     <?php echo html::a(".", $lang->refresh, '', "class='btn'");?>
     <?php echo html::a(helper::createLink('instance', 'backupSettings', "id={$instance->id}", '', true), $lang->instance->backup->autoBackup, '', "class='iframe btn btn-primary' title='{$lang->instance->backup->autoBackup}' data-width='520' data-app='space'");?>
@@ -35,14 +36,14 @@
     <tr>
       <td><span data-toggle='tooltip' data-placement='bottom' title='<?php echo date('Y-m-d H:i:s', $backup->create_time);?>'><?php echo date('Y-m-d', $backup->create_time);?></span></td>
       <td><?php echo zget($lang->instance->backup->operators, $backup->username, $backup->username);?></td>
-      <td><?php echo isset($backup->backup_details->db[0]) ? zget($lang->instance->backup->statusList, strtolower(zget($backup->backup_details->db[0], 'status'))) : '';?></td>
+      <td><?php echo zget($lang->instance->backup->statusList, strtolower($backup->status));?></td>
       <?php $backupSize = isset($backup->backup_details->db[0]) ? intval(zget($backup->backup_details->db[0], 'size', 0)) : 0;?>
       <?php $backupSize += isset($backup->backup_details->volume[0]) ? intval(zget($backup->backup_details->volume[0], 'doneBytes', 0)) : 0;?>
       <td><?php echo helper::formatKB($backupSize / 1024);?></td>
       <?php if($hasRestoreLog):?>
       <td>
         <span data-toggle='tooltip' data-placement='bottom' title='<?php echo $backup->latest_restore_time ?  date('Y-m-d H:i:s', $backup->latest_restore_time) : '';?>'>
-          <?php echo $backup->latest_restore_time ?  date('Y-m-d', $backup->latest_restore_time) : '';?>
+        <?php echo $backup->latest_restore_time ?  date('Y-m-d', $backup->latest_restore_time) : '';?>
         </span>
       </td>
       <td><?php echo $backup->latest_restore_status ?  zget($lang->instance->restore->statusList, $backup->latest_restore_status, '') : '';?></td>

@@ -1185,7 +1185,11 @@ class InstanceModel extends model
      */
     public function autoBackup()
     {
-        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('autoBackup')->eq(true)->fetchAll('id');
+        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('deleted')->eq(0)
+            ->andWhere('autoBackup')->eq(true)
+            ->andWhere('status')->eq('running')
+            ->fetchAll('id');
 
         /* Load all crons that instance is enable auto backup. */
         $crons = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->in(array_keys($instanceList))->fetchAll();
@@ -1198,7 +1202,7 @@ class InstanceModel extends model
             $minute = intval($cron->m);
             if(!($nowHour == $hour and $nowMiute == $minute)) continue;
 
-            // 1. create new backup of instance.
+            /* 1. create new backup of instance. */
             $system = new stdclass;
             $system->account = 'auto';  // The string 'auto' should be kept for System.
 
@@ -1208,14 +1212,25 @@ class InstanceModel extends model
 
             $this->action->create('instance', $instance->id, 'autoBackup');
 
-            // 2. delete expired backup. Get backup list of instance, then check every backup is expired or not.
+            /* 2. Pick latest successful backup recorder. */
+            $latestBackup = null;
             $backupList = $this->backupList($instance);
             foreach($backupList as $backup)
             {
-                if($backup->creator != 'auto') continue;
+                if(empty($latestBackup) or $backup->status == 'completed' && $backup->create_time > $latestBackup->create_time)
+                {
+                    $latestBackup = $backup;
+                }
+            }
+
+            /* 3. delete expired backup. Get backup list of instance, then check every backup is expired or not.*/
+            foreach($backupList as $backup)
+            {
+                if($backup->creator != 'auto') continue; // Only delete data madde by auto backup.
+                if($latestBackup && $latestBackup->name == $backup->name) continue; // Keep latest successful backup.
 
                 $deadline = intval($backup->create_time) + $instance->backupKeepDays * 24 * 3600;
-                //$deadline = intval($backup->create_time) + 300; // Debug codes: delete backup if it life is older 5 minuts.
+                //$deadline = intval($backup->create_time) + 300; // Debug codes: delete backup if it's life is older 5 minuts.
                 if($deadline < time())
                 {
                     $this->deleteBackup($instance, $backup->name);
