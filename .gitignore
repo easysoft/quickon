@@ -29,3 +29,4 @@ backup/
 _output/
 .build/
 test/
+.history

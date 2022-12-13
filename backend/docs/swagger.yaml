@@ -7,6 +7,8 @@ definitions:
         type: string
       cluster:
         type: string
+      force_restart:
+        type: boolean
       name:
         type: string
       namespace:
@@ -81,6 +83,19 @@ definitions:
         type: string
     required:
     - name
+    type: object
+  model.ReqSystemQLB:
+    properties:
+      cluster:
+        type: string
+      ippool:
+        type: string
+      name:
+        type: string
+      namespace:
+        type: string
+    required:
+    - namespace
     type: object
   model.StringSetting:
     properties:
@@ -549,4 +564,82 @@ paths:
       summary: 删除命名空间
       tags:
       - 命名空间
+  /api/cne/system/qlb/config:
+    get:
+      consumes:
+      - application/json
+      description: 配置负载均衡
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: namespace
+        in: query
+        name: namespace
+        type: string
+      - description: cluster
+        in: query
+        name: cluster
+        type: string
+      - description: name
+        in: query
+        name: name
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 配置负载均衡
+      tags:
+      - 系统
+    post:
+      consumes:
+      - application/json
+      description: 配置负载均衡
+      parameters:
+      - description: jwtToken
+        in: header
+        name: Authorization
+        type: string
+      - description: staticToken
+        in: header
+        name: X-Auth-Token
+        type: string
+      - description: meta
+        in: body
+        name: body
+        required: true
+        schema:
+          $ref: '#/definitions/model.ReqSystemQLB'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/router.response2xx'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/router.response5xx'
+      security:
+      - ApiKeyAuth: []
+      summary: 配置负载均衡
+      tags:
+      - 系统
 swagger: "2.0"
