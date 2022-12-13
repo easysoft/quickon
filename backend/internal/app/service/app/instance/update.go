@@ -176,7 +176,7 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	}
 
 	if body.ForceRestart {
-		settings = append(settings, generateRestartSetting())
+		settings = append(settings, generateRestartSetting()...)
 	}
 
 	options := &values.Options{
