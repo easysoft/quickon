@@ -7,14 +7,15 @@ package router
 import (
 	"crypto/tls"
 	"fmt"
-	"github.com/gin-gonic/gin"
-	"github.com/pkg/errors"
-	"github.com/spf13/viper"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 	"net"
 	"net/http"
 	"net/smtp"
 	"strings"
+
+	"github.com/gin-gonic/gin"
+	"github.com/pkg/errors"
+	"github.com/spf13/viper"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
@@ -229,19 +230,22 @@ func ConfigLoadBalancer(c *gin.Context) {
 	logger := getLogger(ctx)
 	logger = logger.WithField("qlb", body.Name)
 	// 校验是否合法
+	logger.Infof("valid ip pool: %s(%s)", body.Name, body.IPPool)
 	if strings.Contains(body.IPPool, "-") {
 		pools := strings.Split(body.IPPool, "-")
 		if len(pools) != 2 {
-			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool"))
+			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool failed, like 192.168.1.1-192.168.1.100"))
 			return
 		}
 		if net.ParseIP(pools[0]) == nil || net.ParseIP(pools[1]) == nil {
-			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool"))
+			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool failed, ip is invalid"))
 			return
 		}
-	} else if net.ParseIP(body.IPPool) == nil {
-		renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool"))
-		return
+	} else {
+		if _, _, err := net.ParseCIDR(body.IPPool); err != nil {
+			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool failed: %v, like 192.168.1.1/24", err))
+			return
+		}
 	}
 
 	if err = service.Components(ctx, body.Cluster).UpdateQLBConfig(body.Name, body.Namespace, body.IPPool); err != nil {
