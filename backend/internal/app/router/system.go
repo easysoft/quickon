@@ -7,6 +7,8 @@ package router
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/pkg/errors"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 	"net"
 	"net/http"
 	"net/smtp"
@@ -181,13 +183,17 @@ func UploadTLS(c *gin.Context) {
 	}
 
 	if err = t.Valid(); err != nil {
-		renderError(c, http.StatusBadRequest, err)
+		renderError(c, translateError(err), err)
 		return
 	}
 
+	err = service.Apps(ctx, "", viper.GetString(constant.FlagRuntimeNamespace)).UploadTLS(body.Name, body.CertificatePem, body.PrivateKeyPem)
+	if err != nil {
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
 	renderJson(c, http.StatusOK, t.GetCertInfo())
 
-	service.Apps(ctx, "", viper.GetString(constant.FlagRuntimeNamespace)).UploadTLS(body.Name, body.CertificatePem, body.PrivateKeyPem)
 }
 
 func ReadTLSInfo(c *gin.Context) {
@@ -207,8 +213,21 @@ func ReadTLSInfo(c *gin.Context) {
 
 	info, err := service.Apps(ctx, "", viper.GetString(constant.FlagRuntimeNamespace)).ReadTLSCertInfo(query.Name)
 	if err != nil {
-		renderError(c, http.StatusInternalServerError, err)
+		renderError(c, translateError(err), err)
 		return
 	}
 	renderJson(c, http.StatusOK, info)
+}
+
+func translateError(e error) int {
+	var code = retcode.DefaultCode
+	if errors.Is(e, utiltls.ErrUnmatchedCertificate) {
+		code = retcode.UnmatchedCertificate
+	} else if errors.Is(e, utiltls.ErrExpiredCertificate) {
+		code = retcode.ExpiredCertificate
+	} else if errors.Is(e, utiltls.ErrIncompleteCertificateChain) {
+		code = retcode.IncompleteCertificateChain
+	}
+
+	return int(code)
 }
