@@ -15,3 +15,10 @@ type ReqSmtpAuth struct {
 	User string `json:"user"`
 	Pass string `json:"pass"`
 }
+
+// ReqSystemQLB 负载均衡配置
+type ReqSystemQLB struct {
+	QueryNamespace
+	Name   string `json:"name"`
+	IPPool string `json:"ippool"`
+}

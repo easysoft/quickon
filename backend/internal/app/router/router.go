@@ -102,6 +102,8 @@ func Config(r *gin.Engine) {
 		api.POST("/system/update", SystemUpdate)
 		api.GET("/system/app-full-list", FindAllApps)
 		api.POST("/system/smtp/validator", AuthMailServer)
+		api.GET("/system/qlb/config", GetLoadBalancer)
+		api.POST("/system/qlb/config", ConfigLoadBalancer)
 
 		api.GET("/snippet", ListSnippets)
 		api.GET("/snippet/read", ReadSnippet)
