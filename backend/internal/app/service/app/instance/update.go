@@ -118,7 +118,7 @@ func (i *Instance) Restart(chart, channel string) error {
 	}
 	defer os.Remove(lastValFile)
 
-	stopSettings := []string{generateRestartSetting()}
+	stopSettings := generateRestartSetting()
 	options := &values.Options{
 		Values:     stopSettings,
 		ValueFiles: []string{lastValFile},
@@ -132,9 +132,12 @@ func (i *Instance) Restart(chart, channel string) error {
 	}
 }
 
-func generateRestartSetting() string {
+func generateRestartSetting() []string {
 	uniqueStr := time.Now().Format(time.RFC3339)
-	return "global.env.RESTART_TIME=" + uniqueStr
+	return []string{
+		"global.env.RESTART_TIME=" + uniqueStr,
+		"env.RESTART_TIME=null",
+	}
 }
 
 func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel, snippetSettings, delSettings map[string]interface{}) error {
