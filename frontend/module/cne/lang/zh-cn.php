@@ -16,5 +16,10 @@ $lang->CNE->statusIcons['stopped']  = "<i class='icon icon-5x icon-off status-gr
 $lang->CNE->statusIcons['unknown']  = "<i class='icon icon-5x icon-alert-sign status-orange'></i>";
 
 $lang->CNE->errorList = array();
-$lang->CNE->errorList[400] = '不能包含特殊字符';
-$lang->CNE->errorList[404] = '服务不存在';
+//$lang->CNE->errorList[400]   = '不能包含特殊字符';
+$lang->CNE->errorList[400]   = '请求集群接口失败';
+$lang->CNE->errorList[404]   = '服务不存在';
+$lang->CNE->errorList[41001] = '证书过期';
+$lang->CNE->errorList[41002] = '证书不匹配';
+$lang->CNE->errorList[41003] = '证书链不完整';
+$lang->CNE->errorList[41004] = '私钥与证书不匹配';

@@ -590,8 +590,8 @@ class systemModel extends model
         $settings = new stdclass;
         $settings->customDomain = $this->setting->getItem('owner=system&module=common&section=domain&key=customDomain');
         $settings->https        = $this->setting->getItem('owner=system&module=common&section=domain&key=https');
-        $settings->publicKey    = $this->setting->getItem('owner=system&module=common&section=domain&key=publicKey');
-        $settings->privateKey   = $this->setting->getItem('owner=system&module=common&section=domain&key=privateKey');
+        $settings->certPem      = ''; //
+        $settings->certKey      = ''; //
 
         return $settings;
     }
@@ -608,19 +608,32 @@ class systemModel extends model
             ->setDefault('customDomain', '')
             ->setDefault('https', 'false')
             ->setIf(is_array($this->post->https) && in_array('true', $this->post->https), 'https', 'true')
-            ->setDefault('publicKey', '')
-            ->setDefault('privateKey', '')
+            ->setDefault('certPem', '')
+            ->setDefault('certKey', '')
             ->get();
 
         $this->dao->from('system')->data($settings)
-            ->check('customDomain', 'notempty');
-            //->check('publicKey', '', )
-            //->check('privateKey', '', );
+            ->check('customDomain', 'notempty')
+            ->checkIf($settings->https == 'true', 'certPem', 'notempty')
+            ->checkIf($settings->https == 'true', 'certKey', 'notempty');
         if(dao::isError()) return;
 
         if(!validater::checkREG($settings->customDomain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
         {
             dao::$errors[] = $this->lang->system->errors->invalidDomain;
+            return;
+        }
+
+
+        /* Upload Certificate to CNE. */
+        $cert = new stdclass;
+        $cert->name            = 'tls-' . str_replace('.', '-', $settings->customDomain);
+        $cert->certificate_pem = $settings->certPem;
+        $cert->private_key_pem = $settings->certKey;
+        $certResult = $this->loadModel('cne')->uploadCert($cert);
+        if($certResult->code != 200)
+        {
+            dao::$errors[] = $result->message;
             return;
         }
 
@@ -644,8 +657,6 @@ class systemModel extends model
 
         $this->setting->setItem('system.common.domain.customDomain', zget($settings, 'customDomain', ''));
         $this->setting->setItem('system.common.domain.https', zget($settings, 'https', 'false'));
-        $this->setting->setItem('system.common.domain.publicKey', zget($settings, 'publicKey', ''));
-        $this->setting->setItem('system.common.domain.privateKey', zget($settings, 'privateKey', ''));
 
         $this->loadModel('instance')->updateInstancesDomain();
 
@@ -677,6 +688,52 @@ class systemModel extends model
         $settings->settings_map->minio->ingress->host    = 's3.' . $sysDomain;
 
         $this->cne->updateConfig($minioInstance, $settings);
+    }
+
+    /**
+     * Get SLB settings.
+     *
+     * @access public
+     * @return object
+     */
+    public function getSLBSettings()
+    {
+        $settings = new stdclass;
+        $settings->name   = $this->setting->getItem('owner=system&module=common&section=slb&key=name');
+        $settings->ippool = $this->setting->getItem('owner=system&module=common&section=slb&key=ippool');
+
+        return $settings;
+    }
+
+    /**
+     * Save SLB settings.
+     *
+     * @access public
+     * @return void
+     */
+    public function saveSLBSettings()
+    {
+        $settings = fixer::input('post')
+            ->setDefault('ippool', '')
+            ->get();
+
+        //validater::checkIP('');
+        //if(dao::isError())
+
+        $settings->name      = 'qlb-quickon';
+        $settings->namespace = 'cne-system';
+
+        //a($settings);
+
+        $success = $this->loadModel('cne')->configQLB($settings);
+        if(!$success)
+        {
+            dao::$errors[] = $this->lang->system->errors->failedToConfigSLB;
+            return;
+        }
+
+        $this->setting->setItem('system.common.slb.name', zget($settings, 'name', ''));
+        $this->setting->setItem('system.common.slb.ippool', zget($settings, 'ippool', ''));
     }
 
     /**

@@ -238,7 +238,6 @@ class system extends control
 
         $ossAccount = $this->cne->getDefaultAccount($minioInstance, '', 'minio');
         $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
-
         $this->lang->switcherMenu = $this->system->getOssSwitcher();
 
         $this->view->title      = $this->lang->system->oss->common;
@@ -419,8 +418,66 @@ class system extends control
      */
     public function domainView()
     {
+        $domainSettings = $this->system->getDomainSettings();
+        $certName       = str_replace('.', '-', $domainSettings->customDomain);
+        $cert           = $this->loadModel('cne')->certInfo($certName);
+
         $this->view->title          = $this->lang->system->domain->common;
-        $this->view->domainSettings = $this->system->getDomainSettings();
+        $this->view->domainSettings = $domainSettings;
+        $this->view->cert           = $cert;
+
+        $this->display();
+    }
+
+    /**
+     * Config Server Load Balancing.
+     *
+     * @access public
+     * @return void
+     */
+    public function configSLB()
+    {
+        $slbSettings = $this->system->getSLBSettings();
+        if($slbSettings->name) return print(js::locate($this->inLink('slbView')));
+
+        return print(js::locate($this->inLink('editSLB')));
+    }
+
+    /**
+     * Edit SLB.
+     *
+     * @access public
+     * @return void
+     */
+    public function editSLB()
+    {
+        if($_POST)
+        {
+            $this->system->saveSLBSettings();
+            if(dao::isError())
+            {
+                return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+            }
+
+            return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->configSLBSuccess, 'locate' => $this->inLink('SLBView')));
+        }
+
+        $this->view->title       = $this->lang->system->SLB->common;
+        $this->view->SLBSettings = $this->system->getSLBSettings();
+
+        $this->display();
+    }
+
+    /**
+     * SLB View.
+     *
+     * @access public
+     * @return void
+     */
+    public function SLBView()
+    {
+        $this->view->title       = $this->lang->system->SLB->common;
+        $this->view->slbSettings = $this->system->getSLBSettings();
 
         $this->display();
     }
@@ -487,7 +544,7 @@ class system extends control
         $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $secretKey);
         if(!$password) $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt); // Secret key was createdAt field value less v2.2.
 
-        $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $ldapInstance->domain, 'account' => $ldapSetting->auth->username, 'pass' => $password)));
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $this->instance->url($ldapInstance), 'account' => $ldapSetting->auth->username, 'pass' => $password)));
     }
 
     /**
@@ -504,8 +561,13 @@ class system extends control
         $minioInstance->spaceData->k8space = 'cne-system';
 
         $ossAccount = $this->loadModel('cne')->getDefaultAccount($minioInstance, '', 'minio');
+
         $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
-        if($ossAccount and $ossAccount) return  $this->send(array('result' => 'success', 'message' => '', 'data' => array('account' => $ossAccount, 'domain' => $ossDomain)));
+        $ossDomain->domain = $ossDomain->access_host;
+
+        $url = $this->loadModel('instance')->url($ossDomain);
+
+        if($ossAccount and $ossAccount) return  $this->send(array('result' => 'success', 'message' => '', 'data' => array('account' => $ossAccount, 'url' => $url)));
 
         $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->failGetOssAccount));
     }

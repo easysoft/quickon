@@ -44,7 +44,7 @@
             <td></td>
             <td></td>
           </tr>
-          <tr class='hide'>
+          <tr class=''>
             <td></td>
             <td colspan='2'>
               <h4>
@@ -56,16 +56,16 @@
           </tr>
         </tbody>
       </table>
-      <table class="hide table table-form">
+      <table id='cert-box' class="table table-form">
         <tbody>
           <tr>
-            <th><?php echo $lang->system->domain->publicKey;?></th>
-            <td class='required' colspan='2'><?php echo html::textarea('publicKey', zget($domainSettings, 'publicKey', ''), "class='form-control'");?></td>
+            <th><?php echo $lang->system->certPem;?></th>
+            <td class='required' colspan='2'><?php echo html::textarea('certPem', zget($domainSettings, 'certPem', ''), "class='form-control' rows='5'");?></td>
             <td></td>
           </tr>
           <tr>
-            <th><?php echo $lang->system->domain->privateKey;?></th>
-            <td class='required' colspan='2'><?php echo html::textarea('privateKey', zget($domainSettings, 'privateKey', ''), "class='form-control'");?></td>
+            <th><?php echo $lang->system->certKey;?></th>
+            <td class='required' colspan='2'><?php echo html::textarea('certKey', zget($domainSettings, 'certKey', ''), "class='form-control' rows='5'");?></td>
             <td></td>
           </tr>
         </tbody>

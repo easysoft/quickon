@@ -167,6 +167,76 @@ class cneModel extends model
     }
 
     /**
+     * Config QLB (Server Load Balancing).
+     *
+     * @param  object $settings
+     * @param  string $channel
+     * @access public
+     * @return bool
+     */
+    public function configQLB($settings, $channel = '')
+    {
+        $apiParams = array();
+        $apiParams['cluster']   = '';
+        $apiParams['channel']   = empty($channel) ? $this->config->CNE->api->channel : $channel;
+        $apiParams['namespace'] = $settings->namespace;
+        $apiParams['name']      = $settings->name;
+        $apiParams['ippool']    = $settings->ippool;
+
+        $apiUrl = "/api/cne/system/qlb/config";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return true;
+
+        return false;
+    }
+
+    /**
+     * Upload cert
+     *
+     * @param  object $cert
+     * @param  string $channel
+     * @access public
+     * @return object
+     */
+    public function uploadCert($cert, $channel = '')
+    {
+        $apiParams = array();
+        $apiParams['cluster']         = '';
+        $apiParams['channel']         = empty($channel) ? $this->config->CNE->api->channel : $channel;
+        $apiParams['name']            = $cert->name;
+        $apiParams['certificate_pem'] = $cert->certificate_pem;
+        $apiParams['private_key_pem'] = $cert->private_key_pem;
+
+        $apiUrl = "/api/cne/system/tls/upload";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        //if($result && $result->code == 200) return $result->data;
+
+        return $result;
+    }
+
+    /**
+     * Upload cert
+     *
+     * @param  string $certName
+     * @param  string $channel
+     * @access public
+     * @return object|null success: return cert info, fail: return null.
+     */
+    public function certInfo($certName, $channel = '')
+    {
+        $apiParams = array();
+        $apiParams['cluster'] = '';
+        $apiParams['channel'] = empty($channel) ? $this->config->CNE->api->channel : $channel;
+        $apiParams['name']    = $certName;
+
+        $apiUrl = "/api/cne/system/tls/info";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result->data;
+
+        return null;
+    }
+
+    /**
      * Get default username and password of app.
      *
      * @param  object $instance

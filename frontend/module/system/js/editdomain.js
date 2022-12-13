@@ -1,5 +1,27 @@
 $(function()
 {
+    function toggleCertBox()
+    {
+        $showCert = $("#httpstrue[type=checkbox]:checked").length > 0;
+        if($showCert)
+        {
+            $('#cert-box').show();
+        }
+        else
+        {
+            $('#cert-box').hide();
+        }
+
+    }
+
+    toggleCertBox();
+
+    $("#httpstrue[type=checkbox]").on('change', function()
+    {
+       toggleCertBox();
+    });
+
+
     var timerID = 0;
 
     /**

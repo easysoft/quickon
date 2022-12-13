@@ -69,8 +69,8 @@ $lang->system->SMTP->save     = '保存';
 
 /* Domain */
 $lang->system->customDomain = '新域名';
-$lang->system->publicKey    = '公钥';
-$lang->system->privateKey   = '私钥';
+$lang->system->certPem      = '公钥';
+$lang->system->certKey      = '私钥';
 
 $lang->system->domain = new stdclass;
 $lang->system->domain->common        = '域名管理';
@@ -79,8 +79,7 @@ $lang->system->domain->config        = '配置域名和证书';
 $lang->system->domain->currentDomain = '当前域名';
 $lang->system->domain->oldDomain     = '旧域名';
 $lang->system->domain->newDomain     = '新域名';
-$lang->system->domain->publicKey     = '公钥';
-$lang->system->domain->privateKey    = '私钥';
+$lang->system->domain->expiredDate   = '过期时间';
 $lang->system->domain->uploadCert    = '上传证书（仅支持泛域名证书）';
 
 $lang->system->domain->notReuseOldDomain     = '使用自定义域名后无法改回默认域名';
@@ -90,6 +89,13 @@ $lang->system->domain->updateInstancesDomain = '更新已安装服务的域名';
 $lang->system->domain->totalOldDomain        = '共 %s 个。';
 $lang->system->domain->updatingProgress      = '更新中...，剩余 %s 个,';
 $lang->system->domain->updating              = '更新中...';
+
+$lang->system->SLB = new stdclass;
+$lang->system->SLB->common        = '负载均衡';
+$lang->system->SLB->config        = '配置负载均衡';
+$lang->system->SLB->edit          = '修改负载均衡';
+$lang->system->SLB->ipPool        = 'IP段';
+$lang->system->SLB->ipPoolExample = '示例：192.168.10.0/24或者192.168.10.0-192.168.10.100';
 
 $lang->system->notices = new stdclass;
 $lang->system->notices->success               = '成功';
@@ -110,6 +116,7 @@ $lang->system->notices->verifySMTPSuccess     = '校验成功！';
 $lang->system->notices->pleaseCheckSMTPInfo   = '校验失败！请检查用户名和密码是否正确';
 $lang->system->notices->confirmUpdateDomain   = '修改域名后，会自动更新已安装服务的域名，确定要修改吗？';
 $lang->system->notices->updateDomainSuccess   = '域名修改成功。';
+$lang->system->notices->configSLBSuccess      = '配置负载均衡成功。';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB                 = '找不到该数据库';
@@ -136,3 +143,4 @@ $lang->system->errors->invalidDomain              = '无效的域名或格式错
 $lang->system->errors->failToUpdateDomain         = '更新域名失败';
 $lang->system->errors->forbiddenOriginalDomain    = '不能修改为平台默认域名';
 $lang->system->errors->newDomainIsSameWithOld     = '新域名不能与原域名相同';
+$lang->system->errors->failedToConfigSLB          = '配置负载均衡失败';

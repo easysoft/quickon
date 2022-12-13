@@ -439,6 +439,22 @@ class InstanceModel extends model
     }
 
     /**
+     * Get URL for visiting instance service.
+     *
+     * @param  object $instance
+     * @access public
+     * @return string
+     */
+    public function url($instance)
+    {
+        $url  = "//" . $instance->domain;
+        $port = getenv('APP_HTTPS_PORT');
+        if($port and $port != '443') $url .= ":$port/";
+
+        return $url;
+    }
+
+    /**
      * Create third domain.
      *
      * @param  int    $length
@@ -1577,7 +1593,7 @@ class InstanceModel extends model
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//' . $instance->domain, '<i class="icon icon-menu-my"></i>', '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg btn-action btn-link'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+            $actionHtml  .= html::a($this->url($instance), '<i class="icon icon-menu-my"></i>', '_blank', "title='{$this->lang->instance->visit}' class='btn btn-lg btn-action btn-link'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;
@@ -1606,7 +1622,7 @@ class InstanceModel extends model
         if($instance->domain)
         {
             $disableVisit = !$this->canDo('visit', $instance);
-            $actionHtml  .= html::a('//' . $instance->domain, $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-primary label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
+            $actionHtml  .= html::a($this->url($instance), $this->lang->instance->visit, '_blank', "title='{$this->lang->instance->visit}' class='btn btn-primary label-lg'" . ($disableVisit ? ' disabled style="pointer-events: none;"' : ''));
         }
 
         echo $actionHtml;
