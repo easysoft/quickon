@@ -21,3 +21,10 @@ type ReqTLSUpload struct {
 	CertificatePem string `json:"certificate_pem"`
 	PrivateKeyPem  string `json:"private_key_pem"`
 }
+
+// ReqSystemQLB 负载均衡配置
+type ReqSystemQLB struct {
+	QueryNamespace
+	Name   string `json:"name"`
+	IPPool string `json:"ippool"`
+}

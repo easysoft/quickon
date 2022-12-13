@@ -25,6 +25,7 @@ import (
 	metanetworkv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/labels"
 	"k8s.io/apimachinery/pkg/util/runtime"
+	"k8s.io/client-go/dynamic"
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	appsv1 "k8s.io/client-go/listers/apps/v1"
@@ -120,9 +121,10 @@ type Lister struct {
 }
 
 type Clients struct {
-	Base   *kubernetes.Clientset
-	Cne    *quchengclientset.Clientset
-	Velero *veleroclientset.Clientset
+	Base    *kubernetes.Clientset
+	Cne     *quchengclientset.Clientset
+	Velero  *veleroclientset.Clientset
+	Dynamic dynamic.Interface
 }
 
 type Storer struct {
@@ -208,6 +210,12 @@ func NewStorer(config rest.Config) *Storer {
 
 		s.informers.VolumeBackups = factory.Velero().V1().PodVolumeBackups().Informer()
 		s.listers.VolumeBackups = factory.Velero().V1().PodVolumeBackups().Lister()
+	}
+
+	if cs, err := dynamic.NewForConfig(&config); err != nil {
+		logger.WithError(err).Error("failed to prepare dynamic kubeclient")
+	} else {
+		s.Clients.Dynamic = cs
 	}
 
 	return s

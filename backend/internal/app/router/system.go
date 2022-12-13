@@ -7,14 +7,14 @@ package router
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
+	"github.com/spf13/viper"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 	"net"
 	"net/http"
 	"net/smtp"
-
-	"github.com/gin-gonic/gin"
-	"github.com/spf13/viper"
+	"strings"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
@@ -157,6 +157,101 @@ func AuthMailServer(c *gin.Context) {
 		}
 	}
 
+	renderSuccess(c, http.StatusOK)
+}
+
+// GetLoadBalancer 配置负载均衡
+// @Summary 配置负载均衡
+// @Tags 系统
+// @Description 配置负载均衡
+// @Accept json
+// @Produce json
+// @Param Authorization header string false "jwtToken"
+// @Param X-Auth-Token header string false "staticToken"
+// @Security ApiKeyAuth
+// @Param namespace query string false "namespace"
+// @Param cluster query string false "cluster"
+// @Param name query string true "name"
+// @Success 201 {object} response2xx
+// @Failure 500 {object} response5xx
+// @Router /api/cne/system/qlb/config [get]
+func GetLoadBalancer(c *gin.Context) {
+	var (
+		err error
+		ctx = c.Request.Context()
+	)
+
+	namespace := c.DefaultQuery("namespace", "cne-system")
+	cluster := c.DefaultQuery("cluster", "")
+	name := c.DefaultQuery("name", "default-qlb-pool")
+
+	logger := getLogger(ctx)
+	logger = logger.WithField("qlb", name)
+	ippool, err := service.Components(ctx, cluster).GetQLBConfig(name, namespace)
+	if err != nil {
+		logger.WithError(err).Error("fetch qlb config failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	renderJson(c, http.StatusOK, map[string]string{
+		"ippool": ippool,
+	})
+}
+
+// ConfigLoadBalancer 配置负载均衡
+// @Summary 配置负载均衡
+// @Tags 系统
+// @Description 配置负载均衡
+// @Accept json
+// @Produce json
+// @Param Authorization header string false "jwtToken"
+// @Param X-Auth-Token header string false "staticToken"
+// @Security ApiKeyAuth
+// @Param body body model.ReqSystemQLB true "meta"
+// @Success 201 {object} response2xx
+// @Failure 500 {object} response5xx
+// @Router /api/cne/system/qlb/config [post]
+func ConfigLoadBalancer(c *gin.Context) {
+	var (
+		err  error
+		ctx  = c.Request.Context()
+		body model.ReqSystemQLB
+	)
+
+	if err = c.ShouldBindJSON(&body); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if len(body.Name) == 0 {
+		body.Name = "default-qlb-pool"
+	}
+	logger := getLogger(ctx)
+	logger = logger.WithField("qlb", body.Name)
+	// 校验是否合法
+	if strings.Contains(body.IPPool, "-") {
+		pools := strings.Split(body.IPPool, "-")
+		if len(pools) != 2 {
+			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool"))
+			return
+		}
+		if net.ParseIP(pools[0]) == nil || net.ParseIP(pools[1]) == nil {
+			renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool"))
+			return
+		}
+	} else if net.ParseIP(body.IPPool) == nil {
+		renderError(c, http.StatusInternalServerError, fmt.Errorf("valid ip pool"))
+		return
+	}
+
+	if err = service.Components(ctx, body.Cluster).UpdateQLBConfig(body.Name, body.Namespace, body.IPPool); err != nil {
+		logger.WithError(err).Error("update qlb config failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	logger.Info("update qlb config successful")
+	logger.Infof("lb pool name: %s, address: %s", body.Name, body.IPPool)
 	renderSuccess(c, http.StatusOK)
 }
 

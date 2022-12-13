@@ -11,6 +11,10 @@ import (
 
 	quchengv1beta1 "github.com/easysoft/quickon-api/qucheng/v1beta1"
 	"github.com/sirupsen/logrus"
+	apierrors "k8s.io/apimachinery/pkg/api/errors"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
+	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/apimachinery/pkg/util/intstr"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
@@ -271,4 +275,60 @@ func fromBool(b *bool) bool {
 		return false
 	}
 	return *b
+}
+
+// CreateQLBConfig 更新负载均衡配置, 若没有则配置
+func (m *Manager) UpdateQLBConfig(name, namespace, ippool string) error {
+	gvr := schema.GroupVersionResource{Group: "metallb.io", Version: "v1beta1", Resource: "ipaddresspools"}
+	dc := m.ks.Store.Clients.Dynamic.Resource(gvr).Namespace(namespace)
+	found, err := dc.Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		if apierrors.IsNotFound(err) {
+			object := &unstructured.Unstructured{
+				Object: map[string]interface{}{
+					"apiVersion": "metallb.io/v1beta1",
+					"kind":       "IPAddressPool",
+					"metadata": map[string]interface{}{
+						"name":      name,
+						"namespace": namespace,
+					},
+					"spec": map[string]interface{}{
+						"addresses": []interface{}{
+							ippool,
+						},
+					},
+				},
+			}
+			_, err = dc.Create(context.TODO(), object, metav1.CreateOptions{})
+			return err
+		}
+		return err
+	}
+	// 存在更新
+	newipPool := []interface{}{
+		ippool,
+	}
+	if err := unstructured.SetNestedSlice(found.Object, newipPool, "spec", "addresses"); err != nil {
+		return err
+	}
+	_, err = dc.Update(context.TODO(), found, metav1.UpdateOptions{})
+	return err
+}
+
+// GetQLBConfig 查询负载均衡配置
+func (m *Manager) GetQLBConfig(name, namespace string) (string, error) {
+	gvr := schema.GroupVersionResource{Group: "metallb.io", Version: "v1beta1", Resource: "ipaddresspools"}
+	dc := m.ks.Store.Clients.Dynamic.Resource(gvr).Namespace(namespace)
+	found, err := dc.Get(context.TODO(), name, metav1.GetOptions{})
+	if err != nil {
+		return "", err
+	}
+	data, exist, err := unstructured.NestedSlice(found.Object, "spec", "addresses")
+	if err != nil {
+		return "", err
+	}
+	if !exist || len(data) == 0 {
+		return "", fmt.Errorf("not exist addresses filed")
+	}
+	return data[0].(string), nil
 }
