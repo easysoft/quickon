@@ -17,6 +17,7 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	utiltls "gitlab.zcorp.cc/pangu/cne-api/pkg/utils/tls"
 )
 
 func SystemUpdate(c *gin.Context) {
@@ -155,4 +156,59 @@ func AuthMailServer(c *gin.Context) {
 	}
 
 	renderSuccess(c, http.StatusOK)
+}
+
+func UploadTLS(c *gin.Context) {
+	var (
+		err  error
+		ctx  = c.Request.Context()
+		body model.ReqTLSUpload
+	)
+
+	if err = c.ShouldBindJSON(&body); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger := getLogger(ctx)
+	logger.Debugf("certificate: %s", body.CertificatePem)
+	logger.Debugf("privateKey: %s", body.PrivateKeyPem)
+
+	t, err := utiltls.Parse([]byte(body.CertificatePem), []byte(body.PrivateKeyPem))
+	if err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = t.Valid(); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, t.GetCertInfo())
+
+	service.Apps(ctx, "", viper.GetString(constant.FlagRuntimeNamespace)).UploadTLS(body.Name, body.CertificatePem, body.PrivateKeyPem)
+}
+
+func ReadTLSInfo(c *gin.Context) {
+	var (
+		err   error
+		ctx   = c.Request.Context()
+		query struct {
+			model.QueryCluster
+			Name string `form:"name"`
+		}
+	)
+
+	if err = c.ShouldBindQuery(&query); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	info, err := service.Apps(ctx, "", viper.GetString(constant.FlagRuntimeNamespace)).ReadTLSCertInfo(query.Name)
+	if err != nil {
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	renderJson(c, http.StatusOK, info)
 }
