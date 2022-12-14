@@ -717,8 +717,13 @@ class systemModel extends model
             ->setDefault('ippool', '')
             ->get();
 
-        //validater::checkIP('');
-        //if(dao::isError())
+        $reg1Result = validater::checkREG($settings->ippool, '/^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}\/\d{1,2}$/');
+        $reg2Result = validater::checkREG($settings->ippool, '/^(((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})-(((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})$/');
+        if($reg1Result === false && $reg2Result === false)
+        {
+            dao::$errors[] = $this->lang->system->errors->wrongIPRange;
+            return;
+        }
 
         $settings->name      = 'qlb-quickon';
         $settings->namespace = 'cne-system';

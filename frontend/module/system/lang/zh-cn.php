@@ -144,3 +144,4 @@ $lang->system->errors->failToUpdateDomain         = '更新域名失败';
 $lang->system->errors->forbiddenOriginalDomain    = '不能修改为平台默认域名';
 $lang->system->errors->newDomainIsSameWithOld     = '新域名不能与原域名相同';
 $lang->system->errors->failedToConfigSLB          = '配置负载均衡失败';
+$lang->system->errors->wrongIPRange               = 'IP段格式错误，请参照示例格式，' . $lang->system->SLB->ipPoolExample;
