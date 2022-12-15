@@ -9,7 +9,7 @@ $(function()
             {
                 $('#ossAdmin').text(res.data.account.username);
                 $('#ossPassword').val(res.data.account.password);
-                $('#ossVisitUrl').attr('href', '//' + res.data.domain.access_host);
+                $('#ossVisitUrl').attr('href', res.data.url);
                 $('#ossAccountModal').modal('show');
             }
         });

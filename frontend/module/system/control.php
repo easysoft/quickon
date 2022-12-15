@@ -487,7 +487,7 @@ class system extends control
         $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $secretKey);
         if(!$password) $password = openssl_decrypt($ldapSetting->auth->password, 'DES-ECB', $ldapInstance->createdAt); // Secret key was createdAt field value less v2.2.
 
-        $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $ldapInstance->domain, 'account' => $ldapSetting->auth->username, 'pass' => $password)));
+        $this->send(array('result' => 'success', 'message' => '', 'data' => array('domain' => $this->instance->url($ldapInstance), 'account' => $ldapSetting->auth->username, 'pass' => $password)));
     }
 
     /**
@@ -504,8 +504,13 @@ class system extends control
         $minioInstance->spaceData->k8space = 'cne-system';
 
         $ossAccount = $this->loadModel('cne')->getDefaultAccount($minioInstance, '', 'minio');
+
         $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
-        if($ossAccount and $ossAccount) return  $this->send(array('result' => 'success', 'message' => '', 'data' => array('account' => $ossAccount, 'domain' => $ossDomain)));
+        $ossDomain->domain = $ossDomain->access_host;
+
+        $url = $this->loadModel('instance')->url($ossDomain);
+
+        if($ossAccount and $ossAccount) return  $this->send(array('result' => 'success', 'message' => '', 'data' => array('account' => $ossAccount, 'url' => $url)));
 
         $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->failGetOssAccount));
     }
