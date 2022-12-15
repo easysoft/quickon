@@ -65,7 +65,6 @@ func parseKey(key []byte) (*rsa.PrivateKey, error) {
 func validCertificates(certs []*x509.Certificate) error {
 	domainCert := certs[0]
 	if time.Now().After(domainCert.NotAfter) {
-		//return ErrExpiredCertificate(fmt.Sprintf("Expired at %s", domainCert.NotAfter.Format(time.RFC3339)))
 		return ErrExpiredCertificate
 	}
 
@@ -79,9 +78,9 @@ func validCertificates(certs []*x509.Certificate) error {
 		lastCert = *cert
 	}
 
-	if !lastCert.IsCA {
-		return ErrIncompleteCertificateChain
-	}
+	//if !lastCert.IsCA {
+	//	return ErrIncompleteCertificateChain
+	//}
 	return nil
 }
 
