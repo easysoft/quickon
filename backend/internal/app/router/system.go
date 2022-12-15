@@ -286,10 +286,28 @@ func UploadTLS(c *gin.Context) {
 		return
 	}
 
-	err = service.Apps(ctx, "", viper.GetString(constant.FlagRuntimeNamespace)).UploadTLS(body.Name, body.CertificatePem, body.PrivateKeyPem)
+	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
+
+	err = service.Apps(ctx, "", runtimeNs).UploadTLS(body.Name, body.CertificatePem, body.PrivateKeyPem)
 	if err != nil {
 		renderError(c, http.StatusInternalServerError, err)
 		return
+	}
+
+	setting := model.StringSetting{
+		Key: "extraArgs.default-ssl-certificate",
+		Val: fmt.Sprintf("%s/%s", runtimeNs, body.Name),
+	}
+	ingressController, err := service.Apps(ctx, "", runtimeNs).GetApp("ingress")
+	if err == nil {
+		err = ingressController.PatchSettings("nginx-ingress-controller", model.AppCreateOrUpdateModel{
+			Channel:  "stable",
+			Settings: []model.StringSetting{setting},
+		}, nil, nil)
+		if err != nil {
+			renderError(c, http.StatusInternalServerError, err)
+			return
+		}
 	}
 	renderJson(c, http.StatusOK, t.GetCertInfo())
 

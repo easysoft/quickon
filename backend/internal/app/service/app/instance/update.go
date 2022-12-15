@@ -154,6 +154,9 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	if err != nil {
 		return err
 	}
+	if vals == nil {
+		vals = make(map[string]interface{})
+	}
 
 	// remove values from the release's current values
 	if delSettings != nil {
@@ -183,6 +186,8 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 		Values:     settings,
 		ValueFiles: []string{lastValFile},
 	}
+
+	i.logger.Debugf("options is %+v", options)
 
 	if len(snippetSettings) > 0 {
 		snippetValueFile, err := writeValuesFile(snippetSettings)
