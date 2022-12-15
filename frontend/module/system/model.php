@@ -624,17 +624,19 @@ class systemModel extends model
             return;
         }
 
-
         /* Upload Certificate to CNE. */
-        $cert = new stdclass;
-        $cert->name            = 'tls-' . str_replace('.', '-', $settings->customDomain);
-        $cert->certificate_pem = $settings->certPem;
-        $cert->private_key_pem = $settings->certKey;
-        $certResult = $this->loadModel('cne')->uploadCert($cert);
-        if($certResult->code != 200)
+        if($settings->https == 'true')
         {
-            dao::$errors[] = $certResult->message;
-            return;
+            $cert = new stdclass;
+            $cert->name            = 'tls-' . str_replace('.', '-', $settings->customDomain);
+            $cert->certificate_pem = $settings->certPem;
+            $cert->private_key_pem = $settings->certKey;
+            $certResult = $this->loadModel('cne')->uploadCert($cert);
+            if($certResult->code != 200)
+            {
+                dao::$errors[] = $certResult->message;
+                return;
+            }
         }
 
         $oldSettings = $this->getDomainSettings();

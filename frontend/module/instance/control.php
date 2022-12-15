@@ -98,6 +98,7 @@ class instance extends control
         $this->view->hasRestoreLog   =  $hasRestoreLog;
         $this->view->latestBackup    = $latestBackup;
         $this->view->dbList          = $dbList;
+        $this->view->domain          = $this->cne->getDomain($instance);
         $this->view->tab             = $tab;
         $this->view->pager           = $pager;
 
