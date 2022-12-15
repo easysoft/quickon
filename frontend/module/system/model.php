@@ -633,7 +633,7 @@ class systemModel extends model
         $certResult = $this->loadModel('cne')->uploadCert($cert);
         if($certResult->code != 200)
         {
-            dao::$errors[] = $result->message;
+            dao::$errors[] = $certResult->message;
             return;
         }
 
