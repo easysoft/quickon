@@ -618,11 +618,43 @@ class InstanceModel extends model
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        return $this->doCneInstall($app, $instance, $space, $settingMap, $snippets);
+        return $this->doCneInstall($instance, $space, $settingMap, $snippets, $app);
     }
 
     /**
-     * install global SMTP proxy service.
+     * Install System SLB component.
+     *
+     * @param  object $app
+     * @param  string $k8name
+     * @param  string $channel
+     * @access public
+     * @return object
+     */
+    public function installSysSLB($app, $k8name = 'cne-lb', $channel = 'stable')
+    {
+        $this->app->loadLang('system');
+
+        $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+        $instance = $this->createInstance($app, $space, '', '', $k8name, $channel);
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            return false;
+        }
+
+        $instance = $this->doCneInstall($instance, $space, (new stdclass), array(), $app);
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            return false;
+        }
+
+        return $instance;
+    }
+
+    /**
+      install global SMTP proxy service.
      *
      * @param  object $app
      * @param  object $smtpSettings
@@ -658,7 +690,7 @@ class InstanceModel extends model
         $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
         $settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
 
-        $instance = $this->doCneInstall($app, $instance, $space, $settingsMap);
+        $instance = $this->doCneInstall($instance, $space, $settingsMap, array(), $app);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
@@ -739,7 +771,7 @@ class InstanceModel extends model
         $settingMap->auth->password = helper::randStr(16);
         $settingMap->auth->root     = 'dc=quickon,dc=org';
 
-        $instance = $this->doCneInstall($app, $instance, $space, $settingMap);
+        $instance = $this->doCneInstall($instance, $space, $settingMap, array(), $app);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
@@ -818,7 +850,7 @@ class InstanceModel extends model
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        return $this->doCneInstall($app, $instance, $space, $settingMap);
+        return $this->doCneInstall($instance, $space, $settingMap, array(), $app);
     }
 
     /**
@@ -840,7 +872,7 @@ class InstanceModel extends model
         $instanceData = new stdclass;
         $instanceData->appId           = $app->id;
         $instanceData->appName         = $app->alias;
-        $instanceData->name            = !empty($name)   ? $name : $app->alias;
+        $instanceData->name            = !empty($name) ? $name : $app->alias;
         $instanceData->domain          = !empty($thirdDomain) ? $this->fullDomain($thirdDomain) : '';
         $instanceData->logo            = $app->logo;
         $instanceData->desc            = $app->desc;
@@ -868,15 +900,15 @@ class InstanceModel extends model
     /**
      * Create app instance on CNE platform.
      *
-     * @param  object $app
      * @param  object $instance
      * @param  object $space
      * @param  object $settingMap
      * @param  array  $snippets
+     * @param  object $app
      * @access private
      * @return object|bool
      */
-    private function doCneInstall($app, $instance, $space, $settingMap, $snippets = array())
+    private function doCneInstall($instance, $space, $settingMap, $snippets = array(), $app = array())
     {
         $apiParams = new stdclass;
         $apiParams->userame           = $instance->createdBy;
@@ -889,7 +921,7 @@ class InstanceModel extends model
         $apiParams->settings_map      = $settingMap;
         $apiParams->settings_snippets = array_values($snippets);
 
-        if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas');
+        if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas'); // Only for demo enviroment.
 
         $result = $this->cne->installApp($apiParams);
         if($result->code != 200)

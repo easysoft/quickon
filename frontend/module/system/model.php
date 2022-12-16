@@ -701,8 +701,12 @@ class systemModel extends model
     public function getSLBSettings()
     {
         $settings = new stdclass;
-        $settings->name   = $this->setting->getItem('owner=system&module=common&section=slb&key=name');
-        $settings->ippool = $this->setting->getItem('owner=system&module=common&section=slb&key=ippool');
+        $settings->instanceID = $this->setting->getItem('owner=system&module=common&section=slb&key=instanceID');
+        $settings->name       = $this->setting->getItem('owner=system&module=common&section=slb&key=name');
+        $settings->ippool     = $this->setting->getItem('owner=system&module=common&section=slb&key=ippool');
+
+        //$slbInstance = $this->loadModel('instance')->getByID($settings->instanceID);
+        //$result      = $this->loadmodel('cne')->getQLBinfo($slbInstance);
 
         return $settings;
     }
@@ -727,11 +731,39 @@ class systemModel extends model
             return;
         }
 
+        $instanceID = $this->setting->getItem('owner=system&module=common&section=slb&key=instanceID');
+        if(!$instanceID)
+        {
+            /* 1. Install SLB component metallb at first time. */
+            $slbInstance = $this->installSLBInstance();
+            if(!$slbInstance) return;
+
+            $instanceID = $slbInstance->id;
+            $this->setting->setItem('system.common.slb.instanceID', $slbInstance->id);
+        }
+
+        $instance = $this->loadModel('instance')->getByID($instanceID);
+        $status = '';
+        for($times = 0; $times < 5; $times++)
+        {
+            sleep(3);
+            $statusResponse = $this->loadModel('cne')->queryStatus($instance);
+            if($statusResponse->code != 200) continue;
+
+            $status = $statusResponse->data->status;
+            if($status == 'running') break; // @todo What's the value of $status?
+        }
+
+        //@todo How to cofirm SLB instance has been installed and ready.
+        if(empty($status))
+        {
+            dao::$errors[] = $this->lang->system->errors->tryReinstallSLB;
+            return;
+        }
+
+        /* 2. Config SLB. */
         $settings->name      = 'qlb-quickon';
         $settings->namespace = 'cne-system';
-
-        //a($settings);
-
         $success = $this->loadModel('cne')->configQLB($settings);
         if(!$success)
         {
@@ -741,6 +773,36 @@ class systemModel extends model
 
         $this->setting->setItem('system.common.slb.name', zget($settings, 'name', ''));
         $this->setting->setItem('system.common.slb.ippool', zget($settings, 'ippool', ''));
+    }
+
+    /**
+     * Install SLB instance.
+     *
+     * @access private
+     * @return object|null
+     */
+    private function installSLBInstance()
+    {
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+
+        $slbApp = new stdclass;
+        $slbApp->name        = 'metallb';
+        $slbApp->alias       = 'metallb';
+        $slbApp->desc        = 'metallb';
+        $slbApp->chart       = 'metallb';
+        $slbApp->app_version = '';
+        $slbApp->version     = '';
+        $slbApp->id          = '';
+        $slbApp->logo        = '';
+
+        $slbInstance = $this->loadModel('instance')->installSysSLB($slbApp, 'cne-lb', $channel);
+        if(!$slbInstance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failedToInstallSLBComponent;
+            return;
+        }
+
+        return $slbInstance;
     }
 
     /**

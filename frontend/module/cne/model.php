@@ -191,6 +191,51 @@ class cneModel extends model
     }
 
     /**
+     * Get Qucheng Load Balancer Info
+     *
+     * @param  object    $slbInstance
+     * @access public
+     * @return object
+     */
+    public function getQLBInfo($slbInstance)
+    {
+        $apiParams = array();
+        $apiParams['cluster']   = '';
+        $apiParams['channel']   = empty($channel) ? $this->config->CNE->api->channel : $channel;
+        $apiParams['namespace'] = $slbInstance->spaceData->k8space;
+        $apiParams['name']      = $slbInstance->k8name;
+
+        $apiUrl = "/api/cne/system/qlb/config";
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code == 200) return $result->data;
+
+        return null;
+    }
+
+    /**
+     * Valid Certificate.
+     *
+     * @param  object $name
+     * @param  object $pem
+     * @param  object $key
+     * @access public
+     * @return object
+     */
+    public function validCert($name, $pem, $key)
+    {
+        $apiParams = array();
+        $apiParams['name'] = $name;
+        $apiParams['certificate_pem'] = $pem;
+        $apiParams['private_key_pem'] = $key;
+
+        $apiUrl = "/api/cne/system/tls/upload";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        //if($result && $result->code == 200) return $result->data;
+
+        return $result;
+    }
+
+    /**
      * Upload cert
      *
      * @param  object $cert

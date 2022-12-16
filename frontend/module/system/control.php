@@ -419,7 +419,7 @@ class system extends control
     public function domainView()
     {
         $domainSettings = $this->system->getDomainSettings();
-        $certName       = str_replace('.', '-', $domainSettings->customDomain);
+        $certName       = 'tls-' . str_replace('.', '-', $domainSettings->customDomain);
         $cert           = $this->loadModel('cne')->certInfo($certName);
 
         $this->view->title          = $this->lang->system->domain->common;

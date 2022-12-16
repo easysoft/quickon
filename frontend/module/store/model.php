@@ -60,7 +60,7 @@ class storeModel extends model
     /**
      * Get app info by App chart from cloud market.
      *
-     * @param  string $chart
+      @param  string $chart
      * @param  string $channel
      * @param  bool   $analysis
      * @param  string $version
