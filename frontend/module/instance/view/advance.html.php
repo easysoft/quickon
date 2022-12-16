@@ -2,10 +2,10 @@
   <?php $ips = (array) zget($domain,'load_balancer_ips', new stdclass);?>
   <?php if(!empty($ips)):?>
   <div class='panel-heading'>
-    <div class='panel-title'><?php echo $lang->instance->SLB;?></span></div>
+    <div class='panel-title'><?php echo $lang->instance->visitIP;?></span></div>
   </div>
   <div class='panel-body'>
-      <table class='table table-form'>
+      <table class='table table-form cell'>
         <?php foreach($ips as $key => $value):?>
         <tr>
           <th><?php echo $key;?></th>
