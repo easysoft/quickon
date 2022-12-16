@@ -259,6 +259,36 @@ func ConfigLoadBalancer(c *gin.Context) {
 	renderSuccess(c, http.StatusOK)
 }
 
+func TLSValidator(c *gin.Context) {
+	var (
+		err  error
+		ctx  = c.Request.Context()
+		body model.ReqTLSUpload
+	)
+
+	if err = c.ShouldBindJSON(&body); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	logger := getLogger(ctx)
+	logger.Debugf("certificate: %s", body.CertificatePem)
+	logger.Debugf("privateKey: %s", body.PrivateKeyPem)
+
+	t, err := utiltls.Parse([]byte(body.CertificatePem), []byte(body.PrivateKeyPem))
+	if err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	if err = t.Valid(); err != nil {
+		renderError(c, translateError(err), err)
+		return
+	}
+	renderJson(c, http.StatusOK, t.GetCertInfo())
+
+}
+
 func UploadTLS(c *gin.Context) {
 	var (
 		err  error
@@ -298,6 +328,8 @@ func UploadTLS(c *gin.Context) {
 		Key: "extraArgs.default-ssl-certificate",
 		Val: fmt.Sprintf("%s/%s", runtimeNs, body.Name),
 	}
+
+	logger.Info("upgrade app ingress to change default ssl certificate")
 	ingressController, err := service.Apps(ctx, "", runtimeNs).GetApp("ingress")
 	if err == nil {
 		err = ingressController.PatchSettings("nginx-ingress-controller", model.AppCreateOrUpdateModel{
@@ -305,9 +337,12 @@ func UploadTLS(c *gin.Context) {
 			Settings: []model.StringSetting{setting},
 		}, nil, nil)
 		if err != nil {
+			logger.WithError(err).Error("patch ingress settings failed")
 			renderError(c, http.StatusInternalServerError, err)
 			return
 		}
+	} else {
+		logger.WithError(err).Error("get ingress app failed")
 	}
 	renderJson(c, http.StatusOK, t.GetCertInfo())
 
