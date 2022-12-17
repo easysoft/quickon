@@ -68,6 +68,14 @@
             <td class='required' colspan='2'><?php echo html::textarea('certKey', zget($domainSettings, 'certKey', ''), "class='form-control' rows='5'");?></td>
             <td></td>
           </tr>
+          <tr>
+            <td></td>
+            <td>
+              <?php echo html::commonButton($lang->system->verify, "id='validateCertBtn'");?>
+              <span class='with-padding' id='validateMsg'></span>
+            </td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
       <div class='text-center'><?php echo html::commonButton($lang->save, "id='submitBtn'", "btn btn-primary");?></div>

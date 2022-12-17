@@ -228,7 +228,7 @@ class cneModel extends model
         $apiParams['certificate_pem'] = $pem;
         $apiParams['private_key_pem'] = $key;
 
-        $apiUrl = "/api/cne/system/tls/upload";
+        $apiUrl = "/api/cne/system/tls/validator";
         $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
         //if($result && $result->code == 200) return $result->data;
 

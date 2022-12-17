@@ -397,6 +397,23 @@ class system extends control
     }
 
     /**
+     * AjaxValidCert
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxValidateCert()
+    {
+        $certData = fixer::input('post')->get();
+
+        $certName = 'tls-' . str_replace('.', '-',$certData->domain);
+        $result = $this->loadModel('cne')->validCert($certName, $certData->certPem, $certData->certKey);
+        if($result->code == 200) return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->validCert));
+
+        return $this->send(array('result' => 'fail', 'message' => $result->message));
+    }
+
+    /**
      * Show progress of updating domains.
      *
      * @access public

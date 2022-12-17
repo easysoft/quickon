@@ -1,5 +1,37 @@
 $(function()
 {
+    /**
+     * Fresh submitBtn status.
+     *
+     * @access public
+     * @return void
+     */
+    function freshSubmitBtn()
+    {
+        if($('#httpstrue:checked').length == 0)
+        {
+            $('#submitBtn').attr('disabled', false);
+            return;
+        }
+        var pass = $('#validCertBtn').attr('pass') == 'true';
+        if(pass)
+        {
+            $('#submitBtn').attr('disabled', false);
+        }
+        else
+        {
+            $('#submitBtn').attr('disabled', true);
+        }
+    }
+
+    freshSubmitBtn();
+
+    /**
+     * Toggle certificate textarea.
+     *
+     * @access public
+     * @return void
+     */
     function toggleCertBox()
     {
         $showCert = $("#httpstrue[type=checkbox]:checked").length > 0;
@@ -12,6 +44,7 @@ $(function()
             $('#cert-box').hide();
         }
 
+        freshSubmitBtn();
     }
 
     toggleCertBox();
@@ -21,6 +54,29 @@ $(function()
        toggleCertBox();
     });
 
+    $('#validateCertBtn').on('click', function()
+    {
+        var certData = {};
+        certData.domain  = $('#customDomain').val();
+        certData.certPem = $('#certPem').val();
+        certData.certKey = $('#certKey').val();
+        $.post(createLink('system', 'ajaxValidateCert'), certData).done(function(response)
+        {
+            var res = JSON.parse(response);
+            $('#validateMsg').html(res.message);
+            if(res.result == 'success')
+            {
+                $('#validateCertBtn').attr('pass', 'true');
+                $('#validateMsg').removeClass('text-red').addClass('text-green');
+            }
+            else
+            {
+                $('#validateCertBtn').attr('pass', 'false');
+                $('#validateMsg').removeClass('text-green').addClass('text-red');
+            }
+            freshSubmitBtn();
+        });
+    });
 
     var timerID = 0;
 

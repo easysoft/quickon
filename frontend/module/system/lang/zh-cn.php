@@ -117,6 +117,7 @@ $lang->system->notices->pleaseCheckSMTPInfo   = '校验失败！请检查用户�
 $lang->system->notices->confirmUpdateDomain   = '修改域名后，会自动更新已安装服务的域名，确定要修改吗？';
 $lang->system->notices->updateDomainSuccess   = '域名修改成功。';
 $lang->system->notices->configSLBSuccess      = '配置负载均衡成功。';
+$lang->system->notices->validCert             = '校验成功';
 
 $lang->system->errors = new stdclass;
 $lang->system->errors->notFoundDB                  = '找不到该数据库';
