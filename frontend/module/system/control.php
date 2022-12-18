@@ -406,6 +406,15 @@ class system extends control
     {
         $certData = fixer::input('post')->get();
 
+        $this->dao->select('system')->data($certData)
+            ->batchCheck('domain,certPem,certKey', 'notempty');
+        if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::$errors));
+
+        if(!validater::checkREG($certData->domain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
+        {
+            return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->invalidDomain));
+        }
+
         $certName = 'tls-' . str_replace('.', '-',$certData->domain);
         $result = $this->loadModel('cne')->validCert($certName, $certData->certPem, $certData->certKey);
         if($result->code == 200) return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->validCert));

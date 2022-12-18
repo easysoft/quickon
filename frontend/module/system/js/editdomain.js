@@ -63,16 +63,21 @@ $(function()
         $.post(createLink('system', 'ajaxValidateCert'), certData).done(function(response)
         {
             var res = JSON.parse(response);
-            $('#validateMsg').html(res.message);
             if(res.result == 'success')
             {
                 $('#validateCertBtn').attr('pass', 'true');
                 $('#validateMsg').removeClass('text-red').addClass('text-green');
+                $('#validateMsg').html(res.message);
             }
             else
             {
                 $('#validateCertBtn').attr('pass', 'false');
                 $('#validateMsg').removeClass('text-green').addClass('text-red');
+                var errMessage = res.message;
+                if(res.message instanceof Array) errMessage = res.message.join('&nbsp;');
+                if(res.message instanceof Object) errMessage = Object.values(res.message).join('&nbsp;');
+
+                $('#validateMsg').html(errMessage);
             }
             freshSubmitBtn();
         });

@@ -70,7 +70,7 @@
           </tr>
           <tr>
             <td></td>
-            <td>
+            <td colspan='2' >
               <?php echo html::commonButton($lang->system->verify, "id='validateCertBtn'");?>
               <span class='with-padding' id='validateMsg'></span>
             </td>
