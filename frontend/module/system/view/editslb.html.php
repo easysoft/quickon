@@ -24,7 +24,7 @@
     <div class='main-header'>
     <h2><?php echo $lang->system->SLB->config;?></h2>
     </div>
-    <form id='SLBForm' class='cell not-watch load-indicator main-form form-ajax'>
+    <form id='SLBForm' class='cell not-watch main-form'>
       <table class="table table-form">
         <tbody>
           <tr>
@@ -36,7 +36,7 @@
           </tr>
         </tbody>
       </table>
-      <div class='text-center'><?php echo html::submitButton($lang->save);?></div>
+      <div class='text-center'><?php echo html::commonButton($lang->save, "id='submitBtn'", 'btn btn-wide btn-primary');?></div>
     </form>
   </div>
 </div>
@@ -44,9 +44,11 @@
   <div class="modal-dialog w-400px">
     <div class="modal-content">
       <div class="modal-body">
-        <h4><?php echo $lang->system->domain->updateInstancesDomain;?></h4>
+        <h4><?php echo $lang->system->SLB->installing;?></h4>
         <div>
-          <span id='message'><?php echo $lang->system->domain->updating;?></span>
+          <span id='message'><?php echo $lang->system->SLB->leftSeconds;?></span>
+          <span id='timer'></span>
+          <span><?php echo $lang->system->SLB->second;?></span>
         </div>
       </div>
     </div>

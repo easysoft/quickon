@@ -96,6 +96,9 @@ $lang->system->SLB->config        = '配置负载均衡';
 $lang->system->SLB->edit          = '修改负载均衡';
 $lang->system->SLB->ipPool        = 'IP段';
 $lang->system->SLB->ipPoolExample = '示例：192.168.10.0/24或者192.168.10.0-192.168.10.100';
+$lang->system->SLB->installing    = '正在配置负载均衡';
+$lang->system->SLB->leftSeconds   = '预计剩余';
+$lang->system->SLB->second        = '秒';
 
 $lang->system->notices = new stdclass;
 $lang->system->notices->success               = '成功';
@@ -147,4 +150,4 @@ $lang->system->errors->newDomainIsSameWithOld      = '新域名不能与原域�
 $lang->system->errors->failedToConfigSLB           = '配置负载均衡失败';
 $lang->system->errors->wrongIPRange                = 'IP段格式错误，请参照示例格式，' . $lang->system->SLB->ipPoolExample;
 $lang->system->errors->failedToInstallSLBComponent = '安装负载均衡组件失败';
-$lang->system->errors->tryReinstallSLB             = $lang->system->errors->failedToInstallSLBComponent . '，请重试。';
+$lang->system->errors->tryReinstallSLB             = '安装负载均衡组件超时，请重试。';

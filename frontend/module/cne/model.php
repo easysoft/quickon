@@ -193,17 +193,18 @@ class cneModel extends model
     /**
      * Get Qucheng Load Balancer Info
      *
-     * @param  object    $slbInstance
+     * @param  string $name
+     * @param  string $namespace
      * @access public
      * @return object
      */
-    public function getQLBInfo($slbInstance)
+    public function getQLBInfo($name, $namespace)
     {
         $apiParams = array();
         $apiParams['cluster']   = '';
         $apiParams['channel']   = empty($channel) ? $this->config->CNE->api->channel : $channel;
-        $apiParams['namespace'] = $slbInstance->spaceData->k8space;
-        $apiParams['name']      = $slbInstance->k8name;
+        $apiParams['namespace'] = $namespace;
+        $apiParams['name']      = $name;
 
         $apiUrl = "/api/cne/system/qlb/config";
         $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
@@ -215,22 +216,38 @@ class cneModel extends model
     /**
      * Valid Certificate.
      *
-     * @param  object $name
-     * @param  object $pem
-     * @param  object $key
+     * @param  string $certName
+     * @param  string $pem
+     * @param  string $key
+     * @param  string $domain
      * @access public
-     * @return object
+     * @return bool
      */
-    public function validCert($name, $pem, $key)
+    public function validateCert($certName, $pem, $key, $domain)
     {
         $apiParams = array();
-        $apiParams['name'] = $name;
+        $apiParams['name'] = $certName;
         $apiParams['certificate_pem'] = $pem;
         $apiParams['private_key_pem'] = $key;
 
         $apiUrl = "/api/cne/system/tls/validator";
         $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
-        //if($result && $result->code == 200) return $result->data;
+        if($result && $result->code != 200) return $result;
+
+        $match = false;
+        foreach($result->data->sans as $domainPattern)
+        {
+            if(stripos($domainPattern, $domain) !== false)
+            {
+                $match = true;
+                break;
+            }
+        }
+        if(!$match)
+        {
+            $result->code = 40004;
+            $result->message = zget($this->lang->CNE->errorList, 40004);
+        }
 
         return $result;
     }

@@ -13,7 +13,7 @@ $(function()
             $('#submitBtn').attr('disabled', false);
             return;
         }
-        var pass = $('#validCertBtn').attr('pass') == 'true';
+        var pass = $('#validateCertBtn').attr('pass') == 'true';
         if(pass)
         {
             $('#submitBtn').attr('disabled', false);
