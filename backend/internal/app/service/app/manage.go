@@ -161,7 +161,7 @@ func (m *Manager) ReadTLSCertInfo(name string) (*tls.CertInfo, error) {
 		return nil, err
 	}
 
-	t, err := tls.Parse(secret.Data[v1.TLSCertKey], secret.Data[v1.TLSPrivateKeyKey])
+	t, err := tls.Parse(secret.Data[v1.TLSCertKey], secret.Data[v1.TLSPrivateKeyKey], m.logger)
 	if err != nil {
 		return nil, err
 	}

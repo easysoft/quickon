@@ -7,6 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"github.com/pkg/errors"
+	"github.com/sirupsen/logrus"
 	"time"
 )
 
@@ -18,7 +19,7 @@ type tlsKeyPair struct {
 	PrivateKey   *rsa.PrivateKey
 }
 
-func Parse(cert, key []byte) (*tlsKeyPair, error) {
+func Parse(cert, key []byte, logger logrus.FieldLogger) (*tlsKeyPair, error) {
 	t := &tlsKeyPair{
 		certificate: cert,
 		privateKey:  key,
@@ -28,12 +29,14 @@ func Parse(cert, key []byte) (*tlsKeyPair, error) {
 
 	t.Certificates, err = parseCertificate(cert)
 	if err != nil {
-		return nil, err
+		logger.WithError(err).Error("parse certificate failed")
+		return nil, ErrParseCertificate
 	}
 
 	t.PrivateKey, err = parseKey(key)
 	if err != nil {
-		return nil, err
+		logger.WithError(err).Error("parse private key failed")
+		return nil, ErrParsePrivateKey
 	}
 
 	return t, nil

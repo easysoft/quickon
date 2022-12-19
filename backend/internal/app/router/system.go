@@ -275,9 +275,9 @@ func TLSValidator(c *gin.Context) {
 	logger.Debugf("certificate: %s", body.CertificatePem)
 	logger.Debugf("privateKey: %s", body.PrivateKeyPem)
 
-	t, err := utiltls.Parse([]byte(body.CertificatePem), []byte(body.PrivateKeyPem))
+	t, err := utiltls.Parse([]byte(body.CertificatePem), []byte(body.PrivateKeyPem), logger)
 	if err != nil {
-		renderError(c, http.StatusBadRequest, err)
+		renderError(c, translateError(err), err)
 		return
 	}
 
@@ -305,9 +305,9 @@ func UploadTLS(c *gin.Context) {
 	logger.Debugf("certificate: %s", body.CertificatePem)
 	logger.Debugf("privateKey: %s", body.PrivateKeyPem)
 
-	t, err := utiltls.Parse([]byte(body.CertificatePem), []byte(body.PrivateKeyPem))
+	t, err := utiltls.Parse([]byte(body.CertificatePem), []byte(body.PrivateKeyPem), logger)
 	if err != nil {
-		renderError(c, http.StatusBadRequest, err)
+		renderError(c, translateError(err), err)
 		return
 	}
 
@@ -379,6 +379,10 @@ func translateError(e error) int {
 		code = retcode.ExpiredCertificate
 	} else if errors.Is(e, utiltls.ErrIncompleteCertificateChain) {
 		code = retcode.IncompleteCertificateChain
+	} else if errors.Is(e, utiltls.ErrParseCertificate) {
+		code = retcode.ParseCertificate
+	} else if errors.Is(e, utiltls.ErrParsePrivateKey) {
+		code = retcode.ParsePrivateKey
 	}
 
 	return int(code)
