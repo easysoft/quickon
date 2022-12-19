@@ -416,7 +416,7 @@ class system extends control
         }
 
         $certName = 'tls-' . str_replace('.', '-',$certData->domain);
-        $result = $this->loadModel('cne')->validCert($certName, $certData->certPem, $certData->certKey);
+        $result = $this->loadModel('cne')->validateCert($certName, $certData->certPem, $certData->certKey, $certData->domain);
         if($result->code == 200) return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->validCert));
 
         return $this->send(array('result' => 'fail', 'message' => $result->message));

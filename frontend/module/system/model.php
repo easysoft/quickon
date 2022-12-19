@@ -703,10 +703,15 @@ class systemModel extends model
         $settings = new stdclass;
         $settings->instanceID = $this->setting->getItem('owner=system&module=common&section=slb&key=instanceID');
         $settings->name       = $this->setting->getItem('owner=system&module=common&section=slb&key=name');
-        $settings->ippool     = $this->setting->getItem('owner=system&module=common&section=slb&key=ippool');
+        $settings->ippool     = '';
 
-        //$slbInstance = $this->loadModel('instance')->getByID($settings->instanceID);
-        //$result      = $this->loadmodel('cne')->getQLBinfo($slbInstance);
+        if($settings->instanceID)
+        {
+            $slbInstance = $this->loadModel('instance')->getByID($settings->instanceID);
+
+            $qlbInfo = $this->loadmodel('cne')->getQLBinfo($settings->name, $slbInstance->spaceData->k8space); // QLB: Qucheng load balancer.
+            if($qlbInfo) $settings->ippool = $qlbInfo->ippool;
+        }
 
         return $settings;
     }
@@ -744,18 +749,18 @@ class systemModel extends model
 
         $instance = $this->loadModel('instance')->getByID($instanceID);
         $status = '';
-        for($times = 0; $times < 5; $times++)
+        /* Wait 30 seconds at most for SLB instance ready. */
+        for($times = 0; $times < 10; $times++)
         {
             sleep(3);
             $statusResponse = $this->loadModel('cne')->queryStatus($instance);
             if($statusResponse->code != 200) continue;
 
             $status = $statusResponse->data->status;
-            if($status == 'running') break; // @todo What's the value of $status?
+            if($status == 'running') break;
         }
 
-        //@todo How to cofirm SLB instance has been installed and ready.
-        if(empty($status))
+        if($status != 'running')
         {
             dao::$errors[] = $this->lang->system->errors->tryReinstallSLB;
             return;
@@ -772,7 +777,6 @@ class systemModel extends model
         }
 
         $this->setting->setItem('system.common.slb.name', zget($settings, 'name', ''));
-        $this->setting->setItem('system.common.slb.ippool', zget($settings, 'ippool', ''));
     }
 
     /**
