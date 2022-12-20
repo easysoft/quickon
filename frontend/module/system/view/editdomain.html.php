@@ -29,12 +29,12 @@
         <tbody>
           <tr>
             <th><?php echo $lang->system->domain->oldDomain;?></th>
-            <td colspan='2' ><?php echo $this->loadModel('cne')->sysDomain();?> <span class='with-padding text-danger'><?php echo $lang->system->domain->notReuseOldDomain;?></span></td>
+            <td><?php echo $this->loadModel('cne')->sysDomain();?> <span class='with-padding text-danger'><?php echo $lang->system->domain->notReuseOldDomain;?></span></td>
             <td></td>
           </tr>
           <tr>
             <th class='new-domain-label'><?php echo $lang->system->domain->newDomain;?></th>
-            <td class='required w-400px'>
+            <td class='required'>
               <?php echo html::input('customDomain', zget($domainSettings, 'customDomain', ''), "class='form-control' placeholder=''");?>
               <div class='with-padding'>
                 <span><?php echo $lang->system->domain->setDNS;?></span>
@@ -42,11 +42,10 @@
               </div>
             </td>
             <td></td>
-            <td></td>
           </tr>
-          <tr class=''>
+          <tr>
             <td></td>
-            <td colspan='2'>
+            <td>
               <h4>
               <?php $domainUsed = false;?>
               <?php echo html::checkbox('https', array('true' => $lang->system->domain->uploadCert), $domainSettings->https, ($domainUsed ? "onclick='return false;'" : ''));?>

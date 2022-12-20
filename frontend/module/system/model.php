@@ -83,28 +83,33 @@ class systemModel extends model
         echo $btnHtml;
     }
 
+    /**
+     * Print edit LDAP button.
+     *
+     * @access public
+     * @return void
+     */
     public function printEditLDAPBtn()
     {
         $this->loadModel('instance');
 
-        $disableEdit = false;
         $title       = $this->lang->system->editLDAP;
         $toolTips    = '';
         $count       = $this->instance->countLDAP();
         if($count)
         {
-            $disableEdit = true;
-            $title       = $this->lang->system->notices->ldapUsed;
+            $title       = sprintf($this->lang->system->notices->ldapUsed, $count);
             $toolTips    = "data-toggle='tooltip' data-placement='bottom'";
         }
 
         $buttonHtml = '';
         $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
-        $buttonHtml .= html::a(inLink('editLDAP'), $this->lang->system->editLDAP, '', ($disableEdit ? 'disabled' : '') . " title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
+        $buttonHtml .= html::a(inLink('editLDAP'), $this->lang->system->editLDAP, '', "title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
         $buttonHtml .= "</span>";
 
         echo $buttonHtml;
     }
+
     /**
      * Print LDAP buttons.
      *
@@ -188,7 +193,7 @@ class systemModel extends model
      * @access protected
      * @return bool
      */
-    public function installExtraLDAP($settings)
+    public function configExtraLDAP($settings)
     {
         if(!$this->testLDAPConnection($settings))
         {
@@ -246,6 +251,40 @@ class systemModel extends model
         $this->setting->setItem('system.common.ldap.extraSnippetName', $snippetSettings->name); // Parameter for App installation API.
         $this->setting->setItem('system.common.ldap.extraSettings', json_encode($settings));
 
+        return true;
+    }
+
+    /**
+     * Update LDAP config and update instance.
+     *
+     * @access public
+     * @return void
+     */
+    public function updateLDAP()
+    {
+        $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
+        if($postData->source == 'qucheng')
+        {
+            $success = $this->updateQuchengLDAP($ldapApp, $channel);
+        }
+        else if($postData->source == 'extra')
+        {
+            $success = $this->configExtraLDAP((object)$postData->extra);
+        }
+
+        if(!$success) return false;
+
+        /* Update instances that has been enabled LDAP. */
+        $instanceList = $this->loadModel('instance')->getListEnabledLDAP();
+        $counter = count($instanceList);
+        foreach($instanceList  as $instance)
+        {
+            $this->loadModel('setting')->setItem('system.common.ldap.updatingProgress', $counter);
+            $this->instance->switchLDAP($instance, true);
+            $counter-- ;
+        }
+
+        $this->loadModel('setting')->deleteItems('owner=system&module=common&section=ldap&key=updatingProgress');
         return true;
     }
 
@@ -727,6 +766,11 @@ class systemModel extends model
         $settings = fixer::input('post')
             ->setDefault('ippool', '')
             ->get();
+        if(empty($settings->ippool))
+        {
+            dao::$errors[] = $this->lang->system->errors->ippoolRequired;
+            return;
+        }
 
         $reg1Result = validater::checkREG($settings->ippool, '/^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}\/\d{1,2}$/');
         $reg2Result = validater::checkREG($settings->ippool, '/^(((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})-(((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})$/');

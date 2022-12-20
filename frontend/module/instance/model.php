@@ -108,6 +108,26 @@ class InstanceModel extends model
     }
 
     /**
+     * Get instance list that has been enabled LDAP.
+     *
+     * @access public
+     * @return array
+     */
+    public function getListEnabledLDAP()
+    {
+        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('length(ldapSnippetName) > 0')->fetchAll('id');
+
+        $spaces = $this->dao->select('*')->from(TABLE_SPACE)
+            ->where('deleted')->eq(0)
+            ->andWhere('id')->in(array_column($instances, 'space'))
+            ->fetchAll('id');
+
+        foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
+
+        return $instances;
+    }
+
+    /**
      * Count instance which is enabled LDAP.
      *
      * @access public

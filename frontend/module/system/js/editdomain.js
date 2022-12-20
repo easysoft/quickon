@@ -57,9 +57,9 @@ $(function()
     $('#validateCertBtn').on('click', function()
     {
         var certData = {};
-        certData.domain  = $('#customDomain').val();
-        certData.certPem = $('#certPem').val();
-        certData.certKey = $('#certKey').val();
+        certData.customDomain = $('#customDomain').val();
+        certData.certPem      = $('#certPem').val();
+        certData.certKey      = $('#certKey').val();
         $.post(createLink('system', 'ajaxValidateCert'), certData).done(function(response)
         {
             var res = JSON.parse(response);
