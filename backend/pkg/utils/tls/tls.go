@@ -16,7 +16,7 @@ type tlsKeyPair struct {
 	privateKey  []byte
 
 	Certificates []*x509.Certificate
-	PrivateKey   *rsa.PrivateKey
+	PrivateKey   any
 }
 
 func Parse(cert, key []byte, logger logrus.FieldLogger) (*tlsKeyPair, error) {
@@ -56,13 +56,13 @@ func parseCertificate(cert []byte) ([]*x509.Certificate, error) {
 	return certificates, err
 }
 
-func parseKey(key []byte) (*rsa.PrivateKey, error) {
+func parseKey(key []byte) (any, error) {
 	block, rest := pem.Decode(key)
 	if block == nil {
 		return nil, errors.Errorf("decode private key failed, rest: %s", rest)
 	}
 
-	return x509.ParsePKCS1PrivateKey(block.Bytes)
+	return x509.ParsePKCS8PrivateKey(block.Bytes)
 }
 
 func validCertificates(certs []*x509.Certificate) error {
@@ -104,7 +104,7 @@ func (t *tlsKeyPair) Encrypt(content []byte) ([]byte, error) {
 
 func (t *tlsKeyPair) Decrypt(content []byte) ([]byte, error) {
 	hash := sha512.New()
-	plaintext, err := rsa.DecryptOAEP(hash, rand.Reader, t.PrivateKey, content, nil)
+	plaintext, err := rsa.DecryptOAEP(hash, rand.Reader, t.PrivateKey.(*rsa.PrivateKey), content, nil)
 	if err != nil {
 		return nil, err
 	}
