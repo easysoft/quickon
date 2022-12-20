@@ -1,5 +1,11 @@
 $(function()
 {
+    /**
+     * Fresh submit button.
+     *
+     * @access public
+     * @return void
+     */
     function freshSubmitBtn()
     {
         var enableLDAP    = $('#LDAPForm input[type=checkbox]:checked').length > 0;
@@ -11,13 +17,15 @@ $(function()
 
         if(enableLDAP && ldapCheckPass)
         {
-          $('#LDAPForm button[type=submit]').attr('disabled', false);
+            $('#LDAPForm #submitBtn').attr('disabled', false);
         }
         else
         {
-          $('#LDAPForm button[type=submit]').attr('disabled', true);
+            $('#LDAPForm #submitBtn').attr('disabled', true);
         }
     }
+
+    freshSubmitBtn();
 
     $('#LDAPForm input[type=checkbox]').on('change', function(event)
     {
@@ -87,12 +95,61 @@ $(function()
         });
     });
 
-    freshSubmitBtn();
+    var timerID = 0;
 
-    if(disableEdit)
+    /**
+     * Show updating LDAP progress modal.
+     *
+     * @access public
+     * @return void
+     */
+    function showProgressModal()
     {
-        $('#LDAPForm input').attr('disabled', true);
-        $('#LDAPForm select').attr('disabled', true);
-        $('#LDAPForm button').attr('disabled', true);
-    }
+        $('#waiting').modal('show');
+        timerID = setInterval(function()
+        {
+            $.get(createLink('system', 'ajaxUpdatingLDAPProgress'), function(data)
+            {
+                $('#waiting #message').html(data);
+            });
+        }, 1000);
+    };
+
+    $('#submitBtn').on('click', function()
+    {
+        bootbox.confirm(notices.confirmUpdateLDAP, function(result)
+        {
+            if(!result) return;
+
+            showProgressModal();
+            $('#submitBtn').attr('disabled', true);
+
+            var ldapData = $('#LDAPForm').serializeArray();
+            $.post(createLink('system', 'editLDAP'), ldapData).done(function(response)
+            {
+                $('#submitBtn').attr('disabled', false);
+
+                var res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    parent.window.location.href = res.locate;
+                }
+                else
+                {
+                    $('#waiting').modal('hide');
+                    clearInterval(timerID);
+
+                    var errMessage = res.message;
+                    if(res.message instanceof Array) errMessage = res.message.join('<br/>');
+                    if(res.message instanceof Object) errMessage = Object.values(res.message).join('<br/>');
+
+                    bootbox.alert(
+                    {
+                        title:   notices.fail,
+                        message: errMessage,
+                    });
+                }
+            });
+        });
+    });
 });

@@ -17,7 +17,7 @@ $(function()
             if(res.result == 'success')
             {
                 config.onlybody = 'no';
-                window.parent.$.apps.open(createLink('space', 'browse'), 'space');
+                window.parent.$.apps.open(res.locate, 'space');
             }
             else
             {

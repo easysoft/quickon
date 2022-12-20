@@ -83,7 +83,7 @@ class system extends control
             }
             else if($postData->source == 'extra')
             {
-                $this->system->installExtraLDAP((object)$postData->extra);
+                $this->system->configExtraLDAP((object)$postData->extra);
             }
             else
             {
@@ -118,16 +118,8 @@ class system extends control
         $ldapApp = $this->loadModel('store')->getAppInfoByChart('openldap', $channel, false);
         if($_POST)
         {
-            $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
-            if($postData->source == 'qucheng')
-            {
-                $this->system->updateQuchengLDAP($ldapApp, $channel);
-            }
-            else if($postData->source == 'extra')
-            {
-                $this->system->installExtraLDAP((object)$postData->extra);
-            }
-
+            session_write_close();
+            $this->system->updateLDAP($channel);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
@@ -140,6 +132,20 @@ class system extends control
         $this->view->activeLDAP   = $this->system->getActiveLDAP();
         $this->view->ldapSettings = $this->system->getExtraLDAPSettings();
         $this->display();
+    }
+
+    /**
+     * ajaxUpdatingLDAPProgress
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxUpdatingLDAPProgress()
+    {
+        session_write_close();
+
+        $number = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=updatingProgress');
+        echo sprintf($this->lang->system->LDAP->updatingProgress, intval($number));
     }
 
     /**
@@ -406,8 +412,8 @@ class system extends control
     {
         $certData = fixer::input('post')->get();
 
-        $this->dao->select('system')->data($certData)
-            ->batchCheck('domain,certPem,certKey', 'notempty');
+        $this->dao->select('*')->from('system')->data($certData)
+            ->batchCheck('customDomain,certPem,certKey', 'notempty');
         if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::$errors));
 
         if(!validater::checkREG($certData->domain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))

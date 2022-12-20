@@ -365,10 +365,11 @@ class instance extends control
             {
                 $sharedDB = zget($pgList, $customData->dbService);
             }
-            $result = $this->instance->install($cloudApp, $sharedDB, $customData);
-            if(!$result) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
+            $instance = $this->instance->install($cloudApp, $sharedDB, $customData);
+            if(!$instance) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->notices['installFail']));
 
-            $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('space', 'browse'), 'target' => 'parent'));
+            unset($_GET['onlybody']);
+            $this->send(array('result' => 'success', 'message' => $this->lang->instance->notices['installSuccess'], 'locate' => $this->createLink('instance', 'view', "id=$instance->id", '', false)));
         }
 
         $this->lang->switcherMenu = $this->instance->getInstallSwitcher($cloudApp);

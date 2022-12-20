@@ -22,7 +22,7 @@
 <div id='mainContent' class='main-row'>
   <div class='main-col main-content'>
     <div class='main-header'>
-      <h2><?php echo $lang->system->LDAPInfo;?></h2>
+      <h2><?php echo $lang->system->LDAP->info;?></h2>
       <div class='ldap-button-group btn-toolbar pull-right'>
         <?php $this->system->printEditLDAPBtn();?>
         <?php if($activeLDAP == 'qucheng'):?>
@@ -37,16 +37,16 @@
     <table class='table table-form instance-status' instance-id='<?php echo $ldapInstance->id;?>' data-status='<?php echo $ldapInstance->status;?>'>
       <tbody>
         <tr>
-          <th><?php echo $lang->system->ldapSource;?></th>
-          <td><?php echo zget($lang->system->ldapTypeList,  $activeLDAP, '');?></td>
+          <th><?php echo $lang->system->LDAP->ldapSource;?></th>
+          <td><?php echo zget($lang->system->LDAP->ldapTypeList,  $activeLDAP, '');?></td>
           <td></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->ldapUsername;?></th>
+          <th><?php echo $lang->system->LDAP->ldapUsername;?></th>
           <td><?php echo zget($ldapSettings->auth, 'username', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->ldapRoot;?></th>
+          <th><?php echo $lang->system->LDAP->ldapRoot;?></th>
           <td><?php echo zget($ldapSettings->auth, 'root', '');?></td>
         <tr>
         <tr>
@@ -59,45 +59,45 @@
     <table class='table table-form instance-status'>
       <tbody>
         <tr>
-          <th><?php echo $lang->system->ldapSource;?></th>
+          <th><?php echo $lang->system->LDAP->ldapSource;?></th>
           <td><?php echo zget($lang->system->ldapTypeList, $activeLDAP, '');?></td>
           <td></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->host;?></th>
+          <th><?php echo $lang->system->LDAP->host;?></th>
           <td><?php echo zget($ldapSettings, 'host', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->port;?></th>
+          <th><?php echo $lang->system->LDAP->port;?></th>
           <td><?php echo zget($ldapSettings, 'port', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->ldapUsername;?></th>
+          <th><?php echo $lang->system->LDAP->ldapUsername;?></th>
           <td><?php echo zget($ldapSettings, 'bindDN', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->password;?></th>
+          <th><?php echo $lang->system->LDAP->password;?></th>
           <td><?php echo zget($ldapSettings, 'bindPass', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->ldapRoot;?></th>
+          <th><?php echo $lang->system->LDAP->ldapRoot;?></th>
           <td><?php echo zget($ldapSettings, 'baseDN', '');?></td>
         </tr>
         <tr><td></td></tr>
         <tr>
           <td></td>
-          <th class='text-left'><?php echo $lang->system->ldapAdvance;?></th>
+          <th class='text-left'><?php echo $lang->system->LDAP->ldapAdvance;?></th>
         </tr>
         <tr>
-          <th><?php echo $lang->system->filterUser;?></th>
+          <th><?php echo $lang->system->LDAP->filterUser;?></th>
           <td><?php echo zget($ldapSettings, 'filter', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->email;?></th>
+          <th><?php echo $lang->system->LDAP->email;?></th>
           <td><?php echo zget($ldapSettings, 'attrEmail', '');?></td>
         </tr>
         <tr>
-          <th><?php echo $lang->system->extraAccount;?></th>
+          <th><?php echo $lang->system->LDAP->extraAccount;?></th>
           <td><?php echo zget($ldapSettings, 'attrUser', '');?></td>
         </tr>
       </tbody>
@@ -110,10 +110,10 @@
     <div class="modal-content">
       <div class="modal-body">
         <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span></button>
-        <h2 class="text-center"><?php echo $lang->system->accountInfo;?></h2>
-        <div><?php echo $lang->system->account;?>：<span id='ldapAccount'></span></div>
+        <h2 class="text-center"><?php echo $lang->system->LDAP->accountInfo;?></h2>
+        <div><?php echo $lang->system->LDAP->account;?>：<span id='ldapAccount'></span></div>
         <div>
-          <?php echo $lang->system->password;?>：<input id='ldapPassword' readonly />
+          <?php echo $lang->system->LDAP->password;?>：<input id='ldapPassword' readonly />
           <?php echo html::commonButton($lang->system->copy, "id='copyPassBtn'", "btn bnt-link");?>
         </div>
       </div>
