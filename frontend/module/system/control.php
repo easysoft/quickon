@@ -119,7 +119,7 @@ class system extends control
         if($_POST)
         {
             session_write_close();
-            $this->system->updateLDAP($channel);
+            $this->system->updateLDAP($ldapApp, $channel);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));

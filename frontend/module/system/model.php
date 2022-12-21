@@ -257,10 +257,12 @@ class systemModel extends model
     /**
      * Update LDAP config and update instance.
      *
+     * @param  object $ldapApp
+     * @param  string $channel
      * @access public
      * @return void
      */
-    public function updateLDAP()
+    public function updateLDAP($ldapApp, $channel)
     {
         $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
         if($postData->source == 'qucheng')
@@ -270,6 +272,7 @@ class systemModel extends model
         else if($postData->source == 'extra')
         {
             $success = $this->configExtraLDAP((object)$postData->extra);
+            if($success) $this->uninstallQuChengLDAP(true);
         }
 
         if(!$success) return false;
@@ -291,16 +294,20 @@ class systemModel extends model
     /**
      * Uninstall QuCheng LDAP.
      *
+     * @param bool    $force
      * @access public
      * @return bool
      */
-    public function uninstallQuChengLDAP()
+    public function uninstallQuChengLDAP($force = false)
     {
-        $ldapLinked = $this->loadModel('instance')->countLDAP();
-        if($ldapLinked)
+        if(!$force)
         {
-            dao::$errors[] = $this->lang->system->errors->LDAPLinked;
-            return false;
+            $ldapLinked = $this->loadModel('instance')->countLDAP();
+            if($ldapLinked)
+            {
+                dao::$errors[] = $this->lang->system->errors->LDAPLinked;
+                return false;
+            }
         }
 
         $instanceID = $this->setting->getItem('owner=system&module=common&section=ldap&key=instanceID');

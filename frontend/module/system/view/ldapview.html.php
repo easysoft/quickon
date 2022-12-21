@@ -38,7 +38,7 @@
       <tbody>
         <tr>
           <th><?php echo $lang->system->LDAP->ldapSource;?></th>
-          <td><?php echo zget($lang->system->LDAP->ldapTypeList,  $activeLDAP, '');?></td>
+          <td><?php echo zget($lang->system->ldapTypeList,  $activeLDAP, '');?></td>
           <td></td>
         </tr>
         <tr>
