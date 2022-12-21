@@ -710,7 +710,7 @@ class InstanceModel extends model
         $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
         $settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
 
-        $instance = $this->doCn eInstall($instance, $space, $settingsMap, array(), $app);
+        $instance = $this->doCneInstall($instance, $space, $settingsMap, array(), $app);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;

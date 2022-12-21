@@ -530,10 +530,10 @@ class systemModel extends model
         $settings = new stdclass;
         $settings->settings_map = $settingsMap;
 
-        $snippetResult = $this->loadModel('cne')->updateConfig($instance, $settings);
-        if($snippetResult->code != 200)
+        $success = $this->loadModel('cne')->updateConfig($instance, $settings);
+        if(!$success)
         {
-            dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
+            dao::$errors[] = $this->lang->system->errors->failToUpdateSMTP;
             return false;
         }
 

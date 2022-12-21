@@ -145,6 +145,7 @@ $lang->system->errors->SMTPLinked                  = '有服务已经关联了SM
 $lang->system->errors->failGetOssAccount           = '获取对象存储账号失败';
 $lang->system->errors->failToInstallSMTP           = '安装SMTP失败';
 $lang->system->errors->failToUninstallSMTP         = '卸载SMTP失败';
+$lang->system->errors->failToUpdateSMTP            = '更新SMTP失败';
 $lang->system->errors->verifySMTPFailed            = '校验SMTP失败';
 $lang->system->errors->notFoundSMTPApp             = '找不到SMTP代理应用';
 $lang->system->errors->notFoundSMTPService         = '找不到SMTP代理服务';
