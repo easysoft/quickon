@@ -1,4 +1,4 @@
-<form id='LDAPForm' class='cell load-indicator main-form form-ajax'>
+<form id='LDAPForm' class='cell not-watch load-indicator main-form form-ajax'>
   <h4>
     <?php $enableLDAP = $this->system->hasSystemLDAP();?>
     <?php echo html::checkbox('enableLDAP', array('true' => $lang->system->LDAP->ldapEnabled), $enableLDAP ? 'true' : '', (($ldapLinked or $activeLDAP) ? "onclick='return false;'" : '')); ?>
