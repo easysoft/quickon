@@ -333,7 +333,7 @@ func UploadTLS(c *gin.Context) {
 	ingressController, err := service.Apps(ctx, "", runtimeNs).GetApp("ingress")
 	if err == nil {
 		err = ingressController.PatchSettings("nginx-ingress-controller", model.AppCreateOrUpdateModel{
-			Channel:  "stable",
+			Channel: "stable", Version: "latest",
 			Settings: []model.StringSetting{setting},
 		}, nil, nil)
 		if err != nil {
