@@ -33,7 +33,7 @@
         </tr>
         <tr>
           <th><?php echo $lang->system->domain->expiredDate;?></th>
-          <td><?php echo zget($cert, 'not_after', '');?></td>
+          <td><?php echo zget($cert, 'expiredDate', '');?></td>
           <td></td>
         </tr>
       </tbody>

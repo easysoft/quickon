@@ -416,13 +416,13 @@ class system extends control
             ->batchCheck('customDomain,certPem,certKey', 'notempty');
         if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::$errors));
 
-        if(!validater::checkREG($certData->domain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
+        if(!validater::checkREG($certData->customDomain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
         {
             return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->invalidDomain));
         }
 
-        $certName = 'tls-' . str_replace('.', '-',$certData->domain);
-        $result = $this->loadModel('cne')->validateCert($certName, $certData->certPem, $certData->certKey, $certData->domain);
+        $certName = 'tls-' . str_replace('.', '-',$certData->customDomain);
+        $result = $this->loadModel('cne')->validateCert($certName, $certData->certPem, $certData->certKey, $certData->customDomain);
         if($result->code == 200) return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->validCert));
 
         return $this->send(array('result' => 'fail', 'message' => $result->message));
@@ -453,6 +453,9 @@ class system extends control
         $domainSettings = $this->system->getDomainSettings();
         $certName       = 'tls-' . str_replace('.', '-', $domainSettings->customDomain);
         $cert           = $this->loadModel('cne')->certInfo($certName);
+
+        $notAfter = zget($cert, 'not_after', '');
+        if($notAfter) $cert->expiredDate = date('Y-m-d H:i:s', $notAfter);
 
         $this->view->title          = $this->lang->system->domain->common;
         $this->view->domainSettings = $domainSettings;
