@@ -296,13 +296,13 @@ class system extends control
 
         if($_POST)
         {
-            $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+            $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
             $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
-            $this->system->updateSMTPSettings($ldapApp, $channel);
+            $this->system->updateSMTPSettings();
 
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
-            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->smtpUpdateSuccess, 'locate' => $this->inLink('smtpView')));
         }
 
         $this->lang->switcherMenu = $this->system->getSMTPSwitcher();
@@ -310,7 +310,7 @@ class system extends control
         $this->view->title        = $this->lang->system->SMTP->editSMTP;
         $this->view->smtpSettings = $this->system->getSMTPSettings();
         $this->view->smtpLinked   = $this->instance->countSMTP();
-        $this->view->activeSMTP   = false;
+        $this->view->activeSMTP   = zget($this->view->smtpSettings, 'enabled', false);
 
         $this->display();
     }

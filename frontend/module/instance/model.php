@@ -710,7 +710,7 @@ class InstanceModel extends model
         $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
         $settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
 
-        $instance = $this->doCneInstall($instance, $space, $settingsMap, array(), $app);
+        $instance = $this->doCn eInstall($instance, $space, $settingsMap, array(), $app);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
@@ -729,8 +729,8 @@ class InstanceModel extends model
         $snippetSettings->values->mail->smtp    = new stdclass;
         $snippetSettings->values->mail->smtp->host = "{$instance->k8name}.{$snippetSettings->namespace}.svc";
         $snippetSettings->values->mail->smtp->port = '1025';
-        $snippetSettings->values->mail->smtp->user = $settingsMap->env->SMTP_USER;
-        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+        $snippetSettings->values->mail->smtp->user = 'smtp-bot@quickon.local'; // This is fake value.
+        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE; // This is fake value.
 
         $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
         if($snippetResult->code != 200)
@@ -922,13 +922,13 @@ class InstanceModel extends model
      *
      * @param  object $instance
      * @param  object $space
-     * @param  object $settingMap
+     * @param  object $settingsMap
      * @param  array  $snippets
      * @param  object $app
      * @access private
      * @return object|bool
      */
-    private function doCneInstall($instance, $space, $settingMap, $snippets = array(), $app = array())
+    private function doCneInstall($instance, $space, $settingsMap, $snippets = array(), $app = array())
     {
         $apiParams = new stdclass;
         $apiParams->userame           = $instance->createdBy;
@@ -938,7 +938,7 @@ class InstanceModel extends model
         $apiParams->chart             = $instance->chart;
         $apiParams->version           = $instance->version;
         $apiParams->channel           = $instance->channel;
-        $apiParams->settings_map      = $settingMap;
+        $apiParams->settings_map      = $settingsMap;
         $apiParams->settings_snippets = array_values($snippets);
 
         if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas'); // Only for demo enviroment.

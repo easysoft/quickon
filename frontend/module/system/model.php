@@ -148,7 +148,6 @@ class systemModel extends model
         $buttonHtml .= "</span>";
 
         echo $buttonHtml;
-
     }
 
     /**
@@ -496,59 +495,54 @@ class systemModel extends model
         return $settings;
     }
 
+    /**
+     * Update SMTP settings.
+     *
+     * @access public
+     * @return void
+     */
     public function updateSMTPSettings()
     {
         $this->loadModel('cne');
         $this->loadModel('instance');
 
-        $smtpSettings = fixer::input('pos')->get();
+        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+
+        $smtpSettings = fixer::input('post')->get();
 
         $instanceID = $this->setting->getItem('owner=system&module=common&section=smtp&key=instanceID');
         $instance   = $this->instance->getByID($instanceID);
-        if($instance)
+        if(!$instance)
         {
-
+            dao::$errors[] = $this->lang->system->errors->notFoundSMTPService;
+            return false;
         }
+
+        $instance->version = 'latest'; // Update and upgrade SMTP proxy instance.
 
         /* 1. Update SMTP service settings. */
         $settingsMap = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=settingsMap'));
+        $settingsMap->env->SMTP_HOST = $smtpSettings->host;
+        $settingsMap->env->SMTP_PORT = strval($smtpSettings->port);
+        $settingsMap->env->SMTP_USER = $smtpSettings->user;
+        $settingsMap->env->SMTP_PASS = $smtpSettings->pass;
 
-        $settingsMap->env->SMTP_HOST         = $smtpSettings->host;
-        $settingsMap->env->SMTP_PORT         = strval($smtpSettings->port);
-        $settingsMap->env->SMTP_USER         = $smtpSettings->user;
-        $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
-        //$settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
+        $settings = new stdclass;
+        $settings->settings_map = $settingsMap;
 
-        $this->
-
-        /* 2. Update SMTP snippet settings. */
-        $snippetSettings = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=snippetSettings'));
-
-        $snippetSettings->values->mail->smtp->user = $settingsMap->env->SMTP_USER;
-        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
-
-        $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
+        $snippetResult = $this->loadModel('cne')->updateConfig($instance, $settings);
         if($snippetResult->code != 200)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
             return false;
         }
 
-        /* Save LDAP account. */
+        /* 2. Save SMTP account. */
         $secretKey = helper::readKey();
-        $settingsMap->env->SMTP_PASS         = openssl_encrypt($settingsMap->env->SMTP_PASS, 'DES-ECB', $secretKey);
-        $settingsMap->env->AUTHENTICATE_CODE = openssl_encrypt($settingsMap->env->AUTHENTICATE_CODE, 'DES-ECB', $secretKey);
-
-        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+        $settingsMap->env->SMTP_PASS = openssl_encrypt($settingsMap->env->SMTP_PASS, 'DES-ECB', $secretKey);
 
         $this->loadModel('setting');
-        $this->setting->setItem('system.common.smtp.enabled', true);
-        $this->setting->setItem('system.common.smtp.instanceID', $instance->id);
-        $this->setting->setItem('system.common.smtp.snippetName', $snippetSettings->name);
         $this->setting->setItem('system.common.smtp.settingsMap', json_encode($settingsMap));
-        $this->setting->setItem('system.common.smtp.snippetSettings', json_encode($snippetSettings));
-
-        $this->loadModel('cne')->updateSnippet();
 
         return true;
     }
@@ -861,35 +855,6 @@ class systemModel extends model
     }
 
     /**
-     * Print edit SMTP button.
-     *
-     * @access public
-     * @return string
-     */
-    public function printEditSMTPBtn()
-    {
-        $this->loadModel('instance');
-
-        $disableEdit = false;
-        $title       = $this->lang->system->SMTP->edit;
-        $toolTips    = '';
-        $count       = $this->instance->countSMTP();
-        if($count)
-        {
-            $disableEdit = true;
-            $title       = $this->lang->system->notices->smtpUsed;
-            $toolTips    = "data-toggle='tooltip' data-placement='bottom'";
-        }
-
-        $buttonHtml = '';
-        $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
-        $buttonHtml .= html::a(inLink('editSMTP'), $this->lang->system->SMTP->edit, '', ($disableEdit ? 'disabled' : '') . " title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
-        $buttonHtml .= "</span>";
-
-        echo $buttonHtml;
-    }
-
-    /**
      * Print SMTP buttons.
      *
      * @param  objevt $smtpInstance
@@ -911,9 +876,13 @@ class systemModel extends model
         $count    = $this->instance->countSMTP();
         if($count)
         {
-            $title    = $this->lang->system->notices->smtpUsed;
+            $title    = sprintf($this->lang->system->notices->smtpUsed, $count);
             $toolTips = "data-toggle='tooltip' data-placement='bottom' runat='server'";
         }
+
+        $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
+        $buttonHtml .= html::a(inLink('editSMTP'), $this->lang->system->SMTP->edit, '', "title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
+        $buttonHtml .= "</span>";
 
         $disableStop = $count > 0 || !$this->instance->canDo('stop', $smtpInstance);
         $buttonHtml .= "<span {$toolTips} title='{$title}'>";
@@ -921,7 +890,6 @@ class systemModel extends model
         $buttonHtml .= "</span>";
 
         echo $buttonHtml;
-
     }
 }
 

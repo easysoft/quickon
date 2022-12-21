@@ -23,7 +23,6 @@
     <div class='main-header'>
       <h2><?php echo $lang->system->SMTP->common;?></h2>
       <div class='smtp-button-group btn-toolbar pull-right'>
-        <?php //$this->system->printEditSMTPBtn();?>
         <?php $this->system->printSMTPButtons($smtpInstance);?>
       </div>
     </div>
