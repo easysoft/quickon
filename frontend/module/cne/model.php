@@ -292,7 +292,7 @@ class cneModel extends model
         $apiParams['name']    = $certName;
 
         $apiUrl = "/api/cne/system/tls/info";
-        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        $result = $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
         if($result && $result->code == 200) return $result->data;
 
         return null;
