@@ -15,6 +15,19 @@ $(function()
         });
     });
 
+    $('#ldapPassBtn').on('click', function(event){
+        var inputTyep = $('#ldap_password').attr('type');
+        if(inputTyep == 'text'){
+            $('#ldap_password').attr('type', 'password');
+            $('#ldapPassBtn').find('.icon').removeClass('icon-eye').addClass('icon-eye-off');
+        }
+        else
+        {
+            $('#ldap_password').attr('type', 'text');
+            $('#ldapPassBtn').find('.icon').addClass('icon-eye').removeClass('icon-eye-off');
+        }
+    });
+
     $('#copyPassBtn').on('click', function(event)
     {
         $('#ldapPassword').select();

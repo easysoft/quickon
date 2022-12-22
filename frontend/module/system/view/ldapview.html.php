@@ -77,7 +77,12 @@
         </tr>
         <tr>
           <th><?php echo $lang->system->LDAP->password;?></th>
-          <td><?php echo zget($ldapSettings, 'bindPass', '');?></td>
+          <td>
+            <div class='w-250px input-group'>
+              <?php echo html::password('ldap_password', zget($ldapSettings, 'bindPass', ''), "readonly class='form-control'");?>
+              <span class='input-group-addon'><button id='ldapPassBtn'><i class='icon icon-eye-off'></i></button></span>
+            </div>
+          </td>
         </tr>
         <tr>
           <th><?php echo $lang->system->LDAP->ldapRoot;?></th>
