@@ -245,6 +245,7 @@ class InstanceModel extends model
         $snippetName = $this->system->ldapSnippetName();
 
         $settings = new stdclass;
+        $settings->force_restart = true;
         if($enableLDAP)
         {
             $settings->settings_snippets = [$snippetName];
