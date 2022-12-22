@@ -521,7 +521,8 @@ class systemModel extends model
         $instance->version = 'latest'; // Update and upgrade SMTP proxy instance.
 
         /* 1. Update SMTP service settings. */
-        $settingsMap = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=settingsMap'));
+        $settingsMap = new stdclass;
+        $settingsMap->env = new stdclass;
         $settingsMap->env->SMTP_HOST = $smtpSettings->host;
         $settingsMap->env->SMTP_PORT = strval($smtpSettings->port);
         $settingsMap->env->SMTP_USER = $smtpSettings->user;
