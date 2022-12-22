@@ -1,5 +1,11 @@
 $(function()
 {
+    /**
+     * Fresh submit button.
+     *
+     * @access public
+     * @return void
+     */
     function freshSubmitBtn()
     {
         var enableLDAP    = $('#LDAPForm input[type=checkbox]:checked').length > 0;
@@ -11,13 +17,15 @@ $(function()
 
         if(enableLDAP && ldapCheckPass)
         {
-          $('#LDAPForm button[type=submit]').attr('disabled', false);
+            $('#LDAPForm #submitBtn').attr('disabled', false);
         }
         else
         {
-          $('#LDAPForm button[type=submit]').attr('disabled', true);
+            $('#LDAPForm #submitBtn').attr('disabled', true);
         }
     }
+
+    freshSubmitBtn();
 
     $('#LDAPForm input[type=checkbox]').on('change', function(event)
     {
@@ -87,5 +95,35 @@ $(function()
         });
     });
 
-    freshSubmitBtn();
+    $('#submitBtn').on('click', function()
+    {
+        $('#submitBtn').attr('disabled', true);
+
+        var ldapData = $('#LDAPForm').serializeArray();
+        $.post(createLink('system', 'installLDAP'), ldapData).done(function(response)
+        {
+            $('#submitBtn').attr('disabled', false);
+
+            var res = JSON.parse(response);
+            if(res.result == 'success')
+            {
+                parent.window.location.href = res.locate;
+            }
+            else
+            {
+                $('#waiting').modal('hide');
+                clearInterval(timerID);
+
+                var errMessage = res.message;
+                if(res.message instanceof Array) errMessage = res.message.join('<br/>');
+                if(res.message instanceof Object) errMessage = Object.values(res.message).join('<br/>');
+
+                bootbox.alert(
+                {
+                    title:   notices.fail,
+                    message: errMessage,
+                });
+            }
+        });
+    });
 });

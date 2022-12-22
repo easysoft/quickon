@@ -88,7 +88,6 @@ class system extends control
             else
             {
                 dao::$errors[] = $this->lang->system->notSupportedLDAP;
-                return false;
             }
 
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
