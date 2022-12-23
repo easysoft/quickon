@@ -5,6 +5,7 @@
 package instance
 
 import (
+	v1 "k8s.io/api/core/v1"
 	"strings"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
@@ -41,6 +42,7 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 	}
 
 	var extraHosts = make(map[string]string, 0)
+	var lbIps = make(map[string]string, 0)
 	var accessHost string
 	var internalHost string
 
@@ -95,13 +97,20 @@ func (i *Instance) GetDomains(component string) (interface{}, error) {
 		if componentName == filterComponentName {
 			internalHost = strings.Join([]string{svc.Name, svc.Namespace, "svc"}, ".")
 		}
+
+		if svc.Spec.Type == v1.ServiceTypeLoadBalancer {
+			if len(svc.Status.LoadBalancer.Ingress) > 0 {
+				lbIps[componentName] = svc.Status.LoadBalancer.Ingress[0].IP
+			}
+		}
 	}
 
 	// build response
 	data := model.AppResDomain{
-		InternalHost: internalHost,
-		AccessHost:   accessHost,
-		ExtraHosts:   extraHosts,
+		InternalHost:    internalHost,
+		AccessHost:      accessHost,
+		ExtraHosts:      extraHosts,
+		LoadBalancerIPS: lbIps,
 	}
 
 	return data, nil

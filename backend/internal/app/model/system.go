@@ -15,3 +15,16 @@ type ReqSmtpAuth struct {
 	User string `json:"user"`
 	Pass string `json:"pass"`
 }
+
+type ReqTLSUpload struct {
+	Name           string `json:"name,omitempty"`
+	CertificatePem string `json:"certificate_pem"`
+	PrivateKeyPem  string `json:"private_key_pem"`
+}
+
+// ReqSystemQLB 负载均衡配置
+type ReqSystemQLB struct {
+	QueryNamespace
+	Name   string `json:"name"`
+	IPPool string `json:"ippool"`
+}

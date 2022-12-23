@@ -11,6 +11,7 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/utils/tls"
 	"io"
 
 	"github.com/sirupsen/logrus"
@@ -128,6 +129,46 @@ func (m *Manager) ListAllApplications() (interface{}, error) {
 	}
 
 	return result, nil
+}
+
+func (m *Manager) UploadTLS(name, certPem, keyPem string) error {
+	secret, err := m.ks.Store.GetSecret(m.namespace, name)
+	if err != nil {
+		s := v1.Secret{
+			ObjectMeta: metav1.ObjectMeta{
+				Name: name,
+			},
+			Data: map[string][]byte{
+				v1.TLSCertKey:       []byte(certPem),
+				v1.TLSPrivateKeyKey: []byte(keyPem),
+			},
+			Type: v1.SecretTypeTLS,
+		}
+		_, err = m.ks.Clients.Base.CoreV1().Secrets(m.namespace).Create(m.ctx, &s, metav1.CreateOptions{})
+		return err
+	}
+
+	secret.Data[v1.TLSCertKey] = []byte(certPem)
+	secret.Data[v1.TLSPrivateKeyKey] = []byte(keyPem)
+
+	_, err = m.ks.Clients.Base.CoreV1().Secrets(m.namespace).Update(m.ctx, secret, metav1.UpdateOptions{})
+	return err
+}
+
+func (m *Manager) ReadTLSCertInfo(name string) (*tls.CertInfo, error) {
+	secret, err := m.ks.Store.GetSecret(m.namespace, name)
+	if err != nil {
+		return nil, err
+	}
+
+	t, err := tls.Parse(secret.Data[v1.TLSCertKey], secret.Data[v1.TLSPrivateKeyKey], m.logger)
+	if err != nil {
+		return nil, err
+	}
+
+	info := t.GetCertInfo()
+
+	return &info, nil
 }
 
 func completeAppLabels(ctx context.Context, rel *release.Release, ks *cluster.Cluster, logger logrus.FieldLogger, meta metav1.ObjectMeta) error {

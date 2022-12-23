@@ -118,7 +118,7 @@ func (i *Instance) Restart(chart, channel string) error {
 	}
 	defer os.Remove(lastValFile)
 
-	stopSettings := []string{generateRestartSetting()}
+	stopSettings := generateRestartSetting()
 	options := &values.Options{
 		Values:     stopSettings,
 		ValueFiles: []string{lastValFile},
@@ -132,9 +132,12 @@ func (i *Instance) Restart(chart, channel string) error {
 	}
 }
 
-func generateRestartSetting() string {
+func generateRestartSetting() []string {
 	uniqueStr := time.Now().Format(time.RFC3339)
-	return "global.env.RESTART_TIME=" + uniqueStr
+	return []string{
+		"global.env.RESTART_TIME=" + uniqueStr,
+		"env.RESTART_TIME=null",
+	}
 }
 
 func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel, snippetSettings, delSettings map[string]interface{}) error {
@@ -150,6 +153,9 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	vals, err = h.GetValues(i.name)
 	if err != nil {
 		return err
+	}
+	if vals == nil {
+		vals = make(map[string]interface{})
 	}
 
 	// remove values from the release's current values
@@ -173,13 +179,15 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 	}
 
 	if body.ForceRestart {
-		settings = append(settings, generateRestartSetting())
+		settings = append(settings, generateRestartSetting()...)
 	}
 
 	options := &values.Options{
 		Values:     settings,
 		ValueFiles: []string{lastValFile},
 	}
+
+	i.logger.Debugf("options is %+v", options)
 
 	if len(snippetSettings) > 0 {
 		snippetValueFile, err := writeValuesFile(snippetSettings)

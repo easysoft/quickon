@@ -35,6 +35,9 @@ func namespaceExist(fl validator.FieldLevel) bool {
 func versionFormat(fl validator.FieldLevel) bool {
 	val := fl.Field().String()
 	if val != "" {
+		if val == "latest" {
+			return true
+		}
 		return versionRegexSemantic.MatchString(val)
 	}
 	return true

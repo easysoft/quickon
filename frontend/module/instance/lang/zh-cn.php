@@ -8,6 +8,7 @@ $lang->instance->cpu              = 'CPU';
 $lang->instance->mem              = '内存';
 $lang->instance->space            = '空间';
 $lang->instance->domain           = '域名';
+$lang->instance->visitIP          = '访问方式';
 $lang->instance->dbType           = '数据库';
 $lang->instance->advanceOption    = '高级选项';
 $lang->instance->baseInfo         = '基本信息';
@@ -105,6 +106,7 @@ $lang->instance->backup->keepDayRange        = '请输入1~30之间的整数';
 $lang->instance->backup->firstStartTime      = '%s 首次备份将于%s 执行';
 $lang->instance->backup->invalidTime         = '无效的时间';
 $lang->instance->backup->disableAutoBackup   = '自动备份已关闭';
+$lang->instance->backup->keepBackupBySystem  = '备份数据超过1条时系统才会删除过期的自动备份数据。';
 
 $lang->instance->backup->cycleList[1]  = '每日';
 
@@ -120,6 +122,7 @@ $lang->instance->backup->statusList['inprogress']     = '备份中';
 $lang->instance->backup->statusList['completed']      = '完成';
 $lang->instance->backup->statusList['executedFailed'] = '失败';
 $lang->instance->backup->statusList['uploading']      = '上传中';
+$lang->instance->backup->statusList['deleting']       = '删除中';
 $lang->instance->backup->statusList['uploadFailed']   = '上传失败';
 $lang->instance->backup->statusList['downloading']    = '下载中';
 $lang->instance->backup->statusList['downloadFailed'] = '下载失败';

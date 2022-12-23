@@ -1,4 +1,20 @@
 <div class='panel'>
+  <?php $ips = (array) zget($domain,'load_balancer_ips', new stdclass);?>
+  <?php if(!empty($ips)):?>
+  <div class='panel-heading'>
+    <div class='panel-title'><?php echo $lang->instance->visitIP;?></span></div>
+  </div>
+  <div class='panel-body'>
+      <table class='table table-form cell'>
+        <?php foreach($ips as $key => $value):?>
+        <tr>
+          <th><?php echo $key;?></th>
+          <td><?php echo $value;?></td>
+        </tr>
+        <?php endforeach;?>
+      </table>
+  </div>
+  <?php endif;?>
   <div class='panel-heading'>
     <div class='panel-title'><?php echo $lang->instance->mem;?></span></div>
   </div>

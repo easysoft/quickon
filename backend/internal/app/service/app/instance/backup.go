@@ -172,7 +172,10 @@ func (i *Instance) GetBackupStatus(backupName string) (interface{}, error) {
 func (i *Instance) RemoveBackup(backupName string) error {
 	ns := viper.GetString(constant.FlagRuntimeNamespace)
 	currTime := time.Now()
-	delName := fmt.Sprintf("%s-delete-%d", i.name, currTime.Unix())
+	delName := fmt.Sprintf("%s-del-%d", backupName, currTime.Unix())
+	if len(delName) > 63 {
+		delName = delName[0:63]
+	}
 	delReq := quchengv1beta1.DeleteBackupRequest{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: delName,

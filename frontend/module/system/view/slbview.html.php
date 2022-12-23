@@ -19,21 +19,16 @@
 <div id='mainContent' class='main-row'>
   <div class='main-col main-content'>
     <div class='main-header'>
-      <h2><?php echo $lang->system->domain->common;?></h2>
+      <h2><?php echo $lang->system->SLB->common;?></h2>
       <div class='smtp-button-group btn-toolbar pull-right'>
-      <?php echo html::a($this->inLink('editDomain'), $lang->system->domain->editDomain, '', "class='btn btn-primary'");?>
+      <?php echo html::a($this->inLink('editSLB'), $lang->system->SLB->edit, '', "class='btn btn-primary'");?>
       </div>
     </div>
     <table class='table table-form'>
       <tbody>
         <tr>
-          <th><?php echo $lang->system->domain->currentDomain;?></th>
-          <td><?php echo zget($domainSettings, 'customDomain', '');?></td>
-          <td></td>
-        </tr>
-        <tr>
-          <th><?php echo $lang->system->domain->expiredDate;?></th>
-          <td><?php echo zget($cert, 'expiredDate', '');?></td>
+          <th><?php echo $lang->system->SLB->ipPool;?></th>
+          <td><?php echo zget($slbSettings, 'ippool', '');?></td>
           <td></td>
         </tr>
       </tbody>

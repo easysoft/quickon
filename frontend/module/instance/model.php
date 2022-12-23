@@ -108,6 +108,26 @@ class InstanceModel extends model
     }
 
     /**
+     * Get instance list that has been enabled LDAP.
+     *
+     * @access public
+     * @return array
+     */
+    public function getListEnabledLDAP()
+    {
+        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('length(ldapSnippetName) > 0')->fetchAll('id');
+
+        $spaces = $this->dao->select('*')->from(TABLE_SPACE)
+            ->where('deleted')->eq(0)
+            ->andWhere('id')->in(array_column($instances, 'space'))
+            ->fetchAll('id');
+
+        foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
+
+        return $instances;
+    }
+
+    /**
      * Count instance which is enabled LDAP.
      *
      * @access public
@@ -225,6 +245,7 @@ class InstanceModel extends model
         $snippetName = $this->system->ldapSnippetName();
 
         $settings = new stdclass;
+        $settings->force_restart = true;
         if($enableLDAP)
         {
             $settings->settings_snippets = [$snippetName];
@@ -618,11 +639,43 @@ class InstanceModel extends model
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        return $this->doCneInstall($app, $instance, $space, $settingMap, $snippets);
+        return $this->doCneInstall($instance, $space, $settingMap, $snippets, $app);
     }
 
     /**
-     * install global SMTP proxy service.
+     * Install System SLB component.
+     *
+     * @param  object $app
+     * @param  string $k8name
+     * @param  string $channel
+     * @access public
+     * @return object
+     */
+    public function installSysSLB($app, $k8name = 'cne-lb', $channel = 'stable')
+    {
+        $this->app->loadLang('system');
+
+        $space = $this->loadModel('space')->getSystemSpace($this->app->user->account);
+
+        $instance = $this->createInstance($app, $space, '', '', $k8name, $channel);
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            return false;
+        }
+
+        $instance = $this->doCneInstall($instance, $space, (new stdclass), array(), $app);
+        if(!$instance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
+            return false;
+        }
+
+        return $instance;
+    }
+
+    /**
+      install global SMTP proxy service.
      *
      * @param  object $app
      * @param  object $smtpSettings
@@ -658,7 +711,7 @@ class InstanceModel extends model
         $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
         $settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
 
-        $instance = $this->doCneInstall($app, $instance, $space, $settingsMap);
+        $instance = $this->doCneInstall($instance, $space, $settingsMap, array(), $app);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
@@ -677,8 +730,8 @@ class InstanceModel extends model
         $snippetSettings->values->mail->smtp    = new stdclass;
         $snippetSettings->values->mail->smtp->host = "{$instance->k8name}.{$snippetSettings->namespace}.svc";
         $snippetSettings->values->mail->smtp->port = '1025';
-        $snippetSettings->values->mail->smtp->user = $settingsMap->env->SMTP_USER;
-        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+        $snippetSettings->values->mail->smtp->user = 'smtp-bot@quickon.local'; // This is fake value.
+        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE; // This is fake value.
 
         $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
         if($snippetResult->code != 200)
@@ -739,7 +792,7 @@ class InstanceModel extends model
         $settingMap->auth->password = helper::randStr(16);
         $settingMap->auth->root     = 'dc=quickon,dc=org';
 
-        $instance = $this->doCneInstall($app, $instance, $space, $settingMap);
+        $instance = $this->doCneInstall($instance, $space, $settingMap, array(), $app);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
@@ -818,7 +871,7 @@ class InstanceModel extends model
         if(!$instance) return false;
 
         $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        return $this->doCneInstall($app, $instance, $space, $settingMap);
+        return $this->doCneInstall($instance, $space, $settingMap, array(), $app);
     }
 
     /**
@@ -840,7 +893,7 @@ class InstanceModel extends model
         $instanceData = new stdclass;
         $instanceData->appId           = $app->id;
         $instanceData->appName         = $app->alias;
-        $instanceData->name            = !empty($name)   ? $name : $app->alias;
+        $instanceData->name            = !empty($name) ? $name : $app->alias;
         $instanceData->domain          = !empty($thirdDomain) ? $this->fullDomain($thirdDomain) : '';
         $instanceData->logo            = $app->logo;
         $instanceData->desc            = $app->desc;
@@ -868,15 +921,15 @@ class InstanceModel extends model
     /**
      * Create app instance on CNE platform.
      *
-     * @param  object $app
      * @param  object $instance
      * @param  object $space
-     * @param  object $settingMap
+     * @param  object $settingsMap
      * @param  array  $snippets
+     * @param  object $app
      * @access private
      * @return object|bool
      */
-    private function doCneInstall($app, $instance, $space, $settingMap, $snippets = array())
+    private function doCneInstall($instance, $space, $settingsMap, $snippets = array(), $app = array())
     {
         $apiParams = new stdclass;
         $apiParams->userame           = $instance->createdBy;
@@ -886,10 +939,10 @@ class InstanceModel extends model
         $apiParams->chart             = $instance->chart;
         $apiParams->version           = $instance->version;
         $apiParams->channel           = $instance->channel;
-        $apiParams->settings_map      = $settingMap;
+        $apiParams->settings_map      = $settingsMap;
         $apiParams->settings_snippets = array_values($snippets);
 
-        if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas');
+        if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas'); // Only for demo enviroment.
 
         $result = $this->cne->installApp($apiParams);
         if($result->code != 200)
@@ -1201,7 +1254,11 @@ class InstanceModel extends model
      */
     public function autoBackup()
     {
-        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)->where('deleted')->eq(0)->andWhere('autoBackup')->eq(true)->fetchAll('id');
+        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('deleted')->eq(0)
+            ->andWhere('autoBackup')->eq(true)
+            ->andWhere('status')->eq('running')
+            ->fetchAll('id');
 
         /* Load all crons that instance is enable auto backup. */
         $crons = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->in(array_keys($instanceList))->fetchAll();
@@ -1214,7 +1271,7 @@ class InstanceModel extends model
             $minute = intval($cron->m);
             if(!($nowHour == $hour and $nowMiute == $minute)) continue;
 
-            // 1. create new backup of instance.
+            /* 1. create new backup of instance. */
             $system = new stdclass;
             $system->account = 'auto';  // The string 'auto' should be kept for System.
 
@@ -1224,14 +1281,25 @@ class InstanceModel extends model
 
             $this->action->create('instance', $instance->id, 'autoBackup');
 
-            // 2. delete expired backup. Get backup list of instance, then check every backup is expired or not.
+            /* 2. Pick latest successful backup recorder. */
+            $latestBackup = null;
             $backupList = $this->backupList($instance);
             foreach($backupList as $backup)
             {
-                if($backup->creator != 'auto') continue;
+                if(empty($latestBackup) or $backup->status == 'completed' && $backup->create_time > $latestBackup->create_time)
+                {
+                    $latestBackup = $backup;
+                }
+            }
+
+            /* 3. delete expired backup. Get backup list of instance, then check every backup is expired or not.*/
+            foreach($backupList as $backup)
+            {
+                if($backup->creator != 'auto') continue; // Only delete data madde by auto backup.
+                if($latestBackup && $latestBackup->name == $backup->name) continue; // Keep latest successful backup.
 
                 $deadline = intval($backup->create_time) + $instance->backupKeepDays * 24 * 3600;
-                //$deadline = intval($backup->create_time) + 300; // Debug codes: delete backup if it life is older 5 minuts.
+                //$deadline = intval($backup->create_time) + 300; // Debug codes: delete backup if it's life is older 5 minuts.
                 if($deadline < time())
                 {
                     $this->deleteBackup($instance, $backup->name);

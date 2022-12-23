@@ -1,3 +1,4 @@
+.plug-container > div{margin-bottom: 20px;}
 .plug-container a {display: inline-block; width: 150px;}
 .plug-container a:hover { text-decoration: none; box-shadow: 0 1px 5px rgb(0 0 0 / 18%);}
 .logo { display: inline-block; padding: 10px;}

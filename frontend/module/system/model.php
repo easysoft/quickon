@@ -83,28 +83,33 @@ class systemModel extends model
         echo $btnHtml;
     }
 
+    /**
+     * Print edit LDAP button.
+     *
+     * @access public
+     * @return void
+     */
     public function printEditLDAPBtn()
     {
         $this->loadModel('instance');
 
-        $disableEdit = false;
         $title       = $this->lang->system->editLDAP;
         $toolTips    = '';
         $count       = $this->instance->countLDAP();
         if($count)
         {
-            $disableEdit = true;
-            $title       = $this->lang->system->notices->ldapUsed;
+            $title       = sprintf($this->lang->system->notices->ldapUsed, $count);
             $toolTips    = "data-toggle='tooltip' data-placement='bottom'";
         }
 
         $buttonHtml = '';
         $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
-        $buttonHtml .= html::a(inLink('editLDAP'), $this->lang->system->editLDAP, '', ($disableEdit ? 'disabled' : '') . " title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
+        $buttonHtml .= html::a(inLink('editLDAP'), $this->lang->system->editLDAP, '', "title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
         $buttonHtml .= "</span>";
 
         echo $buttonHtml;
     }
+
     /**
      * Print LDAP buttons.
      *
@@ -143,7 +148,6 @@ class systemModel extends model
         $buttonHtml .= "</span>";
 
         echo $buttonHtml;
-
     }
 
     /**
@@ -188,7 +192,7 @@ class systemModel extends model
      * @access protected
      * @return bool
      */
-    public function installExtraLDAP($settings)
+    public function configExtraLDAP($settings)
     {
         if(!$this->testLDAPConnection($settings))
         {
@@ -250,18 +254,59 @@ class systemModel extends model
     }
 
     /**
+     * Update LDAP config and update instance.
+     *
+     * @param  object $ldapApp
+     * @param  string $channel
+     * @access public
+     * @return void
+     */
+    public function updateLDAP($ldapApp, $channel)
+    {
+        $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
+        if($postData->source == 'qucheng')
+        {
+            $success = $this->updateQuchengLDAP($ldapApp, $channel);
+        }
+        else if($postData->source == 'extra')
+        {
+            $success = $this->configExtraLDAP((object)$postData->extra);
+            if($success) $this->uninstallQuChengLDAP(true);
+        }
+
+        if(!$success) return false;
+
+        /* Update instances that has been enabled LDAP. */
+        $instanceList = $this->loadModel('instance')->getListEnabledLDAP();
+        $counter = count($instanceList);
+        foreach($instanceList  as $instance)
+        {
+            $this->loadModel('setting')->setItem('system.common.ldap.updatingProgress', $counter);
+            $this->instance->switchLDAP($instance, true);
+            $counter-- ;
+        }
+
+        $this->loadModel('setting')->deleteItems('owner=system&module=common&section=ldap&key=updatingProgress');
+        return true;
+    }
+
+    /**
      * Uninstall QuCheng LDAP.
      *
+     * @param bool    $force
      * @access public
      * @return bool
      */
-    public function uninstallQuChengLDAP()
+    public function uninstallQuChengLDAP($force = false)
     {
-        $ldapLinked = $this->loadModel('instance')->countLDAP();
-        if($ldapLinked)
+        if(!$force)
         {
-            dao::$errors[] = $this->lang->system->errors->LDAPLinked;
-            return false;
+            $ldapLinked = $this->loadModel('instance')->countLDAP();
+            if($ldapLinked)
+            {
+                dao::$errors[] = $this->lang->system->errors->LDAPLinked;
+                return false;
+            }
         }
 
         $instanceID = $this->setting->getItem('owner=system&module=common&section=ldap&key=instanceID');
@@ -450,59 +495,55 @@ class systemModel extends model
         return $settings;
     }
 
+    /**
+     * Update SMTP settings.
+     *
+     * @access public
+     * @return void
+     */
     public function updateSMTPSettings()
     {
         $this->loadModel('cne');
         $this->loadModel('instance');
 
-        $smtpSettings = fixer::input('pos')->get();
+        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+
+        $smtpSettings = fixer::input('post')->get();
 
         $instanceID = $this->setting->getItem('owner=system&module=common&section=smtp&key=instanceID');
         $instance   = $this->instance->getByID($instanceID);
-        if($instance)
+        if(!$instance)
         {
-
-        }
-
-        /* 1. Update SMTP service settings. */
-        $settingsMap = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=settingsMap'));
-
-        $settingsMap->env->SMTP_HOST         = $smtpSettings->host;
-        $settingsMap->env->SMTP_PORT         = strval($smtpSettings->port);
-        $settingsMap->env->SMTP_USER         = $smtpSettings->user;
-        $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
-        //$settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
-
-        $this->
-
-        /* 2. Update SMTP snippet settings. */
-        $snippetSettings = json_decode($this->setting->getItem('owner=system&module=common&section=smtp&key=snippetSettings'));
-
-        $snippetSettings->values->mail->smtp->user = $settingsMap->env->SMTP_USER;
-        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
-
-        $snippetResult = $this->loadModel('cne')->addSnippet($snippetSettings);
-        if($snippetResult->code != 200)
-        {
-            dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
+            dao::$errors[] = $this->lang->system->errors->notFoundSMTPService;
             return false;
         }
 
-        /* Save LDAP account. */
-        $secretKey = helper::readKey();
-        $settingsMap->env->SMTP_PASS         = openssl_encrypt($settingsMap->env->SMTP_PASS, 'DES-ECB', $secretKey);
-        $settingsMap->env->AUTHENTICATE_CODE = openssl_encrypt($settingsMap->env->AUTHENTICATE_CODE, 'DES-ECB', $secretKey);
+        $instance->version = 'latest'; // Update and upgrade SMTP proxy instance.
 
-        $snippetSettings->values->mail->smtp->pass = $settingsMap->env->AUTHENTICATE_CODE;
+        /* 1. Update SMTP service settings. */
+        $settingsMap = new stdclass;
+        $settingsMap->env = new stdclass;
+        $settingsMap->env->SMTP_HOST = $smtpSettings->host;
+        $settingsMap->env->SMTP_PORT = strval($smtpSettings->port);
+        $settingsMap->env->SMTP_USER = $smtpSettings->user;
+        $settingsMap->env->SMTP_PASS = $smtpSettings->pass;
+
+        $settings = new stdclass;
+        $settings->settings_map = $settingsMap;
+
+        $success = $this->loadModel('cne')->updateConfig($instance, $settings);
+        if(!$success)
+        {
+            dao::$errors[] = $this->lang->system->errors->failToUpdateSMTP;
+            return false;
+        }
+
+        /* 2. Save SMTP account. */
+        $secretKey = helper::readKey();
+        $settingsMap->env->SMTP_PASS = openssl_encrypt($settingsMap->env->SMTP_PASS, 'DES-ECB', $secretKey);
 
         $this->loadModel('setting');
-        $this->setting->setItem('system.common.smtp.enabled', true);
-        $this->setting->setItem('system.common.smtp.instanceID', $instance->id);
-        $this->setting->setItem('system.common.smtp.snippetName', $snippetSettings->name);
         $this->setting->setItem('system.common.smtp.settingsMap', json_encode($settingsMap));
-        $this->setting->setItem('system.common.smtp.snippetSettings', json_encode($snippetSettings));
-
-        $this->loadModel('cne')->updateSnippet();
 
         return true;
     }
@@ -590,8 +631,8 @@ class systemModel extends model
         $settings = new stdclass;
         $settings->customDomain = $this->setting->getItem('owner=system&module=common&section=domain&key=customDomain');
         $settings->https        = $this->setting->getItem('owner=system&module=common&section=domain&key=https');
-        $settings->publicKey    = $this->setting->getItem('owner=system&module=common&section=domain&key=publicKey');
-        $settings->privateKey   = $this->setting->getItem('owner=system&module=common&section=domain&key=privateKey');
+        $settings->certPem      = ''; //
+        $settings->certKey      = ''; //
 
         return $settings;
     }
@@ -608,20 +649,35 @@ class systemModel extends model
             ->setDefault('customDomain', '')
             ->setDefault('https', 'false')
             ->setIf(is_array($this->post->https) && in_array('true', $this->post->https), 'https', 'true')
-            ->setDefault('publicKey', '')
-            ->setDefault('privateKey', '')
+            ->setDefault('certPem', '')
+            ->setDefault('certKey', '')
             ->get();
 
         $this->dao->from('system')->data($settings)
-            ->check('customDomain', 'notempty');
-            //->check('publicKey', '', )
-            //->check('privateKey', '', );
+            ->check('customDomain', 'notempty')
+            ->checkIf($settings->https == 'true', 'certPem', 'notempty')
+            ->checkIf($settings->https == 'true', 'certKey', 'notempty');
         if(dao::isError()) return;
 
         if(!validater::checkREG($settings->customDomain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
         {
             dao::$errors[] = $this->lang->system->errors->invalidDomain;
             return;
+        }
+
+        /* Upload Certificate to CNE. */
+        if($settings->https == 'true')
+        {
+            $cert = new stdclass;
+            $cert->name            = 'tls-' . str_replace('.', '-', $settings->customDomain);
+            $cert->certificate_pem = $settings->certPem;
+            $cert->private_key_pem = $settings->certKey;
+            $certResult = $this->loadModel('cne')->uploadCert($cert);
+            if($certResult->code != 200)
+            {
+                dao::$errors[] = $certResult->message;
+                return;
+            }
         }
 
         $oldSettings = $this->getDomainSettings();
@@ -644,8 +700,6 @@ class systemModel extends model
 
         $this->setting->setItem('system.common.domain.customDomain', zget($settings, 'customDomain', ''));
         $this->setting->setItem('system.common.domain.https', zget($settings, 'https', 'false'));
-        $this->setting->setItem('system.common.domain.publicKey', zget($settings, 'publicKey', ''));
-        $this->setting->setItem('system.common.domain.privateKey', zget($settings, 'privateKey', ''));
 
         $this->loadModel('instance')->updateInstancesDomain();
 
@@ -680,32 +734,125 @@ class systemModel extends model
     }
 
     /**
-     * Print edit SMTP button.
+     * Get SLB settings.
      *
      * @access public
-     * @return string
+     * @return object
      */
-    public function printEditSMTPBtn()
+    public function getSLBSettings()
     {
-        $this->loadModel('instance');
+        $settings = new stdclass;
+        $settings->instanceID = $this->setting->getItem('owner=system&module=common&section=slb&key=instanceID');
+        $settings->name       = $this->setting->getItem('owner=system&module=common&section=slb&key=name');
+        $settings->ippool     = '';
 
-        $disableEdit = false;
-        $title       = $this->lang->system->SMTP->edit;
-        $toolTips    = '';
-        $count       = $this->instance->countSMTP();
-        if($count)
+        if($settings->instanceID)
         {
-            $disableEdit = true;
-            $title       = $this->lang->system->notices->smtpUsed;
-            $toolTips    = "data-toggle='tooltip' data-placement='bottom'";
+            $slbInstance = $this->loadModel('instance')->getByID($settings->instanceID);
+
+            $qlbInfo = $this->loadmodel('cne')->getQLBinfo($settings->name, $slbInstance->spaceData->k8space); // QLB: Qucheng load balancer.
+            if($qlbInfo) $settings->ippool = $qlbInfo->ippool;
         }
 
-        $buttonHtml = '';
-        $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
-        $buttonHtml .= html::a(inLink('editSMTP'), $this->lang->system->SMTP->edit, '', ($disableEdit ? 'disabled' : '') . " title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
-        $buttonHtml .= "</span>";
+        return $settings;
+    }
 
-        echo $buttonHtml;
+    /**
+     * Save SLB settings.
+     *
+     * @access public
+     * @return void
+     */
+    public function saveSLBSettings()
+    {
+        $settings = fixer::input('post')
+            ->setDefault('ippool', '')
+            ->get();
+        if(empty($settings->ippool))
+        {
+            dao::$errors[] = $this->lang->system->errors->ippoolRequired;
+            return;
+        }
+
+        $reg1Result = validater::checkREG($settings->ippool, '/^((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3}\/\d{1,2}$/');
+        $reg2Result = validater::checkREG($settings->ippool, '/^(((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})-(((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})(\.((2(5[0-5]|[0-4]\d))|[0-1]?\d{1,2})){3})$/');
+        if($reg1Result === false && $reg2Result === false)
+        {
+            dao::$errors[] = $this->lang->system->errors->wrongIPRange;
+            return;
+        }
+
+        $instanceID = $this->setting->getItem('owner=system&module=common&section=slb&key=instanceID');
+        if(!$instanceID)
+        {
+            /* 1. Install SLB component metallb at first time. */
+            $slbInstance = $this->installSLBInstance();
+            if(!$slbInstance) return;
+
+            $instanceID = $slbInstance->id;
+            $this->setting->setItem('system.common.slb.instanceID', $slbInstance->id);
+        }
+
+        $instance = $this->loadModel('instance')->getByID($instanceID);
+        $status = '';
+        /* Wait 30 seconds at most for SLB instance ready. */
+        for($times = 0; $times < 10; $times++)
+        {
+            sleep(3);
+            $statusResponse = $this->loadModel('cne')->queryStatus($instance);
+            if($statusResponse->code != 200) continue;
+
+            $status = $statusResponse->data->status;
+            if($status == 'running') break;
+        }
+
+        if($status != 'running')
+        {
+            dao::$errors[] = $this->lang->system->errors->tryReinstallSLB;
+            return;
+        }
+
+        /* 2. Config SLB. */
+        $settings->name      = 'qlb-quickon';
+        $settings->namespace = 'cne-system';
+        $success = $this->loadModel('cne')->configQLB($settings);
+        if(!$success)
+        {
+            dao::$errors[] = $this->lang->system->errors->failedToConfigSLB;
+            return;
+        }
+
+        $this->setting->setItem('system.common.slb.name', zget($settings, 'name', ''));
+    }
+
+    /**
+     * Install SLB instance.
+     *
+     * @access private
+     * @return object|null
+     */
+    private function installSLBInstance()
+    {
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+
+        $slbApp = new stdclass;
+        $slbApp->name        = 'metallb';
+        $slbApp->alias       = 'metallb';
+        $slbApp->desc        = 'metallb';
+        $slbApp->chart       = 'metallb';
+        $slbApp->app_version = '';
+        $slbApp->version     = '';
+        $slbApp->id          = '';
+        $slbApp->logo        = '';
+
+        $slbInstance = $this->loadModel('instance')->installSysSLB($slbApp, 'cne-lb', $channel);
+        if(!$slbInstance)
+        {
+            dao::$errors[] = $this->lang->system->errors->failedToInstallSLBComponent;
+            return;
+        }
+
+        return $slbInstance;
     }
 
     /**
@@ -730,9 +877,13 @@ class systemModel extends model
         $count    = $this->instance->countSMTP();
         if($count)
         {
-            $title    = $this->lang->system->notices->smtpUsed;
+            $title    = sprintf($this->lang->system->notices->smtpUsed, $count);
             $toolTips = "data-toggle='tooltip' data-placement='bottom' runat='server'";
         }
+
+        $buttonHtml .= "<span class='edit-tools-tips' {$toolTips} title='{$title}'>";
+        $buttonHtml .= html::a(inLink('editSMTP'), $this->lang->system->SMTP->edit, '', "title='{$title}' class='btn-edit btn label label-outline label-primary label-lg'");
+        $buttonHtml .= "</span>";
 
         $disableStop = $count > 0 || !$this->instance->canDo('stop', $smtpInstance);
         $buttonHtml .= "<span {$toolTips} title='{$title}'>";
@@ -740,7 +891,6 @@ class systemModel extends model
         $buttonHtml .= "</span>";
 
         echo $buttonHtml;
-
     }
 }
 

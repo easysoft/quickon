@@ -29,12 +29,12 @@
         <tbody>
           <tr>
             <th><?php echo $lang->system->domain->oldDomain;?></th>
-            <td colspan='2' ><?php echo $this->loadModel('cne')->sysDomain();?> <span class='with-padding text-danger'><?php echo $lang->system->domain->notReuseOldDomain;?></span></td>
+            <td><?php echo $this->loadModel('cne')->sysDomain();?> <span class='with-padding text-danger'><?php echo $lang->system->domain->notReuseOldDomain;?></span></td>
             <td></td>
           </tr>
           <tr>
             <th class='new-domain-label'><?php echo $lang->system->domain->newDomain;?></th>
-            <td class='required w-400px'>
+            <td class='required'>
               <?php echo html::input('customDomain', zget($domainSettings, 'customDomain', ''), "class='form-control' placeholder=''");?>
               <div class='with-padding'>
                 <span><?php echo $lang->system->domain->setDNS;?></span>
@@ -42,11 +42,10 @@
               </div>
             </td>
             <td></td>
-            <td></td>
           </tr>
-          <tr class='hide'>
+          <tr>
             <td></td>
-            <td colspan='2'>
+            <td>
               <h4>
               <?php $domainUsed = false;?>
               <?php echo html::checkbox('https', array('true' => $lang->system->domain->uploadCert), $domainSettings->https, ($domainUsed ? "onclick='return false;'" : ''));?>
@@ -56,16 +55,24 @@
           </tr>
         </tbody>
       </table>
-      <table class="hide table table-form">
+      <table id='cert-box' class="table table-form">
         <tbody>
           <tr>
-            <th><?php echo $lang->system->domain->publicKey;?></th>
-            <td class='required' colspan='2'><?php echo html::textarea('publicKey', zget($domainSettings, 'publicKey', ''), "class='form-control'");?></td>
+            <th><?php echo $lang->system->certPem;?></th>
+            <td class='required' colspan='2'><?php echo html::textarea('certPem', zget($domainSettings, 'certPem', ''), "class='form-control' rows='5'");?></td>
             <td></td>
           </tr>
           <tr>
-            <th><?php echo $lang->system->domain->privateKey;?></th>
-            <td class='required' colspan='2'><?php echo html::textarea('privateKey', zget($domainSettings, 'privateKey', ''), "class='form-control'");?></td>
+            <th><?php echo $lang->system->certKey;?></th>
+            <td class='required' colspan='2'><?php echo html::textarea('certKey', zget($domainSettings, 'certKey', ''), "class='form-control' rows='5'");?></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td></td>
+            <td colspan='2' >
+              <?php echo html::commonButton($lang->system->verify, "id='validateCertBtn'");?>
+              <span class='with-padding' id='validateMsg'></span>
+            </td>
             <td></td>
           </tr>
         </tbody>

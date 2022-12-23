@@ -83,12 +83,11 @@ class system extends control
             }
             else if($postData->source == 'extra')
             {
-                $this->system->installExtraLDAP((object)$postData->extra);
+                $this->system->configExtraLDAP((object)$postData->extra);
             }
             else
             {
                 dao::$errors[] = $this->lang->system->notSupportedLDAP;
-                return false;
             }
 
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
@@ -118,16 +117,8 @@ class system extends control
         $ldapApp = $this->loadModel('store')->getAppInfoByChart('openldap', $channel, false);
         if($_POST)
         {
-            $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
-            if($postData->source == 'qucheng')
-            {
-                $this->system->updateQuchengLDAP($ldapApp, $channel);
-            }
-            else if($postData->source == 'extra')
-            {
-                $this->system->installExtraLDAP((object)$postData->extra);
-            }
-
+            session_write_close();
+            $this->system->updateLDAP($ldapApp, $channel);
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
             $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
@@ -140,6 +131,20 @@ class system extends control
         $this->view->activeLDAP   = $this->system->getActiveLDAP();
         $this->view->ldapSettings = $this->system->getExtraLDAPSettings();
         $this->display();
+    }
+
+    /**
+     * ajaxUpdatingLDAPProgress
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxUpdatingLDAPProgress()
+    {
+        session_write_close();
+
+        $number = $this->loadModel('setting')->getItem('owner=system&module=common&section=ldap&key=updatingProgress');
+        echo sprintf($this->lang->system->LDAP->updatingProgress, intval($number));
     }
 
     /**
@@ -238,7 +243,6 @@ class system extends control
 
         $ossAccount = $this->cne->getDefaultAccount($minioInstance, '', 'minio');
         $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
-
         $this->lang->switcherMenu = $this->system->getOssSwitcher();
 
         $this->view->title      = $this->lang->system->oss->common;
@@ -291,13 +295,13 @@ class system extends control
 
         if($_POST)
         {
-            $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+            $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
             $postData = fixer::input('post')->setDefault('source', 'qucheng')->get();
-            $this->system->updateSMTPSettings($ldapApp, $channel);
+            $this->system->updateSMTPSettings();
 
             if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
 
-            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->ldapUpdateSuccess, 'locate' => $this->inLink('ldapView')));
+            $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->smtpUpdateSuccess, 'locate' => $this->inLink('smtpView')));
         }
 
         $this->lang->switcherMenu = $this->system->getSMTPSwitcher();
@@ -305,7 +309,7 @@ class system extends control
         $this->view->title        = $this->lang->system->SMTP->editSMTP;
         $this->view->smtpSettings = $this->system->getSMTPSettings();
         $this->view->smtpLinked   = $this->instance->countSMTP();
-        $this->view->activeSMTP   = false;
+        $this->view->activeSMTP   = zget($this->view->smtpSettings, 'enabled', false);
 
         $this->display();
     }
@@ -398,6 +402,32 @@ class system extends control
     }
 
     /**
+     * AjaxValidCert
+     *
+     * @access public
+     * @return void
+     */
+    public function ajaxValidateCert()
+    {
+        $certData = fixer::input('post')->get();
+
+        $this->dao->select('*')->from('system')->data($certData)
+            ->batchCheck('customDomain,certPem,certKey', 'notempty');
+        if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::$errors));
+
+        if(!validater::checkREG($certData->customDomain, '/^((?!-)[a-z0-9-]{1,63}(?<!-)\\.)+[a-z]{2,6}$/'))
+        {
+            return $this->send(array('result' => 'fail', 'message' => $this->lang->system->errors->invalidDomain));
+        }
+
+        $certName = 'tls-' . str_replace('.', '-',$certData->customDomain);
+        $result = $this->loadModel('cne')->validateCert($certName, $certData->certPem, $certData->certKey, $certData->customDomain);
+        if($result->code == 200) return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->validCert));
+
+        return $this->send(array('result' => 'fail', 'message' => $result->message));
+    }
+
+    /**
      * Show progress of updating domains.
      *
      * @access public
@@ -419,8 +449,69 @@ class system extends control
      */
     public function domainView()
     {
+        $domainSettings = $this->system->getDomainSettings();
+        $certName       = 'tls-' . str_replace('.', '-', $domainSettings->customDomain);
+        $cert           = $this->loadModel('cne')->certInfo($certName);
+
+        $notAfter = zget($cert, 'not_after', '');
+        if($notAfter) $cert->expiredDate = date('Y-m-d H:i:s', $notAfter);
+
         $this->view->title          = $this->lang->system->domain->common;
-        $this->view->domainSettings = $this->system->getDomainSettings();
+        $this->view->domainSettings = $domainSettings;
+        $this->view->cert           = $cert;
+
+        $this->display();
+    }
+
+    /**
+     * Config Server Load Balancing.
+     *
+     * @access public
+     * @return void
+     */
+    public function configSLB()
+    {
+        $slbSettings = $this->system->getSLBSettings();
+        if($slbSettings->name) return print(js::locate($this->inLink('slbView')));
+
+        return print(js::locate($this->inLink('editSLB')));
+    }
+
+    /**
+     * Edit SLB.
+     *
+     * @access public
+     * @return void
+     */
+    public function editSLB()
+    {
+        if($_POST)
+        {
+            $this->system->saveSLBSettings();
+            if(dao::isError())
+            {
+                return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+            }
+
+            return $this->send(array('result' => 'success', 'message' => $this->lang->system->notices->configSLBSuccess, 'locate' => $this->inLink('SLBView')));
+        }
+
+        $this->view->title       = $this->lang->system->SLB->common;
+        $this->view->SLBSettings = $this->system->getSLBSettings();
+
+        $this->display();
+    }
+
+    /**
+     * SLB View.
+     *
+     * @access public
+     * @return void
+     */
+    public function SLBView()
+    {
+        $this->view->title       = $this->lang->system->SLB->common;
+        $this->view->slbSettings = $this->system->getSLBSettings();
 
         $this->display();
     }

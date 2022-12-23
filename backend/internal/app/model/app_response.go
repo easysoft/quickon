@@ -153,7 +153,8 @@ type AppCustomSetting struct {
 }
 
 type AppResDomain struct {
-	InternalHost string            `json:"internal_host"`
-	AccessHost   string            `json:"access_host"`
-	ExtraHosts   map[string]string `json:"extra_hosts"`
+	InternalHost    string            `json:"internal_host"`
+	AccessHost      string            `json:"access_host"`
+	ExtraHosts      map[string]string `json:"extra_hosts"`
+	LoadBalancerIPS map[string]string `json:"load_balancer_ips"`
 }
