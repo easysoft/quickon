@@ -74,7 +74,7 @@ $lang->system->SMTP->save     = '保存';
 
 /* Domain */
 $lang->system->customDomain = '新域名';
-$lang->system->certPem      = '公钥';
+$lang->system->certPem      = '公钥证书';
 $lang->system->certKey      = '私钥';
 
 $lang->system->domain = new stdclass;
@@ -84,7 +84,7 @@ $lang->system->domain->config        = '配置域名和证书';
 $lang->system->domain->currentDomain = '当前域名';
 $lang->system->domain->oldDomain     = '旧域名';
 $lang->system->domain->newDomain     = '新域名';
-$lang->system->domain->expiredDate   = '过期时间';
+$lang->system->domain->expiredDate   = '证书过期时间';
 $lang->system->domain->uploadCert    = '上传证书（仅支持泛域名证书）';
 
 $lang->system->domain->notReuseOldDomain     = '使用自定义域名后无法改回默认域名';
