@@ -4,6 +4,7 @@ $lang->index       = new stdclass();
 $lang->store       = new stdclass();
 $lang->space       = new stdclass();
 $lang->instance    = new stdclass();
+$lang->solution    = new stdclass();
 $lang->CNE         = new stdclass();
 $lang->my          = new stdclass();
 $lang->measurement = new stdclass();

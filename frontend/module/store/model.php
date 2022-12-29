@@ -336,4 +336,74 @@ class storeModel extends model
 
         return null;
     }
+
+    /**
+     * Get solution list.
+     *
+     * @param  string $sortBy    possible vlues: id,name,create_time,update_time
+     * @param  string $keyword
+     * @param  int    $page
+     * @param  int    $pageSize
+     * @access public
+     * @return object
+     */
+    public function searchSolutions($sortBy = '', $keyword = '', $page = 1, $pageSize = 20)
+    {
+        $apiUrl  = $this->config->cloud->api->host;
+        $apiUrl .= '/api/market/solution/list?channel='. $this->config->cloud->api->channel;
+        $apiUrl .= "&sort=" . rawurlencode(trim($sortBy));
+        $apiUrl .= "&q=" . rawurlencode(trim($keyword));
+        $apiUrl .= "&page=$page";
+        $apiUrl .= "&page_size=$pageSize";
+
+        $result = commonModel::apiGet($apiUrl, array(), $this->config->cloud->api->headers);
+        if($result->code == 200) return $result->data;
+
+        $pagedApps = new stdclass;
+        $pagedApps->apps  = array();
+        $pagedApps->total = 0;
+        return $pagedApps;
+    }
+
+    /**
+     * Get solution info by ID.
+     *
+     * @param  int    $id
+     * @access public
+     * @return object
+     */
+    public function getSolutionByID($id)
+    {
+        $apiParams = array();
+        $apiParams['id'] = $id;
+
+        $apiUrl  = $this->config->cloud->api->host;
+        $apiUrl .= '/api/market/solution/info?channel='. $this->config->cloud->api->channel;
+        $result  = commonModel::apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        $solution = $result->data;
+        $solution->apps = array_combine(array_column($solution->apps, 'chart'), $solution->apps);
+
+        return $solution;
+    }
+    /**
+     * Get solution config by ID.
+     *
+     * @param  int    $id
+     * @access public
+     * @return object
+     */
+    public function solutionConfigByID($id)
+    {
+        $apiParams = array();
+        $apiParams['id'] = $id;
+
+        $apiUrl  = $this->config->cloud->api->host;
+        $apiUrl .= '/api/market/solution/schema?channel='. $this->config->cloud->api->channel;
+        $result  = commonModel::apiGet($apiUrl, $apiParams, $this->config->cloud->api->headers);
+        if(!isset($result->code) || $result->code != 200) return null;
+
+        return $result->data;
+    }
 }

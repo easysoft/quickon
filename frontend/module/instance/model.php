@@ -71,6 +71,26 @@ class InstanceModel extends model
     }
 
     /**
+     * Get instance list by solution.
+     *
+     * @param  object $solution
+     * @param  string $chart
+     * @access public
+     * @return array
+     */
+    public function instanceOfSolution($solution, $chart)
+    {
+        $instance = $this->dao->select('id')->from(TABLE_INSTANCE)->where('deleted')->eq(0)
+            ->andWhere('solution')->eq($solution->id)
+            ->andWhere('chart')->eq($chart)
+            ->fetch();
+
+        if($instance) return $this->getByID($instance->id);
+
+        return;
+    }
+
+    /**
      * Get instances list by account.
      *
      * @param  string $account
@@ -1154,6 +1174,8 @@ class InstanceModel extends model
 
         if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
         {
+            $instance->status = $statusData->status;
+
             $this->dao->update(TABLE_INSTANCE)
                 ->set('status')->eq($statusData->status)
                 ->beginIF($statusData->version)->set('version')->eq($statusData->version)->fi()
