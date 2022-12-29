@@ -57,6 +57,7 @@ func Config(r *gin.Engine) {
 		api.GET("/app/settings/simple", AppSimpleSettings)
 		api.GET("/app/settings/common", AppCommonSettings)
 		api.GET("/app/settings/custom", AppCustomSettings)
+		api.POST("/app/settings/mapping", AppMappingSettings)
 		api.GET("/app/status", AppStatus)
 		api.POST("/app/status/multi", AppListStatus)
 		api.GET("/app/domain", AppDomain)
