@@ -13,6 +13,7 @@ $lang->system->close          = '关闭';
 $lang->system->installLDAP    = '安装LDAP';
 $lang->system->editLDAP       = '编辑';
 $lang->system->LDAPInfo       = 'LDAP信息';
+$lang->system->accountInfo    = '账号信息';
 $lang->system->advance        = '高级';
 $lang->system->verify         = '校验';
 $lang->system->copy           = '复制';
