@@ -140,21 +140,24 @@ class solutionModel extends model
             return false;
         }
 
+        $this->loadModel('cne');
         $this->loadModel('instance');
         $this->loadModel('store');
-        $channel    = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
-        $components = json_decode($solution->components);
-        foreach($components as $componentApp)
+        $allMappings    = array();
+        $solutionSchema = $this->loadModel('store')->solutionConfigByID($solution->appID);
+        $channel        = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $components     = json_decode($solution->components);
+        foreach($components as $categorty => $componentApp)
         {
             $this->dao->update(TABLE_SOLUTION)->set('status')->eq('installing')->where('id')->eq($solutionID)->exec();
-            if($componentApp->status == 'installed') continue;
 
             $instance = $this->instance->instanceOfSolution($solution, $componentApp->chart);
             /* If not install. */
             if(!$instance)
             {
                 $cloudApp = $this->store->getAppInfo($componentApp->id, false, '', '', $channel);
-                $instance = $this->instance->apiInstall($cloudApp, '', '', '', $channel);
+                $settings = $this->mountSettings($solutionSchema, $componentApp->chart, $components, $allMappings);
+                $instance = $this->installApp($cloudApp, $settings);
                 if(!$instance)
                 {
                     dao::$errors[] = sprintf($this->lang->solution->errors->failToInstallApp, $cloudApp->name);
@@ -171,6 +174,12 @@ class solutionModel extends model
             $instance = $this->waitInstanceStart($instance);
             if($instance)
             {
+                $mappingKeys = zget($solutionSchema->mappings, $instance->chart, '');
+                if($mappingKeys)
+                {
+                    $tempMappings = $this->cne->getSettingsMapping($instance, $mappingKeys);
+                    if($tempMappings) $allMappings[$categorty] = $tempMappings;
+                }
                 $componentApp->status = 'installed';
                 $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
             }
@@ -184,6 +193,74 @@ class solutionModel extends model
 
         $this->dao->update(TABLE_SOLUTION)->set('status')->eq('finish')->where('id')->eq($solutionID)->exec();
         return true;
+    }
+
+    /**
+     * Mount settings for installing app.
+     *
+     * @param  object   $solutionSchema
+     * @param  string   $chart
+     * @param  object   $components
+     * @param  array    $mappings  example: ['git' => ['env.GIT_USERNAME' => 'admin', ...], ...]
+     * @access private
+     * @return array
+     */
+    private function mountSettings($solutionSchema, $chart, $components, $mappings)
+    {
+        $settings = array();
+
+        $appSettings = zget($solutionSchema->settings, $chart, array());
+        foreach($appSettings as $item)
+        {
+            switch($item->type)
+            {
+                case 'static':
+                    $settings[] = array('key' => $item->key, 'value' => $item->value);
+                    break;
+                case 'choose':
+                    $appInfo = zget($components, $item->target, '');
+                    if($appInfo) $settings[] = array('key' => $item->key, 'value' => $appInfo->chart);
+                    break;
+                case 'mappings':
+                    $mappingInfo = zget($mappings, $item->target, '');
+                    if($mappingInfo) $settings[] = array('key' => $item->key, 'value' => zget($mappingInfo, $item->key, ''));
+                    break;
+            }
+        }
+
+        return $settings;
+    }
+
+    /**
+     * installApp
+     *
+     * @param  int    $cloudApp
+     * @param  int    $settings
+     * @access private
+     * @return mixed
+     */
+    private function installApp($cloudApp, $settings)
+    {
+        /* Fake parameters for installation. */
+
+        $customData = new stdclass;
+        $customData->customName   = $cloudApp->alias;
+        $customData->dbType       = null;
+        $customData->customDomain = $this->loadModel('instance')->randThirdDomain();
+        //$customData->ldapSnippet[0] = 'qucheng'; // another possiable value : extra
+        //$customData->smtpSnippet[0] = 'qucheng'; // another possiable value : extra
+
+        $dbInfo = new stdclass;
+        $dbList = $this->loadModel('cne')->sharedDBList();
+        if(count($dbList) > 0)
+        {
+            $dbInfo = reset($dbList);
+
+            $customData->dbType    = 'sharedDB';
+            $customData->dbService = $dbInfo->name; // Use first shared database.
+        }
+
+        return $this->instance->install($cloudApp, $dbInfo, $customData, null, $settings);
     }
 
     /**

@@ -11,12 +11,12 @@ $(function()
             {
                 $.get(createLink('solution', 'ajaxInstall', 'id=' + res.data.id)).done(function(response)
                 {
-                    //parent.window.location.href = res.locate;
+                    parent.window.location.href = res.locate;
                 });
                 setTimeout(function()
                 {
-                    //parent.window.location.href = res.locate;
-                }, 30000);
+                    parent.window.location.href = res.locate;
+                }, 3000);
             }
             else
             {

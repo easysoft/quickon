@@ -23,10 +23,10 @@
       <div class='col-sm-9'>
         <div class='info-container'>
           <p><?php echo $solution->description;?></p>
-          <?php if($solution->archDesignUrl):?>
+          <?php if(isset($solution->arch_design_url)):?>
           <div class='row'>
             <div class='col-sm-12'><h3><?php echo $lang->solution->diagram;?></h3></div>
-            <p><?php echo html::image($solution->archDesignUrl);?></p>
+            <p class='text-center'><?php echo html::image($solution->arch_design_url, "class='arch-design'");?></p>
           </div>
           <?php endif;?>
 

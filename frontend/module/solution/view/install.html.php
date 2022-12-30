@@ -19,7 +19,7 @@
     <div>
       <h2><?php echo $cloudSolution->title;?></h2>
     </div>
-    <form id='installForm' method='post' class='form form-ajax'>
+    <form id='installForm' method='post' class='form form-ajax not-watch'>
       <table class='table table-form'>
         <tbody>
           <tr>

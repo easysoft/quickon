@@ -713,7 +713,7 @@ class cneModel extends model
      */
     public function installApp($apiParams)
     {
-        if(!empty($apiParams->settings)) $apiParams->settings = $this->trasformSettings($apiParams->settings);
+        //if(!empty($apiParams->settings)) $apiParams->settings = $this->transformSettings($apiParams->settings);
 
         if(empty($apiParams->channel)) $apiParams->channel = $this->config->CNE->api->channel;
 
@@ -790,6 +790,29 @@ class cneModel extends model
             $transformedSettings[] = array('key' => str_replace('_', '.', $key), 'value' => $value);
         }
         return $transformedSettings;
+    }
+
+    /**
+     * Get settings mapping by instance.
+     *
+     * @param  object      $instance
+     * @param  object      $mappings
+     * @access public
+     * @return object|null
+     */
+    public function getSettingsMapping($instance, $mappings)
+    {
+        $apiParams = new stdclass;
+        $apiParams->cluster   = '';
+        $apiParams->namespace = $instance->spaceData->k8space;
+        $apiParams->name      = $instance->k8name;
+        $apiParams->mappings  = $mappings;
+
+        $apiUrl = "/api/cne/app/settings/mapping";
+        $result = $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        if($result && $result->code != 200) return null;
+
+        return $result->data;
     }
 
     /**

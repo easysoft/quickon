@@ -10,8 +10,10 @@
  * @link        https://www.qucheng.com
  */
 ?>
-<?php include  $this->app->getModuleRoot() . '/common/view/header.html.php';?>
+<?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <?php js::set('solutionID', $solution->id);?>
+<?php js::set('notices', $lang->solution->notices);?>
+<?php js::set('errors', $lang->solution->errors);?>
 <div id='mainContent' class='main-row'>
   <div class='cell'>
     <div>
@@ -22,21 +24,19 @@
         <?php foreach($components as $category => $cloudApp):?>
         <?php $active = (isset($cloudApp->status) && $cloudApp->status !='waiting') ? 'active' : '';?>
         <?php if($order++ > 0):?>
-            <div class='arrow <?php echo $active;?>'>&rarr;</div>
+            <div class='arrow app-<?php echo $cloudApp->id;?> <?php echo $active;?>'>&rarr;</div>
         <?php endif;?>
-        <div class='step <?php echo $active;?>'>
-          <div class='step-no'><?php echo $order;?></div>
+        <div class='step app-<?php echo $cloudApp->id;?> <?php echo $active;?>'>
+          <div class='step-no <?php echo $active;?>'><?php echo $order;?></div>
           <div class='step-title'><?php echo $cloudApp->alias;?></div>
         </div>
         <?php endforeach;?>
       </div>
-      <div class='step-message'>
-        <span></span>
-      </div>
+      <div class='progress-message text-center'></div>
+      <div class='error-message text-red  text-center'></div>
       <div class='form-actions text-center'>
-        <?php echo html::commonButton($lang->solution->cancelInstall, "", 'btn btn-primary btn-wide');?>
+        <?php echo html::commonButton($lang->solution->cancelInstall, "cancelInstallBtn", 'btn btn-primary btn-wide');?>
       </div>
-
     </div>
   </div>
 </div>

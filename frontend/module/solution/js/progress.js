@@ -7,7 +7,41 @@ $(function()
             var res = JSON.parse(response);
             if(res.result == 'success')
             {
-                $('.step-message span').text(res.message);
+                var finish = true;
+                for(var index in res.data)
+                {
+                    var cloudApp = res.data[index];
+                    if(cloudApp.status == 'waiting')
+                    {
+                        $('.arrow.app-' + cloudApp.id).removeClass('active');
+                        $('.step.app-' + cloudApp.id + ' .step-no').removeClass('active');
+                    }
+                    else
+                    {
+                        $('.arrow.app-' + cloudApp.id).addClass('active');
+                        $('.step.app-' + cloudApp.id + ' .step-no').addClass('active');
+                    }
+
+                    if(cloudApp.status == 'installing')
+                    {
+                        $('.progress-message').text(notices.installingApp + cloudApp.alias);
+                    }
+
+                    if(cloudApp.status != 'installed')
+                    {
+                        finish = false;
+                    }
+
+                    if(cloudApp.status == 'error')
+                    {
+                        $('.error-message').text(res.message);
+                    }
+                }
+                if(finish)
+                {
+                    $('.progress-message').text(notices.installationSuccess);
+                    parent.window.location.href = createLink('solution', 'view', 'id=' + solutionID);
+                }
             }
             else
             {
@@ -19,4 +53,23 @@ $(function()
             }
         });
     }, 2000);
+
+    $('#cancelInstallBtn').on('click', function()
+    {
+        bootbox.confirm(notices.cancelInstall, function(result)
+        {
+            if(!result) return;
+            //showUninstallProgress();
+
+            $.post(createLink('solution', 'uninstall', 'id=' + solutionID), function(response)
+            {
+                var res = JSON.parse(response);
+                if(res.result == 'success')
+                {
+                    parent.window.location.href = createLink('solution', 'browse');
+                }
+            });
+        });
+    });
+
 });

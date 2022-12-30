@@ -15,6 +15,7 @@ a#serialDiff {color: #ff9800;}
 .c-title {text-align: center; padding-top: 10px; font-size: 15px}
 .progress-pie {margin: 10px auto;}
 .instance-panel > div > a:last-child { margin-left: 8px;}
+.solution-link {display: inline-block; margin-left: 20px;}
 
 #backup .panel {padding: 10px;}
 #backup .panel .btn-toolbar{padding: 0 0 10px 0;}
