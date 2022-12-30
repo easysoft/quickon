@@ -1133,12 +1133,11 @@ class InstanceModel extends model
             $statusData = zget($statusList, $instance->k8name, '');
             if($statusData)
             {
-                if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
+                if($instance->status != $statusData->status || $instance->version != $statusData->version)
                 {
                     $this->dao->update(TABLE_INSTANCE)
                         ->set('status')->eq($statusData->status)
                         ->beginIF($statusData->version)->set('version')->eq($statusData->version)->fi()
-                        ->beginIF($statusData->access_host)->set('domain')->eq($statusData->access_host)->fi()
                         ->where('id')->eq($instance->id)
                         ->autoCheck()
                         ->exec();
@@ -1172,14 +1171,13 @@ class InstanceModel extends model
         $statusData = $statusResponse->data;
         $instance->runDuration = intval($statusData->age); // Run duration used in view page.
 
-        if($instance->status != $statusData->status || $instance->version != $statusData->version || $instance->domain != $statusData->access_host)
+        if($instance->status != $statusData->status || $instance->version != $statusData->version)
         {
             $instance->status = $statusData->status;
 
             $this->dao->update(TABLE_INSTANCE)
                 ->set('status')->eq($statusData->status)
                 ->beginIF($statusData->version)->set('version')->eq($statusData->version)->fi()
-                ->beginIF($statusData->access_host)->set('domain')->eq($statusData->access_host)->fi()
                 ->where('id')->eq($instance->id)
                 ->autoCheck()
                 ->exec();
