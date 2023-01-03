@@ -66,6 +66,9 @@ class solution extends control
      */
     public function view($id)
     {
+        $this->loadModel('instance');
+        $this->app->loadLang('instance');
+
         $solution = $this->solution->getByID($id);
         if($solution->status != 'finish') return printf(js::locate($this->inLink('progress', "id=$id")));
 

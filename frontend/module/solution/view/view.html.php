@@ -11,19 +11,62 @@
  */
 ?>
 <?php include  $this->app->getModuleRoot() . '/common/view/header.html.php';?>
-<div id='mainMenu' class='clearfix'>
-  <div class='btn-toolbar pull-left'>
-    <h3><?php echo $solution->name;?></h3>
-  </div>
-</div>
 <div id='mainContent' class='main-row'>
-  <div class='main-cell cell' id='solutionContainer'>
-    <div>
-      <div class="panel">
-        <div class="panel-heading">
-          <div class="panel-title"><?php echo $lang->solution->common;?></div>
+  <div class='cell' id='solutionContainer'>
+    <div class='row'>
+      <div class='col-sm-12'>
+        <h3 class='solution-name'><?php echo $solution->name;?></h3>
+      </div>
+      <div class='col-sm-9' id='instanceContainer'>
+        <h3><?php echo $lang->solution->apps;?></h3>
+        <?php foreach($solution->instances as $instance):?>
+        <div class='col-sm-4'>
+          <div class='panel'>
+            <div class='panel-heading'>
+              <div class="instance-name">
+                <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                  <?php echo $instance->name;?>&nbsp;
+                </a>
+              </div>
+            </div>
+            <div class='panel-body'>
+              <div class="instance-detail">
+                <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                  <div class='instance-logo'>
+                    <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
+                  </div>
+                  <p class="instance-intro"><?php echo $instance->introduction;?>&nbsp;</p>
+                </a>
+              </div>
+              <div class="instance-actions">
+                <?php $canVisit = $this->instance->canDo('visit', $instance);?>
+                <?php echo html::a($this->instance->url($instance), $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
+              </div>
+            </div>
+            <div class='panel-footer instance-footer'>
+              <?php $channel = zget($lang->instance->channelList, $instance->channel, '');?>
+              <div class="pull-left"><?php echo $instance->appVersion . ($config->cloud->api->switchChannel && $channel ? " ($channel)" : '');?></div>
+              <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
+                <?php $this->instance->printStatus($instance);?>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="panel-body">
+        <?php endforeach;?>
+      </div>
+      <div class='col-sm-3'>
+        <h3><?php echo $lang->solution->resources;?></h3>
+        <div class='text-center'>
+          <h4><?php echo $lang->instance->cpuUsage;?></h4>
+          <div class='usage-pie'>
+            <?php $this->solution->printCpuUsage($solution, 'pie');?>
+          </div>
+        </div>
+        <div class='text-center'>
+          <h4><?php echo $lang->instance->memUsage;?></h4>
+          <div class='usage-pie'>
+            <?php $this->solution->printMemUsage($solution, 'pie');?>
+          </div>
         </div>
       </div>
     </div>

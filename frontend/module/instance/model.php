@@ -1646,10 +1646,7 @@ class InstanceModel extends model
         $rate = $metrics->rate;
         $tip  = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->limit / 1024);
 
-        if(strtolower($type) == 'pie')
-        {
-            return commonModel::printProgressPie($rate, '', $tip);
-        }
+        if(strtolower($type) == 'pie') return commonModel::printProgressPie($rate, '', $tip);
 
         $valueType = 'tip';
         if($instnace->status == 'stopped') $valueType = '';

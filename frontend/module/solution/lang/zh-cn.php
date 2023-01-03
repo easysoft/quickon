@@ -7,7 +7,6 @@ $lang->solution->browse   = '已安装';
 $lang->solution->view     = '解决方案详情';
 $lang->solution->detail   = '查看';
 $lang->solution->progress = '安装进度';
-
 $lang->solution->install       = '安装';
 $lang->solution->cancelInstall = '取消安装';
 $lang->solution->uninstall     = '卸载';
@@ -19,6 +18,9 @@ $lang->solution->includedApp  = '包含应用';
 $lang->solution->features     = '方案亮点';
 $lang->solution->relatedLinks = '相关链接';
 $lang->solution->customers    = '典型客户';
+
+$lang->solution->apps      = '应用';
+$lang->solution->resources = '资源占用';
 
 $lang->solution->chooseApp  = '请选择要安装的应用';
 

@@ -20,50 +20,49 @@
     <?php foreach ($instances as $instance):?>
     <div class='col-sm-4 col-md-3 col-lg-3' data-id='<?php echo $instance->id;?>'>
       <div class='panel'>
-          <div class='panel-heading'>
-            <div class="q-card-title">
-              <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
-                <?php echo $instance->name;?>&nbsp;
-              </a>
-            </div>
+        <div class='panel-heading'>
+          <div class="q-card-title">
+            <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+              <?php echo $instance->name;?>&nbsp;
+            </a>
+          </div>
+          <?php if(!empty($instance->latestVersion) && empty($instance->solution)):?>
+          <div class="q-metal"><?php echo empty($instance->latestVersion->change_log_url) ? $lang->space->upgrade : html::a($instance->latestVersion->change_log_url, $lang->space->upgrade, '_blank');?></div>
+          <?php endif;?>
+        </div>
+        <div class='panel-body'>
+          <div class="instance-detail">
+            <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+              <div class='instance-logo'>
+                <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
+              </div>
+              <p class="instance-intro"><?php echo $instance->introduction;?>&nbsp;</p>
+            </a>
+          </div>
+          <div class="instance-actions">
+            <?php $canVisit = $this->instance->canDo('visit', $instance);?>
+            <?php echo html::a($this->instance->url($instance), $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
             <?php if(!empty($instance->latestVersion) && empty($instance->solution)):?>
-            <div class="q-metal"><?php echo empty($instance->latestVersion->change_log_url) ? $lang->space->upgrade : html::a($instance->latestVersion->change_log_url, $lang->space->upgrade, '_blank');?></div>
+            <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>" . $lang->space->upgrade, '', "class='btn btn-link iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
+            <?php endif;?>
+            <?php if($instance->solution):?>
+            <?php echo html::a(helper::createLink('solution', 'view', "id=$instance->solution"), $instance->solutionData->name, '', "class='label label-success label-outline solution-link'");?>
             <?php endif;?>
           </div>
-          <div class='panel-body'>
-            <div class="instance-detail">
-              <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
-                <div class='instance-logo'>
-                  <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
-                </div>
-                <p class="instance-intro"><?php echo $instance->introduction;?>&nbsp;</p>
-              </a>
-            </div>
-            <div class="instance-actions">
-              <?php $canVisit = $this->instance->canDo('visit', $instance);?>
-              <?php echo html::a($this->instance->url($instance), $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
-              <?php if(!empty($instance->latestVersion) && empty($instance->solution)):?>
-              <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>" . $lang->space->upgrade, '', "class='btn btn-link iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
-              <?php endif;?>
-              <?php if($instance->solution):?>
-              <?php echo html::a(helper::createLink('solution', 'view', "id=$instance->solution"), $instance->solutionData->name, '', "class='label label-success label-outline solution-link'");?>
-              <?php endif;?>
-            </div>
+        </div>
+        <div class='panel-footer instance-footer'>
+          <?php $channel = zget($lang->instance->channelList, $instance->channel, '');?>
+          <div class="pull-left"><?php echo $instance->appVersion . ($config->cloud->api->switchChannel && $channel ? " ($channel)" : '');?></div>
+          <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
+            <?php $this->instance->printStatus($instance);?>
           </div>
-          <div class='panel-footer instance-footer'>
-            <?php $channel = zget($lang->instance->channelList, $instance->channel, '');?>
-            <div class="pull-left"><?php echo $instance->appVersion . ($config->cloud->api->switchChannel && $channel ? " ($channel)" : '');?></div>
-            <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
-              <?php $this->instance->printStatus($instance);?>
-            </div>
-            <?php if(commonModel::isDemoAccount()):?>
-            <div class="pull-right count-down label label-outline label-danger" instance-id="<?php echo $instance->id;?>" data-created-at="<?php echo strtotime($instance->createdAt);?>">
-              <span><?php echo $lang->instance->leftTime;?></span>
-              <span class='left-time'>00:00</span>
-            </div>
-            <?php endif;?>
+          <?php if(commonModel::isDemoAccount()):?>
+          <div class="pull-right count-down label label-outline label-danger" instance-id="<?php echo $instance->id;?>" data-created-at="<?php echo strtotime($instance->createdAt);?>">
+            <span><?php echo $lang->instance->leftTime;?></span>
+            <span class='left-time'>00:00</span>
           </div>
-        </a>
+          <?php endif;?>
+        </div>
       </div>
     </div>
     <?php endforeach;?>
