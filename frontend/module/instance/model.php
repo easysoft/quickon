@@ -1010,10 +1010,11 @@ class InstanceModel extends model
         $apiParams->channel   = $instance->channel;
         $apiParams->namespace = $instance->spaceData->k8space;
 
-        $result = $this->cne->uninstallApp($apiParams);
-        if($result->code == 200 || $result->code == 404) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
+        $result  = $this->cne->uninstallApp($apiParams);
+        $success = $result->code == 200 || $result->code == 404;
+        if($success) $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
 
-        return $result;
+        return $success;
     }
 
     /*

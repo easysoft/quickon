@@ -12,6 +12,7 @@
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <?php js::set('solutionID', $solution->id);?>
+<?php js::set('hasError', !in_array($solution->status, array('installing', 'installed', 'finish')));?>
 <?php js::set('notices', $lang->solution->notices);?>
 <?php js::set('errors', $lang->solution->errors);?>
 <div id='mainContent' class='main-row'>
@@ -35,7 +36,8 @@
       <div class='progress-message text-center'></div>
       <div class='error-message text-red  text-center'></div>
       <div class='form-actions text-center'>
-        <?php echo html::commonButton($lang->solution->cancelInstall, "cancelInstallBtn", 'btn btn-primary btn-wide');?>
+        <?php echo html::commonButton($lang->solution->retryInstall, "id='retryInstallBtn' class='hide'", 'btn btn-primary btn-wide');?>
+        <?php echo html::commonButton($lang->solution->cancelInstall, "id='cancelInstallBtn'", 'btn btn-primary btn-wide');?>
       </div>
     </div>
   </div>

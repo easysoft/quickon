@@ -120,6 +120,21 @@ class solution extends control
     }
 
     /**
+     * Ajax uninstall
+     *
+     * @param  int    $solutionID
+     * @access public
+     * @return void
+     */
+    public function ajaxUninstall($solutionID)
+    {
+        $this->solution->uninstall($solutionID);
+        if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+        $this->send(array('result' => 'success', 'message' => '', 'locate' => $this->inLink('browse')));
+    }
+
+    /**
      * Show installation progress of solution.
      *
      * @param  int    $id
@@ -145,9 +160,18 @@ class solution extends control
      */
     public function ajaxProgress($id)
     {
-        $solution   = $this->solution->getByID($id);
-        $components = json_decode($solution->components);
+        $solution = $this->solution->getByID($id);
+        if(in_array($solution->status, array('installing', 'installed', 'finish')))
+        {
+            $result = 'success';
+            $message = '';
+        }
+        else
+        {
+            $result = 'fail';
+            $message = zget($this->lang->solution->installationErrors, $solution->status, $this->lang->solution->errors->hasInstallationError);
+        }
 
-        $this->send(array('result' => 'success', 'message' => '', 'data' => $components));
+        $this->send(array('result' => $result, 'message' => $message, 'data' => json_decode($solution->components)));
     }
 }

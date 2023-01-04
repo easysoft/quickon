@@ -20,6 +20,14 @@
       </div>
     </div>
     <div class='row'>
+      <?php if(empty($solutionList)):?>
+      <div class='col-sm-12'>
+        <div class="table-empty-tip">
+          <span class='text-blue with-padding'><?php echo $lang->solution->noInstalledSolution;?></span>
+          <?php echo html::a($this->inlink('browseMarket'), $lang->solution->toInstall, '', "class='btn btn-primary'");?>
+        </div>
+      </div>
+      <?php endif;?>
       <?php foreach($solutionList as $solution):?>
       <div class='col-sm-3'>
         <div class="card">

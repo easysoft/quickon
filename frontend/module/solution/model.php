@@ -139,6 +139,7 @@ class solutionModel extends model
             $this->dao->update(TABLE_SOLUTION)->set('status')->eq('error')->where('id')->eq($solutionID)->exec();
             return false;
         }
+        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('installing')->where('id')->eq($solutionID)->exec();
 
         $this->loadModel('cne');
         $this->loadModel('instance');
@@ -149,7 +150,14 @@ class solutionModel extends model
         $components     = json_decode($solution->components);
         foreach($components as $categorty => $componentApp)
         {
-            $this->dao->update(TABLE_SOLUTION)->set('status')->eq('installing')->where('id')->eq($solutionID)->exec();
+            $solutionStatus = $this->dao->select('status')->from(TABLE_SOLUTION)->where('id')->eq($solutionID)->fetch();
+            if($solutionStatus->status !='installing')
+            {
+                dao::$errors[] = $this->lang->solution->errors->notFound;
+                return false;
+            }
+
+            //$this->dao->update(TABLE_SOLUTION)->set('status')->eq('installing')->where('id')->eq($solutionID)->exec();
 
             $instance = $this->instance->instanceOfSolution($solution, $componentApp->chart);
             /* If not install. */
@@ -278,11 +286,43 @@ class solutionModel extends model
         {
             sleep(6);
             $instance = $this->instance->freshStatus($instance);
-            //$this->app->saveLog(date('Y-m-d H:i:s').' installing ' . $instance->name . ':' .$instance->status);
+            //$this->app->saveLog(date('Y-m-d H:i:s').' installing ' . $instance->name . ':' .$instance->status); // Code for debug.
             if($instance->status == 'running') return $instance;
         }
 
         return false;
+    }
+
+    /**
+     * Uninstall solution and all included instances .
+     *
+     * @param  int    $solutionID
+     * @access public
+     * @return void
+     */
+    public function uninstall($solutionID)
+    {
+        $this->loadModel('instance');
+        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('uninstalling')->where('id')->eq($solutionID)->exec();
+
+        $solution = $this->getByID($solutionID);
+        if(empty($solution))
+        {
+            dao::$errors[] = $this->lang->solution->notFound;
+            return;
+        }
+
+        foreach($solution->instances as $instance)
+        {
+            $success = $this->instance->uninstall($instance);
+            if(!$success)
+            {
+                dao::$errors[] = printf($this->lang->solution->errors->failToUninstallApp, $instance->name);
+                return;
+            }
+        }
+
+        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('uninstalled')->set('deleted')->eq(1)->where('id')->eq($solutionID)->exec();
     }
 
     /**
