@@ -90,3 +90,21 @@ type DbServiceModel struct {
 	QueryNamespace
 	Name string `form:"name" json:"name" binding:"required"`
 }
+
+type MappingKeyType string
+
+const (
+	MappingKeyHelm   MappingKeyType = "helm"
+	MappingKeySecret MappingKeyType = "secret"
+)
+
+type AppSettingMappingItem struct {
+	Key  string         `json:"key"`
+	Type MappingKeyType `json:"type"`
+	Path string         `json:"path"`
+}
+
+type AppSettingMappings struct {
+	NamespacedApp
+	Mappings []AppSettingMappingItem `json:"mappings"`
+}

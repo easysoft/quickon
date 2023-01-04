@@ -6,6 +6,7 @@ package instance
 
 import (
 	"encoding/json"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/parse"
 	"reflect"
 	"strconv"
 	"strings"
@@ -181,6 +182,33 @@ func (s *Settings) Custom() ([]model.AppCustomSetting, error) {
 	}
 
 	return settings, nil
+}
+
+// Mapping parse setting from helm values or secret
+func (s *Settings) Mapping(items []model.AppSettingMappingItem) (map[string]string, error) {
+	vals, err := s.getMergedVals()
+	if err != nil {
+		return nil, err
+	}
+	p := parse.New(vals)
+
+	secret, hasSecret := s.app.Ks.Store.GetSecret(s.app.namespace, s.app.name)
+
+	var data = make(map[string]string)
+	for _, m := range items {
+		if m.Type == model.MappingKeyHelm {
+			val, _ := p.GetString(m.Path)
+			data[m.Key] = val
+		} else if m.Type == model.MappingKeySecret && hasSecret == nil {
+			content, ok := secret.Data[m.Path]
+			if ok {
+				data[m.Key] = string(content)
+			} else {
+				data[m.Key] = ""
+			}
+		}
+	}
+	return data, nil
 }
 
 func (s *Settings) Simple() *Settings {

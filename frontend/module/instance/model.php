@@ -44,6 +44,11 @@ class InstanceModel extends model
         if(!$instance) return null;
 
         $instance->spaceData = $this->dao->select('*')->from(TABLE_SPACE)->where('id')->eq($instance->space)->fetch();
+        if($instance->solution)
+        {
+            $solution = $this->dao->select('*')->from(TABLE_SOLUTION)->where('id')->eq($instance->solution)->fetch();
+            $instance->solutionData = $solution;
+        }
 
         return $instance;
     }
@@ -64,10 +69,35 @@ class InstanceModel extends model
             ->andWhere('deleted')->eq(0)
             ->beginIF(commonModel::isDemoAccount())->andWhere('createdAt')->gt($deadline)->fi()
             ->fetchAll('id');
-        $spaces    = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->in(array_column($instances, 'space'))->fetchAll('id');
+
+        $spaces = $this->dao->select('*')->from(TABLE_SPACE)->where('deleted')->eq(0)->andWhere('id')->in(array_column($instances, 'space'))->fetchAll('id');
         foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
 
+        $solutionIDList = array_column($instances, 'solution');
+        $solutions      = $this->dao->select('*')->from(TABLE_SOLUTION)->where('id')->in($solutionIDList)->fetchAll('id');
+        foreach($instances as $instance) $instance->solutionData = zget($solutions, $instance->solution, new stdclass);
+
         return $instances;
+    }
+
+    /**
+     * Get instance list by solution.
+     *
+     * @param  object $solution
+     * @param  string $chart
+     * @access public
+     * @return array
+     */
+    public function instanceOfSolution($solution, $chart)
+    {
+        $instance = $this->dao->select('id')->from(TABLE_INSTANCE)->where('deleted')->eq(0)
+            ->andWhere('solution')->eq($solution->id)
+            ->andWhere('chart')->eq($chart)
+            ->fetch();
+
+        if($instance) return $this->getByID($instance->id);
+
+        return;
     }
 
     /**
@@ -103,6 +133,10 @@ class InstanceModel extends model
             ->fetchAll('id');
 
         foreach($instances as $instance) $instance->spaceData = zget($spaces, $instance->space, new stdclass);
+
+        $solutionIDList = array_column($instances, 'solution');
+        $solutions      = $this->dao->select('*')->from(TABLE_SOLUTION)->where('id')->in($solutionIDList)->fetchAll('id');
+        foreach($instances as $instance) $instance->solutionData = zget($solutions, $instance->solution, new stdclass);
 
         return $instances;
     }
@@ -535,12 +569,11 @@ class InstanceModel extends model
      *
      * @param  object  $customData
      * @param  object  $dbInfo
-     * @param  object  $app
      * @param  object  $instance
      * @access private
      * @return object
      */
-    private function installationSettingsMap($customData, $dbInfo, $app, $instance)
+    private function installationSettingsMap($customData, $dbInfo, $instance)
     {
         $settingsMap = new stdclass;
         if($customData->customDomain)
@@ -605,7 +638,7 @@ class InstanceModel extends model
         if(!$validatedResult->user)     $dbSettings->user = $defaultUser . '_' . help::randStr(4);
         if(!$validatedResult->database) $dbSettings->database = $defaultDBName  . '_' . help::randStr(4);
 
-        return $this->solveDBSettings($dbSettings, $defaultUser, $defaultDBName, $times++);
+        return $this->getValidDBSettings($dbSettings, $defaultUser, $defaultDBName, $times++);
     }
 
     /**
@@ -618,7 +651,7 @@ class InstanceModel extends model
      * @access public
      * @return false|object Failure: return false, Success: return instance
      */
-    public function install($app, $dbInfo, $customData, $spaceID = null)
+    public function install($app, $dbInfo, $customData, $spaceID = null, $settings = array())
     {
         $this->loadModel('space');
         if($spaceID)
@@ -631,15 +664,15 @@ class InstanceModel extends model
         }
 
         $snippets = array();
-        $snippets['ldapSnippetName'] = isset($customData->ldapSnippet[0]) ? $customData->ldapSnippet[0] : null;
-        $snippets['smtpSnippetName'] = isset($customData->smtpSnippet[0]) ? $customData->smtpSnippet[0] : null;
+        if(isset($customData->ldapSnippet[0])) $snippets['ldapSnippetName'] = $customData->ldapSnippet[0];
+        if(isset($customData->smtpSnippet[0])) $snippets['smtpSnippetName'] =  $customData->smtpSnippet[0];
 
         $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
         $instance = $this->createInstance($app, $space, $customData->customDomain, $customData->customName, '', $channel, $snippets);
         if(!$instance) return false;
 
-        $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        return $this->doCneInstall($instance, $space, $settingMap, $snippets, $app);
+        $settingMap = $this->installationSettingsMap($customData, $dbInfo, $instance);
+        return $this->doCneInstall($instance, $space, $settingMap, $snippets, $settings);
     }
 
     /**
@@ -664,7 +697,7 @@ class InstanceModel extends model
             return false;
         }
 
-        $instance = $this->doCneInstall($instance, $space, (new stdclass), array(), $app);
+        $instance = $this->doCneInstall($instance, $space, (new stdclass));
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
@@ -702,7 +735,7 @@ class InstanceModel extends model
             return false;
         }
 
-        $settingsMap = $this->installationSettingsMap($customData, array(), $app, $instance);
+        $settingsMap = $this->installationSettingsMap($customData, array(), $instance);
 
         $settingsMap->env = new stdclass;
         $settingsMap->env->SMTP_HOST         = $smtpSettings->host;
@@ -711,7 +744,7 @@ class InstanceModel extends model
         $settingsMap->env->SMTP_PASS         = $smtpSettings->pass;
         $settingsMap->env->AUTHENTICATE_CODE = helper::randStr(24);
 
-        $instance = $this->doCneInstall($instance, $space, $settingsMap, array(), $app);
+        $instance = $this->doCneInstall($instance, $space, $settingsMap);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallSMTP;
@@ -785,14 +818,14 @@ class InstanceModel extends model
             return false;
         }
 
-        $settingMap = $this->installationSettingsMap($customData, array(), $app, $instance);
+        $settingMap = $this->installationSettingsMap($customData, array(), $instance);
 
         $settingMap->auth = new stdclass;
         $settingMap->auth->username = $app->account ? $app->account->username : 'admin';
         $settingMap->auth->password = helper::randStr(16);
         $settingMap->auth->root     = 'dc=quickon,dc=org';
 
-        $instance = $this->doCneInstall($instance, $space, $settingMap, array(), $app);
+        $instance = $this->doCneInstall($instance, $space, $settingMap);
         if(!$instance)
         {
             dao::$errors[] = $this->lang->system->errors->failToInstallLDAP;
@@ -841,14 +874,14 @@ class InstanceModel extends model
     /**
      * Install app through API.
      *
-     * @param  object $app
+     * @param  object $cloudApp
      * @param  string $thirdDomain
      * @param  string $name
      * @param  string $channel
      * @access public
      * @return bool|object
      */
-    public function apiInstall($app, $thirdDomain = '', $name = '', $k8name = '', $channel = 'stable')
+    public function apiInstall($cloudApp, $thirdDomain = '', $name = '', $k8name = '', $channel = 'stable')
     {
         $this->loadModel('space');
         $space = $this->space->defaultSpace($this->app->user->account);
@@ -867,11 +900,11 @@ class InstanceModel extends model
             $customData->dbService = $dbInfo->name; // Use first shared database.
         }
 
-        $instance = $this->createInstance($app, $space, $customData->customDomain, $name, $k8name, $channel);
+        $instance = $this->createInstance($cloudApp, $space, $customData->customDomain, $name, $k8name, $channel);
         if(!$instance) return false;
 
-        $settingMap = $this->installationSettingsMap($customData, $dbInfo, $app, $instance);
-        return $this->doCneInstall($instance, $space, $settingMap, array(), $app);
+        $settingMap = $this->installationSettingsMap($customData, $dbInfo, $instance);
+        return $this->doCneInstall($instance, $space, $settingMap);
     }
 
     /**
@@ -929,7 +962,7 @@ class InstanceModel extends model
      * @access private
      * @return object|bool
      */
-    private function doCneInstall($instance, $space, $settingsMap, $snippets = array(), $app = array())
+    private function doCneInstall($instance, $space, $settingsMap, $snippets = array(), $settings = array())
     {
         $apiParams = new stdclass;
         $apiParams->userame           = $instance->createdBy;
@@ -940,6 +973,7 @@ class InstanceModel extends model
         $apiParams->version           = $instance->version;
         $apiParams->channel           = $instance->channel;
         $apiParams->settings_map      = $settingsMap;
+        $apiParams->settings          = $settings;
         $apiParams->settings_snippets = array_values($snippets);
 
         if(strtolower($this->config->CNE->app->domain) == 'demo.haogs.cn') $apiParams->settings_snippets = array('quickon_saas'); // Only for demo enviroment.
@@ -951,7 +985,7 @@ class InstanceModel extends model
             return false;
         }
 
-        $this->action->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'app' => $app)));
+        $this->action->create('instance', $instance->id, 'install', '', json_encode(array('result' => $result, 'apiParams' => $apiParams)));
 
         $instance->status     = 'initializing';
         $instance->dbSettings = json_encode($apiParams->settings_map);
@@ -1153,6 +1187,8 @@ class InstanceModel extends model
 
         if($instance->status != $statusData->status || $instance->version != $statusData->version)
         {
+            $instance->status = $statusData->status;
+
             $this->dao->update(TABLE_INSTANCE)
                 ->set('status')->eq($statusData->status)
                 ->beginIF($statusData->version)->set('version')->eq($statusData->version)->fi()
@@ -1610,10 +1646,7 @@ class InstanceModel extends model
         $rate = $metrics->rate;
         $tip  = "{$rate}% = " . helper::formatKB($metrics->usage / 1024) . ' / ' . helper::formatKB($metrics->limit / 1024);
 
-        if(strtolower($type) == 'pie')
-        {
-            return commonModel::printProgressPie($rate, '', $tip);
-        }
+        if(strtolower($type) == 'pie') return commonModel::printProgressPie($rate, '', $tip);
 
         $valueType = 'tip';
         if($instnace->status == 'stopped') $valueType = '';
@@ -1638,8 +1671,11 @@ class InstanceModel extends model
         $disableStop = !$this->canDo('stop', $instance);
         $actionHtml .= html::commonButton('<i class="icon-off"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn btn-lg btn-action');
 
-        $disableUninstall = !$this->canDo('uninstall', $instance);
-        $actionHtml      .= html::commonButton('<i class="icon-trash"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn btn-lg btn-action');
+        if(empty($instance->solution))
+        {
+            $disableUninstall = !$this->canDo('uninstall', $instance);
+            $actionHtml      .= html::commonButton('<i class="icon-trash"></i>', "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn btn-lg btn-action');
+        }
 
         if($instance->domain)
         {
@@ -1667,8 +1703,11 @@ class InstanceModel extends model
         $disableStop = !$this->canDo('stop', $instance);
         $actionHtml .= html::commonButton($this->lang->instance->stop, "instance-id='{$instance->id}' title='{$this->lang->instance->stop}'" . ($disableStop ? ' disabled ' : ''), 'btn-stop btn label label-outline label-warning label-lg');
 
-        $disableUninstall = !$this->canDo('uninstall', $instance);
-        $actionHtml      .= html::commonButton($this->lang->instance->uninstall, "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn label  label-outline label-danger label-lg');
+        if(empty($instance->solution))
+        {
+            $disableUninstall = !$this->canDo('uninstall', $instance);
+            $actionHtml      .= html::commonButton($this->lang->instance->uninstall, "instance-id='{$instance->id}' title='{$this->lang->instance->uninstall}'" . ($disableUninstall ? ' disabled ' : ''), 'btn-uninstall btn label  label-outline label-danger label-lg');
+        }
 
         if($instance->domain)
         {

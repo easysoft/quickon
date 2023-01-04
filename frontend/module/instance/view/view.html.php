@@ -25,6 +25,9 @@
         <span class='left-time'>00:00</span>
     </span>
     <?php endif;?>
+    <?php if($instance->solution):?>
+    <?php echo html::a(helper::createLink('solution', 'view', "id=$instance->solution"), $instance->solutionData->name, '', "class='label label-success label-outline solution-link'");?>
+    <?php endif;?>
   </div>
   <div class='btn-toolbar pull-right instance-panel'>
     <div class="">

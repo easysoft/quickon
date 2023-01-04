@@ -1,0 +1,9 @@
+.btn-toolbar a {font-size: 18px; font-weight: bolder; padding-left: 10px;}
+div.row {margin: 0;}
+div.card {margin-top: 20px; cursor: pointer; position: relative;background-color: #fff; border-radius: 4px; -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%), 0 2px 6px 0 rgb(0 0 0 / 5%); box-shadow: 0 1px 1px rgb(0 0 0 / 5%), 0 2px 6px 0 rgb(0 0 0 / 5%);}
+div.card:hover {box-shadow: 0 1px 5px rgb(0 0 0 / 18%);}
+.card img {border: 1px solid #cccccc; border-radius: 4px; width: 100%; height: 180px;}
+.card .card-heading {position: absolute; top: 80px; width: 100%; color: #eeeeee; text-align: center; font-size: 20px; font-weight: bolder;}
+.card .card-heading:hover {color: #61be68;}
+.card .card-content {padding: 10px; height: 58px;}
+.card .card-actions {text-align: right; padding: 10px;}

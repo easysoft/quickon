@@ -17,3 +17,4 @@ input.search-input#search {padding:5px;}
 #spaceSearchForm > div.btn-toolbar.pull-left > a {padding: 3px;}
 #spaceSearchForm button[type=submit] {height: 32px;}
 #spaceSearchForm a.btn {margin-top: 3px;}
+.solution-link {line-height: 18px; display: inline-block; float: right;}

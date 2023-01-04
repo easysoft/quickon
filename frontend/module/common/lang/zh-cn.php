@@ -162,6 +162,7 @@ $lang->common->common     = '公有模块';
 $lang->my->common         = '仪表盘';
 $lang->space->common      = '服务管理';
 $lang->store->common      = '应用市场';
+$lang->solution->common   = '解决方案';
 $lang->navigation->common = '导航';
 $lang->admin->common      = '后台管理';
 $lang->system->common     = '后台管理';
@@ -170,11 +171,12 @@ $lang->custom->common     = '自定义';
 $lang->company->common    = '公司';
 $lang->upgrade->common    = '升级';
 
-$lang->my->shortCommon    = '仪表盘';
-$lang->space->shortCommon = '服务管理';
-$lang->store->shortCommon = '应用市场';
-$lang->store->cloudStore  = '公共市场';
-$lang->store->localStore  = '本地市场';
+$lang->my->shortCommon       = '仪表盘';
+$lang->space->shortCommon    = '服务管理';
+$lang->store->shortCommon    = '应用市场';
+$lang->solution->shortCommon  = '解决方案';
+$lang->store->cloudStore     = '公共市场';
+$lang->store->localStore     = '本地市场';
 
 $lang->dashboard       = '仪表盘';
 $lang->contribute      = '贡献';

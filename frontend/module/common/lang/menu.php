@@ -1,26 +1,29 @@
 <?php
-$lang->navIcons['my']     = "<i class='icon icon-gauge'></i>";
-$lang->navIcons['store']  = "<i class='icon icon-store'></i>";
-$lang->navIcons['space']  = "<i class='icon icon-apps'></i>";
-$lang->navIcons['system'] = "<i class='icon icon-cog-outline'></i>";
+$lang->navIcons['my']       = "<i class='icon icon-gauge'></i>";
+$lang->navIcons['store']    = "<i class='icon icon-store'></i>";
+$lang->navIcons['solution'] = "<i class='icon icon-stack'></i>";
+$lang->navIcons['space']    = "<i class='icon icon-apps'></i>";
+$lang->navIcons['system']   = "<i class='icon icon-cog-outline'></i>";
 
 $lang->visionList['qucheng'] = '渠成平台';
 
 /* Main Navigation. */
-$lang->mainNav         = new stdclass();
-$lang->mainNav->my     = "{$lang->navIcons['my']} {$lang->my->shortCommon}|my|index|";
-$lang->mainNav->store  = "{$lang->navIcons['store']} {$lang->store->shortCommon}|store|index|";
-$lang->mainNav->space  = "{$lang->navIcons['space']} {$lang->space->shortCommon}|space|browse|";
-$lang->mainNav->system = "{$lang->navIcons['system']} {$lang->system->common}|system|index|";
+$lang->mainNav = new stdclass();
+$lang->mainNav->my       = "{$lang->navIcons['my']} {$lang->my->shortCommon}|my|index|";
+$lang->mainNav->store    = "{$lang->navIcons['store']} {$lang->store->shortCommon}|store|index|";
+$lang->mainNav->solution = "{$lang->navIcons['solution']} {$lang->solution->shortCommon}|solution|browseMarket|";
+$lang->mainNav->space    = "{$lang->navIcons['space']} {$lang->space->shortCommon}|space|browse|";
+$lang->mainNav->system   = "{$lang->navIcons['system']} {$lang->system->common}|system|index|";
 
 $lang->dividerMenu = ',system,';
 
 /* Menu order. */
 $lang->mainNav->menuOrder = array();
 $lang->mainNav->menuOrder[5]  = 'my';
-$lang->mainNav->menuOrder[7]  = 'store';
-$lang->mainNav->menuOrder[9]  = 'space';
-$lang->mainNav->menuOrder[65] = 'system';
+$lang->mainNav->menuOrder[10]  = 'store';
+$lang->mainNav->menuOrder[15]  = 'solution';
+$lang->mainNav->menuOrder[20]  = 'space';
+$lang->mainNav->menuOrder[25] = 'system';
 
 /* My menu. */
 $lang->my->menu        = new stdclass();

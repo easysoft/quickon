@@ -455,6 +455,27 @@ func AppCustomSettings(c *gin.Context) {
 	renderJson(c, http.StatusOK, settings)
 }
 
+func AppMappingSettings(c *gin.Context) {
+	var (
+		body model.AppSettingMappings
+	)
+
+	_, i, code, err := LookupApp(c, &body)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	logger := i.GetLogger()
+	settings, err := i.Settings().Mapping(body.Mappings)
+	if err != nil {
+		logger.WithError(err).Error("get mapping settings failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+	renderJson(c, http.StatusOK, settings)
+}
+
 func AppMetric(c *gin.Context) {
 	var (
 		query model.AppModel

@@ -347,30 +347,30 @@ a:focus,a:hover {
 }
 
 .label-primary[href]:focus,.label-primary[href]:hover {
-    background-color: #008469
+    background-color: #008469;
 }
 
 .label-success {
-    background-color: #00da88
+    background-color: #00da88;
 }
 
 .label-success[href]:focus,.label-success[href]:hover {
     color: #fff;
-    background-color: #00a768
+    background-color: #00a768;
 }
 
 .label-success.label-outline {
-    color: #00da88;
+    color: #61be68;
     background: 0 0;
-    border: 1px solid #00da88
+    border: 1px solid #61be68;
 }
 
 .label-success[href]:focus,.label-success[href]:hover {
-    background-color: #00a768
+    background-color: #00a768;
 }
 
 .label-info {
-    background-color: #2196f3
+    background-color: #2196f3;
 }
 
 .label-info[href]:focus,.label-info[href]:hover {
@@ -381,45 +381,45 @@ a:focus,a:hover {
 .label-info.label-outline {
     color: #2196f3;
     background: 0 0;
-    border: 1px solid #2196f3
+    border: 1px solid #2196f3;
 }
 
 .label-info[href]:focus,.label-info[href]:hover {
-    background-color: #0c7cd5
+    background-color: #0c7cd5;
 }
 
 .label-warning {
-    background-color: #ff9800
+    background-color: #ff9800;
 }
 
 .label-warning[href]:focus,.label-warning[href]:hover {
     color: #fff;
-    background-color: #cc7a00
+    background-color: #cc7a00;
 }
 
 .label-warning.label-outline {
     color: #ff9800;
     background: 0 0;
-    border: 1px solid #ff9800
+    border: 1px solid #ff9800;
 }
 
 .label-warning[href]:focus,.label-warning[href]:hover {
-    background-color: #cc7a00
+    background-color: #cc7a00;
 }
 
 .label-danger {
-    background-color: #ff5d5d
+    background-color: #ff5d5d;
 }
 
 .label-danger[href]:focus,.label-danger[href]:hover {
     color: #fff;
-    background-color: #ff2a2a
+    background-color: #ff2a2a;
 }
 
 .label-danger.label-outline {
     color: #ff5d5d;
     background: 0 0;
-    border: 1px solid #ff5d5d
+    border: 1px solid #ff5d5d;
 }
 
 .label-danger[href]:focus,.label-danger[href]:hover {
