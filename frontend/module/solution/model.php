@@ -136,10 +136,9 @@ class solutionModel extends model
         if(!$solution)
         {
             dao::$errors[] = $this->lang->solution->errors->notFound;
-            $this->dao->update(TABLE_SOLUTION)->set('status')->eq('error')->where('id')->eq($solutionID)->exec();
             return false;
         }
-        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('installing')->where('id')->eq($solutionID)->exec();
+        $this->saveStatus($solutionID, 'installing');
 
         $this->loadModel('cne');
         $this->loadModel('instance');
@@ -153,11 +152,10 @@ class solutionModel extends model
             $solutionStatus = $this->dao->select('status')->from(TABLE_SOLUTION)->where('id')->eq($solutionID)->fetch();
             if($solutionStatus->status !='installing')
             {
-                dao::$errors[] = $this->lang->solution->errors->notFound;
+                /* If status is not installing, should abort installation.  Becaust installation was canceled or error happened. */
+                dao::$errors[] = $this->lang->solution->errors->hasInstallationError;
                 return false;
             }
-
-            //$this->dao->update(TABLE_SOLUTION)->set('status')->eq('installing')->where('id')->eq($solutionID)->exec();
 
             $instance = $this->instance->instanceOfSolution($solution, $componentApp->chart);
             /* If not install. */
@@ -166,18 +164,28 @@ class solutionModel extends model
                 $cloudApp = $this->store->getAppInfo($componentApp->id, false, '', $componentApp->version, $channel);
                 if(!$cloudApp)
                 {
+                    $this->saveStatus($solutionID, 'notFoundApp');
                     dao::$errors[] = sprintf($this->lang->solution->errors->notFoundAppByVersion, $componentApp->version, $componentApp->alias);
                     return false;
                 }
-                $cloudApp->version     = $componentApp->version; // Must install the defineded version in solution schema.
+                /* Must install the defineded version in solution schema. */
+                $cloudApp->version     = $componentApp->version;
                 $cloudApp->app_version = $componentApp->app_version;
+
+                /* Check enough memory to install app, or not.*/
+                if(!$this->instance->enoughMemory($cloudApp))
+                {
+                    $this->saveStatus($solutionID, 'notEnoughResource');
+                    dao::$errors[] = $this->lang->solution->errors->notEnoughResource;
+                    return false;
+                }
 
                 $settings = $this->mountSettings($solutionSchema, $componentApp->chart, $components, $allMappings);
                 $instance = $this->installApp($cloudApp, $settings);
                 if(!$instance)
                 {
+                    $this->saveStatus($solutionID, 'cneError');
                     dao::$errors[] = sprintf($this->lang->solution->errors->failToInstallApp, $cloudApp->name);
-                    $this->dao->update(TABLE_SOLUTION)->set('status')->eq('error')->where('id')->eq($solutionID)->exec();
                     return false;
                 }
                 $this->dao->update(TABLE_INSTANCE)->set('solution')->eq($solutionID)->where('id')->eq($instance->id)->exec();
@@ -186,13 +194,15 @@ class solutionModel extends model
                 $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
             }
 
-            /* Query status of the installed instance. */
+
+            /* Wait instanlled app started. */
             $instance = $this->waitInstanceStart($instance);
             if($instance)
             {
                 $mappingKeys = zget($solutionSchema->mappings, $instance->chart, '');
                 if($mappingKeys)
                 {
+                    /* Load settings mapping of installed app for next app.*/
                     $tempMappings = $this->cne->getSettingsMapping($instance, $mappingKeys);
                     if($tempMappings) $allMappings[$categorty] = $tempMappings;
                 }
@@ -201,14 +211,19 @@ class solutionModel extends model
             }
             else
             {
+                $this->saveStatus($solutionID, 'timeout');
                 dao::$errors[] = $this->lang->solution->errors->timeout;
-                $this->dao->update(TABLE_SOLUTION)->set('status')->eq('error')->where('id')->eq($solutionID)->exec();
                 return false;
             }
         }
 
-        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('installed')->where('id')->eq($solutionID)->exec();
+        $this->saveStatus($solutionID, 'installed');
         return true;
+    }
+
+    public function saveStatus($solutionID, $status)
+    {
+        return $this->dao->update(TABLE_SOLUTION)->set('status')->eq($status)->where('id')->eq($solutionID)->exec();
     }
 
     /**
@@ -294,7 +309,7 @@ class solutionModel extends model
         {
             sleep(6);
             $instance = $this->instance->freshStatus($instance);
-            //$this->app->saveLog(date('Y-m-d H:i:s').' installing ' . $instance->name . ':' .$instance->status); // Code for debug.
+            $this->app->saveLog(date('Y-m-d H:i:s').' installing ' . $instance->name . ':' .$instance->status); // Code for debug.
             if($instance->status == 'running') return $instance;
         }
 
@@ -311,6 +326,7 @@ class solutionModel extends model
     public function uninstall($solutionID)
     {
         $this->loadModel('instance');
+        /* Firstly change the status to 'unintalling' for abort installing process. */
         $this->dao->update(TABLE_SOLUTION)->set('status')->eq('uninstalling')->where('id')->eq($solutionID)->exec();
 
         $solution = $this->getByID($solutionID);

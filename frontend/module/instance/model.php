@@ -1914,4 +1914,19 @@ class InstanceModel extends model
 
         return $appList;
     }
+
+    /**
+     * Check the free memory of cluster is enough to install app.
+     *
+     * @param  object $cloudApp
+     * @access public
+     * @return bool
+     */
+    public function enoughMemory($cloudApp)
+    {
+        $clusterResource = $this->cne->cneMetrics();
+        $freeMemory      = intval($clusterResource->metrics->memory->allocatable * 0.9); // Remain 10% memory for system.
+
+        return $freeMemory >= $cloudApp->memory;
+    }
 }

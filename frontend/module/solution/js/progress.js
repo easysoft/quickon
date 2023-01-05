@@ -51,7 +51,7 @@ $(function()
                 if(res.message instanceof Array) errMessage = res.message.join('<br/>');
                 if(res.message instanceof Object) errMessage = Object.values(res.message).join('<br/>');
 
-                $('.step-message span').text(errMessage);
+                $('.error-message').text(errMessage);
             }
         });
     }, 2000);
@@ -93,12 +93,22 @@ $(function()
 
             if(!result) return;
 
+            $('.error-message').text('');
+
             $.post(createLink('solution', 'ajaxInstall', 'id=' + solutionID), function(response)
             {
                 var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
                     //parent.window.location.href = res.locate;
+                }
+                else
+                {
+                    bootbox.alert(
+                    {
+                        title:   errors.error,
+                        message: res.message
+                    });
                 }
             });
         });

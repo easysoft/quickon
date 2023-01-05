@@ -5,4 +5,4 @@ div.cell { padding: 20px;}
 .step-title{padding: 10px; font-size: 20px;}
 .arrow.active {color: #3daf45;}
 .step-no.active {background-color: #3daf45;}
-span.loading {padding: 10px 20px;}
+span.loading {padding: 10px 20px; line-height: 40px;}
