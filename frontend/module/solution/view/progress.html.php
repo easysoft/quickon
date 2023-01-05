@@ -33,7 +33,10 @@
         </div>
         <?php endforeach;?>
       </div>
-      <div class='progress-message text-center'></div>
+      <div class='text-center'>
+        <span class='load-indicator loading'></span>
+        <span class='progress-message'></span>
+      </div>
       <div class='error-message text-red  text-center'></div>
       <div class='form-actions text-center'>
         <?php echo html::commonButton($lang->solution->retryInstall, "id='retryInstallBtn' class='hide'", 'btn btn-primary btn-wide');?>
