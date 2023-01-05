@@ -35,6 +35,7 @@ $(function()
                     if(cloudApp.status == 'error')
                     {
                         $('.error-message').text(res.message);
+                        $('.progress.loading').hide();
                     }
                 }
                 if(installed)
@@ -46,6 +47,7 @@ $(function()
             else
             {
                 $('#retryInstallBtn').show();
+                $('.progress.loading').hide();
 
                 var errMessage = res.message;
                 if(res.message instanceof Array) errMessage = res.message.join('<br/>');
@@ -89,11 +91,12 @@ $(function()
         bootbox.confirm(notices.confirmReinstall, function(result)
         {
             $('#retryInstallBtn').attr('disabled', false);
-            $('#retryInstallBtn').hide();
 
             if(!result) return;
 
+            $('#retryInstallBtn').hide();
             $('.error-message').text('');
+            $('.progress.loading').show();
 
             $.post(createLink('solution', 'ajaxInstall', 'id=' + solutionID), function(response)
             {
@@ -123,4 +126,5 @@ $(function()
         $('#retryInstallBtn').hide();
     }
 
+  console.log('1234');
 });

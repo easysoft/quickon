@@ -34,7 +34,7 @@
         <?php endforeach;?>
       </div>
       <div class='text-center'>
-        <span class='load-indicator loading'></span>
+        <span class='progress load-indicator loading'></span>
         <span class='progress-message'></span>
       </div>
       <div class='error-message text-red  text-center'></div>
