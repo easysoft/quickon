@@ -2,6 +2,9 @@ $(function()
 {
     var timerID = setInterval(function()
     {
+        var mainMenu = parent.window.$.apps.getLastApp();
+        if(mainMenu.code != 'solution') return;
+
         $.get(createLink('solution', 'ajaxProgress', 'id='+ solutionID)).done(function(response)
         {
             var res = JSON.parse(response);
@@ -125,6 +128,4 @@ $(function()
     {
         $('#retryInstallBtn').hide();
     }
-
-  console.log('1234');
 });

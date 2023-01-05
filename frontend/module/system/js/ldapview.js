@@ -103,15 +103,10 @@ $(function()
         });
     });
 
-    var enableTimer = true;
-    window.parent.$(window.parent.document).on('showapp', function(event, app)
-    {
-        enableTimer = app.code == 'space';
-    });
-
     setInterval(function()
     {
-        if(!enableTimer) return;
+        var mainMenu = parent.window.$.apps.getLastApp();
+        if(mainMenu.code != 'system') return;
 
         var statusURL = createLink('instance', 'ajaxStatus');
         $.post(statusURL, {idList: instanceIdList}).done(function(response)

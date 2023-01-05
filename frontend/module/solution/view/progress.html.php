@@ -17,7 +17,7 @@
 <?php js::set('errors', $lang->solution->errors);?>
 <div id='mainContent' class='main-row'>
   <div class='cell'>
-    <div>
+    <div class='solution-progress'>
       <h2><?php echo $solution->name;?></h2>
       <div class='text-center'>
         <?php $components = json_decode($solution->components);?>
