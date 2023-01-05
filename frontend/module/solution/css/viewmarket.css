@@ -1,6 +1,6 @@
-.arch-design {border: 1px solid #dddddd; border-radius: 4px; padding: 5px;}
+.arch-design {border-radius: 4px; padding: 5px;}
 .app-list img {width: 25px; height: 25px; display: inline-block; margin-right: 10px;}
 .link-list a {color: #61be68;}
 .customer-list {margin-top: 20px;}
-.customer-list img {border: solid 1px #ccc; border-radius: 3px; width: 80px; height: 80px; padding: 10px;}
+.customer-list img {border-radius: 3px; width: 80px; height: 80px; padding: 10px;}
 .customer-list h4 {width: 80px;}

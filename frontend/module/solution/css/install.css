@@ -1,2 +1,2 @@
-.main-cell{padding: 20px;}
+.main-cell{padding: 20px; width: 50%; min-width: 500px; margin: 0 auto;}
 .main-cell .table{margin: 0 auto; width: auto;}

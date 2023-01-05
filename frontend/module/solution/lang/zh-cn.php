@@ -44,6 +44,7 @@ $lang->solution->errors->failToInstallApp     = '安装%s应用失败';
 $lang->solution->errors->timeout              = '安装超时';
 $lang->solution->errors->failToUninstallApp   = '卸载%s应用失败';
 $lang->solution->errors->hasInstallationError = '安装过程中发生错误';
+$lang->solution->errors->notFoundAppByVersion = '找不到%s版本的%s应用';
 
 $lang->solution->installationErrors = array();
 $lang->solution->installationErrors['uninstalling']      = '安装已取消。';

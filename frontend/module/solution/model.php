@@ -163,7 +163,15 @@ class solutionModel extends model
             /* If not install. */
             if(!$instance)
             {
-                $cloudApp = $this->store->getAppInfo($componentApp->id, false, '', '', $channel);
+                $cloudApp = $this->store->getAppInfo($componentApp->id, false, '', $componentApp->version, $channel);
+                if(!$cloudApp)
+                {
+                    dao::$errors[] = sprintf($this->lang->solution->errors->notFoundAppByVersion, $componentApp->version, $componentApp->alias);
+                    return false;
+                }
+                $cloudApp->version     = $componentApp->version; // Must install the defineded version in solution schema.
+                $cloudApp->app_version = $componentApp->app_version;
+
                 $settings = $this->mountSettings($solutionSchema, $componentApp->chart, $components, $allMappings);
                 $instance = $this->installApp($cloudApp, $settings);
                 if(!$instance)
@@ -199,7 +207,7 @@ class solutionModel extends model
             }
         }
 
-        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('finish')->where('id')->eq($solutionID)->exec();
+        $this->dao->update(TABLE_SOLUTION)->set('status')->eq('installed')->where('id')->eq($solutionID)->exec();
         return true;
     }
 

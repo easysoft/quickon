@@ -70,7 +70,7 @@ class solution extends control
         $this->app->loadLang('instance');
 
         $solution = $this->solution->getByID($id);
-        if($solution->status != 'finish') return printf(js::locate($this->inLink('progress', "id=$id")));
+        if($solution->status != 'installed') return printf(js::locate($this->inLink('progress', "id=$id")));
 
         $this->view->title    = $this->lang->solution->view;
         $this->view->solution = $solution;
@@ -161,7 +161,7 @@ class solution extends control
     public function ajaxProgress($id)
     {
         $solution = $this->solution->getByID($id);
-        if(in_array($solution->status, array('installing', 'installed', 'finish')))
+        if(in_array($solution->status, array('installing', 'installed')))
         {
             $result = 'success';
             $message = '';
