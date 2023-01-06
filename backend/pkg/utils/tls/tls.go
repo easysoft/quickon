@@ -1,14 +1,21 @@
 package tls
 
 import (
+	"crypto"
+	"crypto/dsa"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/sha512"
 	"crypto/x509"
+	"encoding/asn1"
 	"encoding/pem"
+	"fmt"
+	"math/big"
+	"strings"
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
-	"time"
 )
 
 type tlsKeyPair struct {
@@ -16,7 +23,7 @@ type tlsKeyPair struct {
 	privateKey  []byte
 
 	Certificates []*x509.Certificate
-	PrivateKey   any
+	PrivateKey   crypto.PrivateKey
 }
 
 func Parse(cert, key []byte, logger logrus.FieldLogger) (*tlsKeyPair, error) {
@@ -56,13 +63,59 @@ func parseCertificate(cert []byte) ([]*x509.Certificate, error) {
 	return certificates, err
 }
 
-func parseKey(key []byte) (any, error) {
-	block, rest := pem.Decode(key)
+type DSAKeyFormat struct {
+	Version       int
+	P, Q, G, Y, X *big.Int
+}
+
+func parseKey(key []byte) (crypto.PrivateKey, error) {
+	block, _ := pem.Decode(key)
 	if block == nil {
-		return nil, errors.Errorf("decode private key failed, rest: %s", rest)
+		return nil, errors.New("no PEM data in input")
 	}
 
-	return x509.ParsePKCS8PrivateKey(block.Bytes)
+	if block.Type == "PRIVATE KEY" {
+		priv, err := x509.ParsePKCS8PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("decoding PEM as PKCS#8: %s", err)
+		}
+		return priv, nil
+	} else if !strings.HasSuffix(block.Type, " PRIVATE KEY") {
+		return nil, fmt.Errorf("no private key data in PEM block of type %s", block.Type)
+	}
+
+	switch block.Type[:len(block.Type)-12] { // strip " PRIVATE KEY"
+	case "RSA":
+		priv, err := x509.ParsePKCS1PrivateKey(block.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("parsing RSA private key from PEM: %s", err)
+		}
+		return priv, nil
+	case "EC":
+		priv, err := x509.ParseECPrivateKey(block.Bytes)
+		if err != nil {
+			return nil, fmt.Errorf("parsing EC private key from PEM: %s", err)
+		}
+		return priv, nil
+	case "DSA":
+		var k DSAKeyFormat
+		_, err := asn1.Unmarshal(block.Bytes, &k)
+		if err != nil {
+			return nil, fmt.Errorf("parsing DSA private key from PEM: %s", err)
+		}
+		priv := &dsa.PrivateKey{
+			PublicKey: dsa.PublicKey{
+				Parameters: dsa.Parameters{
+					P: k.P, Q: k.Q, G: k.G,
+				},
+				Y: k.Y,
+			},
+			X: k.X,
+		}
+		return priv, nil
+	default:
+		return nil, fmt.Errorf("invalid private key type %s", block.Type)
+	}
 }
 
 func validCertificates(certs []*x509.Certificate) error {
