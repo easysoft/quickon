@@ -19,7 +19,7 @@
     <div class='row'>
       <div class='col-sm-12'>
         <h3 class='solution-name'><?php echo $solution->name;?></h3>
-        <div class='btn-toolbar pull-right'>
+        <div class='pull-right'>
           <?php echo html::commonButton($lang->solution->uninstall, "id='uninstallBtn'", "btn btn-primary btn-wide");?>
         </div>
       </div>

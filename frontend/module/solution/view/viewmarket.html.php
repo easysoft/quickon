@@ -13,13 +13,13 @@
 <?php include  $this->app->getModuleRoot() . '/common/view/header.html.php';?>
 <div id='mainContent' class='main-row'>
   <div class='main-cell cell' id='solutionContainer'>
-    <div class='info-header'>
-      <div class='btn-toolbar pull-right'>
-        <?php echo html::a($this->inlink('install', "id=$solution->id"), $lang->solution->install, "", "class='btn btn-primary btn-wide'");?>
-      </div>
-      <h2><?php echo $solution->title;?></h2>
-    </div>
     <div class='row'>
+      <div class='col-sm-12'>
+        <h3 class='solution-name'><?php echo $solution->title;?></h3>
+        <div class='pull-right'>
+          <?php echo html::a($this->inlink('install', "id=$solution->id"), $lang->solution->install, "", "class='install-btn btn btn-primary btn-wide'");?>
+        </div>
+      </div>
       <div class='col-sm-9'>
         <div class='info-container'>
           <p><?php echo $solution->description;?></p>
@@ -45,7 +45,7 @@
             <div class='col-sm-12'><h3><?php echo $lang->solution->includedApp;?></h3></div>
             <?php foreach($components->categories as $category => $groupedApp):?>
             <div class='col-sm-3'>
-              <h4 class='text-gray'><?php echo $groupedApp->alias;?></h4>
+              <h4 class='text-gray text-center'><?php echo $groupedApp->alias;?></h4>
               <?php foreach($groupedApp->choices as $cloudApp):?>
               <h5 class='app-list'>
                 <?php $appInfo = zget($solution->apps, $cloudApp->name, '');?>

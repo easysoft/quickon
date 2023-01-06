@@ -1,3 +1,7 @@
+.info-container {border-right: solid 1px #cccccc; padding: 20px;}
+.info-container p {margin-bottom: 30px;}
+.solution-name {margin-left: 20px; display: inline-block;}
+.install-btn {margin: 20px;}
 .arch-design {border-radius: 4px; padding: 5px;}
 .app-list img {width: 25px; height: 25px; display: inline-block; margin-right: 10px;}
 .link-list a {color: #61be68;}
