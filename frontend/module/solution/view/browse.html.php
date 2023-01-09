@@ -32,7 +32,7 @@
       <div class='col-sm-3'>
         <div class="card">
           <a href='<?php echo helper::createLink('solution', 'view', "id=$solution->id");?>'>
-            <?php echo html::image(isset($solution->cover) ? $solution->cover : "/theme/default/images/main/waterfall.png");?>
+            <?php echo html::image(isset($solution->cover) ? $solution->cover . '?' . date('YmdH') : "/theme/default/images/main/waterfall.png");?>
             <div class="card-heading"><span class='text-ellipsis'><?php echo $solution->name;?></span></div>
             <div class="card-content"><?php echo $solution->introduction;?></div>
           </a>
