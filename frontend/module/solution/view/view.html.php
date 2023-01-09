@@ -14,6 +14,7 @@
 <?php js::set('solutionID', $solution->id);?>
 <?php js::set('notices', $lang->solution->notices);?>
 <?php js::set('errors', $lang->solution->errors);?>
+<?php js::set('instanceIdList', array_keys($solution->instances));?>
 <div id='mainContent' class='main-row'>
   <div class='cell' id='solutionContainer'>
     <div class='row'>
