@@ -33,7 +33,7 @@
         <div class="card">
           <a href='<?php echo helper::createLink('solution', 'view', "id=$solution->id");?>'>
             <?php echo html::image(isset($solution->cover) ? $solution->cover : "/theme/default/images/main/waterfall.png");?>
-            <div class="card-heading"><span><?php echo $solution->name;?></span></div>
+            <div class="card-heading"><span class='text-ellipsis'><?php echo $solution->name;?></span></div>
             <div class="card-content"><?php echo $solution->introduction;?></div>
           </a>
           <div class="card-actions">

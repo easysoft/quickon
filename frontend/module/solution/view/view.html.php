@@ -30,8 +30,8 @@
           <div class='panel'>
             <div class='panel-heading'>
               <div class="instance-name">
-                <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
-                  <?php echo $instance->name;?>&nbsp;
+                <a class='text-ellipsis' href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                  <?php echo $instance->name;?>
                 </a>
               </div>
             </div>
@@ -41,7 +41,7 @@
                   <div class='instance-logo'>
                     <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
                   </div>
-                  <p class="instance-intro"><?php echo $instance->introduction;?>&nbsp;</p>
+                  <p class="instance-introduction"><?php echo $instance->introduction;?></p>
                 </a>
               </div>
               <div class="instance-actions">
