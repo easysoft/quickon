@@ -35,12 +35,30 @@ class solutionModel extends model
     /**
      * Search
      *
+     * @param  string $keyword
      * @access public
      * @return array
      */
-    public function search()
+    public function search($keyword = '')
     {
-        return $this->dao->select('*')->from(TABLE_SOLUTION)->where('deleted')->eq(0)->orderBy('createdAt desc')->fetchAll();
+        return $this->dao->select('*')->from(TABLE_SOLUTION)
+            ->where('deleted')->eq(0)
+            ->beginIF($keyword)->andWhere('name')->like($keyword)->fi()
+            ->orderBy('createdAt desc')->fetchAll();
+    }
+
+    /**
+     * Update solution name.
+     *
+     * @param  int    $solutionID
+     * @access public
+     * @return int
+     */
+    public function updateName($solutionID)
+    {
+        $newSolution = fixer::input('post')->trim('name')->get();
+
+        return $this->dao->update(TABLE_SOLUTION)->data($newSolution)->autoCheck()->where('id')->eq($solutionID)->exec();
     }
 
     /**

@@ -79,6 +79,31 @@ class solution extends control
     }
 
     /**
+     * Edit solution app name.
+     *
+     * @param  int $id
+     * @access public
+     * @return void
+     */
+    public function editName($id)
+    {
+        $solution = $this->solution->getByID($id);
+
+        if(!empty($_POST))
+        {
+            $this->solution->updateName($id);
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            return print(js::closeModal('parent.parent', 'this', "function(){parent.parent.location.reload();}"));
+        }
+
+        $this->view->title    = $solution->name;
+        $this->view->solution = $solution;
+
+        $this->display();
+    }
+
+    /**
      * Show installing solution progress.
      *
      * @param  int    $cloudSolutionID
