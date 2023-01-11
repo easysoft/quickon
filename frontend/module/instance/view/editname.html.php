@@ -19,7 +19,7 @@
     <table class='table table-form'>
       <tr>
         <th class='w-100px'><?php echo $lang->instance->name;?></th>
-        <td><?php echo html::input('name', $instance->name, "class='form-control'");?></td>
+        <td><?php echo html::input('name', $instance->name, "class='form-control' maxlength='50'");?></td>
       </tr>
     </table>
     <div class='text-center form-actions'><?php echo html::submitButton() . html::backButton();?></div>
