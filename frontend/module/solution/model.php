@@ -359,7 +359,7 @@ class solutionModel extends model
             $success = $this->instance->uninstall($instance);
             if(!$success)
             {
-                dao::$errors[] = printf($this->lang->solution->errors->failToUninstallApp, $instance->name);
+                dao::$errors[] = sprintf($this->lang->solution->errors->failToUninstallApp, $instance->name);
                 return;
             }
         }
