@@ -106,7 +106,7 @@ $(function()
                 var res = JSON.parse(response);
                 if(res.result == 'success')
                 {
-                    //parent.window.location.href = res.locate;
+                    parent.window.location.href = res.locate;
                 }
                 else
                 {

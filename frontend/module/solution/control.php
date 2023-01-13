@@ -188,12 +188,12 @@ class solution extends control
         $solution = $this->solution->getByID($id);
         if(in_array($solution->status, array('installing', 'installed')))
         {
-            $result = 'success';
+            $result  = 'success';
             $message = '';
         }
         else
         {
-            $result = 'fail';
+            $result  = 'fail';
             $message = zget($this->lang->solution->installationErrors, $solution->status, $this->lang->solution->errors->hasInstallationError);
         }
 

@@ -37,7 +37,7 @@
         <span class='progress load-indicator loading'></span>
         <span class='progress-message'></span>
       </div>
-      <div class='error-message text-red  text-center'></div>
+      <div class='error-message text-red text-center'></div>
       <div class='form-actions text-center'>
         <?php echo html::commonButton($lang->solution->retryInstall, "id='retryInstallBtn' class='hide'", 'btn btn-primary btn-wide');?>
         <?php echo html::commonButton($lang->solution->cancelInstall, "id='cancelInstallBtn'", 'btn btn-primary btn-wide');?>
@@ -46,4 +46,3 @@
   </div>
 </div>
 <?php include  $this->app->getModuleRoot() . '/common/view/footer.html.php';?>
-

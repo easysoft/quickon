@@ -99,7 +99,8 @@ class solutionModel extends model
         $solution->createdBy    = $this->app->user->account;
         $solution->createdAt    = date('Y-m-d H:i:s');
 
-        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+
         $solution->channel = $channel;
 
         $this->dao->insert(TABLE_SOLUTION)->data($solution)->exec();
@@ -127,6 +128,7 @@ class solutionModel extends model
             if($appInSchema->name != $chart) continue;
 
             $appInfo = zget($cloudSolution->apps, $chart);
+
             $appInfo->version     = $appInSchema->version;
             $appInfo->app_version = $appInSchema->app_version;
             $appInfo->status      = 'waiting';
@@ -239,6 +241,14 @@ class solutionModel extends model
         return true;
     }
 
+    /**
+     * Save status.
+     *
+     * @param  int    $solutionID
+     * @param  string $status
+     * @access public
+     * @return int
+     */
     public function saveStatus($solutionID, $status)
     {
         return $this->dao->update(TABLE_SOLUTION)->set('status')->eq($status)->where('id')->eq($solutionID)->exec();
@@ -247,10 +257,10 @@ class solutionModel extends model
     /**
      * Mount settings for installing app.
      *
-     * @param  object   $solutionSchema
-     * @param  string   $chart
-     * @param  object   $components
-     * @param  array    $mappings  example: ['git' => ['env.GIT_USERNAME' => 'admin', ...], ...]
+     * @param  object  $solutionSchema
+     * @param  string  $chart
+     * @param  object  $components
+     * @param  array   $mappings  example: ['git' => ['env.GIT_USERNAME' => 'admin', ...], ...]
      * @access private
      * @return array
      */
@@ -283,8 +293,8 @@ class solutionModel extends model
     /**
      * installApp
      *
-     * @param  int    $cloudApp
-     * @param  int    $settings
+     * @param  int     $cloudApp
+     * @param  int     $settings
      * @access private
      * @return mixed
      */
@@ -413,7 +423,7 @@ class solutionModel extends model
 
         $totalRate = round($totalRate / count($solution->instances), 2);
 
-        $tip  = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
+        $tip = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
 
         if(strtolower($type) == 'pie') return commonModel::printProgressPie($totalRate, '', $tip);
 
@@ -446,11 +456,10 @@ class solutionModel extends model
 
         $totalRate = round($totalRate / count($solution->instances), 2);
 
-        $tip  = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
+        $tip = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
 
         if(strtolower($type) == 'pie') return commonModel::printProgressPie($totalRate, '', $tip);
 
         return commonModel::printProgressBar($totalRate, '', $tip, 'percent');
     }
 }
-
