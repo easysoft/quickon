@@ -1,10 +1,19 @@
-.info-container {border-right: solid 1px #cccccc; padding: 20px;}
+.info-container {padding: 20px;}
 .info-container p {margin-bottom: 30px;}
-.solution-name {margin-left: 20px; display: inline-block;}
-.install-btn {margin: 20px;}
+.info-container h3 {margin-top: 40px;}
+.solution-name {display: inline-block;}
+.install-btn {margin: 20px 0;}
 .arch-design {border-radius: 4px; padding: 5px;}
-.app-list img {width: 25px; height: 25px; display: inline-block; margin-right: 10px;}
-.link-list a {color: #61be68;}
+.component-title {display: inline-block; line-height: 24px; background-size: contain; background-image: url('/theme/default/images/main/green_corner.svg'); background-position: top right; background-repeat: no-repeat;}
+.component-title span {color: #ffffff; background-color: #5fb964; border-top-left-radius: 4px; margin-right: 30px; padding: 5px 10px; min-width: 110px; display:inline-block;}
+.app-box {border: 1px solid #e7f5e8; margin: 5px 0;  border-top-left-radius: 4px;}
+.app-list {display: inline-block; margin: 5px 10px;}
+.app-list img {width: 25px; height: 25px; display: inline-block; margin: 10px;}
+.feature-box {background-color: #f8faf7; margin-bottom: 20px; padding-left: 40px;}
+.feature-box img {display: inline-block; position: absolute; left: 20px; top: 20px;}
+.feature-box p {overflow: hidden; height: 36px;}
+.right-side .cell {padding-left: 20px; padding-bottom: 20px; margin-bottom: 20px;}
+.link-list a {color: #2d7fff;}
 .customer-list {margin-top: 20px;}
-.customer-list img {border-radius: 3px; width: 80px; height: 80px; padding: 10px;}
-.customer-list h4 {width: 80px;}
+.customer-list img {border-radius: 3px; width: 60px; height: 60px; padding: 10px;}
+.customer-list h4 {width: 60px;  overflow: hidden;}

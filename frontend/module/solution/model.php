@@ -214,7 +214,6 @@ class solutionModel extends model
                 $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
             }
 
-
             /* Wait instanlled app started. */
             $instance = $this->waitInstanceStart($instance);
             if($instance)
@@ -222,7 +221,7 @@ class solutionModel extends model
                 $mappingKeys = zget($solutionSchema->mappings, $instance->chart, '');
                 if($mappingKeys)
                 {
-                    /* Load settings mapping of installed app for next app.*/
+                    /* Load settings mapping of installed app for next app. */
                     $tempMappings = $this->cne->getSettingsMapping($instance, $mappingKeys);
                     if($tempMappings) $allMappings[$categorty] = $tempMappings;
                 }
@@ -306,8 +305,6 @@ class solutionModel extends model
         $customData->customName   = $cloudApp->alias;
         $customData->dbType       = null;
         $customData->customDomain = $this->loadModel('instance')->randThirdDomain();
-        //$customData->ldapSnippet[0] = 'qucheng'; // another possiable value : extra
-        //$customData->smtpSnippet[0] = 'qucheng'; // another possiable value : extra
 
         $dbInfo = new stdclass;
         $dbList = $this->loadModel('cne')->sharedDBList();
