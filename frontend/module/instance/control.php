@@ -338,7 +338,7 @@ class instance extends control
                 ->trim('customName')->setDefault('customName', '')
                 ->trim('customDomain')->setDefault('customDomain', null)
                 ->trim('version')->setDefault('version', '')
-                ->trim('dbType')
+                ->trim('dbType')->setDefault('dbType', 'unsharedDB')
                 ->trim('dbService')
                 ->setDefault('app_version', '')
                 ->get();

@@ -80,7 +80,7 @@
             <td></td>
           </tr>
           <?php endif;?>
-          <?php if(isset($cloudApp->dependencies->mysql) or isset($cloudApp->dependencies->postgresql)):?>
+          <?php if(isset($cloudApp->dependencies->mysql) and $mysqlList or isset($cloudApp->dependencies->postgresql) and $pgList):?>
           <tr>
             <th class='w-80px'><?php echo $lang->instance->dbType;?></th>
             <td class='w-250px'>
@@ -91,7 +91,7 @@
             <td><?php echo html::a('https://www.qucheng.com/book/Installation-manual/app-install-33.html',$lang->instance->howToSelectDB, '_blank');?></td>
           </tr>
           <?php endif;?>
-          <?php if(isset($cloudApp->dependencies->mysql)):?>
+          <?php if(isset($cloudApp->dependencies->mysql) and $mysqlList):?>
           <tr>
             <th></th>
             <td>
@@ -101,7 +101,7 @@
             </td>
             <td></td>
           </tr>
-          <?php elseif(isset($cloudApp->dependencies->postgresql)):?>
+          <?php elseif(isset($cloudApp->dependencies->postgresql) and $pgList):?>
           <tr>
             <th></th>
             <td>
