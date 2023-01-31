@@ -93,7 +93,7 @@
           <div class='customer-list'>
             <a href="<?php echo $customer->home;?>" target='_blank'>
               <?php echo html::image($customer->description);?>
-              <h4 class='text-center'><?php echo $customer->name;?></h4>
+              <h4 class='text-center' title='<?php echo $customer->name;?>'><?php echo $customer->name;?></h4>
             </a>
           </div>
           <?php endforeach;?>
