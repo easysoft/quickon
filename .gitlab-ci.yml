@@ -1,3 +1,6 @@
+include:
+ - local: /.gitlab-ci/sonarqube.yaml
+
 before_script:
   - docker info
   - echo "build $CI_COMMIT_REF_NAME"
@@ -16,6 +19,7 @@ workflow:
     - when: never
 
 stages:
+  - check
   - build
   - deploy
 
