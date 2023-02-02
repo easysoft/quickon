@@ -202,7 +202,6 @@ CREATE TABLE `q_usergroup` (
   UNIQUE KEY `account` (`account`,`group`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
 
-
 -- DROP TABLE IF EXISTS `q_group`;
 CREATE TABLE `q_group` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
@@ -214,7 +213,6 @@ CREATE TABLE `q_group` (
   `developer` enum('0','1') NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb3;
-
 
 -- DROP TABLE IF EXISTS `q_grouppriv`;
 CREATE TABLE `q_grouppriv` (
