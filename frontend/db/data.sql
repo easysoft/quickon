@@ -46,6 +46,21 @@ CREATE TABLE IF NOT EXISTS `q_instance` (
   KEY `k8name` (`k8name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+-- DROP TABLE IF EXISTS `q_cron`;
+CREATE TABLE IF NOT EXISTS `q_cron` (
+  `id` mediumint(8) unsigned NOT NULL AUTO_INCREMENT,
+  `m` varchar(20) NOT NULL,
+  `h` varchar(20) NOT NULL,
+  `dom` varchar(20) NOT NULL,
+  `mon` varchar(20) NOT NULL,
+  `dow` varchar(20) NOT NULL,
+  `objectID` mediumint unsigned NOT NULL DEFAULT 0,
+  `status` varchar(20) NOT NULL,
+  `lastTime` datetime,
+  PRIMARY KEY (`id`),
+  KEY `lastTime` (`lastTime`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 -- DROP TABLE IF EXISTS `q_action`;
 CREATE TABLE `q_action` (
   `id` mediumint unsigned NOT NULL AUTO_INCREMENT,
