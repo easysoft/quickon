@@ -7,3 +7,4 @@ else
 fi
 
 curl "http://localhost/instance-autoBackup-${QuchengKey}.html"
+curl "http://localhost/instance-autoRestore-${QuchengKey}.html"

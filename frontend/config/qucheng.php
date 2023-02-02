@@ -68,6 +68,7 @@ $config->openMethods[] = 'instance.apibrowse';
 $config->openMethods[] = 'instance.apiinstall';
 $config->openMethods[] = 'instance.deleteexpireddemoinstance';
 $config->openMethods[] = 'instance.autobackup';
+$config->openMethods[] = 'instance.autorestore';
 $config->openMethods[] = 'backup.ajaxupgradestatus';
 
 $config->anonymousOpenMethods = array();
@@ -91,6 +92,7 @@ $config->notIframeMethods[] = 'misc.status';
 $config->notIframeMethods[] = 'backup.ajaxupgradestatus';
 $config->notIframeMethods[] = 'instance.deleteexpireddemoinstance';
 $config->notIframeMethods[] = 'instance.autobackup';
+$config->notIframeMethods[] = 'instance.autorestore';
 
 /* Define the tables. */
 define('TABLE_USER',          '`' . $config->db->prefix . 'user`');

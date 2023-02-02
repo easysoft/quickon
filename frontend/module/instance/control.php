@@ -106,7 +106,7 @@ class instance extends control
     }
 
     /**
-     * Save auto backup settings.
+     * Display or save auto backup settings.
      *
      * @param  int    $instanceID
      * @access public
@@ -145,6 +145,43 @@ class instance extends control
     }
 
     /**
+     * Display or save auto restore settings.
+     *
+     * @param  int    $instanceID
+     * @access public
+     * @return void
+     */
+    public function restoreSettings($instanceID)
+    {
+        $instance = $this->instance->getByID($instanceID);
+
+        if($_POST)
+        {
+            $this->instance->saveAutoRestoreSettings($instance);
+            if(dao::isError()) return $this->send(array('result' => 'fail', 'message' => dao::getError()));
+
+            $restoreSettings = $this->instance->getAutoRestoreSettings($instanceID);
+
+            $startTime = strtotime($restoreSettings->restoreTime);
+            if($startTime < time()) $startTime = strtotime("+1 day $restoreSettings->restoreTime");
+
+            if($restoreSettings->autoRestore)
+            {
+                $startRestoreMessage = sprintf($this->lang->instance->restore->firstStartTime, $instance->name, date('Y-m-d H:i:s', $startTime));
+                return $this->send(array('result' => 'success', 'message' => $startRestoreMessage));
+            }
+
+            return $this->send(array('result' => 'success', 'message' => $this->lang->instance->restore->disableAutoRestore));
+        }
+
+        $this->view->title           = $this->lang->instance->restore->autoRestore;
+        $this->view->instance        = $instance;
+        $this->view->restoreSettings = $this->instance->getAutoRestoreSettings($instanceID);
+
+        $this->display();
+    }
+
+    /**
      * Cron task of auto backup.
      *
      * @param  string $key
@@ -153,11 +190,31 @@ class instance extends control
      */
     public function autoBackup($key)
     {
+        if($this->config->instance->enableAutoRestore) return; // Only one of auto backup and auto restore can be enabled.
+
         $this->app->saveLog('Run auto backup at: ' . date('Y-md-d H:i:s'));
 
         if($key != helper::readKey()) return;
 
         $this->instance->autoBackup();
+    }
+
+    /**
+     * Cron task of auto restore.
+     *
+     * @param  string $key
+     * @access public
+     * @return void
+     */
+    public function autoRestore($key)
+    {
+        if(!$this->config->instance->enableAutoRestore) return; // Only one of auto backup and auto restore can be enabled.
+
+        $this->app->saveLog('Run auto restore at: ' . date('Y-md-d H:i:s'));
+
+        if($key != helper::readKey()) return;
+
+        $this->instance->autoRestore();
     }
 
     /**
@@ -187,8 +244,6 @@ class instance extends control
 
         $this->view->title    = $instance->name;
         $this->view->instance = $instance;
-
-        $this->view->position[] = $this->lang->instance->editName;
 
         $this->display();
     }

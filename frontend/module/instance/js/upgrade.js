@@ -1,4 +1,3 @@
-
 $(function()
 {
     $('#upgradeForm').on('submit', function(event)
