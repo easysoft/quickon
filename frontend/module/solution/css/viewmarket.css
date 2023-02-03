@@ -1,6 +1,7 @@
 .info-container {padding: 20px;}
 .info-container p {margin-bottom: 30px;}
 .info-container h3 {margin-top: 40px;}
+.info-container > h3 {margin-top: 10px;}
 .solution-name {display: inline-block;}
 .install-btn {margin: 20px 0;}
 .arch-design {border-radius: 4px; padding: 5px;}

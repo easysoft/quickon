@@ -14,7 +14,7 @@
 <div id='mainContent' class='main-row'>
   <div class='row'>
     <div class='col-sm-12'>
-      <h3 class='solution-name'><?php echo $solution->title;?></h3>
+      <h2 class='solution-name'><?php echo $solution->title;?></h2>
       <div class='pull-right'>
         <?php echo html::a($this->inlink('install', "id=$solution->id"), $lang->solution->install, "", "class='install-btn btn btn-primary btn-wide'");?>
       </div>
@@ -24,6 +24,7 @@
     <div class='row'>
       <div class='col-sm-9'>
         <div class='cell info-container'>
+          <h3 class=''><?php echo $lang->solution->introduction;?></h3>
           <div><?php echo $solution->description;?></div>
           <?php if(isset($solution->arch_design_url)):?>
           <div class='row'>
@@ -36,8 +37,8 @@
             <div class='col-sm-12'><h3><?php echo $lang->solution->scenes;?></h3></div>
             <?php foreach($solution->scenes as $scene):?>
             <div class='col-sm-4'>
-              <div class='cell'>
-                <h4 class='text-center'><?php echo $scene->name;?></h4>
+              <div class='cell text-center'>
+                <h4><?php echo $scene->name;?></h4>
                 <p><?php echo $scene->description;?></p>
               </div>
             </div>
