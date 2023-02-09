@@ -1,0 +1,35 @@
+fields:
+  - field: first
+    range: [1-9]{9}
+    prefix: ' '
+    postfix: ' x '
+
+  - field: second
+    range: 1-9
+    postfix: ' = '
+
+  - field: result       # 数值格式的值表达式
+    value: "$first * $second"
+    postfix: ' '
+
+  - field: third
+    range: [one,two,three]
+    postfix: ' '
+
+  - field: result_str  # 字符串格式的值表达式
+    value: "$first + '_' + $third"
+
+  - field: subs
+    fields:
+      - field: sub_first
+        range: [1-9]
+        prefix: ' '
+        postfix: ' x '
+
+      - field: sub_second
+        range: 1-9
+        postfix: ' = '
+
+      - field: sub_result
+        value: "$sub_first * $sub_second"
+        postfix: ' '

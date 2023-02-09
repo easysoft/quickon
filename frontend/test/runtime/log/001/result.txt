@@ -1,0 +1,36 @@
+
+================================================================ 2022-01-30 15:52:50 发现9个用例: ===============================================================
+(1/9) 通过 [/var/www/zentaopms_repo/test/model/task/assign.php           ] [1. taskModel->assign();] (2.00s)
+(2/9) 通过 [/var/www/zentaopms_repo/test/model/task/batchChangeModule.php] [1. taskModel->batchChangeModule();] (2.00s)
+(3/9) 通过 [/var/www/zentaopms_repo/test/model/task/batchCreate.php      ] [1. 测试taskModel->batchCreate();] (2.00s)
+(4/9) 通过 [/var/www/zentaopms_repo/test/model/task/batchUpdate.php      ] [1. 测试taskModel->batchUpdate();] (2.00s)
+(5/9) 通过 [/var/www/zentaopms_repo/test/model/task/create.php           ] [1. 测试productModel->create();] (2.00s)
+(6/9) 失败 [/var/www/zentaopms_repo/test/model/task/finish.php           ] [1. taskModel->finish();] (2.00s)
+(7/9) 通过 [/var/www/zentaopms_repo/test/model/task/recordEstimate.php   ] [1. taskModel->recordEstimate();] (2.00s)
+(8/9) 失败 [/var/www/zentaopms_repo/test/model/task/start.php            ] [1. 测试taskModel->startTest();] (0.00s)
+(9/9) 通过 [/var/www/zentaopms_repo/test/model/task/update.php           ] [1. 测试taskModel->update();] (2.00s)
+
+失败用例：
+[/var/www/zentaopms_repo/test/model/task/finish.php] 1.taskModel->finish();
+Step 1: 失败
+[Expect] status,wait,done
+[Actual] >> left,2,0
+
+[/var/www/zentaopms_repo/test/model/task/start.php] 1.测试taskModel->startTest();
+Step 1: 失败
+[Expect] status,wite,doing
+[Actual] Parse error: syntax error, unexpected 'public' (T_PUBLIC) in /var/www/zentaopms_repo/test/model/task/start.php on line 26
+
+Step 2: 失败
+[Expect] 此任务已被启动，不能重复启动！
+[Actual] N/A
+
+Step 3: 失败
+[Expect] status,pause,doing
+[Actual] N/A
+
+Step 4: 失败
+[Expect] status,closed,doing
+[Actual] N/A
+
+2022-01-30 15:53:07 执行9个用例，耗时17秒。7(77.0%) 通过，2(22.0%) 失败，0(0.0%) 忽略。报告 /var/www/zentaopms_repo/test/runtime/log/001/result.txt 。

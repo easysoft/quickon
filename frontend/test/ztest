@@ -1,0 +1,25 @@
+#!/usr/bin/env php
+<?php
+include 'lib/utils.php';
+
+if(count($argv) <= 1) die(printUsage());
+
+switch($argv[1])
+{
+    case 'init':
+        zdRun();
+        break;
+    case 'copyDB':
+        copyDB();
+        break;
+    case 'extract':
+        ztfExtract('api');
+        ztfExtract('model');
+        break;
+    case 'user':
+        ztfRun('model/user');
+        break;
+    default:
+        ztfExtract($argv[1]);
+        system("php " . $argv[1]);
+}

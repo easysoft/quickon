@@ -1,0 +1,246 @@
+===start /var/www/zentaopms_repo/test/model/task/assign.php at 2022-01-30 15:42:40
+>> assignedTo,,user92
+>> assignedTo,,user93
+>> assignedTo,,user94
+>> assignedTo,,user95
+>> assignedTo,,user96
+>> assignedTo,,user97
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/assign.php at 2022-01-30 15:42:42
+
+===start /var/www/zentaopms_repo/test/model/task/batchChangeModule.php at 2022-01-30 15:42:42
+>> module,0,21
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/batchChangeModule.php at 2022-01-30 15:42:44
+
+===start /var/www/zentaopms_repo/test/model/task/batchCreate.php at 2022-01-30 15:42:44
+>> 批量任务三
+>> 『任务类型』不能为空。
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/batchCreate.php at 2022-01-30 15:42:47
+
+===start /var/www/zentaopms_repo/test/model/task/batchUpdate.php at 2022-01-30 15:42:47
+>> name,开发任务17,批量修改任务一
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/batchUpdate.php at 2022-01-30 15:42:49
+
+===start /var/www/zentaopms_repo/test/model/task/create.php at 2022-01-30 15:42:49
+>> 开发任务一
+>> 设计任务一
+>> 需求任务一
+>> 测试任务一
+>> 研究任务一
+>> 讨论任务一
+>> 界面任务一
+>> 事务任务一
+>> 其他任务一
+>> 『任务名称』不能为空。
+>> 『任务类型』不能为空。
+>> 『截止日期』应当不小于『2021-04-10』。
+>> 指派人user92任务
+>> 团队任务一
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/create.php at 2022-01-30 15:42:51
+
+===start /var/www/zentaopms_repo/test/model/task/finish.php at 2022-01-30 15:42:51
+>> status,wait,done
+>> status,doing,done
+>> finishedBy,,admin
+>> status,pause,done
+>> status,cancel,done
+>> status,closed,done
+>> "总计消耗"必须大于之前消耗
+>> "本次消耗"不能为0
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/finish.php at 2022-01-30 15:42:53
+
+===start /var/www/zentaopms_repo/test/model/task/recordEstimate.php at 2022-01-30 15:42:53
+>> realStarted,0000-00-00 00:00:00,2022-01-30
+>> status,pause,doing
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/recordEstimate.php at 2022-01-30 15:42:55
+
+===start /var/www/zentaopms_repo/test/model/task/start.php at 2022-01-30 15:42:55
+Parse error: syntax error, unexpected 'public' (T_PUBLIC) in /var/www/zentaopms_repo/test/model/task/start.php on line 26
+===end /var/www/zentaopms_repo/test/model/task/start.php at 2022-01-30 15:42:55
+
+===start /var/www/zentaopms_repo/test/model/task/update.php at 2022-01-30 15:42:55
+>> name,开发任务11,wait任务修改
+>> Error: Cannot get index 2.
+<pre class='alert alert-danger'>implode(): Invalid arguments passed: <input type='text' value='vim +91 /var/www/zentaopms_repo/test/lib/init.php' size='49' style='border:none; background:none;' onclick='this.select();' /></pre>>> 
+>> name,开发任务13,done任务修改
+>> name,开发任务14,pause任务修改
+>> name,开发任务15,cancel任务修改
+>> name,开发任务16,closed任务修改
+>> 没有数据更新
+>> 『关闭原因』必须为空。
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/update.php at 2022-01-30 15:42:57

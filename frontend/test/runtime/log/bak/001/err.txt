@@ -1,0 +1,18 @@
+PHP Parse error:  syntax error, unexpected '%' in /var/www/zentaopms_repo/test/model/program/getparentpairs.php on line 21
+
+PHP Fatal error:  Uncaught ArgumentCountError: Too few arguments to function Tester::__construct(), 0 passed in /var/www/zentaopms_repo/test/model/project/getDataByProject.php on line 78 and exactly 1 expected in /var/www/zentaopms_repo/test/model/project/getDataByProject.php:25
+Stack trace:
+#0 /var/www/zentaopms_repo/test/model/project/getDataByProject.php(78): Tester->__construct()
+#1 {main}
+  thrown in /var/www/zentaopms_repo/test/model/project/getDataByProject.php on line 25
+
+PHP Fatal error:  Uncaught Error: Call to undefined method sonarqubeModel::getByID() in /var/www/zentaopms_repo/test/model/sonarqube/apivalidate.php:18
+Stack trace:
+#0 {main}
+  thrown in /var/www/zentaopms_repo/test/model/sonarqube/apivalidate.php on line 18
+
+PHP Fatal error:  Uncaught Error: Call to undefined method sonarqubeModel::getByID() in /var/www/zentaopms_repo/test/model/sonarqube/getbyid.php:19
+Stack trace:
+#0 {main}
+  thrown in /var/www/zentaopms_repo/test/model/sonarqube/getbyid.php on line 19
+

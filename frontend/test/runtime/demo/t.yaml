@@ -1,0 +1,11 @@
+title: zendata数据配置语法说明
+desc:
+
+author: zentao
+version: 1.0
+
+fields:
+  - field: field_use_instance
+    from: ip.v1.yaml
+    use: privateC{6:3}
+    postfix: "\t"

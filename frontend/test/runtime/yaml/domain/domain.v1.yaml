@@ -1,0 +1,176 @@
+title: 自定义域名
+desc:
+author: zentao
+version: 1.0
+
+field: domain
+instances:
+  - instance: one_number_at_common
+    note: 单数字域名
+    fields:
+      - field: one_number
+        range: 1-9
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: all
+  - instance: one_number_at_cn
+    note: 单数字CN域名
+    fields:
+      - field: one_number
+        range: 1-9
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn
+  - instance: one_number_at_new
+    note: 单数字新域名
+    fields:
+      - field: one_number
+        range: 1-9
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: new
+
+  - instance: one_letter_at_common
+    note: 单字母域名
+    fields:
+      - field: one_letter
+        range: a-z
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: all
+  - instance: one_letter_at_cn
+    note: 单字母CN域名
+    fields:
+      - field: one_letter
+        range: a-z
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn
+  - instance: one_letter_at_new
+    note: 单字母新域名
+    fields:
+      - field: one_letter
+        range: a-z
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: new
+
+  - instance: numbers_at_common
+    note: 纯数字域名
+    fields:
+      - field: several_numbers
+        range: 0-9
+        loop: 5-8
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: all
+  - instance: numbers_at_cn
+    note: 纯数字CN域名
+    fields:
+      - field: several_numbers
+        range: 0-9
+        loop: 5-8
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn
+  - instance: numbers_at_new
+    note: 纯数字新域名
+    fields:
+      - field: several_numbers
+        range: a-z
+        loop: 5-8
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: new
+
+  - instance: letters_at_common
+    note: 使用英文字符的域名
+    fields:
+      - field: letters
+        from: name.letters.v1.yaml
+        use: letters
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: all
+  - instance: letters_at_cn
+    note: 使用英文字符的CN域名
+    fields:
+      - field: letters
+        from: name.letters.v1.yaml
+        use: letters
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn
+  - instance: letters_at_new
+    note: 使用英文字符的新域名
+    fields:
+      - field: letters
+        from: name.letters.v1.yaml
+        use: letters
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: new
+
+  - instance: mixed_at_common
+    note: 字母和数字混合的域名
+    fields:
+      - field: numbers_and_letters
+        range: "[a-z,0-9]"
+        loop: 5-8
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: all
+  - instance: mixed_at_cn
+    note: 字母和数字混合的CN域名
+    fields:
+      - field: numbers_and_letters
+        range: "[a-z,0-9]:R"
+        loop: 5-8
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn
+  - instance: mixed_at_new
+    note: 字母和数字混合的新域名
+    fields:
+      - field: numbers_and_letters
+        range: "[a-z,0-9]:R"
+        loop: 5-8
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: new
+
+  - instance: enaccount_at_common
+    note: 使用英文账号的CN域名
+    fields:
+      - field: english_account
+        from: name.enaccount.v1.yaml
+        use: common_underline
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn
+  - instance: cnaccount_at_cn
+    note: 使用中文账号的新域名
+    fields:
+      - field: chinese_account
+        from: name.cnaccount.v1.yaml
+        use: common_dot
+        postfix: "."
+      - field: domain_postfix
+        from: domain.postfix.v1.yaml
+        use: cn

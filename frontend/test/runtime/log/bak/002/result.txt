@@ -1,0 +1,22 @@
+
+================================================================ 2022-01-28 09:21:27 发现7个用例: ===============================================================
+(1/7) 通过 [/var/www/zentaopms_repo/test/model/task/batchCreate.php] [1. 测试taskModel->batchCreate();] (2.00s)
+(2/7) 失败 [/var/www/zentaopms_repo/test/model/task/batchUpdate.php] [1. 测试taskModel->batchUpdate();] (2.00s)
+(3/7) 通过 [/var/www/zentaopms_repo/test/model/task/create.php     ] [1. 测试productModel->create();] (2.00s)
+(4/7) 通过 [/var/www/zentaopms_repo/test/model/task/getList.php    ] [1. productModel->getList();] (0.00s)
+(5/7) 通过 [/var/www/zentaopms_repo/test/model/task/getPairs.php   ] [1. 测试productModel->getPairs();] (0.00s)
+(6/7) 失败 [/var/www/zentaopms_repo/test/model/task/test.php       ] [1. productModel->getList();] (0.00s)
+(7/7) 通过 [/var/www/zentaopms_repo/test/model/task/update.php     ] [1. 测试taskModel->update();] (2.00s)
+
+失败用例：
+[/var/www/zentaopms_repo/test/model/task/batchUpdate.php] 1.测试taskModel->batchUpdate();
+Step 1: 失败
+[Expect] name,开发任务27,批量修改任务一
+[Actual] >> name,开发任务17,批量修改任务一
+
+[/var/www/zentaopms_repo/test/model/task/test.php] 1.productModel->getList();
+Step 1: 失败
+[Expect] 9
+[Actual] >> 1
+
+2022-01-28 09:21:36 执行7个用例，耗时9秒。5(71.0%) 通过，2(28.0%) 失败，0(0.0%) 忽略。报告 /var/www/zentaopms_repo/test/runtime/log/002/result.txt 。
