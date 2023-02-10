@@ -38,7 +38,6 @@ class InstanceModel extends model
         $instance = $this->dao->select('*')->from(TABLE_INSTANCE)
             ->where('id')->eq($id)
             ->andWhere('deleted')->eq(0)
-            ->andWhere('createdBy')->eq($this->app->user->account)
             ->beginIF(commonModel::isDemoAccount())->andWhere('createdAt')->gt($deadline)->fi()
             ->fetch();
         if(!$instance) return null;
@@ -483,7 +482,7 @@ class InstanceModel extends model
             case 'start':
                 return !($busy or in_array($instance->status, array('running', 'abnormal', 'destroyed')));
             case 'stop':
-                return !($busy or in_array($instance->status, array('stopped', 'installationFail')));
+                return !in_array($instance->status, array('stopped', 'stopping', 'destroying', 'suspending', 'suspended'));
             case 'uninstall':
                 return !in_array($instance->status, array('destroying'));
             case 'visit':
@@ -1275,8 +1274,86 @@ class InstanceModel extends model
         $settings = new stdclass;
         $settings->backupTime = "{$hour}:{$minute}";
         $settings->autoBackup = boolval(zget($instance, 'autoBackup', false));
-        $settings->keepDays   = intval(zget($instance, 'backupKeepDays', 7));
-        $settings->cycleDays  = 1; /* Cycle days is always is 1 at present. */
+        $settings->keepDays   = $settings->autoBackup ? intval(zget($instance, 'backupKeepDays', 7)) : 7; // Set default value to 7 days.
+        $settings->cycleDays  = 1; // Cycle days is always is 1 at present.
+
+        return $settings;
+    }
+
+    /**
+     * Save auto backup settings.
+     *
+     * @param  object $instance
+     * @access public
+     * @return bool
+     */
+    public function saveAutoRestoreSettings($instance)
+    {
+        /* Cycle days is always is 1 at present. */
+        $settings = fixer::input('post')
+            ->setDefault('restoreTime', '1:00')
+            ->setDefault('cycleDays', '1')
+            ->setDefault('autoRestore', array())
+            ->get();
+        $settings->autoRestore = in_array('true', $settings->autoRestore);
+
+        if(!preg_match("/^([0-2][0-9]):([0-5][0-9])$/", $settings->restoreTime, $parts))
+        {
+            dao::$errors[] = $this->lang->instance->restore->invalidTime;
+            return false;
+        }
+
+        /* Save cron task. */
+        list($hour, $minute) = explode(':', $settings->restoreTime);
+        $cronData = new stdclass;
+        $cronData->m   = intval($minute);
+        $cronData->h   = intval($hour);
+        //$cronData['dom'] = intval($settings->cycleDays);
+        $cronData->dom = '*';
+        $cronData->mon = '*';
+        $cronData->dow = '*';
+
+        $cron = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->eq($instance->id)->fetch();
+        if($cron)
+        {
+            $this->dao->update(TABLE_CRON)->autoCheck()->data($cronData)->where('id')->eq($cron->id)->exec();
+        }
+        else
+        {
+            $cronData->objectID = $instance->id;
+            $this->dao->insert(TABLE_CRON)->data($cronData)->exec();
+        }
+        if($this->dao->isError()) return false;
+
+        /* Save instance restore settings. */
+        $this->dao->update(TABLE_INSTANCE)->set('autoRestore')->eq($settings->autoRestore)->where('id')->eq($instance->id)->exec();
+        if($this->dao->isError()) return false;
+
+        $this->action->create('instance', $instance->id, 'saveAutoRestoreSettings', '', json_encode(array('data' => $settings)));
+        return true;
+    }
+
+    /**
+     * Get auto restore settings.
+     *
+     * @param  int    $instnaceID
+     * @access public
+     * @return object
+     */
+    public function getAutoRestoreSettings($instanceID)
+    {
+        $instance = $this->getByID($instanceID);
+
+        $cron = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->eq($instanceID)->limit(1)->fetch();
+        if(!$cron) $cron = new stdclass;
+
+        $hour   = substr('0' . zget($cron, 'h', '1'), -2, 2);
+        $minute = substr('0' . zget($cron, 'm', '00'), -2, 2);
+
+        $settings = new stdclass;
+        $settings->restoreTime = "{$hour}:{$minute}";
+        $settings->autoRestore = boolval(zget($instance, 'autoRestore', false));
+        $settings->cycleDays   = 1; // Cycle days is always is 1 at present.
 
         return $settings;
     }
@@ -1388,6 +1465,54 @@ class InstanceModel extends model
         if($result->code != 200) return false;
 
         return true;
+    }
+
+    /* Run restore latest successful manual backup recorder automatically.
+     *
+     * @access public
+     * @return void
+     */
+    public function autoRestore()
+    {
+        $instanceList = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('deleted')->eq(0)
+            ->andWhere('autoRestore')->eq(true)
+            ->andWhere('status')->eq('running')
+            ->fetchAll('id');
+
+        /* Load all crons that instance is enable auto restore. */
+        $crons = $this->dao->select('*')->from(TABLE_CRON)->where('objectID')->in(array_keys($instanceList))->fetchAll();
+
+        $nowHour  = intval(date('H'));
+        $nowMiute = intval(date('i'));
+        foreach($crons as $cron)
+        {
+            $hour   = intval($cron->h);
+            $minute = intval($cron->m);
+            if(!($nowHour == $hour and $nowMiute == $minute)) continue;
+
+            /* Pick latest successful manual backup recorder. */
+            $latestBackup = null;
+            $instance     = $this->getByID($cron->objectID);
+            $backupList   = $this->backupList($instance);
+            foreach($backupList as $backup)
+            {
+                if($backup->username == 'auto') continue; // Only restore manual backup.
+                if(empty($latestBackup) or $backup->status == 'completed' && $backup->create_time > $latestBackup->create_time)
+                {
+                    $latestBackup = $backup;
+                }
+            }
+
+            if($latestBackup)
+            {
+                $sysUser = new stdclass;
+                $sysUser->account = 'auto';
+                $this->restore($instance, $sysUser, $latestBackup->name);
+
+                $this->action->create('instance', $instance->id, 'autoRestore');
+            }
+        }
     }
 
     /**

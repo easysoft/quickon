@@ -61,7 +61,7 @@
     </div>
   </div>
 </div>
-<?php if(array_key_exists(strtolower($instance->chart), $this->config->instance->seniorChartList)):?>
+<?php if(empty($instance->solution) && array_key_exists(strtolower($instance->chart), $this->config->instance->seniorChartList)):?>
 <div id='seniorAppPanel' class="panel">
   <div class="panel-heading">
     <div class="panel-title"><?php echo $lang->instance->upgradeToSenior;?></div>

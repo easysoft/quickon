@@ -25,4 +25,23 @@ $(function()
             });
         });
     });
+
+    setInterval(function()
+    {
+        var mainMenu = parent.window.$.apps.getLastApp();
+        if(mainMenu.code != 'solution') return;
+
+        var statusURL = createLink('instance', 'ajaxStatus');
+        $.post(statusURL, {idList: instanceIdList}).done(function(response)
+        {
+            let res = JSON.parse(response);
+            if(res.result == 'success' && res.data instanceof Array)
+            {
+                res.data.forEach(function(instance)
+                {
+                    if($(".instance-status[instance-id=" + instance.id + "]").data('status') != instance.status) window.location.reload();
+                });
+            }
+        });
+    }, 1000 * 5);
 });

@@ -46,7 +46,7 @@
             <?php echo html::a(helper::createLink('instance', 'upgrade', "id=$instance->id", '', true), "<i class='icon-sync'></i>" . $lang->space->upgrade, '', "class='btn btn-link iframe' title='{$lang->space->upgrade}' data-width='500' data-app='space'");?>
             <?php endif;?>
             <?php if($instance->solution):?>
-            <?php echo html::a(helper::createLink('solution', 'view', "id=$instance->solution"), $instance->solutionData->name, '', "class='label label-success label-outline solution-link'");?>
+            <?php echo html::a(helper::createLink('solution', 'view', "id=$instance->solution"), $instance->solutionData->name, '', "title='{$instance->solutionData->name}' class='label label-success label-outline solution-link text-ellipsis'");?>
             <?php endif;?>
           </div>
         </div>

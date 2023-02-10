@@ -18,6 +18,7 @@ const (
 	AppStatusStarting                            // 启动中
 	AppStatusUpgrading                           // 升级中
 	AppStatusRunning                             // 运行中
+	AppStatusComplete                            // 结束（job）
 )
 
 type ClusterStatusType int
@@ -39,6 +40,7 @@ var AppStatusMap = map[AppStatusType]string{
 	AppStatusStarting:   "starting",
 	AppStatusUpgrading:  "upgrading",
 	AppStatusRunning:    "running",
+	AppStatusComplete:   "complete",
 }
 
 var ClusterStatusMap = map[ClusterStatusType]string{

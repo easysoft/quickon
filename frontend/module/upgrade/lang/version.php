@@ -11,3 +11,4 @@ $lang->upgrade->fromVersions['1_6_0'] = '1.6.0';
 $lang->upgrade->fromVersions['2_3_0'] = '2.3.0';
 $lang->upgrade->fromVersions['2_3_1'] = '2.3.1';
 $lang->upgrade->fromVersions['2_6_0'] = '2.6.0';
+$lang->upgrade->fromVersions['2_6_1'] = '2.6.1';

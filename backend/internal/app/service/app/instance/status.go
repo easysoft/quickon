@@ -35,6 +35,13 @@ func (i *Instance) getComponents() *component.Components {
 		}
 	}
 
+	jobs, _ := i.Ks.Store.ListJobs(i.namespace, i.selector)
+	if len(jobs) >= 1 {
+		for _, s := range jobs {
+			components.Add(component.NewJobComponent(s, i.Ks))
+		}
+	}
+
 	return components
 }
 

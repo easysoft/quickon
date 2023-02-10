@@ -1,6 +1,6 @@
 #dropMenu .col-left {padding-bottom: 0;}
 input.search-input#search {padding:5px;}
-.q-card-title { border-left-style: solid; border-left-width: 4px; padding-left: 10px; margin-left: -15px; line-height: 18px; font-size: 16px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.q-card-title {padding-left: 15px; margin-left: -15px; line-height: 18px; font-size: 16px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
 #cardsContainer .row {min-height: calc(100vh - 160px);}
 #cardsContainer .panel{border-radius: 2px;}
 #cardsContainer .panel-heading {padding: 14px 14px 20px 14px;}
@@ -17,4 +17,4 @@ input.search-input#search {padding:5px;}
 #spaceSearchForm > div.btn-toolbar.pull-left > a {padding: 3px;}
 #spaceSearchForm button[type=submit] {height: 32px;}
 #spaceSearchForm a.btn {margin-top: 3px;}
-.solution-link {line-height: 18px; display: inline-block; float: right;}
+.solution-link {line-height: 18px; text-align: center; max-width: 140px; display: inline-block; float: right;}

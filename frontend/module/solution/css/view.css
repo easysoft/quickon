@@ -6,9 +6,11 @@
 #instanceContainer {border-right: 1px solid #cccccc;}
 #instanceContainer h3, #instanceContainer h4 {margin-left: 20px;}
 .instance-name {font-size: 16px; font-weight: 700;}
+.instance-name .text-ellipsis {width: 100%; display: inline-block;}
+.edit-name-icon {display: inline-block; margin-left: 20px;}
 .instance-detail {height: 50px;}
 .instance-detail .instance-logo {float: left; display: inline-block;}
-.instance-detail .instance-intro {float: left; display: inline-block; margin-left: 10px; width: calc(100% - 50px);}
+.instance-introduction {float: left; margin-left: 10px; width: calc(100% - 50px); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;}
 .usage-pie {display: inline-block; width: 180px; padding-bottom: 20px;}
 .usage-pie div{margin: 0 auto;}
 

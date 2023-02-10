@@ -42,7 +42,6 @@ $(function()
         }
     });
 
-
     $('#backupSettingForm #saveSetting').on('click', function()
     {
         var settings = $('#backupSettingForm').serialize();

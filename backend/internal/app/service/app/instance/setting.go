@@ -7,6 +7,7 @@ package instance
 import (
 	"encoding/json"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/parse"
+	v1 "k8s.io/api/core/v1"
 	"reflect"
 	"strconv"
 	"strings"
@@ -192,15 +193,16 @@ func (s *Settings) Mapping(items []model.AppSettingMappingItem) (map[string]stri
 	}
 	p := parse.New(vals)
 
-	secret, hasSecret := s.app.Ks.Store.GetSecret(s.app.namespace, s.app.name)
+	secrets, _ := s.app.Ks.Store.ListSecrets(s.app.namespace, s.app.selector)
+	secretMap := mergeSecrets(secrets)
 
 	var data = make(map[string]string)
 	for _, m := range items {
 		if m.Type == model.MappingKeyHelm {
 			val, _ := p.GetString(m.Path)
 			data[m.Key] = val
-		} else if m.Type == model.MappingKeySecret && hasSecret == nil {
-			content, ok := secret.Data[m.Path]
+		} else if m.Type == model.MappingKeySecret {
+			content, ok := secretMap[m.Path]
 			if ok {
 				data[m.Key] = string(content)
 			} else {
@@ -209,6 +211,16 @@ func (s *Settings) Mapping(items []model.AppSettingMappingItem) (map[string]stri
 		}
 	}
 	return data, nil
+}
+
+func mergeSecrets(l []*v1.Secret) map[string][]byte {
+	m := make(map[string][]byte, 0)
+	for _, s := range l {
+		for k, v := range s.Data {
+			m[k] = v
+		}
+	}
+	return m
 }
 
 func (s *Settings) Simple() *Settings {

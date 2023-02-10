@@ -3,7 +3,9 @@
     <span class='text-blue'><?php echo $lang->instance->backup->keepBackupBySystem;?></span>
     <div class='btn-toolbar pull-right'>
     <?php echo html::a(".", $lang->refresh, '', "class='btn'");?>
-    <?php echo html::a(helper::createLink('instance', 'backupSettings', "id={$instance->id}", '', true), $lang->instance->backup->autoBackup, '', "class='iframe btn btn-primary' title='{$lang->instance->backup->autoBackup}' data-width='520' data-app='space'");?>
+    <?php $autoBackupBtn  = html::a(helper::createLink('instance', 'backupSettings', "id={$instance->id}", '', true), $lang->instance->backup->autoBackup, '', "class='iframe btn btn-primary' title='{$lang->instance->backup->autoBackup}' data-width='520' data-app='space'");?>
+    <?php $autoRestoreBtn = html::a(helper::createLink('instance', 'restoreSettings', "id={$instance->id}", '', true), $lang->instance->restore->autoRestore, '', "class='iframe btn btn-primary' title='{$lang->instance->restore->autoRestore}' data-width='520' data-app='space'");?>
+    <?php echo $this->config->instance->enableAutoRestore ? $autoRestoreBtn : $autoBackupBtn;?>
     <?php $this->instance->printBackupBtn($instance);?>
     </div>
   </div>
@@ -43,10 +45,10 @@
       <?php if($hasRestoreLog):?>
       <td>
         <span data-toggle='tooltip' data-placement='bottom' title='<?php echo $backup->latest_restore_time ?  date('Y-m-d H:i:s', $backup->latest_restore_time) : '';?>'>
-        <?php echo $backup->latest_restore_time ?  date('Y-m-d', $backup->latest_restore_time) : '';?>
+        <?php echo $backup->latest_restore_time ? date('Y-m-d', $backup->latest_restore_time) : '';?>
         </span>
       </td>
-      <td><?php echo $backup->latest_restore_status ?  zget($lang->instance->restore->statusList, $backup->latest_restore_status, '') : '';?></td>
+      <td><?php echo $backup->latest_restore_status ? zget($lang->instance->restore->statusList, $backup->latest_restore_status, '') : '';?></td>
       <?php endif;?>
       <td><?php $this->instance->printRestoreBtn($instance, $backup);?></td>
     </tr>

@@ -14,3 +14,6 @@ $config->instance->adminer = new stdclass;
 $config->instance->adminer->dbTypes = array();
 $config->instance->adminer->dbTypes['mysql']      = 'mysql';
 $config->instance->adminer->dbTypes['postgresql'] = 'pgsql';
+
+$features = explode(',', getenv('QUICKON_FEATURES', ''));
+$config->instance->enableAutoRestore = in_array('auto-rollback', $features);

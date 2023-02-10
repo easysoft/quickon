@@ -14,11 +14,13 @@
 <?php js::set('solutionID', $solution->id);?>
 <?php js::set('notices', $lang->solution->notices);?>
 <?php js::set('errors', $lang->solution->errors);?>
+<?php js::set('instanceIdList', array_keys($solution->instances));?>
 <div id='mainContent' class='main-row'>
   <div class='cell' id='solutionContainer'>
     <div class='row'>
       <div class='col-sm-12'>
-        <h3 class='solution-name'><?php echo $solution->name;?></h3>
+        <h3 class='solution-name' title='<?php echo $solution->name;?>'><?php echo $solution->name;?></h3>
+        <?php echo html::a($this->createLink('solution', 'editname', "id=$solution->id", '', true), '<i class="icon-edit"></i>', '', "class='iframe edit-name-icon' title='$lang->edit' data-width='600'");?>
         <div class='pull-right'>
           <?php echo html::commonButton($lang->solution->uninstall, "id='uninstallBtn'", "btn btn-primary btn-wide");?>
         </div>
@@ -30,8 +32,8 @@
           <div class='panel'>
             <div class='panel-heading'>
               <div class="instance-name">
-                <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
-                  <?php echo $instance->name;?>&nbsp;
+                <a class='text-ellipsis' href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>"  title='<?php echo $instance->name;?>'>
+                  <?php echo $instance->name;?>
                 </a>
               </div>
             </div>
@@ -41,7 +43,7 @@
                   <div class='instance-logo'>
                     <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
                   </div>
-                  <p class="instance-intro"><?php echo $instance->introduction;?>&nbsp;</p>
+                  <p class="instance-introduction" title='<?php echo $instance->introduction;?>'><?php echo $instance->introduction;?></p>
                 </a>
               </div>
               <div class="instance-actions">
@@ -79,4 +81,3 @@
   </div>
 </div>
 <?php include  $this->app->getModuleRoot() . '/common/view/footer.html.php';?>
-

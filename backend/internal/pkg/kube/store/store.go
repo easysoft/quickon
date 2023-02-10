@@ -21,6 +21,7 @@ import (
 	veleroinformers "github.com/vmware-tanzu/velero/pkg/generated/informers/externalversions"
 	velerolister "github.com/vmware-tanzu/velero/pkg/generated/listers/velero/v1"
 	metaappsv1 "k8s.io/api/apps/v1"
+	metabatchv1 "k8s.io/api/batch/v1"
 	metav1 "k8s.io/api/core/v1"
 	metanetworkv1 "k8s.io/api/networking/v1"
 	"k8s.io/apimachinery/pkg/labels"
@@ -29,6 +30,7 @@ import (
 	"k8s.io/client-go/informers"
 	"k8s.io/client-go/kubernetes"
 	appsv1 "k8s.io/client-go/listers/apps/v1"
+	batchv1 "k8s.io/client-go/listers/batch/v1"
 	v1 "k8s.io/client-go/listers/core/v1"
 	networkv1 "k8s.io/client-go/listers/networking/v1"
 	"k8s.io/client-go/rest"
@@ -50,6 +52,7 @@ type Informer struct {
 	ConfigMaps   cache.SharedIndexInformer
 	Deployments  cache.SharedIndexInformer
 	StatefulSets cache.SharedIndexInformer
+	Jobs         cache.SharedIndexInformer
 
 	DbService cache.SharedIndexInformer
 	Db        cache.SharedIndexInformer
@@ -71,6 +74,7 @@ func (i *Informer) Run(stopCh chan struct{}) {
 	go i.Secrets.Run(stopCh)
 	go i.Deployments.Run(stopCh)
 	go i.StatefulSets.Run(stopCh)
+	go i.Jobs.Run(stopCh)
 	go i.Backups.Run(stopCh)
 	go i.Restores.Run(stopCh)
 	go i.DbService.Run(stopCh)
@@ -89,6 +93,7 @@ func (i *Informer) Run(stopCh chan struct{}) {
 		i.Secrets.HasSynced,
 		i.Deployments.HasSynced,
 		i.StatefulSets.HasSynced,
+		i.Jobs.HasSynced,
 		i.Backups.HasSynced,
 		i.Restores.HasSynced,
 		i.DbService.HasSynced,
@@ -111,6 +116,7 @@ type Lister struct {
 	Secrets      v1.SecretLister
 	Deployments  appsv1.DeploymentLister
 	StatefulSets appsv1.StatefulSetLister
+	Jobs         batchv1.JobLister
 
 	DbService     quchenglister.DbServiceLister
 	Db            quchenglister.DbLister
@@ -177,6 +183,9 @@ func NewStorer(config rest.Config) *Storer {
 
 		s.informers.StatefulSets = factory.Apps().V1().StatefulSets().Informer()
 		s.listers.StatefulSets = factory.Apps().V1().StatefulSets().Lister()
+
+		s.informers.Jobs = factory.Batch().V1().Jobs().Informer()
+		s.listers.Jobs = factory.Batch().V1().Jobs().Lister()
 	}
 
 	if cs, err := quchengclientset.NewForConfig(&config); err != nil {
@@ -303,6 +312,14 @@ func (s *Storer) GetStatefulSet(namespace string, name string) (*metaappsv1.Stat
 
 func (s *Storer) ListStatefulSets(namespace string, selector labels.Selector) ([]*metaappsv1.StatefulSet, error) {
 	return s.listers.StatefulSets.StatefulSets(namespace).List(selector)
+}
+
+func (s *Storer) GetJob(namespace string, name string) (*metabatchv1.Job, error) {
+	return s.listers.Jobs.Jobs(namespace).Get(name)
+}
+
+func (s *Storer) ListJobs(namespace string, selector labels.Selector) ([]*metabatchv1.Job, error) {
+	return s.listers.Jobs.Jobs(namespace).List(selector)
 }
 
 func (s *Storer) GetBackup(namespace string, name string) (*quchengv1beta1.Backup, error) {

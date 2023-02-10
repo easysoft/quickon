@@ -25,10 +25,10 @@
         <div class="card">
           <a href='<?php echo helper::createLink('solution', 'viewMarket', "id=$solution->id");?>'>
             <?php echo html::image(isset($solution->background_url) ? $solution->background_url : "/theme/default/images/main/waterfall.png");?>
-            <div class="card-heading"><span><?php echo $solution->title;?></span></div>
-            <div class="card-content"><?php echo $solution->introduction;?></div>
+            <div class='card-heading'><span class='text-ellipsis' title='<?php echo $solution->title;?>'><?php echo $solution->title;?></span></div>
+            <div class='card-content' title='<?php echo $solution->introduction;?>'><?php echo $solution->introduction;?></div>
           </a>
-          <div class="card-actions">
+          <div class='card-actions'>
             <?php echo html::a($this->inlink('viewMarket', "id=$solution->id"), $lang->solution->detail, '', "class='label label-outline label-success'");?>
           </div>
         </div>

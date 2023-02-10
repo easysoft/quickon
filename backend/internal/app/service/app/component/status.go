@@ -15,8 +15,10 @@ import (
 func parseStatus(replicas, availableReplicas, updatedReplicas, readyReplicas int32,
 	pods []*v1.Pod, stopped bool) (appStatus constant.AppStatusType) {
 
+	// set default status to unknown
 	appStatus = constant.AppStatusUnknown
 	if replicas == 0 {
+		// set workflow replicas to 0 by helm, contain stopping status
 		if stopped && availableReplicas > 0 {
 			appStatus = constant.AppStatusStopping
 		}
@@ -27,27 +29,40 @@ func parseStatus(replicas, availableReplicas, updatedReplicas, readyReplicas int
 	}
 
 	/*
-		If pods count is greater than replicas, set to upgrading status.
+		If pods count is greater than replicas, return upgrading status
 	*/
 	if replicas > 0 {
 		if availableReplicas > replicas {
 			appStatus = constant.AppStatusUpgrading
 			return
 		} else if len(pods) > int(replicas) {
-			appStatus = constant.AppStatusUpgrading
-			return
+			// exclude evicted pods
+			EvictedCount := 0
+			for _, p := range pods {
+				if p.Status.Reason == "Evicted" {
+					EvictedCount += 1
+				}
+			}
+			if (len(pods) - EvictedCount) > int(replicas) {
+				appStatus = constant.AppStatusUpgrading
+				return
+			}
 		}
 	}
 
+	// all pods are ready, return running status
 	if replicas > 0 && updatedReplicas == replicas && readyReplicas == replicas {
 		appStatus = constant.AppStatusRunning
 		return
 	}
 
+	// set default to starting, continue decide
 	if replicas > 0 && readyReplicas < replicas {
 		appStatus = constant.AppStatusStarting
 	}
 
+	// determine status is abnormal or pulling
+	// otherwise use the default status `starting`
 	for _, pod := range pods {
 		createTime := pod.CreationTimestamp
 		for _, ctnStatus := range pod.Status.ContainerStatuses {

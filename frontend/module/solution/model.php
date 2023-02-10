@@ -35,12 +35,30 @@ class solutionModel extends model
     /**
      * Search
      *
+     * @param  string $keyword
      * @access public
      * @return array
      */
-    public function search()
+    public function search($keyword = '')
     {
-        return $this->dao->select('*')->from(TABLE_SOLUTION)->where('deleted')->eq(0)->orderBy('createdAt desc')->fetchAll();
+        return $this->dao->select('*')->from(TABLE_SOLUTION)
+            ->where('deleted')->eq(0)
+            ->beginIF($keyword)->andWhere('name')->like($keyword)->fi()
+            ->orderBy('createdAt desc')->fetchAll();
+    }
+
+    /**
+     * Update solution name.
+     *
+     * @param  int    $solutionID
+     * @access public
+     * @return int
+     */
+    public function updateName($solutionID)
+    {
+        $newSolution = fixer::input('post')->trim('name')->get();
+
+        return $this->dao->update(TABLE_SOLUTION)->data($newSolution)->autoCheck()->where('id')->eq($solutionID)->exec();
     }
 
     /**
@@ -81,7 +99,8 @@ class solutionModel extends model
         $solution->createdBy    = $this->app->user->account;
         $solution->createdAt    = date('Y-m-d H:i:s');
 
-        $channel  = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+        $channel = $this->app->session->cloudChannel ? $this->app->session->cloudChannel : $this->config->cloud->api->channel;
+
         $solution->channel = $channel;
 
         $this->dao->insert(TABLE_SOLUTION)->data($solution)->exec();
@@ -109,6 +128,7 @@ class solutionModel extends model
             if($appInSchema->name != $chart) continue;
 
             $appInfo = zget($cloudSolution->apps, $chart);
+
             $appInfo->version     = $appInSchema->version;
             $appInfo->app_version = $appInSchema->app_version;
             $appInfo->status      = 'waiting';
@@ -194,7 +214,6 @@ class solutionModel extends model
                 $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
             }
 
-
             /* Wait instanlled app started. */
             $instance = $this->waitInstanceStart($instance);
             if($instance)
@@ -202,7 +221,7 @@ class solutionModel extends model
                 $mappingKeys = zget($solutionSchema->mappings, $instance->chart, '');
                 if($mappingKeys)
                 {
-                    /* Load settings mapping of installed app for next app.*/
+                    /* Load settings mapping of installed app for next app. */
                     $tempMappings = $this->cne->getSettingsMapping($instance, $mappingKeys);
                     if($tempMappings) $allMappings[$categorty] = $tempMappings;
                 }
@@ -221,6 +240,14 @@ class solutionModel extends model
         return true;
     }
 
+    /**
+     * Save status.
+     *
+     * @param  int    $solutionID
+     * @param  string $status
+     * @access public
+     * @return int
+     */
     public function saveStatus($solutionID, $status)
     {
         return $this->dao->update(TABLE_SOLUTION)->set('status')->eq($status)->where('id')->eq($solutionID)->exec();
@@ -229,10 +256,10 @@ class solutionModel extends model
     /**
      * Mount settings for installing app.
      *
-     * @param  object   $solutionSchema
-     * @param  string   $chart
-     * @param  object   $components
-     * @param  array    $mappings  example: ['git' => ['env.GIT_USERNAME' => 'admin', ...], ...]
+     * @param  object  $solutionSchema
+     * @param  string  $chart
+     * @param  object  $components
+     * @param  array   $mappings  example: ['git' => ['env.GIT_USERNAME' => 'admin', ...], ...]
      * @access private
      * @return array
      */
@@ -265,8 +292,8 @@ class solutionModel extends model
     /**
      * installApp
      *
-     * @param  int    $cloudApp
-     * @param  int    $settings
+     * @param  int     $cloudApp
+     * @param  int     $settings
      * @access private
      * @return mixed
      */
@@ -278,8 +305,6 @@ class solutionModel extends model
         $customData->customName   = $cloudApp->alias;
         $customData->dbType       = null;
         $customData->customDomain = $this->loadModel('instance')->randThirdDomain();
-        //$customData->ldapSnippet[0] = 'qucheng'; // another possiable value : extra
-        //$customData->smtpSnippet[0] = 'qucheng'; // another possiable value : extra
 
         $dbInfo = new stdclass;
         $dbList = $this->loadModel('cne')->sharedDBList();
@@ -341,7 +366,7 @@ class solutionModel extends model
             $success = $this->instance->uninstall($instance);
             if(!$success)
             {
-                dao::$errors[] = printf($this->lang->solution->errors->failToUninstallApp, $instance->name);
+                dao::$errors[] = sprintf($this->lang->solution->errors->failToUninstallApp, $instance->name);
                 return;
             }
         }
@@ -395,7 +420,7 @@ class solutionModel extends model
 
         $totalRate = round($totalRate / count($solution->instances), 2);
 
-        $tip  = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
+        $tip = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
 
         if(strtolower($type) == 'pie') return commonModel::printProgressPie($totalRate, '', $tip);
 
@@ -428,11 +453,10 @@ class solutionModel extends model
 
         $totalRate = round($totalRate / count($solution->instances), 2);
 
-        $tip  = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
+        $tip = "{$totalRate}% = {$totalUsage} / {$totalLimit}";
 
         if(strtolower($type) == 'pie') return commonModel::printProgressPie($totalRate, '', $tip);
 
         return commonModel::printProgressBar($totalRate, '', $tip, 'percent');
     }
 }
-

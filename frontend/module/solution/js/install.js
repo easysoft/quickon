@@ -10,7 +10,6 @@ $(function()
         $('#submitBtn').attr('disabled', true);
         $.post(createLink('solution', 'install', 'id=' + cloudSolutionID), $('#installForm').serializeArray()).done(function(response)
         {
-
             var res = JSON.parse(response);
             if(res.result == 'success')
             {
@@ -40,7 +39,6 @@ $(function()
                   message: errMessage,
                 });
             }
-
         });
     });
 });
