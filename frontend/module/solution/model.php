@@ -148,7 +148,6 @@ class solutionModel extends model
      */
     public function install($solutionID)
     {
-        ignore_user_abort(true);
         set_time_limit(0);
         session_write_close();
 
@@ -158,6 +157,7 @@ class solutionModel extends model
             dao::$errors[] = $this->lang->solution->errors->notFound;
             return false;
         }
+        if(in_array($solution->status, array('installing', 'installed'))) return false;
         $this->saveStatus($solutionID, 'installing');
 
         $this->loadModel('cne');
