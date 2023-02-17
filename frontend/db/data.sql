@@ -255,6 +255,7 @@ CREATE TABLE IF NOT EXISTS `q_solution` (
   `deleted` tinyint(1) NOT NULL DEFAULT 0,
   `createdBy` char(30) NOT NULL,
   `createdAt` datetime NOT NULL,
+  `updatedDate` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
