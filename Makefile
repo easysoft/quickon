@@ -45,22 +45,22 @@ build-qucheng: ## 构建镜像
 	docker build --build-arg VERSION=$(BUILD_VERSION) \
 				--build-arg GIT_COMMIT=$(commit_id) \
 				--build-arg GIT_BRANCH=$(branch_name) \
-				-t hub.qucheng.com/test/qucheng:$(TAG) \
+				-t hub.qucheng.com/platform/qucheng:$(TAG) \
 				-f docker/Dockerfile .
 
 build-api: ## 构建api程序
 	docker build --build-arg GIT_COMMIT=$(commit_id) \
 				--build-arg GIT_BRANCH=$(branch_name) \
-				-t hub.qucheng.com/test/cne-api:$(TAG) \
+				-t hub.qucheng.com/platform/cne-api:$(TAG) \
 				-f docker/Dockerfile.api .
 
 build-all: build-api build-qucheng # 构建所有镜像
 
 push-qucheng: ## push qucheng 镜像
-	docker push hub.qucheng.com/test/qucheng:$(TAG)
+	docker push hub.qucheng.com/platform/qucheng:$(TAG)
 
 push-api: ## push api镜像
-	docker push hub.qucheng.com/test/cne-api:$(TAG)
+	docker push hub.qucheng.com/platform/cne-api:$(TAG)
 
 push-all: push-qucheng push-api ## push 所有镜像
 

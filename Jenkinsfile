@@ -109,7 +109,7 @@ pipeline {
 
       environment { 
           CNE_API_TOKEN = credentials('dev-haogs-cn-token')
-          CNE_API_HOST = "https://hjuk.corp.cc"
+          CNE_API_HOST = "https://console.dev.haogs.cn/"
       }
 
       stages {
