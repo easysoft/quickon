@@ -1,22 +1,30 @@
 date_time := $(shell date +%Y%m%d)
-ci_tag := $(citag)
-export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
-export commit_id := $(shell git rev-parse --short HEAD)
 
-# read gitlab-ci branch tag first, git command for developer environment
-export branch_name := $(or $(CI_COMMIT_BRANCH),$(shell git branch --show-current))
-export branch_name := $(shell echo $(branch_name) | tr "/" "-")
+ci_tag := $(or $(citag),$(TAG_NAME),$(CI_COMMIT_TAG))
+
+ifdef JENKINS_HOME
+	export commit_id := $(shell echo $${GIT_COMMIT:0:7})
+	export branch_name := $(BRANCH_NAME)
+else
+	export commit_id := $(shell git rev-parse --short HEAD)
+	export branch_name := $(shell git branch --show-current)
+	export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+endif
+
+# export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+
+export branch_name_valid := $(shell echo $(branch_name) | tr "/" "-")
 export _branch_prefix := $(shell echo $(branch_name) | sed 's/-.*//')
 
 ifneq (,$(filter $(_branch_prefix), test sprint))
-  export TAG=$(branch_name)
-  export BUILD_VERSION=$(branch_name)-$(date_time)-$(commit_id)
+  export TAG=$(branch_name_valid)
+  export BUILD_VERSION=$(branch_name_valid)-$(date_time)-$(commit_id)
 else
   ifdef ci_tag
     export TAG=$(ci_tag)
     export BUILD_VERSION=$(ci_tag)-$(date_time)-$(commit_id)
   else
-    export TAG=$(branch_name)-$(date_time)-$(commit_id)
+    export TAG=$(branch_name_valid)-$(date_time)-$(commit_id)
     export BUILD_VERSION=$(TAG)
 	endif
 endif
@@ -24,26 +32,35 @@ endif
 help: ## this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
+dep-backend:
+	cd backend && go mod download
+
+build-backend:
+	cd backend && CGO_ENABLED=0 make build
+
+test-backend:
+	cd backend && CGO_ENABLED=0 go test ./...
+
 build-qucheng: ## 构建镜像
 	docker build --build-arg VERSION=$(BUILD_VERSION) \
 				--build-arg GIT_COMMIT=$(commit_id) \
 				--build-arg GIT_BRANCH=$(branch_name) \
-				-t hub.qucheng.com/platform/qucheng:$(TAG) \
+				-t hub.qucheng.com/test/qucheng:$(TAG) \
 				-f docker/Dockerfile .
 
 build-api: ## 构建api程序
 	docker build --build-arg GIT_COMMIT=$(commit_id) \
 				--build-arg GIT_BRANCH=$(branch_name) \
-				-t hub.qucheng.com/platform/cne-api:$(TAG) \
+				-t hub.qucheng.com/test/cne-api:$(TAG) \
 				-f docker/Dockerfile.api .
 
 build-all: build-api build-qucheng # 构建所有镜像
 
 push-qucheng: ## push qucheng 镜像
-	docker push hub.qucheng.com/platform/qucheng:$(TAG)
+	docker push hub.qucheng.com/test/qucheng:$(TAG)
 
 push-api: ## push api镜像
-	docker push hub.qucheng.com/platform/cne-api:$(TAG)
+	docker push hub.qucheng.com/test/cne-api:$(TAG)
 
 push-all: push-qucheng push-api ## push 所有镜像
 
@@ -78,7 +95,7 @@ pull: ## 拉取最新镜像
 
 mountFiles:
 	mkdir -p /root/.config/helm
-	kubectl get cm -n cne-system qucheng-files -o jsonpath='{.data.repositories\.yaml}' > /root/.config/helm/repositories.yaml.dev
+	@kubectl get cm -n cne-system qucheng-files -o jsonpath='{.data.repositories\.yaml}' > /root/.config/helm/repositories.yaml.dev
 	@sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.dev
 
 debug:
