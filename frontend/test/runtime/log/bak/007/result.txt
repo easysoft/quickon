@@ -1,0 +1,81 @@
+
+================================================================ 2022-01-30 15:34:54 发现9个用例: ===============================================================
+(1/9) 通过 [/var/www/zentaopms_repo/test/model/task/assign.php           ] [1. taskModel->assign();] (2.00s)
+(2/9) 通过 [/var/www/zentaopms_repo/test/model/task/batchChangeModule.php] [1. taskModel->batchChangeModule();] (2.00s)
+(3/9) 通过 [/var/www/zentaopms_repo/test/model/task/batchCreate.php      ] [1. 测试taskModel->batchCreate();] (2.00s)
+(4/9) 通过 [/var/www/zentaopms_repo/test/model/task/batchUpdate.php      ] [1. 测试taskModel->batchUpdate();] (2.00s)
+(5/9) 通过 [/var/www/zentaopms_repo/test/model/task/create.php           ] [1. 测试productModel->create();] (2.00s)
+(6/9) 失败 [/var/www/zentaopms_repo/test/model/task/finish.php           ] [1. taskModel->finishEstimate();] (2.00s)
+(7/9) 失败 [/var/www/zentaopms_repo/test/model/task/recordEstimate.php   ] [1. taskModel->recordEstimate();] (2.00s)
+(8/9) 失败 [/var/www/zentaopms_repo/test/model/task/start.php            ] [1. taskModel->start();] (0.00s)
+(9/9) 通过 [/var/www/zentaopms_repo/test/model/task/update.php           ] [1. 测试taskModel->update();] (2.00s)
+
+失败用例：
+[/var/www/zentaopms_repo/test/model/task/finish.php] 1.taskModel->finishEstimate();
+Step 1: 失败
+[Expect] Y-m-d h:i:s
+[Actual] >> status,wait,done
+
+Step 2: 失败
+[Expect] status,wite,done
+[Actual] >> status,doing,done
+
+Step 3: 失败
+[Expect] status,doing,done
+[Actual] >> finishedBy,,admin
+
+Step 4: 失败
+[Expect] finishedBy,,admin
+[Actual] >> status,pause,done
+
+Step 5: 失败
+[Expect] status,pause,done
+[Actual] >> status,cancel,done
+
+Step 6: 失败
+[Expect] status,cancel,done
+[Actual] >> status,closed,done
+
+Step 7: 失败
+[Expect] status,closed,done
+[Actual] <pre class='alert alert-danger'>Array to string conversion: <input type='text' value='vim +85 /var/www/zentaopms_repo/test/lib/init.php' size='49' style='border:none; background:none;' onclick='this.select();' /></pre>>> Array
+
+Step 8: 失败
+[Expect] "总计消耗"必须大于之前消耗
+[Actual] >> "本次消耗"不能为0
+
+Step 9: 失败
+[Expect] "本次消耗"不能为0
+[Actual] MySQL connect success
+
+[/var/www/zentaopms_repo/test/model/task/recordEstimate.php] 1.taskModel->recordEstimate();
+Step 1: 失败
+[Expect] Y-m-d
+[Actual] >> status,wait,doing
+
+Step 2: 失败
+[Expect] status,wite,doing
+[Actual] >> realStarted,0000-00-00 00:00:00,2022-01-30 15:35:06
+
+Step 3: 失败
+[Expect] status,pause,doing
+[Actual] MySQL connect success
+
+[/var/www/zentaopms_repo/test/model/task/start.php] 1.taskModel->start();
+Step 1: 失败
+[Expect] status,wite,doing
+[Actual] Parse error: syntax error, unexpected 'public' (T_PUBLIC) in /var/www/zentaopms_repo/test/model/task/start.php on line 26
+
+Step 2: 失败
+[Expect] 此任务已被启动，不能重复启动！
+[Actual] N/A
+
+Step 3: 失败
+[Expect] status,pause,doing
+[Actual] N/A
+
+Step 4: 失败
+[Expect] status,closed,doing
+[Actual] N/A
+
+2022-01-30 15:35:11 执行9个用例，耗时17秒。6(66.0%) 通过，3(33.0%) 失败，0(0.0%) 忽略。报告 /var/www/zentaopms_repo/test/runtime/log/007/result.txt 。

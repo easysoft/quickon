@@ -1,0 +1,10 @@
+
+================================================================ 2022-01-28 10:04:10 发现6个用例: ===============================================================
+(1/6) 通过 [/var/www/zentaopms_repo/test/model/task/batchCreate.php] [1. 测试taskModel->batchCreate();] (2.00s)
+(2/6) 通过 [/var/www/zentaopms_repo/test/model/task/batchUpdate.php] [1. 测试taskModel->batchUpdate();] (2.00s)
+(3/6) 通过 [/var/www/zentaopms_repo/test/model/task/create.php     ] [1. 测试productModel->create();] (2.00s)
+(4/6) 通过 [/var/www/zentaopms_repo/test/model/task/getList.php    ] [1. productModel->getList();] (0.00s)
+(5/6) 通过 [/var/www/zentaopms_repo/test/model/task/getPairs.php   ] [1. 测试productModel->getPairs();] (0.00s)
+(6/6) 通过 [/var/www/zentaopms_repo/test/model/task/update.php     ] [1. 测试taskModel->update();] (2.00s)
+
+2022-01-28 10:04:19 执行6个用例，耗时9秒。6(100.0%) 通过，0(0.0%) 失败，0(0.0%) 忽略。报告 /var/www/zentaopms_repo/test/runtime/log/004/result.txt 。

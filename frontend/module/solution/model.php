@@ -148,7 +148,6 @@ class solutionModel extends model
      */
     public function install($solutionID)
     {
-        ignore_user_abort(true);
         set_time_limit(0);
         session_write_close();
 
@@ -158,6 +157,7 @@ class solutionModel extends model
             dao::$errors[] = $this->lang->solution->errors->notFound;
             return false;
         }
+        if(in_array($solution->status, array('installing', 'installed', 'uninstalled'))) return false;
         $this->saveStatus($solutionID, 'installing');
 
         $this->loadModel('cne');
@@ -200,6 +200,7 @@ class solutionModel extends model
                     return false;
                 }
 
+                if(!$this->checkInstallStatus($solutionID)) return false;
                 $settings = $this->mountSettings($solutionSchema, $componentApp->chart, $components, $allMappings);
                 $instance = $this->installApp($cloudApp, $settings);
                 if(!$instance)
@@ -215,7 +216,7 @@ class solutionModel extends model
             }
 
             /* Wait instanlled app started. */
-            $instance = $this->waitInstanceStart($instance);
+            $instance = $this->waitInstanceStart($instance, $solutionID);
             if($instance)
             {
                 $mappingKeys = zget($solutionSchema->mappings, $instance->chart, '');
@@ -250,7 +251,7 @@ class solutionModel extends model
      */
     public function saveStatus($solutionID, $status)
     {
-        return $this->dao->update(TABLE_SOLUTION)->set('status')->eq($status)->where('id')->eq($solutionID)->exec();
+        return $this->dao->update(TABLE_SOLUTION)->set('status')->eq($status)->set('updatedDate')->eq(date("Y-m-d H:i:s"))->where('id')->eq($solutionID)->exec();
     }
 
     /**
@@ -326,19 +327,36 @@ class solutionModel extends model
      * @access private
      * @return object|bool
      */
-    private function waitInstanceStart($instance)
+    private function waitInstanceStart($instance, $solutionID)
     {
         /* Query status of the installed instance. */
         $times = 0;
         for($times = 0; $times < 50; $times++)
         {
-            sleep(6);
+            if(!$this->checkInstallStatus($solutionID)) return false;
+            $this->dao->update(TABLE_SOLUTION)->set('updatedDate')->eq(date("Y-m-d H:i:s"))->where('id')->eq($solutionID)->exec();
+
+            sleep(12);
             $instance = $this->instance->freshStatus($instance);
-            $this->app->saveLog(date('Y-m-d H:i:s').' installing ' . $instance->name . ':' .$instance->status); // Code for debug.
+            $this->app->saveLog(date('Y-m-d H:i:s').' installing ' . $instance->name . ':' . $instance->status . '#' . $instance->solution); // Code for debug.
             if($instance->status == 'running') return $instance;
         }
 
         return false;
+    }
+
+    /**
+     * Check solution status.
+     *
+     * @param  int $solutionID
+     * @access public
+     * @return void
+     */
+    public function checkInstallStatus($solutionID)
+    {
+        $solution = $this->getByID($solutionID);
+        if($solution->status != 'installing') return false;
+        return true;
     }
 
     /**

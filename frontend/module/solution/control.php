@@ -190,6 +190,16 @@ class solution extends control
         {
             $result  = 'success';
             $message = '';
+
+            if($solution->status == 'installing')
+            {
+                if((time() - strtotime($solution->updatedDate)) > 60 * 20)
+                {
+                    $this->solution->saveStatus($id, 'timeout');
+                    $result  = 'fail';
+                    $message = $this->lang->solution->errors->timeout;
+                }
+            }
         }
         else
         {

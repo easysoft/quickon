@@ -1,0 +1,14 @@
+title: "1"
+desc: ""
+fields:
+- field: 新字段
+  range: test/dir/users.txt
+- field: 新字段
+  range: test/_test02.yaml{3}
+- field: 新字段
+  from: domain.postfix.v1.yaml
+  use: common{3},cn{3}
+- field: 新字段
+  from: time.time.v1.yaml
+  use: time{5},chinese{5}
+content: ""

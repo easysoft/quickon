@@ -1,0 +1,43 @@
+title: 联合default.yaml使用，测试配置的复写特性
+desc:
+author: zentao
+version: 1.0
+
+from: zentao.ip.private.yaml     # 全局from配置
+
+fields:
+  - field: field_use_config
+    prefix: "{"
+    postfix: "}\t"
+
+  - field: field_use_ranges
+    prefix: "{"
+    postfix: "}\t"
+
+  - field: field_use_instance
+    prefix: ""                    # 修改前缀为空
+    postfix: "}\t"
+
+  - field: field_use_excel
+    prefix: "{"
+    postfix: "}\t"
+
+  - field: field_with_children
+    prefix: "{"
+    postfix: "}\t"
+
+  - field: chinese
+    range: [`测试`,实测]
+    prefix: "{"
+    postfix: "}\t"
+
+#  - field: test_excel1
+#    from: test.account01.20200101
+#    select: Address
+#    where: 1=1
+#    postfix: "\t"
+#  - field: test_excel2
+#    from: test.account01.20200101
+#    select: replace(InstReprIDCode,'.','')
+#    where: 1=1
+#    postfix: "\t"

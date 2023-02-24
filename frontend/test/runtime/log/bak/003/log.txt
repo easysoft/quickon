@@ -1,0 +1,151 @@
+===start /var/www/zentaopms_repo/test/model/task/batchCreate.php at 2022-01-28 10:02:15
+>> 批量任务三
+>> 『任务类型』不能为空。
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/batchCreate.php at 2022-01-28 10:02:18
+
+===start /var/www/zentaopms_repo/test/model/task/batchUpdate.php at 2022-01-28 10:02:18
+>> name,开发任务17,批量修改任务一
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/batchUpdate.php at 2022-01-28 10:02:20
+
+===start /var/www/zentaopms_repo/test/model/task/create.php at 2022-01-28 10:02:20
+>> 开发任务一
+>> 设计任务一
+>> 需求任务一
+>> 测试任务一
+>> 研究任务一
+>> 讨论任务一
+>> 界面任务一
+>> 事务任务一
+>> 其他任务一
+>> 『任务名称』不能为空。
+>> 『任务类型』不能为空。
+>> 『截止日期』应当不小于『2021-04-10』。
+>> 指派人user92任务
+>> 团队任务一
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/create.php at 2022-01-28 10:02:22
+
+===start /var/www/zentaopms_repo/test/model/task/getList.php at 2022-01-28 10:02:22
+>> 9
+>> 100
+>> 0
+>> 5
+>> 60
+>> 4
+>> 40
+>> 0
+>> 9
+>> 0
+===end /var/www/zentaopms_repo/test/model/task/getList.php at 2022-01-28 10:02:22
+
+===start /var/www/zentaopms_repo/test/model/task/getPairs.php at 2022-01-28 10:02:22
+<pre class='alert alert-danger'>Creating default object from empty value: <input type='text' value='vim +33 /var/www/zentaopms_repo/test/model/task/getPairs.php' size='60' style='border:none; background:none;' onclick='this.select();' /></pre>>> 正常产品11
+>> 多分支产品55
+>> 多平台产品99
+>> 没有数据
+>> 100
+>> 9
+>> 正常产品6
+>> 5
+<pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +195 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre><pre class='alert alert-danger'>Trying to get property 'program' of non-object: <input type='text' value='vim +200 /var/www/zentaopms_repo/test/lib/init.php' size='50' style='border:none; background:none;' onclick='this.select();' /></pre>>> 1
+>> 1
+>> 1
+===end /var/www/zentaopms_repo/test/model/task/getPairs.php at 2022-01-28 10:02:22
+
+===start /var/www/zentaopms_repo/test/model/task/update.php at 2022-01-28 10:02:22
+>> name,开发任务11,wait任务修改
+>> name,开发任务12,doing任务修改
+>> name,开发任务13,done任务修改
+>> name,开发任务14,pause任务修改
+>> name,开发任务15,cancel任务修改
+>> name,开发任务16,closed任务修改
+>> 没有数据更新
+>> 『关闭原因』必须为空。
+MySQL connect success
+001_company insert rows 1
+002_user insert rows 1000
+003_dept insert rows 100
+004_program insert rows 10
+005_project insert rows 90
+006_execution insert rows 600
+007_task insert rows 600
+008_taskspec insert rows 600
+009_product insert rows 100
+010_productline insert rows 20
+011_taskmodule insert rows 1800
+012_productplan insert rows 360
+013_branch insert rows 240
+014_projectproduct insert rows 200
+015_team insert rows 400
+016_stakeholder insert rows 1
+017_build insert rows 8
+018_release insert rows 8
+019_pipeline insert rows 2
+020_repo insert rows 1
+021_mr insert rows 1
+===end /var/www/zentaopms_repo/test/model/task/update.php at 2022-01-28 10:02:24

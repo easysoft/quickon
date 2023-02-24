@@ -1,0 +1,41 @@
+
+================================================================ 2022-01-29 15:07:57 发现7个用例: ===============================================================
+(1/7) 通过 [/var/www/zentaopms_repo/test/model/task/batchChangeModule.php] [1. taskModel->batchChangeModule();] (2.00s)
+(2/7) 通过 [/var/www/zentaopms_repo/test/model/task/batchCreate.php      ] [1. 测试taskModel->batchCreate();] (2.00s)
+(3/7) 通过 [/var/www/zentaopms_repo/test/model/task/batchUpdate.php      ] [1. 测试taskModel->batchUpdate();] (2.00s)
+(4/7) 通过 [/var/www/zentaopms_repo/test/model/task/create.php           ] [1. 测试productModel->create();] (2.00s)
+(5/7) 通过 [/var/www/zentaopms_repo/test/model/task/getList.php          ] [1. productModel->getList();] (0.00s)
+(6/7) 通过 [/var/www/zentaopms_repo/test/model/task/getPairs.php         ] [1. 测试productModel->getPairs();] (0.00s)
+(7/7) 失败 [/var/www/zentaopms_repo/test/model/task/update.php           ] [1. 测试taskModel->update();] (2.00s)
+
+失败用例：
+[/var/www/zentaopms_repo/test/model/task/update.php] 1.测试taskModel->update();
+Step 2: 失败
+[Expect] name,开发任务12,doing任务修改
+[Actual] >> Error: Cannot get index 2.
+
+Step 3: 失败
+[Expect] name,开发任务13,done任务修改
+[Actual] <pre class='alert alert-danger'>implode(): Invalid arguments passed: <input type='text' value='vim +91 /var/www/zentaopms_repo/test/lib/init.php' size='49' style='border:none; background:none;' onclick='this.select();' /></pre>>>
+
+Step 4: 失败
+[Expect] name,开发任务14,pause任务修改
+[Actual] >> name,开发任务13,done任务修改
+
+Step 5: 失败
+[Expect] name,开发任务15,cancel任务修改
+[Actual] >> name,开发任务14,pause任务修改
+
+Step 6: 失败
+[Expect] name,开发任务16,closed任务修改
+[Actual] >> name,开发任务15,cancel任务修改
+
+Step 7: 失败
+[Expect] 没有数据更新
+[Actual] >> name,开发任务16,closed任务修改
+
+Step 8: 失败
+[Expect] 『关闭原因』必须为空。
+[Actual] >> 没有数据更新
+
+2022-01-29 15:08:10 执行7个用例，耗时13秒。6(85.0%) 通过，1(14.0%) 失败，0(0.0%) 忽略。报告 /var/www/zentaopms_repo/test/runtime/log/006/result.txt 。
