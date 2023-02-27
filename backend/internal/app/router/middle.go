@@ -13,6 +13,30 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service"
 )
 
+func MiddlewareInstances(c *gin.Context) {
+	var (
+		ctx = c.Request.Context()
+		err error
+		op  model.MiddlewareType
+		res interface{}
+	)
+
+	logger := getLogger(ctx)
+	if err = c.ShouldBindQuery(&op); err != nil {
+		logger.WithError(err).Error(errBindDataFailed)
+		renderError(c, http.StatusBadRequest, err)
+	}
+
+	if res, err = service.Middlewares(ctx).Mysql().ListInstances(); err != nil {
+		logger.WithError(err).Error("list mysql instances failed")
+		renderError(c, http.StatusInternalServerError, err)
+		return
+	}
+
+	logger.Info("list mysql instances successful")
+	renderJson(c, http.StatusOK, res)
+}
+
 // MiddlewareInstall 安装中间件
 // @Summary 安装中间件
 // @Tags 中间件

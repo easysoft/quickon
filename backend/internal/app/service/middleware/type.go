@@ -15,6 +15,11 @@ type DbEnvConfig struct {
 	*BaseConfig `env:",prefix=CLOUD_MYSQL_"`
 }
 
+type InstanceConfig struct {
+	Name string `json:"name"`
+	*BaseConfig
+}
+
 type DBConfig struct {
 	BaseConfig
 	Name string `json:"name,omitempty"`

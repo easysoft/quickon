@@ -94,6 +94,7 @@ func Config(r *gin.Engine) {
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)
 
+		api.GET("/middleware/list", MiddlewareInstances)
 		api.POST("/middleware/install", MiddlewareInstall)
 		api.POST("/middleware/uninstall", MiddleWareUninstall)
 
