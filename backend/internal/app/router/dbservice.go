@@ -41,7 +41,7 @@ func GDBList(c *gin.Context) {
 		return
 	}
 
-	i, err := service.Components(ctx, "").ListGlobalDbsComponents(op.Kind, op.Namespace)
+	i, err := service.Components(ctx, op.Cluster).ListGlobalDbsComponents(op.Kind, op.Namespace)
 	if err != nil {
 		logger.WithError(err).Error(errListDbServiceFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errListDbServiceFailed))
@@ -66,7 +66,7 @@ func GDBValidation(c *gin.Context) {
 		return
 	}
 
-	i, err := service.Components(ctx, "").ValidDbService(op.Name, op.Namespace, op.Database, op.User)
+	i, err := service.Components(ctx, op.Cluster).ValidDbService(op.Name, op.Namespace, op.Database, op.User)
 	if err != nil {
 		logger.WithError(err).Error(errValidDbSvcFailed)
 		renderError(c, http.StatusInternalServerError, errors.New(errValidDbSvcFailed))

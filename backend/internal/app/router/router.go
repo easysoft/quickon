@@ -47,6 +47,8 @@ func Config(r *gin.Engine) {
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.Group("/api/cne", Auth(), Trace())
 	{
+		api.GET("/clusters", ClusterList)
+
 		api.POST("/app/install", AppInstall)
 		api.POST("/app/uninstall", AppUnInstall)
 		api.POST("/app/start", AppStart)

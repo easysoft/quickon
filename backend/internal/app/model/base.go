@@ -5,7 +5,7 @@
 package model
 
 type QueryCluster struct {
-	Cluster string `form:"cluster,default=primary" json:"cluster,default=primary"`
+	Cluster string `form:"cluster,default=primary" json:"cluster,default=primary" binding:"cluster_exist"`
 }
 
 type QueryNamespace struct {

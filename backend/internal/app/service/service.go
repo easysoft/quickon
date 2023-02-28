@@ -17,15 +17,15 @@ import (
 )
 
 func Apps(ctx context.Context, clusterName, namespace string) *app.Manager {
-	return app.NewApps(ctx, "primary", namespace)
+	return app.NewApps(ctx, clusterName, namespace)
 }
 
 func Nodes(ctx context.Context, clusterName string) *node.Manager {
-	return node.NewNodes(ctx, "primary")
+	return node.NewNodes(ctx, clusterName)
 }
 
 func Namespaces(ctx context.Context, clusterName string) *namespace.Manager {
-	return namespace.NewNamespaces(ctx, "primary")
+	return namespace.NewNamespaces(ctx, clusterName)
 }
 
 func Middlewares(ctx context.Context) *middleware.Manager {
@@ -33,9 +33,9 @@ func Middlewares(ctx context.Context) *middleware.Manager {
 }
 
 func Components(ctx context.Context, clusterName string) *component.Manager {
-	return component.NewComponents(ctx, "primary")
+	return component.NewComponents(ctx, clusterName)
 }
 
 func Snippets(ctx context.Context, clusterName string) *snippet.Manager {
-	return snippet.NewSnippets(ctx, "primary")
+	return snippet.NewSnippets(ctx, clusterName)
 }
