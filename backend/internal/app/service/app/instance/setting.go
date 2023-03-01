@@ -238,10 +238,7 @@ func (s *Settings) Mode(m string) *Settings {
 }
 
 func (s *Settings) Parse() (interface{}, error) {
-	h, err := helm.NamespaceScope(s.app.namespace)
-	if err != nil {
-		return nil, err
-	}
+	h := s.app.getHelmClient(s.app.namespace)
 
 	rel, err := h.GetRelease(s.app.name)
 	if err != nil {

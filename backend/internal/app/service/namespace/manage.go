@@ -26,11 +26,12 @@ type Manager struct {
 }
 
 func NewNamespaces(ctx context.Context, clusterName string) *Manager {
+	ks := cluster.Get(clusterName)
 	return &Manager{
 		ctx:         ctx,
 		clusterName: clusterName,
-		ks:          cluster.Get(clusterName),
-		logger:      logging.DefaultLogger().WithContext(ctx),
+		ks:          ks,
+		logger:      logging.DefaultLogger().WithContext(ctx).WithField("cluster", ks.Name),
 	}
 }
 
@@ -53,7 +54,7 @@ func (m *Manager) Recycle(name string) error {
 }
 
 func (m *Manager) Has(name string) bool {
-	_, err := m.ks.Clients.Base.CoreV1().Namespaces().Get(context.TODO(), name, metav1.GetOptions{})
+	_, err := m.ks.Store.GetNamespace(name)
 	return err == nil
 }
 

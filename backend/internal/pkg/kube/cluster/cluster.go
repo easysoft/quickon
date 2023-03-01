@@ -26,10 +26,14 @@ var kubeClusters = make(map[string]*Cluster)
 var lock = &sync.RWMutex{}
 
 type Cluster struct {
-	Config    rest.Config
-	Store     *store.Storer
-	Metric    *metric.Metric
-	Clients   *store.Clients
+	Name string
+
+	Config       rest.Config
+	Store        *store.Storer
+	Metric       *metric.Metric
+	Clients      *store.Clients
+	ClientConfig clientcmd.ClientConfig
+
 	inner     bool
 	primary   bool
 	reference string
@@ -57,6 +61,9 @@ func List() []map[string]interface{} {
 func Exist(name string) bool {
 	lock.Lock()
 	defer lock.Unlock()
+	if name == "" {
+		return true
+	}
 	_, ok := kubeClusters[name]
 	return ok
 }
@@ -78,16 +85,18 @@ func Remove(name string) {
 	}
 }
 
-func add(name string, config rest.Config, inner, primary bool) *Cluster {
+func add(name string, config rest.Config, clientConfig clientcmd.ClientConfig, inner, primary bool) *Cluster {
 	s := store.NewStorer(config)
 	m := metric.NewMetric(config)
 	cluster := &Cluster{
-		Config:  config,
-		Store:   s,
-		Metric:  m,
-		Clients: s.Clients,
-		inner:   inner,
-		primary: primary,
+		Name:         name,
+		Config:       config,
+		Store:        s,
+		Metric:       m,
+		Clients:      s.Clients,
+		ClientConfig: clientConfig,
+		inner:        inner,
+		primary:      primary,
 	}
 
 	lock.Lock()
@@ -103,7 +112,7 @@ func Init(stopChan chan struct{}) error {
 		return err
 	}
 
-	primaryCluster := add(primaryClusterName, *restCfg, true, true)
+	primaryCluster := add(primaryClusterName, *restCfg, nil, true, true)
 
 	c := &clusterManage{
 		stopChan: stopChan,
@@ -229,28 +238,20 @@ func (c *clusterManage) removeClusterBySecret(obj interface{}) {
 func (c *clusterManage) addCluster(name string, secret *v1.Secret) {
 	if content, ok := secret.Data[secretKeyContent]; ok {
 		c.logger.Info("load kubeconfig")
-		f, err := os.CreateTemp("", "kubeconfig-*")
-		if err != nil {
-			c.logger.WithError(err).Error("open temp file failed")
-			return
-		}
-		defer func() {
-			_ = f.Close()
-			_ = os.Remove(f.Name())
-		}()
 
-		_, err = f.Write(content)
+		clientConfig, err := clientcmd.NewClientConfigFromBytes(content)
 		if err != nil {
-			c.logger.WithError(err).Error("write temp file failed")
+			c.logger.WithError(err).Error("load kubeconfig content failed")
 			return
 		}
 
-		restCfg, err := clientcmd.BuildConfigFromFlags("", f.Name())
+		restCfg, err := clientConfig.ClientConfig()
 		if err != nil {
-			c.logger.WithError(err).Error("load kubeconfig failed")
+			c.logger.WithError(err).Error("load rest config failed")
 			return
 		}
-		newCluster := add(name, *restCfg, false, false)
+
+		newCluster := add(name, *restCfg, clientConfig, false, false)
 		newCluster.reference = fmt.Sprintf("%s/%s", secret.Namespace, secret.Name)
 		c.logger.Infof("start cluster informer sync")
 		go newCluster.Store.Run(c.stopChan)

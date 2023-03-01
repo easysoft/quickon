@@ -6,6 +6,7 @@ package instance
 
 import (
 	"context"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
 
 	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/release"
@@ -44,7 +45,7 @@ func NewInstance(ctx context.Context, name string, clusterName, namespace string
 		clusterName: clusterName, namespace: namespace, name: name,
 		Ks: ks,
 		logger: logging.DefaultLogger().WithContext(ctx).WithFields(logrus.Fields{
-			"name": name, "namespace": namespace,
+			"name": name, "namespace": namespace, "cluster": ks.Name,
 		}),
 	}
 
@@ -96,4 +97,9 @@ func (i *Instance) GetLogger() logrus.FieldLogger {
 
 func (i *Instance) GetRelease() *release.Release {
 	return i.release
+}
+
+func (i *Instance) getHelmClient(namespace string) *helm.Action {
+	h, _ := helm.NamespaceScope(i.namespace, i.Ks.ClientConfig)
+	return h
 }

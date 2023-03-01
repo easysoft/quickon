@@ -61,7 +61,7 @@ func AppInstall(c *gin.Context) {
 		return
 	}
 
-	snippetSettings, _ := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+	snippetSettings, _ := MergeSnippetConfigs(ctx, body.Cluster, body.Namespace, body.SettingsSnippets, logger)
 
 	if err = service.Apps(ctx, body.Cluster, body.Namespace).Install(body.Name, body, snippetSettings); err != nil {
 		logger.WithError(err).Error("install app failed")
@@ -136,7 +136,7 @@ func AppStart(c *gin.Context) {
 	logger := i.GetLogger()
 
 	// start app with auto-import snippet settings
-	snippetSettings, _ := MergeSnippetConfigs(ctx, body.Namespace, []string{}, logger)
+	snippetSettings, _ := MergeSnippetConfigs(ctx, body.Cluster, body.Namespace, []string{}, logger)
 	err = i.Start(body.Chart, body.Channel, snippetSettings)
 	if err != nil {
 		logger.WithError(err).Error(errStartAppFailed)
@@ -255,7 +255,7 @@ func AppPatchSettings(c *gin.Context) {
 
 	logger := i.GetLogger()
 
-	snippetSettings, delSnippetSettings := MergeSnippetConfigs(ctx, body.Namespace, body.SettingsSnippets, logger)
+	snippetSettings, delSnippetSettings := MergeSnippetConfigs(ctx, body.Cluster, body.Namespace, body.SettingsSnippets, logger)
 
 	err = i.PatchSettings(body.Chart, body, snippetSettings, delSnippetSettings)
 	if err != nil {

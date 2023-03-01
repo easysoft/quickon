@@ -29,11 +29,12 @@ type Manager struct {
 }
 
 func NewSnippets(ctx context.Context, clusterName string) *Manager {
+	ks := cluster.Get(clusterName)
 	return &Manager{
 		ctx:         ctx,
 		clusterName: clusterName,
-		ks:          cluster.Get(clusterName),
-		logger:      logging.DefaultLogger().WithContext(ctx),
+		ks:          ks,
+		logger:      logging.DefaultLogger().WithContext(ctx).WithField("cluster", ks.Name),
 	}
 }
 
@@ -51,8 +52,10 @@ func (m *Manager) List(namespace string) ([]*model.SnippetConfig, error) {
 			continue
 		}
 		sc := &model.SnippetConfig{
-			Name:       cm.Name,
-			Namespace:  cm.Namespace,
+			Name: cm.Name,
+			QueryNamespace: model.QueryNamespace{
+				Namespace: cm.Namespace,
+			},
 			Category:   snippet.Category(),
 			Values:     snippet.Values(),
 			AutoImport: snippet.IsAutoImport(),

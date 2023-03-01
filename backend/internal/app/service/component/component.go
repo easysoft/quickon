@@ -35,11 +35,12 @@ type Manager struct {
 }
 
 func NewComponents(ctx context.Context, clusterName string) *Manager {
+	ks := cluster.Get(clusterName)
 	return &Manager{
 		ctx:         ctx,
 		clusterName: clusterName,
-		ks:          cluster.Get(clusterName),
-		logger:      logging.DefaultLogger().WithContext(ctx),
+		ks:          ks,
+		logger:      logging.DefaultLogger().WithContext(ctx).WithField("cluster", ks.Name),
 	}
 }
 
