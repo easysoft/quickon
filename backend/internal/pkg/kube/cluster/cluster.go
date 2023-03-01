@@ -139,6 +139,7 @@ func (c *clusterManage) validSecret(secret *v1.Secret) (string, bool) {
 	var clusterName string
 	c.logger.Debugf("try to read secret %s/%s", secret.Namespace, secret.Name)
 	if _, ok := secret.Labels[constant.LabelCluster]; !ok {
+		c.logger.Debugf("without cluster label, skip")
 		return "", false
 	}
 
@@ -179,9 +180,6 @@ func (c *clusterManage) updateClusterBySecret(oldObj, newObj interface{}) {
 	c.logger.Info("trigger update event")
 	oldSecret := oldObj.(*v1.Secret)
 	oldClusterName, isValid := c.validSecret(oldSecret)
-	if !isValid {
-		return
-	}
 
 	newSecret := newObj.(*v1.Secret)
 	clusterName, isValid := c.validSecret(newSecret)
@@ -189,7 +187,9 @@ func (c *clusterManage) updateClusterBySecret(oldObj, newObj interface{}) {
 		return
 	}
 
+	c.logger.Info("secret valid, do update")
 	if Exist(clusterName) {
+		c.logger.Infof("cluster %s is exists, do update", clusterName)
 		cluster := Get(clusterName)
 		newRef := fmt.Sprintf("%s/%s", newSecret.Namespace, newSecret.Name)
 		// Do cluster config modify must on the same secret.
@@ -200,8 +200,9 @@ func (c *clusterManage) updateClusterBySecret(oldObj, newObj interface{}) {
 		c.addCluster(clusterName, newSecret)
 		return
 	} else {
+		c.logger.Infof("cluster %s is not exists, do create", clusterName)
 		c.addCluster(clusterName, newSecret)
-		if oldClusterName != clusterName && Exist(oldClusterName) {
+		if oldClusterName != "" && oldClusterName != clusterName && Exist(oldClusterName) {
 			Remove(oldClusterName)
 			c.logger.Infof("old cluster %s was been removed", oldClusterName)
 		}
