@@ -62,7 +62,10 @@ pipeline {
 
         stage('build api') {
           when {
-            branch 'test'
+            anyOf {
+              tag ''
+              branch 'test'
+            }
           }
 
           steps {
@@ -89,7 +92,10 @@ pipeline {
         }
         stage('cne-api image') {
           when {
-            branch 'test'
+            anyOf {
+              tag ''
+              branch 'test'
+            }
           }
           steps {
             container('docker') {
