@@ -100,7 +100,7 @@ pull: ## 拉取最新镜像
 mountFiles:
 	mkdir -p /root/.config/helm
 	@kubectl get cm -n cne-system qucheng-files -o jsonpath='{.data.repositories\.yaml}' > /root/.config/helm/repositories.yaml.dev
-	@sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.dev
+	@sed -r -e "s%(\s+server:\s+https://).*%\1$(kube_api_host):443%" ~/.kube/config > /root/.kube/config.dev
 
 debug:
 	@echo $(branch_name) "123"
