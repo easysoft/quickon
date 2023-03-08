@@ -21,7 +21,8 @@ class solution extends control
     {
         $this->view->title = $this->lang->solution->common;
 
-        $this->view->solutionList = $this->loadModel('store')->searchSolutions();
+        $this->view->solutionList    = $this->loadModel('store')->searchSolutions();
+        $this->view->hasInstalledApp = !empty($this->solution->search());
 
         $this->display();
     }
@@ -37,6 +38,8 @@ class solution extends control
         $this->view->title = $this->lang->solution->common;
 
         $this->view->solutionList = $this->solution->search();
+
+        if(empty($this->view->solutionList)) $this->locate(helper::createLink('solution', 'browseMarket', "open=$url"));
 
         $this->display();
     }

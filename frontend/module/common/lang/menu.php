@@ -11,7 +11,7 @@ $lang->visionList['qucheng'] = '渠成平台';
 $lang->mainNav = new stdclass();
 $lang->mainNav->my       = "{$lang->navIcons['my']} {$lang->my->shortCommon}|my|index|";
 $lang->mainNav->store    = "{$lang->navIcons['store']} {$lang->store->shortCommon}|store|index|";
-$lang->mainNav->solution = "{$lang->navIcons['solution']} {$lang->solution->shortCommon}|solution|browseMarket|";
+$lang->mainNav->solution = "{$lang->navIcons['solution']} {$lang->solution->shortCommon}|solution|browse|";
 $lang->mainNav->space    = "{$lang->navIcons['space']} {$lang->space->shortCommon}|space|browse|";
 $lang->mainNav->system   = "{$lang->navIcons['system']} {$lang->system->common}|system|index|";
 

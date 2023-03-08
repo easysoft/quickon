@@ -15,8 +15,8 @@
   <div class='main-cell' id='solutionContainer'>
     <div>
       <div class="btn-toolbar">
+        <?php echo $hasInstalledApp ? html::a(inlink('browse'), "<span class='text'>{$lang->solution->browse}</span>", '', "") : '';?>
         <?php echo html::a(inlink('browseMarket'), "<span class='text'>{$lang->solution->market->browse}</span>", '', "class='btn-active-text'");?>
-        <?php echo html::a(inlink('browse'), "<span class='text'>{$lang->solution->browse}</span>");?>
       </div>
     </div>
     <div class='row'>

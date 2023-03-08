@@ -75,6 +75,10 @@ run-dev: pull mountFiles ## 运行开发环境
 	chown 33:33 . -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
+run-frontend-dev: pull ## 运行开发环境
+	chown 33:33 . -R
+	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
+
 ps: run ## 运行状态
 	docker-compose -f docker-compose.yml ps
 
