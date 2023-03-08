@@ -26,10 +26,12 @@
             <th></th>
             <td><?php echo $lang->solution->chooseApp;?></td>
           </tr>
-          <?php foreach($components->categories as $category => $groupedApps):?>
+          <?php 
+            foreach($components->category as $item):
+          ?>
           <tr>
-            <th><?php echo $groupedApps->alias;?></th>
-            <td><?php echo html::select($category, $this->solution->createSelectOptions($groupedApps->choices, $cloudSolution), '', "class='form-control'");?></td>
+            <th><?php echo $item->alias;?></th>
+            <td><?php echo html::select($item->name, $this->solution->createSelectOptions($item->choices, $cloudSolution), '', "class='form-control'");?></td>
           </tr>
           <?php endforeach;?>
         </tbody>
