@@ -75,6 +75,29 @@ class solution extends control
         $solution = $this->solution->getByID($id);
         if($solution->status != 'installed') return printf(js::locate($this->inLink('progress', "id=$id")));
 
+        if(!empty($solution->instances))
+        {
+            //sort
+            $instances  = array_column($solution->instances, null, "chart");
+            $components = $this->loadModel('store')->solutionConfigByID($solution->appID);
+
+            if(!empty($components->category))
+            {
+                $newInstances = array();
+
+                foreach($components->category as $category)
+                {
+                    foreach($category->choices as $choice)
+                    {
+                        isset($instances[$choice->name]) && $newInstances[] = $instances[$choice->name];
+                    }
+                }
+
+                $solution->instances = $newInstances;
+            }
+
+        }
+
         $this->view->title    = $this->lang->solution->view;
         $this->view->solution = $solution;
 
