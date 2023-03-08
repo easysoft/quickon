@@ -30,3 +30,5 @@ _output/
 .build/
 test/
 .history
+frontend/tmp/log/logs
+frontend/logs
