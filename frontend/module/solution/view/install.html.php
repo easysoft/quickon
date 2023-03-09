@@ -19,7 +19,7 @@
     <div>
       <h2><?php echo $cloudSolution->title;?></h2>
     </div>
-    <form id='installForm' method='post' class='form form-ajax not-watch'>
+    <form id='installForm' method='post' class='form <?php if(empty($step2)) echo 'form-ajax';?> not-watch'>
       <table class='table table-form'>
         <tbody>
           <tr>
@@ -37,7 +37,11 @@
         </tbody>
       </table>
       <div class='text-center form-actions'>
+        <?php if(empty($step2)):?>
         <?php echo html::commonButton($lang->solution->install, "id='submitBtn'", 'btn btn-primary btn-wide')?>
+        <?php else:?>
+        <?php echo html::submitButton($lang->solution->nextStep, "", 'btn btn-primary btn-wide')?>
+        <?php endif;?>
       </div>
     </form>
   </div>
