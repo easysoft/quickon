@@ -44,7 +44,7 @@ services:
     ports:
       - '4081:80'
     volumes:
-      - ./frontend:/apps/qucheng
+      - ../qucheng-dev:/apps/qucheng
       - ./docker/rootfs/apps/qucheng/config/my.php:/apps/qucheng/config/my.php
       - /root/.kube/config.dev:/root/.kube/config
       - /root/.config/helm/repositories.yaml.dev:/root/.config/helm/repositories.yaml
