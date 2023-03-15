@@ -59,6 +59,11 @@ func (s *Settings) Common() (map[string]interface{}, error) {
 	}
 	data := make(map[string]interface{})
 	data["replicas"] = vals["replicas"]
+	if v, ok := vals["scalable"]; ok {
+		data["scalable"] = v.(bool)
+	} else {
+		data["scalable"] = false
+	}
 
 	resources, ok := vals["resources"]
 	if ok {
