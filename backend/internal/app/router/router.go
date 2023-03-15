@@ -117,6 +117,8 @@ func Config(r *gin.Engine) {
 		api.POST("/snippet/add", CreateSnippet)
 		api.POST("/snippet/update", UpdateSnippet)
 		api.POST("/snippet/remove", RemoveSnippet)
+
+		api.POST("/solution/external/validate", ValidExternalForm)
 	}
 
 	r.NoMethod(func(c *gin.Context) {

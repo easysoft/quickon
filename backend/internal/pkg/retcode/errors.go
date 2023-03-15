@@ -31,3 +31,12 @@ const (
 	ParseCertificate                                  // 证书解析失败
 	ParsePrivateKey                                   // 密钥解析失败
 )
+
+// Define solution app form errors
+const (
+	ValidateFormFailed         RetCode = iota + 41100
+	MissRequiredFormField              // 缺少必填的表单项
+	InvalidFormContent                 // 非法表单内容
+	UnAuthenticatedFormAccount         // 用户名密码验证不通过
+	UnAuthenticatedFormToken           // Token验证不通过
+)
