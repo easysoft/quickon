@@ -60,6 +60,9 @@ ARG VERSION
 ENV BUILD_VERSION=$VERSION
 ENV EASYSOFT_APP_NAME="QuCheng $BUILD_VERSION"
 
+ARG EDITION
+ENV QUICKON_EDITION=$EDITION
+
 # Copy qucheng source code
 WORKDIR /apps/qucheng
 COPY --chown=www-data frontend .

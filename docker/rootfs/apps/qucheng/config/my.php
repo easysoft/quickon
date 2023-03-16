@@ -11,6 +11,7 @@ $config->db->encoding = 'UTF8';
 $config->db->password = getenv('MYSQL_PASSWORD');
 $config->db->prefix   = 'q_';
 $config->webRoot      = getWebRoot();
+$config->edition      = getenv('QUICKON_EDITION');
 
 $config->CNE->api->host   = getenv('CNE_API_HOST');
 if(getenv('CNE_API_TOKEN'))         $config->CNE->api->token   = getenv('CNE_API_TOKEN');
