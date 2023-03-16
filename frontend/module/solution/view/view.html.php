@@ -27,7 +27,9 @@
       </div>
       <div class='col-sm-9' id='instanceContainer'>
         <h3><?php echo $lang->solution->apps;?></h3>
-        <?php foreach($solution->instances as $instance):?>
+        <?php foreach($solution->instances as $instance):
+            if($instance->source == 'external') continue;
+        ?>
         <div class='col-sm-4'>
           <div class='panel'>
             <div class='panel-heading'>
@@ -56,6 +58,37 @@
               <div class="pull-left"><?php echo $instance->appVersion . ($config->cloud->api->switchChannel && $channel ? " ($channel)" : '');?></div>
               <div class="pull-right instance-status" instance-id="<?php echo $instance->id;?>" data-status="<?php echo $instance->status;?>">
                 <?php $this->instance->printStatus($instance);?>
+              </div>
+            </div>
+          </div>
+        </div>
+        <?php endforeach;?>
+
+        <h3><?php echo $lang->solution->externalApps;?></h3>
+        <?php foreach($solution->instances as $instance):
+            if($instance->source != 'external') continue;
+        ?>
+        <div class='col-sm-4'>
+          <div class='panel'>
+            <div class='panel-heading'>
+              <div class="instance-name">
+                <a class='text-ellipsis' href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>"  title='<?php echo $instance->name;?>'>
+                  <?php echo $instance->name;?>
+                </a>
+              </div>
+            </div>
+            <div class='panel-body'>
+              <div class="instance-detail">
+                <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                  <div class='instance-logo'>
+                    <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
+                  </div>
+                  <p class="instance-introduction" title='<?php echo $instance->introduction;?>'><?php echo $instance->introduction;?></p>
+                </a>
+              </div>
+              <div class="instance-actions">
+                <?php $canVisit = $this->instance->canDo('visit', $instance);?>
+                <?php echo html::a($this->instance->url($instance), $lang->instance->visit, '_blank', "class='btn btn-primary' title='{$lang->instance->visit}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
               </div>
             </div>
           </div>

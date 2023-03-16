@@ -22,7 +22,8 @@ $lang->solution->includedApp  = '包含应用';
 $lang->solution->features     = '方案亮点';
 $lang->solution->relatedLinks = '相关链接';
 $lang->solution->customers    = '典型客户';
-$lang->solution->apps         = '应用';
+$lang->solution->apps         = '安装的应用';
+$lang->solution->externalApps = '外部应用';
 $lang->solution->resources    = '资源占用';
 
 $lang->solution->editName = '修改名称';
