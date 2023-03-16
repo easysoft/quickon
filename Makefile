@@ -72,24 +72,22 @@ run: ## 运行
 	docker-compose -f docker-compose.yml up -d mysql qucheng
 
 run-dev: pull mountFiles ## 运行开发环境
-	chown 33:33 . -R
 	$(shell if [ -f ../qucheng-dev ]; then mkdir ../qucheng-dev; fi;)
-	sudo cp -r ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	cp -r ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	chown -R 33:33 ../qucheng-dev -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
-run-frontend-dev: pull ## 运行开发环境
-	chown 33:33 . -R
+run-frontend-dev: pull ## 运行开发环境-仅启动frontend
 	$(shell if [ -f ../qucheng-dev ]; then mkdir ../qucheng-dev; fi;)
-	sudo syncext.sh ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
-	sudo syncext.sh ../quickonext/quickonbiz ../qucheng-dev  >> /dev/null  2>&1 & 
-	sudo chown -R www-data:www-data ../qucheng-dev
+	syncext.sh ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	syncext.sh ../quickonext/quickonbiz ../qucheng-dev  >> /dev/null  2>&1 & 
+	chown -R 33:33 ../qucheng-dev -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
-run-biz-dev: pull mountFiles ## 运行开发环境
-	chown 33:33 . -R
+run-biz-dev: pull mountFiles ## 运行企业版开发环境
 	$(shell if [ -f ../qucheng-dev ]; then mkdir ../qucheng-dev; fi;)
-	sudo syncext.sh ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
-	sudo syncext.sh ../quickonext/quickonbiz ../qucheng-dev  >> /dev/null  2>&1 & 
-	sudo chown -R www-data:www-data ../qucheng-dev
+	syncext.sh ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	syncext.sh ../quickonext/quickonbiz ../qucheng-dev  >> /dev/null  2>&1 & 
+	chown -R 33:33 ../qucheng-dev -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
 ps: run ## 运行状态
