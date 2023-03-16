@@ -14,7 +14,7 @@ endif
 # export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
 
 export branch_name_valid := $(shell echo $(branch_name) | tr "/" "-")
-export _branch_prefix := $(shell echo $(branch_name) | sed 's/-.*//')
+export _branch_prefix := $(shell echo $(branch_name_valid) | sed 's/-.*//')
 
 ifneq (,$(filter $(_branch_prefix), test sprint))
   export TAG=$(branch_name_valid)
