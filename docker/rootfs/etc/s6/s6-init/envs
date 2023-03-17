@@ -43,7 +43,7 @@ export PERSISTENCE_LIST="
 export PERSISTENCE_LINK_LIST="
 /data/qucheng/www/data"
 
-export PERSISTENCE_MOVE_LINK_LIST= "
+export PERSISTENCE_MOVE_LINK_LIST="
 /data/qucheng/config/license
 "
 
