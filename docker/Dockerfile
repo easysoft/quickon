@@ -28,6 +28,10 @@ RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "php" "7.4.28" -
 # Install php-ext-ioncube
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "php-ext-ioncube" "11.0.1" -c 9a6ee08aa864f2b937b9a108d3ec8679ae3a5f08f92a36caf5280520432315ad
 
+# Install php-mcrypt
+RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "php-mcrypt" "1.0.6" -c 6f5be2c44d0dd969af38db9318dfb70396ed222686207d31d7ae386ad846d0f6 \
+    && phpenmod mcrypt
+
 # Install apache
 RUN . /opt/easysoft/scripts/libcomponent.sh && component_unpack "apache" "2.4.53-02" -c 0df3a5e53ef078b75dd43facd6e1473d9ff3c4c5e5b865c4dc066e4e2ece6b07
 
