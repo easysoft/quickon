@@ -461,4 +461,42 @@ $(function()
 
         })
     }, 1000)
+
+    $('#replicas-edit').on('click', function()
+    {
+        $('#replicas-input').show()
+        $('#replicas-text').hide()
+        $('#replicas-save').show()
+        $('#replicas-edit').hide()
+    })
+
+    $('#replicas-save').on('click', function()
+    {
+      var loadingDialog = bootbox.dialog(
+        {
+            message: '<div class="text-center"><i class="icon icon-spinner-indicator icon-spin"></i>&nbsp;&nbsp;' + instanceNotices.adjusting + '</div>',
+        });
+
+        var id         = $(event.target).closest('button').attr('instance-id');
+        var url        = createLink('instance', 'replicas', 'id=' + id, 'json');
+        var adjustData = {replicas: $('#replicas-input').val()};
+        $.post(url, adjustData).done(function(response)
+        {
+
+        var res = JSON.parse(response);
+        if(res.result == 'success')
+        {
+            window.parent.location.reload();
+        }
+        else
+        {
+            loadingDialog.modal('hide');
+            bootbox.alert(
+            {
+                title:   instanceNotices.fail,
+                message: res.message,
+            });
+        }
+        });
+    })
 })

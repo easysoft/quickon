@@ -107,6 +107,31 @@
     </form>
   </div>
   <?php endif;?>
+
+  <?php if(!empty($currentResource->scalable) && $config->edition == 'biz'):?>
+  <div class='panel-heading'>
+    <div class='panel-title'><?php echo $lang->instance->scalable;?></span></div>
+  </div>
+  <div class='panel-body'>
+    <form id='replicasForm' class='cell not-watch load-indicator'>
+      <table class='table table-form'>
+        <tr>
+          <th><?php echo $lang->instance->componentFields['replicas'];?></th>
+          <td class='w-120px center'>
+            <span id="replicas-text"><?php echo $currentResource->replicas;?></span>
+            <?php echo html::number('scalable', $currentResource->replicas, " id='replicas-input' max='4' min='1' class='form-control scalable-input hide'");?>
+          </td>
+          <td>
+            <?php echo html::commonButton($lang->instance->change, 'id="replicas-edit"', 'btn btn-primary ' . (in_array($instance->status, array('uninstalling', 'destroying', 'destroyed', 'unknown', 'abnormal')) ? 'disabled' : ''));?>
+            <?php echo html::commonButton($lang->instance->saveSetting, "id='replicas-save' instance-id='$instance->id'", 'btn btn-primary hide');?>
+          </td>
+          <td></td>
+        </tr>
+      </table>
+    </form>
+  </div>
+  <?php endif;?>
+
   <?php if(count($customItems)):?>
   <div class='panel-heading'>
     <div class='panel-title'><?php echo $lang->instance->customSetting;?></span></div>

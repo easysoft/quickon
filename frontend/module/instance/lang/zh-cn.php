@@ -31,6 +31,8 @@ $lang->instance->uninstall        = '卸载';
 $lang->instance->visit            = '访问';
 $lang->instance->editName         = '修改名称';
 $lang->instance->cpuCore          = '核';
+$lang->instance->scalable         = '应用水平扩容';
+$lang->instance->change           = '修改';
 
 $lang->instance->systemLDAPInactive = '未开启系统LDAP';
 $lang->instance->toSystemLDAP       = '去启用';
