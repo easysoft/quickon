@@ -9,6 +9,7 @@ else
 	export commit_id := $(shell git rev-parse --short HEAD)
 	export branch_name := $(shell git branch --show-current)
 	export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+	export app_domain := $(shell helm get values -n cne-system qucheng -o json | jq -r '.env.APP_DOMAIN')
 endif
 
 # export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')

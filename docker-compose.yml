@@ -64,7 +64,7 @@ services:
       - CNE_API_HOST=http://127.0.0.1:8087
       - CLOUD_API_HOST=https://api.qucheng.com
       - CLOUD_DEFAULT_CHANNEL=test
-      - APP_DOMAIN=qc.yunop.com
+      - APP_DOMAIN=${app_domain}
       - CLOUD_SWITCH_CHANNEL=true
       - CNE_MARKET_API_SCHEMA=https
       - CNE_MARKET_API_HOST=api.qucheng.com
