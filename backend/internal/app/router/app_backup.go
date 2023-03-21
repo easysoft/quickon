@@ -14,7 +14,7 @@ import (
 
 func AppBackupCreate(c *gin.Context) {
 	var (
-		op model.AppWithUserModel
+		op model.AppBackupCreateModel
 	)
 
 	_, i, code, err := LookupApp(c, &op)

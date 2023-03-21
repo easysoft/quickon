@@ -5,6 +5,7 @@
 package instance
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -23,6 +24,12 @@ import (
 func (i *Instance) CreateBackup(username string) (interface{}, error) {
 	currTime := time.Now()
 	backupName := fmt.Sprintf("%s-backup-%d", i.name, currTime.Unix())
+
+	vals, err := json.Marshal(i.release.Config)
+	if err != nil {
+		return nil, err
+	}
+
 	backupReq := quchengv1beta1.Backup{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: backupName,
@@ -37,6 +44,12 @@ func (i *Instance) CreateBackup(username string) (interface{}, error) {
 				"release": i.release.Name,
 			},
 			Namespace: i.namespace,
+			Helm: &quchengv1beta1.HelmBackup{
+				Chart:   i.ChartName,
+				Channel: i.ChartChannel,
+				Version: i.CurrentChartVersion,
+				Values:  string(vals),
+			},
 		},
 	}
 	if username != "" {
@@ -50,7 +63,7 @@ func (i *Instance) CreateBackup(username string) (interface{}, error) {
 
 	ns := viper.GetString(constant.FlagRuntimeNamespace)
 
-	_, err := i.Ks.Clients.Cne.QuchengV1beta1().Backups(ns).Create(i.Ctx, &backupReq, metav1.CreateOptions{})
+	_, err = i.Ks.Clients.Cne.QuchengV1beta1().Backups(ns).Create(i.Ctx, &backupReq, metav1.CreateOptions{})
 	return data, err
 }
 
@@ -71,6 +84,11 @@ func (i *Instance) GetBackupList() ([]model.AppRespBackup, error) {
 			Status:     strings.ToLower(string(b.Status.Phase)),
 			Message:    b.Status.Message,
 			Restores:   make([]model.AppRespRestore, 0),
+		}
+
+		if b.Spec.Helm != nil {
+			item.ChartName = b.Spec.Helm.Chart
+			item.ChartVersion = b.Spec.Helm.Version
 		}
 
 		bkReq, _ := labels.NewRequirement(constant.LabelBackupName, "==", []string{b.Name})

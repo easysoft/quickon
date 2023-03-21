@@ -33,6 +33,7 @@ type Instance struct {
 	secret  *v1.Secret
 
 	ChartName           string
+	ChartChannel        string
 	CurrentChartVersion string
 
 	logger logrus.FieldLogger
@@ -68,6 +69,12 @@ func (i *Instance) prepare() error {
 		return err
 	}
 	i.secret = secret
+	if channel, ok := secret.Annotations[constant.AnnotationAppChannel]; ok {
+		i.ChartChannel = channel
+	} else {
+		i.ChartChannel = "test"
+	}
+
 	return nil
 }
 

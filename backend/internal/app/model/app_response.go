@@ -99,6 +99,8 @@ type AppRespBackup struct {
 	Name          string           `json:"name"`
 	Creator       string           `json:"creator"`
 	CreateTime    int64            `json:"create_time"`
+	ChartName     string           `json:"chart_name,omitempty"`
+	ChartVersion  string           `json:"chart_version,omitempty"`
 	Status        string           `json:"status"`
 	Message       string           `json:"message"`
 	BackupDetails AppBackupDetails `json:"backup_details"`

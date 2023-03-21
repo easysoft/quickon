@@ -61,13 +61,14 @@ type AppWithComponentModel struct {
 //	Category string `json:"category" form:"category" binding:"required"`
 //}
 
-type AppWithUserModel struct {
+type AppBackupCreateModel struct {
 	AppModel
 	UserName string `form:"username" json:"username"`
 }
 
 type AppRestoreCreateModel struct {
-	AppWithUserModel
+	AppModel
+	UserName   string `form:"username" json:"username"`
 	BackupName string `json:"backup_name" form:"backup_name" binding:"required"`
 }
 
