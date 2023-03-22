@@ -119,7 +119,7 @@
           <th><?php echo $lang->instance->componentFields['replicas'];?></th>
           <td class='w-80px center'>
             <span id="replicas-text"><?php echo $currentResource->replicas;?></span>
-            <?php echo html::number('scalable', $currentResource->replicas, " id='replicas-input' max='4' min='1' class='form-control scalable-input hide'");?>
+            <?php echo html::select('scalable', array(1=>1, 2=>2, 3=>3, 4=>4), intval($currentResource->replicas) ? : 1, " id='replicas-input' max='4' min='1' class='form-control scalable-input hide'");?>
           </td>
           <td>
             <?php echo html::commonButton($lang->instance->change, 'id="replicas-edit"', 'btn btn-primary ' . (in_array($instance->status, array('uninstalling', 'destroying', 'destroyed', 'unknown', 'abnormal')) ? 'disabled' : ''));?>

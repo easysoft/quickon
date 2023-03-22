@@ -1,9 +1,10 @@
 package parse
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/assert"
 	"gopkg.in/yaml.v3"
-	"testing"
 )
 
 func TestParse(t *testing.T) {

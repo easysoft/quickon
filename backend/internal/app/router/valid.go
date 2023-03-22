@@ -1,9 +1,11 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/app"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/app"
 )
 
 type ExternalForm struct {

@@ -169,6 +169,7 @@ $lang->instance->actionList['upgrade']                 = '升级了%s';
 $lang->instance->actionList['backup']                  = '备份了%s';
 $lang->instance->actionList['restore']                 = '回滚了%s';
 $lang->instance->actionList['adjustmemory']            = '调整 %s 的内存到 %s';
+$lang->instance->actionList['adjustreplicas']          = '调整 %s 的副本数到 %s';
 $lang->instance->actionList['enableldap']              = '启用了LDAP';
 $lang->instance->actionList['disableldap']             = '禁用了LDAP';
 $lang->instance->actionList['enablesmtp']              = '启用了SMTP';

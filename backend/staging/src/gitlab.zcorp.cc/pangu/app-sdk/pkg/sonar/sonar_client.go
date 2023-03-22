@@ -2,10 +2,11 @@ package sonar
 
 import (
 	"fmt"
+	"net/http"
+
 	"github.com/parnurzeal/gorequest"
 	"github.com/pkg/errors"
 	"gitlab.zcorp.cc/pangu/app-sdk/pkg/httplib"
-	"net/http"
 )
 
 type Client struct {

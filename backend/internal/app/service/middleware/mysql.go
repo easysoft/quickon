@@ -7,11 +7,13 @@ package middleware
 import (
 	"context"
 	"fmt"
-	"github.com/pkg/errors"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"io/ioutil"
 	"os"
+
+	"github.com/pkg/errors"
 	"sigs.k8s.io/yaml"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 
 	"github.com/ergoapi/util/exhash"
 	"github.com/google/uuid"

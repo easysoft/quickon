@@ -7,9 +7,11 @@ package patch
 import (
 	"context"
 	"errors"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/instance"
-	"k8s.io/apimachinery/pkg/labels"
 	"os"
+
+	"k8s.io/apimachinery/pkg/labels"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/service/app/instance"
 
 	"github.com/Masterminds/semver"
 	"github.com/sirupsen/logrus"

@@ -3,7 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+
+	"gitlab.zcorp.cc/pangu/app-sdk/pkg/httplib"
 	"gitlab.zcorp.cc/pangu/app-sdk/pkg/sonar"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 )
 
@@ -20,23 +23,10 @@ type sonarqubeValidator struct {
 }
 
 func newSonarqubeValidator(ctx context.Context, solution string, data interface{}) (Validator, error) {
-	var serverModel ServerInfo
-	err := convertToStruct(data, &serverModel)
-	if err != nil {
-		return nil, err
-	}
-
-	s, err := parseHttpServer(serverModel.Host, serverModel.Username, serverModel.Password)
-	if err != nil {
-		return nil, err
-	}
-
 	switch solution {
 	case solutionDevops:
-		client := sonar.New(s)
 		return &sonarqubeValidator{
 			ctx:      ctx,
-			client:   client,
 			solution: solution,
 			data:     data,
 		}, nil
@@ -48,6 +38,19 @@ func (g *sonarqubeValidator) IsValid() (bool, int, error) {
 	var code retcode.RetCode
 	var err error
 	var isValid bool
+	var server *httplib.HTTPServer
+
+	ms, err := parseModel(g.data)
+	if err != nil {
+		return false, int(retcode.InvalidFormContent), err
+	}
+
+	server, code, err = parseHttpServer(ms.Protocol, ms.Host, ms.Username, ms.Password)
+	if err != nil {
+		return false, int(code), err
+	}
+
+	g.client = sonar.New(server)
 
 	switch g.solution {
 	case solutionDevops:
