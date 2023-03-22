@@ -140,6 +140,7 @@ class solution extends control
     {
         $cloudSolution = $this->loadModel('store')->getSolutionByID($cloudSolutionID);
         $components    = $this->loadModel('store')->solutionConfigByID($cloudSolutionID);
+
         if($_POST)
         {
             $solution = $this->solution->create($cloudSolution, $components);
@@ -192,11 +193,12 @@ class solution extends control
      * @access public
      * @return void
      */
-    public function progress($id)
+    public function progress($id, $install = false)
     {
         $solution  = $this->solution->getByID($id);
 
         $this->view->title    = $this->lang->solution->progress;
+        $this->view->install  = $install;
         $this->view->solution = $solution;
 
         $this->display();

@@ -26,7 +26,7 @@
             <th></th>
             <td><?php echo $lang->solution->chooseApp;?></td>
           </tr>
-          <?php 
+          <?php
             foreach($components->category as $item):
           ?>
           <tr>

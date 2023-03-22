@@ -13,4 +13,4 @@
 .instance-introduction {float: left; margin-left: 10px; width: calc(100% - 50px); display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden;}
 .usage-pie {display: inline-block; width: 180px; padding-bottom: 20px;}
 .usage-pie div{margin: 0 auto;}
-
+.clear {clear: both;}

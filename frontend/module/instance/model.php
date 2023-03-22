@@ -1003,6 +1003,12 @@ class InstanceModel extends model
      */
     public function uninstall($instance)
     {
+        if($instance->source == 'external')
+        {
+            $this->dao->update(TABLE_INSTANCE)->set('deleted')->eq(1)->where('id')->eq($instance->id)->exec();
+            return true;
+        }
+
         $apiParams = new stdclass;
         $apiParams->cluster   = '';// Multiple cluster should set this field.
         $apiParams->name      = $instance->k8name;

@@ -69,7 +69,7 @@
           </div>
         </div>
         <?php endforeach;?>
-        <div>
+        <div class='clear'>
         <?php if(count($externalApps) > 0):?>
           <h3><?php echo $lang->solution->externalApps;?></h3>
           <?php foreach($externalApps as $instance){
@@ -79,14 +79,14 @@
             <div class='panel'>
               <div class='panel-heading'>
                 <div class="instance-name">
-                  <a class='text-ellipsis' href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>"  title='<?php echo $instance->name;?>'>
+                  <a class='text-ellipsis' href="###"  title='<?php echo $instance->name;?>'>
                     <?php echo $instance->name;?>
                   </a>
                 </div>
               </div>
               <div class='panel-body'>
                 <div class="instance-detail">
-                  <a href="<?php echo helper::createLink('instance', 'view', "id=$instance->id");?>">
+                  <a href="###">
                     <div class='instance-logo'>
                       <?php echo html::image($instance->logo ? $instance->logo : '', "referrer='origin'");?>
                     </div>

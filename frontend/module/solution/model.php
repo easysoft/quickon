@@ -70,7 +70,7 @@ class solutionModel extends model
      */
     public function create($cloudSolution, $components)
     {
-        $postedCharts = fixer::input('post')->get();
+        $postedCharts = $this->session->solutionCharts == '' ? fixer::input('post')->get() : $this->session->solutionCharts;
 
         /* Sort selected apps. */
         $orderedCategories = $components->order;
@@ -192,17 +192,25 @@ class solutionModel extends model
                 $cloudApp->version     = $componentApp->version;
                 $cloudApp->app_version = $componentApp->app_version;
 
-                /* Check enough memory to install app, or not.*/
-                if(!$this->instance->enoughMemory($cloudApp))
+                if($componentApp->external)
                 {
-                    $this->saveStatus($solutionID, 'notEnoughResource');
-                    dao::$errors[] = $this->lang->solution->errors->notEnoughResource;
-                    return false;
+                    $instance = $this->installExternalApp($cloudApp, $componentApp->external);
+                }
+                else
+                {
+                    /* Check enough memory to install app, or not.*/
+                    if(!$this->instance->enoughMemory($cloudApp))
+                    {
+                        $this->saveStatus($solutionID, 'notEnoughResource');
+                        dao::$errors[] = $this->lang->solution->errors->notEnoughResource;
+                        return false;
+                    }
+
+                    if(!$this->checkInstallStatus($solutionID)) return false;
+                    $settings = $this->mountSettings($solutionSchema, $componentApp->chart, $components, $allMappings);
+                    $instance = $this->installApp($cloudApp, $settings);
                 }
 
-                if(!$this->checkInstallStatus($solutionID)) return false;
-                $settings = $this->mountSettings($solutionSchema, $componentApp->chart, $components, $allMappings);
-                $instance = $this->installApp($cloudApp, $settings);
                 if(!$instance)
                 {
                     $this->saveStatus($solutionID, 'cneError');
@@ -213,6 +221,16 @@ class solutionModel extends model
 
                 $componentApp->status = 'installing';
                 $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
+            }
+
+            if($componentApp->external)
+            {
+                $tempMappings = $this->getExternalMapping($solutionSchema, $componentApp);
+                if($tempMappings) $allMappings[$categorty] = $tempMappings;
+
+                $componentApp->status = 'configured';
+                $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
+                continue;
             }
 
             /* Wait instanlled app started. */

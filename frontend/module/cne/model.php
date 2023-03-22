@@ -422,6 +422,8 @@ class cneModel extends model
         $apiData = array('cluster' => '', 'apps' => array());
         foreach($instances as $instance)
         {
+            if($instance->source == 'external') continue;
+
             $appData = new stdclass;
             $appData->name      = $instance->k8name;
             $appData->namespace = $instance->spaceData->k8space;
@@ -931,7 +933,7 @@ class cneModel extends model
     {
         $apiUrl    = "/api/cne/app/dbs";
         $apiParams =  array();
-        $apiParams['cluster']   = 'default';
+        $apiParams['cluster']   = '';
         $apiParams['name']      = $instance->k8name;
         $apiParams['namespace'] = $instance->spaceData->k8space;
         $apiParams['channel']   = $this->config->CNE->api->channel;
@@ -954,7 +956,7 @@ class cneModel extends model
     public function appDBDetail($instance, $dbName)
     {
         $apiParams =  array();
-        $apiParams['cluster']   = 'default';
+        $apiParams['cluster']   = '';
         $apiParams['name']      = $instance->k8name;
         $apiParams['namespace'] = $instance->spaceData->k8space;
         $apiParams['db']        = $dbName;
