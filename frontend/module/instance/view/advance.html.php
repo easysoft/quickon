@@ -117,7 +117,7 @@
       <table class='table table-form'>
         <tr>
           <th><?php echo $lang->instance->componentFields['replicas'];?></th>
-          <td class='w-120px center'>
+          <td class='w-80px center'>
             <span id="replicas-text"><?php echo $currentResource->replicas;?></span>
             <?php echo html::number('scalable', $currentResource->replicas, " id='replicas-input' max='4' min='1' class='form-control scalable-input hide'");?>
           </td>
