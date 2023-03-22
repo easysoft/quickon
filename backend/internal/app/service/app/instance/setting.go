@@ -6,11 +6,13 @@ package instance
 
 import (
 	"encoding/json"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/parse"
-	v1 "k8s.io/api/core/v1"
 	"reflect"
 	"strconv"
 	"strings"
+
+	v1 "k8s.io/api/core/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/parse"
 
 	"github.com/sirupsen/logrus"
 

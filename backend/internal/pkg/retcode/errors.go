@@ -18,6 +18,7 @@ func (e *Error) Error() string {
 type RetCode int
 
 const DefaultCode RetCode = 40000
+const OK RetCode = 200
 
 // Define app errors
 
@@ -39,4 +40,6 @@ const (
 	InvalidFormContent                 // 非法表单内容
 	UnAuthenticatedFormAccount         // 用户名密码验证不通过
 	UnAuthenticatedFormToken           // Token验证不通过
+	UnSupportSchema                    // 协议必须为 http/https
+	InvalidHost                        // 主机名不合法
 )

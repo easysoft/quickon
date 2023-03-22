@@ -3,7 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+
 	"gitlab.zcorp.cc/pangu/app-sdk/pkg/gitlab"
+	"gitlab.zcorp.cc/pangu/app-sdk/pkg/httplib"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 )
 
@@ -22,26 +25,13 @@ type gitlabValidator struct {
 }
 
 func newGitlabValidator(ctx context.Context, solution string, data interface{}) (Validator, error) {
-	var serverModel ServerInfo
-	err := convertToStruct(data, &serverModel)
-	if err != nil {
-		return nil, err
-	}
-
-	s, err := parseHttpServer(serverModel.Host, serverModel.Username, serverModel.Password)
-	if err != nil {
-		return nil, err
-	}
-
 	switch solution {
 	case solutionDevops:
-		client, e := gitlab.New(s)
 		return &gitlabValidator{
 			ctx:      ctx,
-			client:   client,
 			solution: solution,
 			data:     data,
-		}, e
+		}, nil
 	}
 	return nil, fmt.Errorf("no implement method for %s", solution)
 }
@@ -50,6 +40,19 @@ func (g *gitlabValidator) IsValid() (bool, int, error) {
 	var code retcode.RetCode
 	var err error
 	var isValid bool
+	var server *httplib.HTTPServer
+
+	ms, err := parseModel(g.data)
+	if err != nil {
+		return false, int(retcode.InvalidFormContent), err
+	}
+
+	server, code, err = parseHttpServer(ms.Protocol, ms.Host, ms.Username, ms.Password)
+	if err != nil {
+		return false, int(code), err
+	}
+
+	g.client, _ = gitlab.New(server)
 
 	switch g.solution {
 	case solutionDevops:

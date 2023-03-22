@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/spf13/viper"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"

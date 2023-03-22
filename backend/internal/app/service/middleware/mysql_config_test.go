@@ -1,11 +1,13 @@
 package middleware
 
 import (
-	"github.com/stretchr/testify/assert"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
 )
 
 func TestReadConfig(t *testing.T) {

@@ -3,7 +3,10 @@ package app
 import (
 	"context"
 	"fmt"
+
 	"gitlab.zcorp.cc/pangu/app-sdk/pkg/gitea"
+	"gitlab.zcorp.cc/pangu/app-sdk/pkg/httplib"
+
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/retcode"
 )
 
@@ -22,23 +25,10 @@ type giteaValidator struct {
 }
 
 func newGiteaValidator(ctx context.Context, solution string, data interface{}) (Validator, error) {
-	var serverModel ServerInfo
-	err := convertToStruct(data, &serverModel)
-	if err != nil {
-		return nil, err
-	}
-
-	s, err := parseHttpServer(serverModel.Host, serverModel.Username, serverModel.Password)
-	if err != nil {
-		return nil, err
-	}
-
 	switch solution {
 	case solutionDevops:
-		client := gitea.New(s)
 		return &giteaValidator{
 			ctx:      ctx,
-			client:   client,
 			solution: solution,
 			data:     data,
 		}, nil
@@ -50,6 +40,19 @@ func (g *giteaValidator) IsValid() (bool, int, error) {
 	var code retcode.RetCode
 	var err error
 	var isValid bool
+	var server *httplib.HTTPServer
+
+	ms, err := parseModel(g.data)
+	if err != nil {
+		return false, int(retcode.InvalidFormContent), err
+	}
+
+	server, code, err = parseHttpServer(ms.Protocol, ms.Host, ms.Username, ms.Password)
+	if err != nil {
+		return false, int(code), err
+	}
+
+	g.client = gitea.New(server)
 
 	switch g.solution {
 	case solutionDevops:
