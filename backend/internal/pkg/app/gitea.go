@@ -62,7 +62,7 @@ func (g *giteaValidator) IsValid() (bool, int, error) {
 			code = retcode.InvalidFormContent
 			break
 		}
-		if _, err = g.client.WithToken(m.Token).ListUsers(); err != nil {
+		if _, err = g.client.WithToken(m.Token).ListGroups(); err != nil {
 			code = retcode.UnAuthenticatedFormToken
 			break
 		}
