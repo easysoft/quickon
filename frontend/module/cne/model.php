@@ -67,7 +67,7 @@ class cneModel extends model
         $instance->chart  = 'qucheng';
 
         $instance->spaceData = new stdclass;
-        $instance->spaceData->k8space = 'cne-system';
+        $instance->spaceData->k8space = $this->config->k8space;
 
         $settings = new stdclass;
         $settings->settings_map = new stdclass;
@@ -107,7 +107,7 @@ class cneModel extends model
         $instance->chart  = 'qucheng';
 
         $instance->spaceData = new stdclass;
-        $instance->spaceData->k8space = 'cne-system';
+        $instance->spaceData->k8space = $this->config->k8space;
 
         return $this->upgradeToVersion($instance, $version);
     }

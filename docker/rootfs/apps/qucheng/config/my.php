@@ -30,3 +30,5 @@ $config->demoAccounts= getenv('DEMO_ACCOUNTS') ?  getenv('DEMO_ACCOUNTS') : '';
 getenv('CONTENT_SECURITY_SCRIPT') && $config->CSPs[] = getenv('CONTENT_SECURITY_SCRIPT');
 getenv('CONTENT_SECURITY_STYLE')  && $config->CSPs[] = getenv('CONTENT_SECURITY_STYLE');
 getenv('CONTENT_SECURITY_IMG')    && $config->CSPs[] = getenv('CONTENT_SECURITY_IMG');
+
+$config->k8space = getenv('POD_NAMESPACE') ?  getenv('POD_NAMESPACE') : 'cne-system';
