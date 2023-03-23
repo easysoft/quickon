@@ -682,6 +682,27 @@ func AppDbDetails(c *gin.Context) {
 	renderJson(c, http.StatusOK, data)
 }
 
+func AppLogs(c *gin.Context) {
+	var (
+		op model.AppLogRequestModel
+	)
+
+	_, i, code, err := LookupApp(c, &op)
+	if err != nil {
+		renderError(c, code, err)
+		return
+	}
+
+	i.GetLogger().Infof("op: %+v", op)
+	data, err := i.Logs(op)
+	if err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	renderJson(c, http.StatusOK, data)
+}
+
 func AppTest(c *gin.Context) {
 
 	ch, err := helm.GetChart("qucheng-test/demo", "0.1.1")

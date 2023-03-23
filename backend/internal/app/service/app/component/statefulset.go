@@ -50,6 +50,18 @@ func (s *Statefulset) Status(stopped bool) constant.AppStatusType {
 	return parseStatus(*spec.Replicas, status.AvailableReplicas, status.UpdatedReplicas, status.ReadyReplicas, s.getPods(), stopped)
 }
 
+func (s *Statefulset) CompName() string {
+	if name, ok := s.object.Labels[constant.LabelComponent]; ok {
+		return name
+	} else {
+		return s.object.Labels[constant.LabelApp]
+	}
+}
+
+func (s *Statefulset) Pods() []*v1.Pod {
+	return s.getPods()
+}
+
 func (s *Statefulset) getPods() []*v1.Pod {
 	matchLabels := s.object.Spec.Selector.MatchLabels
 

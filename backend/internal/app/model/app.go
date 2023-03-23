@@ -109,3 +109,13 @@ type AppSettingMappings struct {
 	NamespacedApp
 	Mappings []AppSettingMappingItem `json:"mappings"`
 }
+
+type AppLogRequestModel struct {
+	AppModel
+	Component     string `form:"component"`
+	PodName       string `form:"pod_name"`
+	ContainerName string `form:"container_name"`
+	Tail          int    `form:"tail,default=50"`
+	Previous      bool   `form:"previous"`
+	ShowTimestamp bool   `form:"show_timestamp"`
+}
