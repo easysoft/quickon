@@ -69,7 +69,7 @@
           </div>
         </div>
         <?php endforeach;?>
-        <div class='clear'>
+        <div class='external clear'>
         <?php if(count($externalApps) > 0):?>
           <h3><?php echo $lang->solution->externalApps;?></h3>
           <?php foreach($externalApps as $instance){
