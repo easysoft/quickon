@@ -9,12 +9,13 @@ else
 	export commit_id := $(shell git rev-parse --short HEAD)
 	export branch_name := $(shell git branch --show-current)
 	export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
+	export app_domain := $(shell helm get values -n cne-system qucheng -o json | jq -r '.env.APP_DOMAIN')
 endif
 
 # export kube_api_host := $(shell kubectl get svc kubernetes -n default -o jsonpath='{.spec.clusterIP}')
 
 export branch_name_valid := $(shell echo $(branch_name) | tr "/" "-")
-export _branch_prefix := $(shell echo $(branch_name) | sed 's/-.*//')
+export _branch_prefix := $(shell echo $(branch_name_valid) | sed 's/-.*//')
 
 ifneq (,$(filter $(_branch_prefix), test sprint))
   export TAG=$(branch_name_valid)
@@ -72,7 +73,22 @@ run: ## 运行
 	docker-compose -f docker-compose.yml up -d mysql qucheng
 
 run-dev: pull mountFiles ## 运行开发环境
-	chown 33:33 . -R
+	$(shell if [ -f ../qucheng-dev ]; then mkdir ../qucheng-dev; fi;)
+	cp -r ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	chown -R 33:33 ../qucheng-dev -R
+	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
+
+run-frontend-dev: pull ## 运行开发环境-仅启动frontend
+	$(shell if [ -f ../qucheng-dev ]; then mkdir ../qucheng-dev; fi;)
+	syncext.sh ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	syncext.sh ../quickonext/quickonbiz ../qucheng-dev  >> /dev/null  2>&1 & 
+	chown -R 33:33 ../qucheng-dev -R
+	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
+run-biz-dev: pull mountFiles ## 运行企业版开发环境
+	$(shell if [ -f ../qucheng-dev ]; then mkdir ../qucheng-dev; fi;)
+	syncext.sh ./frontend ../qucheng-dev  >> /dev/null  2>&1 & 
+	syncext.sh ../quickonext/quickonbiz ../qucheng-dev  >> /dev/null  2>&1 & 
+	chown -R 33:33 ../qucheng-dev -R
 	docker-compose -f docker-compose.yml up -d mysql qucheng-dev
 
 ps: run ## 运行状态
@@ -96,7 +112,7 @@ pull: ## 拉取最新镜像
 mountFiles:
 	mkdir -p /root/.config/helm
 	@kubectl get cm -n cne-system qucheng-files -o jsonpath='{.data.repositories\.yaml}' > /root/.config/helm/repositories.yaml.dev
-	@sed -r -e "s%(\s+server:\s+https://).*(:6443)%\1$(kube_api_host)\2%" ~/.kube/config > /root/.kube/config.dev
+	@sed -r -e "s%(\s+server:\s+https://).*%\1$(kube_api_host):443%" ~/.kube/config > /root/.kube/config.dev
 
 debug:
 	@echo $(branch_name) "123"

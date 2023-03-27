@@ -5,8 +5,17 @@
 package cluster
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
+
+	"github.com/sirupsen/logrus"
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/tools/cache"
+
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/metric"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/store"
@@ -16,14 +25,20 @@ import (
 )
 
 var kubeClusters = make(map[string]*Cluster)
+var lock = &sync.RWMutex{}
 
 type Cluster struct {
-	Config  rest.Config
-	Store   *store.Storer
-	Metric  *metric.Metric
-	Clients *store.Clients
-	inner   bool
-	primary bool
+	Name string
+
+	Config       rest.Config
+	Store        *store.Storer
+	Metric       *metric.Metric
+	Clients      *store.Clients
+	ClientConfig clientcmd.ClientConfig
+
+	inner     bool
+	primary   bool
+	reference string
 }
 
 func (c *Cluster) IsInner() bool {
@@ -34,33 +49,63 @@ func (c *Cluster) IsPrimary() bool {
 	return c.primary
 }
 
+func List() []map[string]interface{} {
+	data := make([]map[string]interface{}, 0)
+	for name, obj := range kubeClusters {
+		item := map[string]interface{}{
+			"name": name, "host": obj.Config.Host,
+		}
+		data = append(data, item)
+	}
+	return data
+}
+
 func Exist(name string) bool {
+	lock.Lock()
+	defer lock.Unlock()
+	if name == "" {
+		return true
+	}
 	_, ok := kubeClusters[name]
 	return ok
 }
 
 func Get(name string) *Cluster {
+	if name == "" {
+		return kubeClusters[primaryClusterName]
+	}
+	lock.Lock()
+	defer lock.Unlock()
 	return kubeClusters[name]
 }
 
-func add(name string, config rest.Config, inner, primary bool) error {
-	if Exist(name) {
-		return &AlreadyRegistered{Name: name}
+func Remove(name string) {
+	lock.Lock()
+	defer lock.Unlock()
+	if _, ok := kubeClusters[name]; ok {
+		delete(kubeClusters, name)
 	}
+}
 
+func add(name string, config rest.Config, clientConfig clientcmd.ClientConfig, inner, primary bool) *Cluster {
 	s := store.NewStorer(config)
 	m := metric.NewMetric(config)
 	cluster := &Cluster{
-		Config:  config,
-		Store:   s,
-		Metric:  m,
-		Clients: s.Clients,
-		inner:   inner,
-		primary: primary,
+		Name:         name,
+		Config:       config,
+		Store:        s,
+		Metric:       m,
+		Clients:      s.Clients,
+		ClientConfig: clientConfig,
+		inner:        inner,
+		primary:      primary,
 	}
 
+	lock.Lock()
+	defer lock.Unlock()
+
 	kubeClusters[name] = cluster
-	return nil
+	return cluster
 }
 
 func Init(stopChan chan struct{}) error {
@@ -69,14 +114,155 @@ func Init(stopChan chan struct{}) error {
 		return err
 	}
 
-	if err = add("primary", *restCfg, true, true); err != nil {
-		return err
+	primaryCluster := add(primaryClusterName, *restCfg, nil, true, true)
+
+	c := &clusterManage{
+		stopChan: stopChan,
+		logger:   logging.DefaultLogger().WithField("action", "setupClusters"),
+	}
+	primaryCluster.Store.Informers().Secrets.AddEventHandler(cache.ResourceEventHandlerFuncs{
+		AddFunc:    c.addClusterBySecret,
+		UpdateFunc: c.updateClusterBySecret,
+		DeleteFunc: c.removeClusterBySecret,
+	})
+	primaryCluster.Store.Run(stopChan)
+	return nil
+}
+
+type clusterManage struct {
+	logger   logrus.FieldLogger
+	stopChan chan struct{}
+}
+
+// validSecret detect the secret has cluster label, read cluster name from annotations,
+// the cluster-name can't use internal names.
+// return the valid cluster name, and detect result.
+func (c *clusterManage) validSecret(secret *v1.Secret) (string, bool) {
+	var clusterName string
+	c.logger.Debugf("try to read secret %s/%s", secret.Namespace, secret.Name)
+	if _, ok := secret.Labels[constant.LabelCluster]; !ok {
+		c.logger.Debugf("without cluster label, skip")
+		return "", false
 	}
 
-	for _, c := range kubeClusters {
-		go c.Store.Run(stopChan)
+	if name, ok := secret.Annotations[constant.AnnotationClusterName]; !ok {
+		c.logger.Warnf("miss annotation %s", constant.AnnotationClusterName)
+		return "", false
+	} else {
+		if name == primaryClusterName {
+			c.logger.Warnf("invalid cluster name %s", name)
+			return "", false
+		}
+		clusterName = name
 	}
-	return nil
+	return clusterName, true
+}
+
+// addClusterBySecret add new cluster on program starting or a secret created
+// the duplicate cluster will be ignored
+func (c *clusterManage) addClusterBySecret(obj interface{}) {
+	c.logger.Info("trigger add event")
+	secret := obj.(*v1.Secret)
+	clusterName, isValid := c.validSecret(secret)
+	if !isValid {
+		return
+	}
+
+	if Exist(clusterName) {
+		c.logger.Warnf("duplicate cluster name %s", clusterName)
+		return
+	}
+
+	c.addCluster(clusterName, secret)
+}
+
+// updateClusterBySecret update current cluster or
+// add a new cluster if the name doesn't equal.
+func (c *clusterManage) updateClusterBySecret(oldObj, newObj interface{}) {
+	c.logger.Info("trigger update event")
+	oldSecret := oldObj.(*v1.Secret)
+	oldClusterName, isValid := c.validSecret(oldSecret)
+
+	newSecret := newObj.(*v1.Secret)
+	clusterName, isValid := c.validSecret(newSecret)
+	if !isValid {
+		return
+	}
+
+	c.logger.Info("secret valid, do update")
+	if Exist(clusterName) {
+		c.logger.Infof("cluster %s is exists, do update", clusterName)
+		cluster := Get(clusterName)
+		newRef := fmt.Sprintf("%s/%s", newSecret.Namespace, newSecret.Name)
+		// Do cluster config modify must on the same secret.
+		if cluster.reference != newRef {
+			c.logger.Warnf("cluster %s is owned by newSecret %s, not %s", clusterName, cluster.reference, newRef)
+			return
+		}
+		c.addCluster(clusterName, newSecret)
+		return
+	} else {
+		c.logger.Infof("cluster %s is not exists, do create", clusterName)
+		c.addCluster(clusterName, newSecret)
+		if oldClusterName != "" && oldClusterName != clusterName && Exist(oldClusterName) {
+			Remove(oldClusterName)
+			c.logger.Infof("old cluster %s was been removed", oldClusterName)
+		}
+	}
+}
+
+// removeClusterBySecret will remove a cluster
+func (c *clusterManage) removeClusterBySecret(obj interface{}) {
+	c.logger.Info("trigger remove event")
+	secret := obj.(*v1.Secret)
+	clusterName, isValid := c.validSecret(secret)
+	if !isValid {
+		return
+	}
+
+	if Exist(clusterName) {
+		cluster := Get(clusterName)
+		ref := fmt.Sprintf("%s/%s", secret.Namespace, secret.Namespace)
+		// cluster will be removed only it's created by the same secret.
+		if cluster.reference != ref {
+			c.logger.Warnf("cluster %s is owned by secret %s, not %s", clusterName, cluster.reference, ref)
+			return
+		}
+		Remove(clusterName)
+		c.logger.Infof("cluster %s was been removed", clusterName)
+	} else {
+		c.logger.Infof("cluster %s is not exist, skip...")
+	}
+
+}
+
+// addCluster read secret data, only support kube config style
+// create cluster with the restConfig, start informer
+func (c *clusterManage) addCluster(name string, secret *v1.Secret) {
+	if content, ok := secret.Data[secretKeyContent]; ok {
+		c.logger.Info("load kubeconfig")
+
+		clientConfig, err := clientcmd.NewClientConfigFromBytes(content)
+		if err != nil {
+			c.logger.WithError(err).Error("load kubeconfig content failed")
+			return
+		}
+
+		restCfg, err := clientConfig.ClientConfig()
+		if err != nil {
+			c.logger.WithError(err).Error("load rest config failed")
+			return
+		}
+
+		newCluster := add(name, *restCfg, clientConfig, false, false)
+		newCluster.reference = fmt.Sprintf("%s/%s", secret.Namespace, secret.Name)
+		c.logger.Infof("start cluster informer sync")
+		go newCluster.Store.Run(c.stopChan)
+		c.logger.Infof("cluster %s is added", name)
+	} else {
+		c.logger.Errorf("'content' not found in secret")
+		return
+	}
 }
 
 func loadPrimaryCluster() (*rest.Config, error) {

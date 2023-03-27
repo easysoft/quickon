@@ -56,6 +56,18 @@ func (d *BatchJob) Status(stopped bool) constant.AppStatusType {
 	return ret
 }
 
+func (d *BatchJob) CompName() string {
+	if s, ok := d.object.Labels[constant.LabelComponent]; ok {
+		return s
+	} else {
+		return d.object.Labels[constant.LabelApp]
+	}
+}
+
+func (d *BatchJob) Pods() []*v1.Pod {
+	return d.getPods()
+}
+
 func (d *BatchJob) getPods() []*v1.Pod {
 	matchLabels := d.object.Spec.Selector.MatchLabels
 

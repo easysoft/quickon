@@ -11,6 +11,7 @@ $config->db->encoding = 'UTF8';
 $config->db->password = getenv('MYSQL_PASSWORD');
 $config->db->prefix   = 'q_';
 $config->webRoot      = getWebRoot();
+$config->edition      = getenv('QUICKON_EDITION');
 
 $config->CNE->api->host   = getenv('CNE_API_HOST');
 if(getenv('CNE_API_TOKEN'))         $config->CNE->api->token   = getenv('CNE_API_TOKEN');
@@ -29,3 +30,5 @@ $config->demoAccounts= getenv('DEMO_ACCOUNTS') ?  getenv('DEMO_ACCOUNTS') : '';
 getenv('CONTENT_SECURITY_SCRIPT') && $config->CSPs[] = getenv('CONTENT_SECURITY_SCRIPT');
 getenv('CONTENT_SECURITY_STYLE')  && $config->CSPs[] = getenv('CONTENT_SECURITY_STYLE');
 getenv('CONTENT_SECURITY_IMG')    && $config->CSPs[] = getenv('CONTENT_SECURITY_IMG');
+
+$config->k8space = getenv('POD_NAMESPACE') ?  getenv('POD_NAMESPACE') : 'cne-system';

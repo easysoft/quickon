@@ -10,6 +10,9 @@ import (
 	"log"
 	"os"
 
+	"k8s.io/cli-runtime/pkg/genericclioptions"
+	"k8s.io/client-go/tools/clientcmd"
+
 	"github.com/pkg/errors"
 	"helm.sh/helm/v3/pkg/action"
 	"helm.sh/helm/v3/pkg/chart"
@@ -37,11 +40,19 @@ func newAction(settings *cli.EnvSettings, config *action.Configuration) *Action 
 	}
 }
 
-func NamespaceScope(namespace string) (*Action, error) {
+func NamespaceScope(namespace string, clientConfig clientcmd.ClientConfig) (*Action, error) {
 	settings := cli.New()
 	settings.SetNamespace(namespace)
 	actionConfig := &action.Configuration{}
-	if err := actionConfig.Init(settings.RESTClientGetter(), namespace, os.Getenv("HELM_DRIVER"), log.Printf); err != nil {
+
+	var cliGetter genericclioptions.RESTClientGetter
+	if clientConfig != nil {
+		cliGetter = NewKubeGetter(clientConfig)
+	} else {
+		cliGetter = settings.RESTClientGetter()
+	}
+
+	if err := actionConfig.Init(cliGetter, namespace, os.Getenv("HELM_DRIVER"), log.Printf); err != nil {
 		return nil, err
 	}
 	h := newAction(settings, actionConfig)

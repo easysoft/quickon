@@ -47,6 +47,8 @@ func Config(r *gin.Engine) {
 	r.GET("/docs/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	api := r.Group("/api/cne", Auth(), Trace())
 	{
+		api.GET("/clusters", ClusterList)
+
 		api.POST("/app/install", AppInstall)
 		api.POST("/app/uninstall", AppUnInstall)
 		api.POST("/app/start", AppStart)
@@ -66,6 +68,7 @@ func Config(r *gin.Engine) {
 		api.GET("/app/account", AppAccountInfo)
 		api.GET("/app/dbs", AppDbList)
 		api.GET("/app/dbs/detail", AppDbDetails)
+		api.GET("/app/logs", AppLogs)
 
 		api.GET("/test", AppTest)
 
@@ -94,6 +97,7 @@ func Config(r *gin.Engine) {
 		api.POST("/namespace/recycle", NamespaceRecycle)
 		api.GET("/namespace", NamespaceGet)
 
+		api.GET("/middleware/list", MiddlewareInstances)
 		api.POST("/middleware/install", MiddlewareInstall)
 		api.POST("/middleware/uninstall", MiddleWareUninstall)
 
@@ -114,6 +118,8 @@ func Config(r *gin.Engine) {
 		api.POST("/snippet/add", CreateSnippet)
 		api.POST("/snippet/update", UpdateSnippet)
 		api.POST("/snippet/remove", RemoveSnippet)
+
+		api.POST("/solution/external/validate", ValidExternalForm)
 	}
 
 	r.NoMethod(func(c *gin.Context) {

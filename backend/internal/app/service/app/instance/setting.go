@@ -6,11 +6,13 @@ package instance
 
 import (
 	"encoding/json"
-	"gitlab.zcorp.cc/pangu/cne-api/pkg/parse"
-	v1 "k8s.io/api/core/v1"
 	"reflect"
 	"strconv"
 	"strings"
+
+	v1 "k8s.io/api/core/v1"
+
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/parse"
 
 	"github.com/sirupsen/logrus"
 
@@ -59,6 +61,11 @@ func (s *Settings) Common() (map[string]interface{}, error) {
 	}
 	data := make(map[string]interface{})
 	data["replicas"] = vals["replicas"]
+	if v, ok := vals["scalable"]; ok {
+		data["scalable"] = v.(bool)
+	} else {
+		data["scalable"] = false
+	}
 
 	resources, ok := vals["resources"]
 	if ok {
@@ -238,10 +245,7 @@ func (s *Settings) Mode(m string) *Settings {
 }
 
 func (s *Settings) Parse() (interface{}, error) {
-	h, err := helm.NamespaceScope(s.app.namespace)
-	if err != nil {
-		return nil, err
-	}
+	h := s.app.getHelmClient(s.app.namespace)
 
 	rel, err := h.GetRelease(s.app.name)
 	if err != nil {

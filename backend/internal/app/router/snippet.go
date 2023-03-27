@@ -9,10 +9,6 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/spf13/viper"
-
-	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
-
 	"github.com/gin-gonic/gin"
 
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/model"
@@ -24,12 +20,16 @@ func ListSnippets(c *gin.Context) {
 	var (
 		err error
 		ctx = c.Request.Context()
+		op  model.QueryNamespace
 	)
 
 	logger := getLogger(ctx)
-	namespace := c.DefaultQuery("namespace", "")
+	if err = c.ShouldBindQuery(&op); err != nil {
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
 
-	data, err := service.Snippets(ctx, "").List(namespace)
+	data, err := service.Snippets(ctx, op.Cluster).List(op.Namespace)
 	if err != nil {
 		logger.WithError(err).Error("failed to list snippets")
 		renderError(c, http.StatusInternalServerError, err)
@@ -61,7 +61,7 @@ func CreateSnippet(c *gin.Context) {
 		return
 	}
 
-	err = service.Snippets(ctx, "").Create(body.Name, body.Namespace, body.Category, body.Values, body.AutoImport)
+	err = service.Snippets(ctx, body.Cluster).Create(body.Name, body.Namespace, body.Category, body.Values, body.AutoImport)
 	if err != nil {
 		logger.WithError(err).Error("failed to create snippet")
 		renderError(c, http.StatusInternalServerError, err)
@@ -85,12 +85,7 @@ func ReadSnippet(c *gin.Context) {
 		return
 	}
 
-	namespace := req.Namespace
-	if namespace == "" {
-		namespace = viper.GetString(constant.FlagRuntimeNamespace)
-	}
-
-	obj, err := service.Snippets(ctx, "").Get(req.Name, namespace)
+	obj, err := service.Snippets(ctx, req.Cluster).Get(req.Name, req.Namespace)
 	if err != nil {
 		logger.WithError(err).Error("failed to create snippet")
 		renderError(c, http.StatusInternalServerError, err)
@@ -115,7 +110,7 @@ func UpdateSnippet(c *gin.Context) {
 	}
 	logger.Debugf("receive snippet update request: %+v", body)
 
-	err = service.Snippets(ctx, "").Update(body.Name, body.Namespace, body.Category, body.Values, body.AutoImport)
+	err = service.Snippets(ctx, body.Cluster).Update(body.Name, body.Namespace, body.Category, body.Values, body.AutoImport)
 	if err != nil {
 		logger.WithError(err).Error("failed to create snippet")
 		renderError(c, http.StatusInternalServerError, err)

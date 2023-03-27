@@ -8,6 +8,7 @@
 . /opt/easysoft/scripts/liblog.sh
 . /opt/easysoft/scripts/libmysql.sh
 . /opt/easysoft/scripts/libfs.sh
+. /opt/easysoft/scripts/libpersistence.sh
 
 # Load QuCheng environment variables
 . /etc/s6/s6-init/envs
@@ -26,6 +27,12 @@ if [ "${RUN_MODE}" == "prod" ];then
     do
         configure_permissions_ownership "$ldir" -d 777
         make_soft_link "$ldir" "${ldir/data/apps}" "www-data"
+    done
+
+    for ldir in $PERSISTENCE_MOVE_LINK_LIST
+    do
+      ensure_dir_exists "$(dirname $ldir)" "www-data"
+      move_then_link "$ldir" "${ldir/data/apps}" "www-data"
     done
 fi
 

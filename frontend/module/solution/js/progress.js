@@ -25,12 +25,17 @@ $(function()
                         $('.step.app-' + cloudApp.id + ' .step-no').addClass('active');
                     }
 
-                    if(cloudApp.status == 'installing')
+                    if(cloudApp.status == 'installing' || cloudApp.status == 'installed')
                     {
-                        $('.progress-message').text(notices.installingApp + cloudApp.alias);
+                        $('#' + cloudApp.alias + '-status').text(installLabel);
                     }
 
-                    if(cloudApp.status != 'installed')
+                    if(cloudApp.status == 'configured')
+                    {
+                        $('#' + cloudApp.alias + '-status').text(configLabel);
+                    }
+
+                    if(cloudApp.status != 'installed' && cloudApp.status != 'configured')
                     {
                         installed = false;
                     }
@@ -120,12 +125,17 @@ $(function()
         });
     });
 
-    if(hasError)
+    if(hasError && !startInstall)
     {
         $('#retryInstallBtn').show();
     }
     else
     {
         $('#retryInstallBtn').hide();
+    }
+
+    if(startInstall)
+    {
+        $.get(createLink('solution', 'ajaxInstall', 'id=' + solutionID)).done(function(response){});
     }
 });

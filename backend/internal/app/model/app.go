@@ -61,13 +61,14 @@ type AppWithComponentModel struct {
 //	Category string `json:"category" form:"category" binding:"required"`
 //}
 
-type AppWithUserModel struct {
+type AppBackupCreateModel struct {
 	AppModel
 	UserName string `form:"username" json:"username"`
 }
 
 type AppRestoreCreateModel struct {
-	AppWithUserModel
+	AppModel
+	UserName   string `form:"username" json:"username"`
 	BackupName string `json:"backup_name" form:"backup_name" binding:"required"`
 }
 
@@ -107,4 +108,14 @@ type AppSettingMappingItem struct {
 type AppSettingMappings struct {
 	NamespacedApp
 	Mappings []AppSettingMappingItem `json:"mappings"`
+}
+
+type AppLogRequestModel struct {
+	AppModel
+	Component     string `form:"component"`
+	PodName       string `form:"pod_name"`
+	ContainerName string `form:"container_name"`
+	Tail          int    `form:"tail,default=50"`
+	Previous      bool   `form:"previous"`
+	ShowTimestamp bool   `form:"show_timestamp"`
 }

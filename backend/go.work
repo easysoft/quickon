@@ -1,0 +1,6 @@
+go 1.18
+
+use (
+	.
+	staging/src/gitlab.zcorp.cc/pangu/app-sdk
+)

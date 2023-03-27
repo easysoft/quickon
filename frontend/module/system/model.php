@@ -721,7 +721,7 @@ class systemModel extends model
         $minioInstance->k8name    = 'cne-operator';
         $minioInstance->chart     = 'cne-operator';
         $minioInstance->spaceData = new stdclass;
-        $minioInstance->spaceData->k8space = 'cne-system';
+        $minioInstance->spaceData->k8space = $this->config->k8space;
 
         $settings = new stdclass;
         $settings->settings_map = new stdclass;
@@ -814,7 +814,7 @@ class systemModel extends model
 
         /* 2. Config SLB. */
         $settings->name      = 'qlb-quickon';
-        $settings->namespace = 'cne-system';
+        $settings->namespace = $this->config->k8space;
         $success = $this->loadModel('cne')->configQLB($settings);
         if(!$success)
         {

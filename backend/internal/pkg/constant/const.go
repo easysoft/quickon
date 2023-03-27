@@ -8,3 +8,8 @@ const (
 	ServicePortWeb = "web"
 	Token          = "X-Auth-Token"
 )
+
+const (
+	ConfigDir    = "./backend/conf"
+	DbConfigFile = "dbs.yaml"
+)

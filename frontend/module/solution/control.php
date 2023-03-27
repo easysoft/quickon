@@ -21,7 +21,8 @@ class solution extends control
     {
         $this->view->title = $this->lang->solution->common;
 
-        $this->view->solutionList = $this->loadModel('store')->searchSolutions();
+        $this->view->solutionList    = $this->loadModel('store')->searchSolutions();
+        $this->view->hasInstalledApp = !empty($this->solution->search());
 
         $this->display();
     }
@@ -37,6 +38,8 @@ class solution extends control
         $this->view->title = $this->lang->solution->common;
 
         $this->view->solutionList = $this->solution->search();
+
+        if(empty($this->view->solutionList)) $this->locate(helper::createLink('solution', 'browseMarket', "open=$url"));
 
         $this->display();
     }
@@ -71,6 +74,29 @@ class solution extends control
 
         $solution = $this->solution->getByID($id);
         if($solution->status != 'installed') return printf(js::locate($this->inLink('progress', "id=$id")));
+
+        if(!empty($solution->instances))
+        {
+            //sort
+            $instances  = array_column($solution->instances, null, "chart");
+            $components = $this->loadModel('store')->solutionConfigByID($solution->appID);
+
+            if(!empty($components->category))
+            {
+                $newInstances = array();
+
+                foreach($components->category as $category)
+                {
+                    foreach($category->choices as $choice)
+                    {
+                        isset($instances[$choice->name]) && $newInstances[] = $instances[$choice->name];
+                    }
+                }
+
+                $solution->instances = $newInstances;
+            }
+
+        }
 
         $this->view->title    = $this->lang->solution->view;
         $this->view->solution = $solution;
@@ -114,6 +140,7 @@ class solution extends control
     {
         $cloudSolution = $this->loadModel('store')->getSolutionByID($cloudSolutionID);
         $components    = $this->loadModel('store')->solutionConfigByID($cloudSolutionID);
+
         if($_POST)
         {
             $solution = $this->solution->create($cloudSolution, $components);
@@ -166,11 +193,12 @@ class solution extends control
      * @access public
      * @return void
      */
-    public function progress($id)
+    public function progress($id, $install = false)
     {
         $solution  = $this->solution->getByID($id);
 
         $this->view->title    = $this->lang->solution->progress;
+        $this->view->install  = $install;
         $this->view->solution = $solution;
 
         $this->display();

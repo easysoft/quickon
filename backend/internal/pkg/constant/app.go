@@ -54,6 +54,8 @@ const (
 	AnnotationAppCreator    = "easycorp.io/app_creator"
 	AnnotationAppChannel    = "easycorp.io/app_channel"
 	AnnotationAppDomainKey  = "easycorp.io/app_domain_key"
+
+	AnnotationClusterName = "easycorp.io/cluster_name"
 )
 
 const (
@@ -62,6 +64,9 @@ const (
 	LabelApplication    = "easycorp.io/application"
 	LabelBackupName     = "easycorp.io/backup_name"
 	LabelGlobalDatabase = "easycorp.io/global_database"
+
+	LabelCluster     = "easycorp.io/kube_cluster"
+	LabelClusterType = "easycorp.io/kube_cluster_type"
 )
 
 const (

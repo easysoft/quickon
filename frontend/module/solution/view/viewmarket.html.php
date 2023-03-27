@@ -45,15 +45,15 @@
             <?php endforeach;?>
           </div>
 
-          <?php if(isset($components->categories)):?>
+          <?php if(isset($components->category)):?>
           <div class='row'>
             <div class='col-sm-12'><h3><?php echo $lang->solution->includedApp;?></h3></div>
-            <?php foreach($components->categories as $category => $groupedApp):?>
+            <?php foreach($components->category as $category):?>
             <div class='col-sm-12'>
               <div class='app-box'>
-                <div class='component-title text-left'><span class=''><?php echo $groupedApp->alias;?></span></div>
+                <div class='component-title text-left'><span class=''><?php echo $category->alias;?></span></div>
                 <div>
-                  <?php foreach($groupedApp->choices as $cloudApp):?>
+                  <?php foreach($category->choices as $cloudApp):?>
                   <div class='app-list'>
                     <?php $appInfo = zget($solution->apps, $cloudApp->name, '');?>
                     <?php echo $appInfo ? html::image($appInfo->logo) : '';?>

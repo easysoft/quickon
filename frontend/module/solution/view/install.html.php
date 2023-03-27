@@ -19,23 +19,29 @@
     <div>
       <h2><?php echo $cloudSolution->title;?></h2>
     </div>
-    <form id='installForm' method='post' class='form form-ajax not-watch'>
+    <form id='installForm' method='post' class='form <?php if(empty($step2)) echo 'form-ajax';?> not-watch'>
       <table class='table table-form'>
         <tbody>
           <tr>
             <th></th>
             <td><?php echo $lang->solution->chooseApp;?></td>
           </tr>
-          <?php foreach($components->categories as $category => $groupedApps):?>
+          <?php
+            foreach($components->category as $item):
+          ?>
           <tr>
-            <th><?php echo $groupedApps->alias;?></th>
-            <td><?php echo html::select($category, $this->solution->createSelectOptions($groupedApps->choices, $cloudSolution), '', "class='form-control'");?></td>
+            <th><?php echo $item->alias;?></th>
+            <td><?php echo html::select($item->name, $this->solution->createSelectOptions($item->choices, $cloudSolution), '', "class='form-control'");?></td>
           </tr>
           <?php endforeach;?>
         </tbody>
       </table>
       <div class='text-center form-actions'>
+        <?php if(empty($step2)):?>
         <?php echo html::commonButton($lang->solution->install, "id='submitBtn'", 'btn btn-primary btn-wide')?>
+        <?php else:?>
+        <?php echo html::submitButton($lang->solution->nextStep, "", 'btn btn-primary btn-wide')?>
+        <?php endif;?>
       </div>
     </form>
   </div>

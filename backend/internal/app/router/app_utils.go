@@ -23,7 +23,7 @@ snippet has two scopes, current namespace & the system namespace.
 if snippet not found in current namespace, try to load it in the system namespace.
 some snippets in the system namespace has auto import switch, will be merged for switch open.
 */
-func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []string, logger logrus.FieldLogger) (map[string]interface{}, map[string]interface{}) {
+func MergeSnippetConfigs(ctx context.Context, clusterName, namespace string, snippetNames []string, logger logrus.FieldLogger) (map[string]interface{}, map[string]interface{}) {
 	var data = make(map[string]interface{})
 	var mergedSnippets = make(map[string]interface{})
 	var deleteData = make(map[string]interface{})
@@ -48,12 +48,12 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 			logger.Infof("snippet %s market be remove", name)
 		}
 
-		s, err := service.Snippets(ctx, "").Get(namespace, name)
+		s, err := service.Snippets(ctx, clusterName).Get(namespace, name)
 		if err != nil {
 			logger.WithError(err).Debugf("get snippet '%s' from namespace '%s' failed", name, namespace)
 
 			logger.Infof("try to load snippet '%s' in namespace '%s'", name, runtimeNs)
-			s, err = service.Snippets(ctx, "").Get(name, runtimeNs)
+			s, err = service.Snippets(ctx, clusterName).Get(name, runtimeNs)
 			if err != nil {
 				logger.WithError(err).Errorf("failed to get snippet '%s'", name)
 			}
@@ -78,7 +78,7 @@ func MergeSnippetConfigs(ctx context.Context, namespace string, snippetNames []s
 		mergedSnippets[name] = true
 	}
 
-	systemSnippets, err := service.Snippets(ctx, "").List(runtimeNs)
+	systemSnippets, err := service.Snippets(ctx, clusterName).List(runtimeNs)
 	if err != nil {
 		logger.WithError(err).Error("list system snippets failed")
 	} else {

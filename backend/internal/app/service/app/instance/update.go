@@ -39,7 +39,7 @@ func (i *Instance) Stop(chart, channel string) error {
 		ValueFiles: []string{lastValFile},
 	}
 
-	h, _ := helm.NamespaceScope(i.namespace)
+	h := i.getHelmClient(i.namespace)
 	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
@@ -63,7 +63,7 @@ func (i *Instance) Suspend(chart, channel string) error {
 		ValueFiles: []string{lastValFile},
 	}
 
-	h, _ := helm.NamespaceScope(i.namespace)
+	h := i.getHelmClient(i.namespace)
 	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
@@ -72,7 +72,7 @@ func (i *Instance) Suspend(chart, channel string) error {
 }
 
 func (i *Instance) Start(chart, channel string, snippetSettings map[string]interface{}) error {
-	h, _ := helm.NamespaceScope(i.namespace)
+	h := i.getHelmClient(i.namespace)
 	vals := i.release.Config
 
 	lastValFile, err := writeValuesFile(vals)
@@ -124,7 +124,7 @@ func (i *Instance) Restart(chart, channel string) error {
 		ValueFiles: []string{lastValFile},
 	}
 
-	h, _ := helm.NamespaceScope(i.namespace)
+	h := i.getHelmClient(i.namespace)
 	if rel, err := h.Upgrade(i.name, helm.GenChart(channel, chart), i.CurrentChartVersion, options); err != nil {
 		return err
 	} else {
@@ -149,7 +149,7 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 
 	i.logger.Debugf("delSettings is %+v", delSettings)
 
-	h, _ := helm.NamespaceScope(i.namespace)
+	h := i.getHelmClient(i.namespace)
 	vals, err = h.GetValues(i.name)
 	if err != nil {
 		return err
@@ -233,17 +233,14 @@ func (i *Instance) PatchSettings(chart string, body model.AppCreateOrUpdateModel
 }
 
 func (i *Instance) Uninstall() error {
-	h, err := helm.NamespaceScope(i.namespace)
-	if err != nil {
-		return err
-	}
+	h := i.getHelmClient(i.namespace)
 
 	installTime := i.release.Info.FirstDeployed.Time
 	uninstallTime := time.Now()
 
 	dur := uninstallTime.Sub(installTime)
 
-	err = h.Uninstall(i.name)
+	err := h.Uninstall(i.name)
 	if err != nil {
 		analysis.UnInstall(i.ChartName, i.CurrentChartVersion).WithDuration(dur.Seconds()).Fail(err)
 		return err

@@ -23,6 +23,35 @@ func RegisterCustomENTranslations(v *validator.Validate, trans ut.Translator) (e
 		customTransFunc validator.TranslationFunc
 	}{
 		{
+			tag: "cluster_exist",
+			customRegisFunc: func(ut ut.Translator) (err error) {
+
+				if err = ut.Add("cluster_exist_string", "{0} {1} not exist", false); err != nil {
+					return
+				}
+				return
+
+			},
+			customTransFunc: func(ut ut.Translator, fe validator.FieldError) string {
+
+				var err error
+				var t string
+
+				t, err = ut.T("cluster_exist_string", strings.ToLower(fe.Field()), fe.Value().(string))
+				if err != nil {
+					goto END
+				}
+
+			END:
+				if err != nil {
+					fmt.Printf("warning: error translating FieldError: %s", err)
+					return fe.(error).Error()
+				}
+
+				return t
+			},
+		},
+		{
 			tag: "namespace_exist",
 			customRegisFunc: func(ut ut.Translator) (err error) {
 

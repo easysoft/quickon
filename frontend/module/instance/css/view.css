@@ -27,3 +27,6 @@ a#serialDiff {color: #ff9800;}
 
 #advance .panel-title span {padding-left: 10px;}
 #advance hr {margin: 5px 20px;}
+#advance .scalable-input{height: 26px;}
+#advance .center{text-align: center;}
+#advance .hide{display: none}

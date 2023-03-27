@@ -23,7 +23,7 @@ func (m *Manager) Install(name string, body model.AppCreateOrUpdateModel, snippe
 	logger := m.logger.WithFields(logrus.Fields{
 		"name": name, "namespace": body.Namespace,
 	})
-	h, err := helm.NamespaceScope(m.namespace)
+	h, err := helm.NamespaceScope(m.namespace, m.ks.ClientConfig)
 	if err != nil {
 		return err
 	}

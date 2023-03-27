@@ -13,6 +13,8 @@ $lang->solution->install       = '安装';
 $lang->solution->cancelInstall = '取消安装';
 $lang->solution->uninstall     = '卸载';
 $lang->solution->retryInstall  = '重试';
+$lang->solution->nextStep      = '下一步';
+$lang->solution->config        = '配置';
 
 $lang->solution->introduction = '基本介绍';
 $lang->solution->scenes       = '适用场景';
@@ -21,7 +23,8 @@ $lang->solution->includedApp  = '包含应用';
 $lang->solution->features     = '方案亮点';
 $lang->solution->relatedLinks = '相关链接';
 $lang->solution->customers    = '典型客户';
-$lang->solution->apps         = '应用';
+$lang->solution->apps         = '安装的应用';
+$lang->solution->externalApps = '外部应用';
 $lang->solution->resources    = '资源占用';
 
 $lang->solution->editName = '修改名称';

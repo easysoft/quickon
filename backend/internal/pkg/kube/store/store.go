@@ -230,6 +230,10 @@ func NewStorer(config rest.Config) *Storer {
 	return s
 }
 
+func (s *Storer) Informers() *Informer {
+	return s.informers
+}
+
 func (s *Storer) Run(stopCh chan struct{}) {
 	s.informers.Run(stopCh)
 }

@@ -7,6 +7,8 @@ package instance
 import (
 	"context"
 
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
+
 	"github.com/sirupsen/logrus"
 	"helm.sh/helm/v3/pkg/release"
 	v1 "k8s.io/api/core/v1"
@@ -32,6 +34,7 @@ type Instance struct {
 	secret  *v1.Secret
 
 	ChartName           string
+	ChartChannel        string
 	CurrentChartVersion string
 
 	logger logrus.FieldLogger
@@ -44,7 +47,7 @@ func NewInstance(ctx context.Context, name string, clusterName, namespace string
 		clusterName: clusterName, namespace: namespace, name: name,
 		Ks: ks,
 		logger: logging.DefaultLogger().WithContext(ctx).WithFields(logrus.Fields{
-			"name": name, "namespace": namespace,
+			"name": name, "namespace": namespace, "cluster": ks.Name,
 		}),
 	}
 
@@ -67,6 +70,12 @@ func (i *Instance) prepare() error {
 		return err
 	}
 	i.secret = secret
+	if channel, ok := secret.Annotations[constant.AnnotationAppChannel]; ok {
+		i.ChartChannel = channel
+	} else {
+		i.ChartChannel = "test"
+	}
+
 	return nil
 }
 
@@ -96,4 +105,9 @@ func (i *Instance) GetLogger() logrus.FieldLogger {
 
 func (i *Instance) GetRelease() *release.Release {
 	return i.release
+}
+
+func (i *Instance) getHelmClient(namespace string) *helm.Action {
+	h, _ := helm.NamespaceScope(i.namespace, i.Ks.ClientConfig)
+	return h
 }

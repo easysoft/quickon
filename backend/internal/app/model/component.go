@@ -5,15 +5,15 @@
 package model
 
 type CompDbServiceListModel struct {
-	Kind      string `form:"kind" json:"kind" binding:"required"`
-	Namespace string `form:"namespace" json:"namespace"`
+	Kind string `form:"kind" json:"kind" binding:"required"`
+	QueryNamespace
 }
 
 type CompDbServiceValidationModel struct {
-	Name      string `form:"name" json:"kind" binding:"required"`
-	Namespace string `form:"namespace" json:"namespace" binding:"required"`
-	User      string `form:"user" json:"user" binding:"required"`
-	Database  string `form:"database" json:"database" binding:"required"`
+	QueryNamespace
+	Name     string `form:"name" json:"kind" binding:"required"`
+	User     string `form:"user" json:"user" binding:"required"`
+	Database string `form:"database" json:"database" binding:"required"`
 }
 
 type ComponentBase struct {

@@ -47,8 +47,7 @@ class spaceModel extends model
      */
     public function getSystemSpace($account)
     {
-        $k8space = getenv('POD_NAMESPACE');
-        if(empty($k8space)) $k8space = 'cne-system';
+        $k8space = $this->config->k8space;
 
         $sysSpace = $this->dao->select('*')->from(TABLE_SPACE)->where('k8space')->eq($k8space)->andWhere('owner')->eq($account)->fetch();
         if($sysSpace) return $sysSpace;

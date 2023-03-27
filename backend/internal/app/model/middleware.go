@@ -4,8 +4,13 @@
 
 package model
 
+type MiddlewareType struct {
+	Type string `form:"type" binding:"required"`
+}
+
 type Middleware struct {
 	Name      string `json:"name,omitempty" binding:"required"`
 	Namespace string `json:"namespace,omitempty"`
 	Type      string `json:"type,omitempty" binding:"required"` // 类型
+	Instance  string `json:"instance,omitempty"`
 }

@@ -49,6 +49,18 @@ func (d *Deployment) Status(stopped bool) constant.AppStatusType {
 	return parseStatus(*spec.Replicas, status.AvailableReplicas, status.UpdatedReplicas, status.ReadyReplicas, d.getPods(), stopped)
 }
 
+func (d *Deployment) CompName() string {
+	if s, ok := d.object.Labels[constant.LabelComponent]; ok {
+		return s
+	} else {
+		return d.object.Labels[constant.LabelApp]
+	}
+}
+
+func (d *Deployment) Pods() []*v1.Pod {
+	return d.getPods()
+}
+
 func (d *Deployment) getPods() []*v1.Pod {
 	matchLabels := d.object.Spec.Selector.MatchLabels
 

@@ -4,7 +4,10 @@
 
 package component
 
-import "gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+import (
+	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/constant"
+	v1 "k8s.io/api/core/v1"
+)
 
 type Component interface {
 	Name() string
@@ -12,4 +15,6 @@ type Component interface {
 	Replicas() int32
 	Status(stopped bool) constant.AppStatusType
 	Age() int64
+	CompName() string
+	Pods() []*v1.Pod
 }

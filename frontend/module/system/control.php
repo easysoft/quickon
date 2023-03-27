@@ -239,7 +239,7 @@ class system extends control
         $minioInstance = new stdclass;
         $minioInstance->k8name    = 'cne-operator';
         $minioInstance->spaceData = new stdclass;
-        $minioInstance->spaceData->k8space = 'cne-system';
+        $minioInstance->spaceData->k8space = $this->config->k8space;
 
         $ossAccount = $this->cne->getDefaultAccount($minioInstance, '', 'minio');
         $ossDomain  = $this->cne->getDomain($minioInstance, '', 'minio');
@@ -592,7 +592,7 @@ class system extends control
         $minioInstance = new stdclass;
         $minioInstance->k8name    = 'cne-operator';
         $minioInstance->spaceData = new stdclass;
-        $minioInstance->spaceData->k8space = 'cne-system';
+        $minioInstance->spaceData->k8space = $this->config->k8space;
 
         $ossAccount = $this->loadModel('cne')->getDefaultAccount($minioInstance, '', 'minio');
 

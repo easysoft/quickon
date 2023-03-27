@@ -13,7 +13,8 @@ ENV OS_ARCH="amd64" \
 COPY docker/prebuildfs /
 
 ENV TZ=Asia/Shanghai \
-    DEBIAN_FRONTEND=noninteractive
+    DEBIAN_FRONTEND=noninteractive \
+    BACKEND_CONFIG_DIR=/opt/cne-api/config
 
 RUN sed -i -r 's/(deb|security).debian.org/mirrors.cloud.tencent.com/g' /etc/apt/sources.list \
     && install_packages curl wget tzdata zip unzip pwgen apt-transport-https ca-certificates procps \

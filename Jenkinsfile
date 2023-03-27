@@ -62,7 +62,10 @@ pipeline {
 
         stage('build api') {
           when {
-            branch 'test'
+            anyOf {
+              tag ''
+              branch 'test'
+            }
           }
 
           steps {
@@ -89,7 +92,10 @@ pipeline {
         }
         stage('cne-api image') {
           when {
-            branch 'test'
+            anyOf {
+              tag ''
+              branch 'test'
+            }
           }
           steps {
             container('docker') {
@@ -109,7 +115,7 @@ pipeline {
 
       environment { 
           CNE_API_TOKEN = credentials('dev-haogs-cn-token')
-          CNE_API_HOST = "https://console.dev.haogs.cn/"
+          CNE_API_HOST = "https://console.dev.haogs.cn"
       }
 
       stages {
@@ -124,7 +130,6 @@ pipeline {
                              contentType: 'APPLICATION_JSON',
                              requestBody: groovy.json.JsonOutput.toJson(body),
                              customHeaders: [[name: 'X-Auth-Token', value: env.CNE_API_TOKEN]],
-                             validResponseContent: 'code":200',
                              url: env.CNE_API_HOST + "/api/cne/app/restart"
 
               println("Content: "+response.content)
@@ -143,7 +148,6 @@ pipeline {
                              contentType: 'APPLICATION_JSON',
                              requestBody: groovy.json.JsonOutput.toJson(body),
                              customHeaders: [[name: 'X-Auth-Token', value: env.CNE_API_TOKEN]],
-                             validResponseContent: 'code":200',
                              url: env.CNE_API_HOST + "/api/cne/app/restart"
 
               println("Content: "+response.content)
