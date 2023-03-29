@@ -45,6 +45,21 @@ $(function()
                         $('.error-message').text(res.message);
                         $('.progress.loading').hide();
                     }
+
+                    if(res.logs.hasOwnProperty(cloudApp.chart))
+                    {
+                        if(!shownLogs.hasOwnProperty(cloudApp.chart)) shownLogs[cloudApp.chart] = [];
+
+                        var logs = res.logs[cloudApp.chart]
+                        for(var j in logs)
+                        {
+                            if(shownLogs[cloudApp.chart].indexOf(logs[j].content) == -1)
+                            {
+                                term.write(logs[j].content + '\n');
+                                shownLogs[cloudApp.chart].push(logs[j].content);
+                            }
+                        }
+                    }
                 }
                 if(installed)
                 {
@@ -138,4 +153,9 @@ $(function()
     {
         $.get(createLink('solution', 'ajaxInstall', 'id=' + solutionID)).done(function(response){});
     }
+
+    term = new Terminal({convertEol: true, rows: 20});
+    term.open(document.getElementById('terminal'));
 });
+
+var shownLogs = [];

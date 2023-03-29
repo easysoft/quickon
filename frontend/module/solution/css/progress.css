@@ -6,3 +6,5 @@ div.cell { padding: 20px;}
 .arrow.active {color: #3daf45;}
 .step-no.active {background-color: #3daf45;}
 span.loading {padding: 10px 20px; line-height: 40px;}
+
+#terminal {width: 800px; margin: 0 auto 10px;}
