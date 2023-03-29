@@ -112,6 +112,7 @@ func Config(r *gin.Engine) {
 		api.GET("/system/tls/info", ReadTLSInfo)
 		api.GET("/system/qlb/config", GetLoadBalancer)
 		api.POST("/system/qlb/config", ConfigLoadBalancer)
+		api.POST("/system/license/authorize", AuthorizeLicense)
 
 		api.GET("/snippet", ListSnippets)
 		api.GET("/snippet/read", ReadSnippet)
