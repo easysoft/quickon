@@ -6,9 +6,12 @@ package router
 
 import (
 	"fmt"
+
 	"net/http"
 	"time"
 
+	_ "gitlab.zcorp.cc/pangu/cne-api/internal/app/router/base"
+	"gitlab.zcorp.cc/pangu/cne-api/internal/app/router/factory"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/validator"
 
 	"github.com/gin-gonic/gin"
@@ -123,6 +126,8 @@ func Config(r *gin.Engine) {
 		api.POST("/solution/external/validate", ValidExternalForm)
 	}
 
+	factory.ApplyRoutes(api)
+
 	r.NoMethod(func(c *gin.Context) {
 		msg := fmt.Sprintf("not found: %v", c.Request.Method)
 		renderMessage(c, http.StatusBadRequest, msg)
@@ -131,4 +136,5 @@ func Config(r *gin.Engine) {
 		msg := fmt.Sprintf("not found: %v", c.Request.URL.Path)
 		renderMessage(c, http.StatusBadRequest, msg)
 	})
+
 }

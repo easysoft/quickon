@@ -27,6 +27,8 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/cron"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/helm"
+
+	_ "gitlab.zcorp.cc/pangu/cne-api/internal/ext"
 )
 
 const (
