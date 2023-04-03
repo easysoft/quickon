@@ -6,12 +6,11 @@ package router
 
 import (
 	"fmt"
-
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/ext/router/factory"
 	"net/http"
 	"time"
 
 	_ "gitlab.zcorp.cc/pangu/cne-api/internal/app/router/base"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/router/factory"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/validator"
 
 	"github.com/gin-gonic/gin"

@@ -2,7 +2,7 @@ package base
 
 import (
 	"github.com/gin-gonic/gin"
-	"gitlab.zcorp.cc/pangu/cne-api/internal/app/router/factory"
+	"gitlab.zcorp.cc/pangu/cne-api/pkg/ext/router/factory"
 	"net/http"
 )
 

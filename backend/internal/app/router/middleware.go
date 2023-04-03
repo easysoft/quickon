@@ -20,6 +20,8 @@ import (
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/logging"
 )
 
+const DefaultAPIToken = "gwaN4KynqNqQoPD7eN8s"
+
 // Cors cors middleware
 func Cors() gin.HandlerFunc {
 	return func(c *gin.Context) {
@@ -49,11 +51,11 @@ func getToken(c *gin.Context) string {
 		return strings.Split(token, " ")[1]
 	}
 	// 2. Token 永久token
-	token = c.Request.Header.Get(constant.Token)
+	token = c.Request.Header.Get(constant.TokenHeader)
 	if len(token) > 0 {
 		return token
 	}
-	return c.Query(constant.Token)
+	return c.Query(constant.TokenHeader)
 }
 
 // auth auth middleware
@@ -67,7 +69,7 @@ func Auth() gin.HandlerFunc {
 		}
 		// TODO 简单判断token是否一致, 后续支持jwt
 		tokenValid := getToken(c)
-		tokenDefault := environ.GetEnv("CNE_API_TOKEN", "gwaN4KynqNqQoPD7eN8s")
+		tokenDefault := environ.GetEnv("CNE_API_TOKEN", constant.DefaultToken)
 		if tokenValid != tokenDefault {
 			renderMessage(c, http.StatusUnauthorized, "token is empty")
 			c.Abort()
