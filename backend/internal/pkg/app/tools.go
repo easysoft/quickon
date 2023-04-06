@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -30,26 +31,36 @@ func parseModel(data interface{}) (*ServerInfo, error) {
 }
 
 func parseHttpServer(protocol, host, username, password string) (*httplib.HTTPServer, retcode.RetCode, error) {
-	if protocol != "http" && protocol != "https" {
-		return nil, retcode.UnSupportSchema, fmt.Errorf("unsupport protocol '%s'", protocol)
+	var h string
+
+	if strings.HasPrefix(host, "http") {
+		h = host
+	} else {
+		// Match invalid host like
+		if !regHost.MatchString(host) {
+			return nil, retcode.InvalidHost, fmt.Errorf("invalid host %s", host)
+		}
+
+		if protocol == "" {
+			h = "https" + "://" + host
+		} else {
+			h = protocol + "://" + host
+		}
 	}
 
-	if !regHost.MatchString(host) {
-		return nil, retcode.InvalidHost, fmt.Errorf("invalid host '%s'", host)
+	u, err := url.Parse(h)
+	if err != nil {
+		return nil, retcode.InvalidHost, err
 	}
-
-	hostFrames := strings.Split(host, ":")
 	s := httplib.HTTPServer{
-		Schema:   protocol,
-		Host:     hostFrames[0],
+		Schema:   u.Scheme,
+		Host:     u.Hostname(),
+		Port:     u.Port(),
 		Username: username,
 		Password: password,
 		Debug:    true,
 	}
 
-	if len(hostFrames) > 1 {
-		s.Port = hostFrames[1]
-	}
 	return &s, retcode.OK, nil
 }
 
