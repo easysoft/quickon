@@ -934,7 +934,10 @@ class systemModel extends model
         if(empty($infos['uid'])) return "Fail: Can not find k8s uid information";
 
         $md5 = md5($this->config->global->sn);
+        $systemDebug = $this->config->debug;
+        $this->config->debug = false;
         $encrypted = @openssl_encrypt(json_encode($infos), 'DES-CBC', substr($md5, 0, 8));
+        $this->config->debug = $systemDebug;
         return $encrypted;
     }
 }
