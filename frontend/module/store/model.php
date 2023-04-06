@@ -170,7 +170,7 @@ class storeModel extends model
      */
     public function platformLatestVersion()
     {
-        $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, 'qucheng', $this->config->cloud->api->channel);
+        $versionList = $this->getUpgradableVersions($this->config->platformVersion, 0, $this->config->edition == 'open' ? 'qucheng' : 'qucheng-biz', $this->config->cloud->api->channel);
 
         $latestVersion = $this->pickHighestVersion($versionList);
         if(!empty($latestVersion) && version_compare(str_replace('-', '.', $latestVersion->version), str_replace('-', '.', $this->config->platformVersion), '>')) return $latestVersion;

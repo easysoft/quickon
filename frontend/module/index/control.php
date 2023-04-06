@@ -33,6 +33,8 @@ class index extends control
      */
     public function index($open = '')
     {
+        if($this->config->edition != 'open') $this->loadModel('system')->checkOutdate();
+
         $this->view->title         = $this->lang->index->common;
         $this->view->open          = helper::safe64Decode($open);
         $this->view->shouldUpgrade = version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>');
