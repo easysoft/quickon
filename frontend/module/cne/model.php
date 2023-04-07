@@ -747,9 +747,11 @@ class cneModel extends model
      */
     public function getAppLogs($instance)
     {
+        $defaultSpace = $this->loadModel('space')->defaultSpace($this->app->user->account);
+
         $apiparams = new stdclass;
         $apiparams->cluster      = '';
-        $apiparams->namespace    = !empty($instance->spacedata->k8space) ? $instance->spacedata->k8space : 'default';
+        $apiparams->namespace    = !empty($instance->spacedata->k8space) ? $instance->spacedata->k8space : $defaultSpace->k8space;
         $apiparams->name         = $instance->k8name;
 
         $apiurl = "/api/cne/app/logs";
