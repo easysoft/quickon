@@ -20,7 +20,7 @@ func TestHost(t *testing.T) {
 		{ServerInfo: ServerInfo{Protocol: "http", Host: "abc.com"}, ExpectErr: false, ExpectCode: retcode.OK, ExpectSchema: "http"},
 		{ServerInfo: ServerInfo{Protocol: "", Host: "abc.com"}, ExpectErr: false, ExpectCode: retcode.OK, ExpectSchema: "https"},
 		{ServerInfo: ServerInfo{Protocol: "https", Host: "abc.com:8080"}, ExpectErr: false, ExpectCode: retcode.OK, ExpectSchema: "https"},
-		{ServerInfo: ServerInfo{Protocol: "http", Host: "http://abc.com"}, ExpectErr: false, ExpectCode: retcode.OK, ExpectSchema: "http"},
+		{ServerInfo: ServerInfo{Protocol: "http", Host: "http://abc.com/"}, ExpectErr: true, ExpectCode: retcode.InvalidHost, ExpectSchema: "http"},
 		{ServerInfo: ServerInfo{Protocol: "ftp", Host: "https://abc.com"}, ExpectErr: false, ExpectCode: retcode.OK, ExpectSchema: "https"},
 		{ServerInfo: ServerInfo{Protocol: "https", Host: "ftp://abc.com"}, ExpectErr: true, ExpectCode: retcode.InvalidHost, ExpectSchema: ""},
 	}
@@ -36,6 +36,8 @@ func TestHost(t *testing.T) {
 		assert.Equal(t, s.ExpectCode, code)
 		if s.ExpectCode != retcode.OK {
 			assert.Nil(t, h)
+		} else {
+			assert.Equal(t, s.ExpectSchema, h.Schema)
 		}
 	}
 }

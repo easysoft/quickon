@@ -31,16 +31,16 @@ func parseModel(data interface{}) (*ServerInfo, error) {
 }
 
 func parseHttpServer(protocol, host, username, password string) (*httplib.HTTPServer, retcode.RetCode, error) {
+	// Match invalid host like
+	if !regHost.MatchString(host) {
+		return nil, retcode.InvalidHost, fmt.Errorf("invalid host %s", host)
+	}
+
 	var h string
 
 	if strings.HasPrefix(host, "http") {
 		h = host
 	} else {
-		// Match invalid host like
-		if !regHost.MatchString(host) {
-			return nil, retcode.InvalidHost, fmt.Errorf("invalid host %s", host)
-		}
-
 		if protocol == "" {
 			h = "https" + "://" + host
 		} else {
@@ -64,18 +64,4 @@ func parseHttpServer(protocol, host, username, password string) (*httplib.HTTPSe
 	return &s, retcode.OK, nil
 }
 
-var regHost = regexp.MustCompile(`^[^/?#]*$`)
-
-func validHttpServer(s *httplib.HTTPServer) (retcode.RetCode, error) {
-	if s.Schema != "http" && s.Schema != "https" {
-		return retcode.UnSupportSchema, fmt.Errorf("unsupport schema '%s'", s.Schema)
-	}
-
-	fmt.Printf("host: %+v", s)
-	if !regHost.MatchString(s.Host) {
-		return retcode.InvalidHost, fmt.Errorf("invalid host '%s'", s.Host)
-	}
-	fmt.Println(110)
-
-	return retcode.OK, nil
-}
+var regHost = regexp.MustCompile(`^(:?https?://)?[^/?#]*$`)
