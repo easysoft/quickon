@@ -33,7 +33,11 @@ class index extends control
      */
     public function index($open = '')
     {
-        if($this->config->edition != 'open') $this->loadModel('system')->checkOutdate();
+        if($this->config->edition != 'open')
+        {
+            if(empty($_SESSION['k8stag'])) $this->session->set('k8stag', $this->loadModel('system')->getK8sTag());
+            $this->loadModel('system')->checkOutdate();
+        }
 
         $this->view->title         = $this->lang->index->common;
         $this->view->open          = helper::safe64Decode($open);
