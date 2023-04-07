@@ -79,7 +79,7 @@ $(function()
                 $('.error-message').text(errMessage);
             }
         });
-    }, 2000);
+    }, 4000);
 
     $('#cancelInstallBtn').on('click', function()
     {
