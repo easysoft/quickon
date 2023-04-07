@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -30,41 +31,37 @@ func parseModel(data interface{}) (*ServerInfo, error) {
 }
 
 func parseHttpServer(protocol, host, username, password string) (*httplib.HTTPServer, retcode.RetCode, error) {
-	if protocol != "http" && protocol != "https" {
-		return nil, retcode.UnSupportSchema, fmt.Errorf("unsupport protocol '%s'", protocol)
-	}
-
+	// Match invalid host like
 	if !regHost.MatchString(host) {
-		return nil, retcode.InvalidHost, fmt.Errorf("invalid host '%s'", host)
+		return nil, retcode.InvalidHost, fmt.Errorf("invalid host %s", host)
 	}
 
-	hostFrames := strings.Split(host, ":")
+	var h string
+
+	if strings.HasPrefix(host, "http") {
+		h = host
+	} else {
+		if protocol == "" {
+			h = "https" + "://" + host
+		} else {
+			h = protocol + "://" + host
+		}
+	}
+
+	u, err := url.Parse(h)
+	if err != nil {
+		return nil, retcode.InvalidHost, err
+	}
 	s := httplib.HTTPServer{
-		Schema:   protocol,
-		Host:     hostFrames[0],
+		Schema:   u.Scheme,
+		Host:     u.Hostname(),
+		Port:     u.Port(),
 		Username: username,
 		Password: password,
 		Debug:    true,
 	}
 
-	if len(hostFrames) > 1 {
-		s.Port = hostFrames[1]
-	}
 	return &s, retcode.OK, nil
 }
 
-var regHost = regexp.MustCompile(`^[^/?#]*$`)
-
-func validHttpServer(s *httplib.HTTPServer) (retcode.RetCode, error) {
-	if s.Schema != "http" && s.Schema != "https" {
-		return retcode.UnSupportSchema, fmt.Errorf("unsupport schema '%s'", s.Schema)
-	}
-
-	fmt.Printf("host: %+v", s)
-	if !regHost.MatchString(s.Host) {
-		return retcode.InvalidHost, fmt.Errorf("invalid host '%s'", s.Host)
-	}
-	fmt.Println(110)
-
-	return retcode.OK, nil
-}
+var regHost = regexp.MustCompile(`^(:?https?://)?[^/?#]*$`)

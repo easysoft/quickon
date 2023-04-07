@@ -11,6 +11,10 @@
  */
 ?>
 <?php include $this->app->getModuleRoot() . '/common/view/header.html.php';?>
+<?php
+css::import($jsRoot . 'xterm/css/xterm.css');
+js::import($jsRoot . 'xterm/lib/xterm.js');
+?>
 <?php js::set('solutionID', $solution->id);?>
 <?php js::set('hasError', !in_array($solution->status, array('installing', 'installed', 'finish')));?>
 <?php js::set('notices', $lang->solution->notices);?>
@@ -35,6 +39,8 @@
           <div class='step-title'><span id='<?php echo $cloudApp->alias;?>-status'></span><?php echo $cloudApp->alias;?></div>
         </div>
         <?php endforeach;?>
+      </div>
+      <div id='terminal'>
       </div>
       <div class='text-center'>
         <span class='progress load-indicator loading'></span>

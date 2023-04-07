@@ -2,5 +2,6 @@ go 1.18
 
 use (
 	.
+	staging/src/git.zcorp.cc/pangu/cne-api-ext
 	staging/src/gitlab.zcorp.cc/pangu/app-sdk
 )

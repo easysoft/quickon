@@ -38,7 +38,7 @@
       </thead>
       <tbody class='text-center'>
         <tr>
-          <td><?php echo $lang->quchengPlatform;?></td>
+          <td><?php echo $lang->quchengPlatform . ($config->edition == 'open' ? $lang->pmsName : $lang->bizName);?></td>
           <td><?php echo $lang->backup->running;?></td>
           <td><?php echo getenv('APP_VERSION');?></td>
           <td>

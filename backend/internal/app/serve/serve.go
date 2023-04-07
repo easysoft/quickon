@@ -23,6 +23,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	_ "git.zcorp.cc/pangu/cne-api-ext/ext"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/app/router"
 	"gitlab.zcorp.cc/pangu/cne-api/internal/pkg/kube/cluster"
 	"gitlab.zcorp.cc/pangu/cne-api/pkg/cron"
@@ -64,6 +65,7 @@ func Serve(ctx context.Context, logger logrus.FieldLogger) error {
 	cr.Add("@midnight", func() {
 		job.LoadJob()
 	})
+	cr.LoadExtra()
 	cr.Start()
 
 	// apply patches

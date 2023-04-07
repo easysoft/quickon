@@ -453,6 +453,9 @@ class user extends control
                 /* Set user group, rights, view and aword login score. */
                 $user = $this->user->login($user);
 
+                if(empty($this->config->global->sn)) $this->loadModel('setting')->setSN();
+                $this->session->set('k8stag', $this->loadModel('system')->getK8sTag());
+
                 /* Go to the referer. */
                 if($this->post->referer and strpos($this->post->referer, $loginLink) === false and strpos($this->post->referer, $denyLink) === false and strpos($this->post->referer, 'block') === false)
                 {

@@ -75,7 +75,7 @@ class spaceModel extends model
     {
         $default = new stdclass;
         $default->name      = $this->lang->space->defaultSpace;
-        $default->k8space   = 'default';
+        $default->k8space   = 'quickon-app';
         $default->owner     = $account;
         $default->default   = true;
         $default->createdAt = date('Y-m-d H:i:s');

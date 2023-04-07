@@ -214,6 +214,7 @@ class solution extends control
     public function ajaxProgress($id)
     {
         $solution = $this->solution->getByID($id);
+        $logs     = array();
         if(in_array($solution->status, array('installing', 'installed')))
         {
             $result  = 'success';
@@ -227,6 +228,23 @@ class solution extends control
                     $result  = 'fail';
                     $message = $this->lang->solution->errors->timeout;
                 }
+
+                if($result == 'success')
+                {
+                    $components     = json_decode($solution->components);
+                    foreach($components as $categorty => $componentApp)
+                    {
+                        if($componentApp->status == 'installing')
+                        {
+                            $instance = $this->loadModel('instance')->instanceOfSolution($solution, $componentApp->chart);
+                            if($instance)
+                            {
+                                $chartLogs = $this->loadModel('cne')->getAppLogs($instance);
+                                $logs[$componentApp->chart] = !empty($chartLogs->data) ? $chartLogs->data : array();
+                            }
+                        }
+                    }
+                }
             }
         }
         else
@@ -235,6 +253,6 @@ class solution extends control
             $message = zget($this->lang->solution->installationErrors, $solution->status, $this->lang->solution->errors->hasInstallationError);
         }
 
-        $this->send(array('result' => $result, 'message' => $message, 'data' => json_decode($solution->components)));
+        $this->send(array('result' => $result, 'message' => $message, 'data' => json_decode($solution->components), 'logs' => $logs));
     }
 }

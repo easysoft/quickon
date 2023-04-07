@@ -618,17 +618,17 @@ class cneModel extends model
      * @access public
      * @return object
      */
-    public function restoreStatus($instance, $restore)
+    public function restorestatus($instance, $restore)
     {
-        $apiParams = new stdclass;
-        $apiParams->cluster      = '';
-        $apiParams->namespace    = $instance->spaceData->k8space;
-        $apiParams->name         = $instance->k8name;
-        $apiParams->restore_name = $restore->restoreName;
-        $apiParams->channel      = empty($instance->channel) ? $this->config->CNE->api->channel : $instance->channel;
+        $apiparams = new stdclass;
+        $apiparams->cluster      = '';
+        $apiparams->namespace    = $instance->spacedata->k8space;
+        $apiparams->name         = $instance->k8name;
+        $apiparams->restore_name = $restore->restorename;
+        $apiparams->channel      = empty($instance->channel) ? $this->config->cne->api->channel : $instance->channel;
 
-        $apiUrl = "/api/cne/app/restore/status";
-        return $this->apiGet($apiUrl, $apiParams, $this->config->CNE->api->headers);
+        $apiurl = "/api/cne/app/restore/status";
+        return $this->apiget($apiurl, $apiparams, $this->config->cne->api->headers);
     }
 
     /**
@@ -736,6 +736,26 @@ class cneModel extends model
 
         $apiUrl = "/api/cne/app/uninstall";
         return $this->apiPost($apiUrl, $apiParams, $this->config->CNE->api->headers);
+    }
+
+    /**
+     * Get app install logs.
+     *
+     * @param object $instance
+     * @access public
+     * @return object
+     */
+    public function getAppLogs($instance)
+    {
+        $defaultSpace = $this->loadModel('space')->defaultSpace($this->app->user->account);
+
+        $apiparams = new stdclass;
+        $apiparams->cluster      = '';
+        $apiparams->namespace    = !empty($instance->spacedata->k8space) ? $instance->spacedata->k8space : $defaultSpace->k8space;
+        $apiparams->name         = $instance->k8name;
+
+        $apiurl = "/api/cne/app/logs";
+        return $this->apiget($apiurl, $apiparams, $this->config->CNE->api->headers);
     }
 
     /**

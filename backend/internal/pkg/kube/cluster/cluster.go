@@ -161,7 +161,7 @@ func (c *clusterManage) validSecret(secret *v1.Secret) (string, bool) {
 // addClusterBySecret add new cluster on program starting or a secret created
 // the duplicate cluster will be ignored
 func (c *clusterManage) addClusterBySecret(obj interface{}) {
-	c.logger.Info("trigger add event")
+	c.logger.Debug("trigger add event")
 	secret := obj.(*v1.Secret)
 	clusterName, isValid := c.validSecret(secret)
 	if !isValid {

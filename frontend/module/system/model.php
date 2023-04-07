@@ -892,5 +892,52 @@ class systemModel extends model
 
         echo $buttonHtml;
     }
-}
 
+    public function getK8sTag()
+    {
+        $serviceAccount = '/var/run/secrets/kubernetes.io/serviceaccount';
+        if(!is_dir($serviceAccount)) return "Fail: Please run script in k8s.";
+
+        $nameSpace = file_get_contents($serviceAccount . '/namespace');
+
+        $apiServer = empty($_POST['apiServer']) ? 'https://kubernetes.default.svc' : $_POST['apiServer'];
+        $token     = file_get_contents($serviceAccount . '/token');
+        $cacert    = $serviceAccount . '/ca.crt';
+
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, "$apiServer/api/v1/namespaces/{$nameSpace}/serviceaccounts/default");
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_CAINFO, $cacert);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, array("Authorization: Bearer $token"));
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'GET');
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLINFO_HEADER_OUT, true);
+        $response = curl_exec($curl);
+        $errors   = curl_error($curl);
+        curl_close($curl);
+
+        if($errors) return "Fail: " . $errors;
+
+        $serviceAccounts = json_decode($response);
+        if(empty($serviceAccounts->metadata->uid))
+        {
+            if($serviceAccounts->code == '403') return $this->lang->misc->k8s->repairNotice;
+            return "Fail: " . $response;
+        }
+
+        $infos = array();
+        $infos['apiServer']  = $apiServer;
+        $infos['nameSpace']  = $nameSpace;
+        $infos['uid']        = '';
+        if(isset($serviceAccounts->metadata->uid)) $infos['uid'] = $serviceAccounts->metadata->uid;
+
+        if(empty($infos['uid'])) return "Fail: Can not find k8s uid information";
+
+        $md5 = md5($this->config->global->sn);
+        $systemDebug = $this->config->debug;
+        $this->config->debug = false;
+        $encrypted = @openssl_encrypt(json_encode($infos), 'DES-CBC', substr($md5, 0, 8));
+        $this->config->debug = $systemDebug;
+        return $encrypted;
+    }
+}

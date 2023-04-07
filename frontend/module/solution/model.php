@@ -181,6 +181,9 @@ class solutionModel extends model
             /* If not install. */
             if(!$instance)
             {
+                $componentApp->status = 'installing';
+                $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
+
                 $cloudApp = $this->store->getAppInfo($componentApp->id, false, '', $componentApp->version, $channel);
                 if(!$cloudApp)
                 {
@@ -218,9 +221,6 @@ class solutionModel extends model
                     return false;
                 }
                 $this->dao->update(TABLE_INSTANCE)->set('solution')->eq($solutionID)->where('id')->eq($instance->id)->exec();
-
-                $componentApp->status = 'installing';
-                $this->dao->update(TABLE_SOLUTION)->set('components')->eq(json_encode($components))->where('id')->eq($solution->id)->exec();
             }
 
             if($componentApp->external)

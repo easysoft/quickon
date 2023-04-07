@@ -23,7 +23,6 @@ const OK RetCode = 200
 // Define app errors
 
 // Define system errors
-
 const (
 	ExpiredCertificate         RetCode = iota + 41001 // 证书过期
 	UnmatchedCertificate                              // 证书不匹配
@@ -31,6 +30,9 @@ const (
 	InvalidCertKeyPair                                // 私钥与证书不匹配
 	ParseCertificate                                  // 证书解析失败
 	ParsePrivateKey                                   // 密钥解析失败
+	DecodeLicenseFailed                               // 解析license失败
+	UnrecognizableLicense                             // 无法识别的license
+	ExpiredLicense                                    // license 过期
 )
 
 // Define solution app form errors

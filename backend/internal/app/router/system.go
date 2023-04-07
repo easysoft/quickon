@@ -372,6 +372,25 @@ func ReadTLSInfo(c *gin.Context) {
 	renderJson(c, http.StatusOK, info)
 }
 
+func AuthorizeLicense(c *gin.Context) {
+	var (
+		err  error
+		ctx  = c.Request.Context()
+		body struct {
+			EncodedData string `json:"encoded_data"`
+		}
+	)
+	logger := getLogger(ctx)
+
+	if err = c.ShouldBindJSON(&body); err != nil {
+		logger.WithError(err).Error("failed to bind json data")
+		renderError(c, http.StatusBadRequest, err)
+		return
+	}
+
+	renderSuccess(c, http.StatusOK)
+}
+
 func translateError(e error) int {
 	var code = retcode.DefaultCode
 	if errors.Is(e, utiltls.ErrUnmatchedCertificate) {

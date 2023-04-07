@@ -33,6 +33,14 @@ func (c *Client) Add(spec string, cmd func()) error {
 	return err
 }
 
+func (c *Client) AddWithRun(spec string, cmd func()) error {
+	cmd()
+
+	id, err := c.client.AddFunc(spec, cmd)
+	c.logger.Infof("add cron: %v", id)
+	return err
+}
+
 func (c *Client) Stop() {
 	c.logger.Info("stop cron tasks")
 	c.client.Stop()

@@ -32,3 +32,7 @@ test/
 .history
 frontend/tmp/log/logs
 frontend/logs
+
+# ignore ext devel code
+backend/staging/src/git.zcorp.cc/pangu/cne-api-ext/ext/*/**
+backend/staging/src/git.zcorp.cc/pangu/cne-api-ext/ext/load.go
