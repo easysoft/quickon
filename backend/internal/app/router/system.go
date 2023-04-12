@@ -7,6 +7,7 @@ package router
 import (
 	"crypto/tls"
 	"fmt"
+	"github.com/ergoapi/util/environ"
 	"net"
 	"net/http"
 	"net/smtp"
@@ -38,6 +39,17 @@ func SystemUpdate(c *gin.Context) {
 		return
 	}
 
+	var quchengChartName = "qucheng"
+	var quchengReleaseName = "qucheng"
+
+	edition := environ.GetEnv("QUICKON_EDITION")
+	if edition == "biz" {
+		quchengChartName = "qucheng-biz"
+		podName := environ.GetEnv("POD_NAME")
+		frames := strings.Split(podName, "-")
+		quchengReleaseName = strings.Join(frames[0:len(frames)-2], "-")
+	}
+
 	blankSnippet := make(map[string]interface{})
 	runtimeNs := viper.GetString(constant.FlagRuntimeNamespace)
 
@@ -57,14 +69,14 @@ func SystemUpdate(c *gin.Context) {
 	}
 	logger.WithField("channel", body.Channel).Info("update operator chart success")
 
-	qcApp, err := service.Apps(ctx, "", runtimeNs).GetApp("qucheng")
+	qcApp, err := service.Apps(ctx, "", runtimeNs).GetApp(quchengReleaseName)
 	if err != nil {
 		logger.WithError(err).Error("get qucheng app failed")
 		renderError(c, http.StatusInternalServerError, err)
 		return
 	}
 
-	if err = qcApp.PatchSettings(qcApp.ChartName, model.AppCreateOrUpdateModel{
+	if err = qcApp.PatchSettings(quchengChartName, model.AppCreateOrUpdateModel{
 		Version: body.Version, Channel: body.Channel,
 	}, blankSnippet, nil); err != nil {
 		logger.WithError(err).WithField("channel", body.Channel).Errorf("update qucheng chart to version %s failed", body.Version)

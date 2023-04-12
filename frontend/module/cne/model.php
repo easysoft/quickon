@@ -753,6 +753,7 @@ class cneModel extends model
         $apiparams->cluster      = '';
         $apiparams->namespace    = !empty($instance->spacedata->k8space) ? $instance->spacedata->k8space : $defaultSpace->k8space;
         $apiparams->name         = $instance->k8name;
+        $apiparams->tail         = 500;
 
         $apiurl = "/api/cne/app/logs";
         return $this->apiget($apiurl, $apiparams, $this->config->CNE->api->headers);
