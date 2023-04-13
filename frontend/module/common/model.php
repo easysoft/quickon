@@ -2017,7 +2017,7 @@ EOT;
 
         $module = $this->app->getModuleName();
         $method = $this->app->getMethodName();
-        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade' || $module == 'navigation') return;
+        if($module == 'index' || $module == 'tutorial' || $module == 'install' || $module == 'upgrade' || $module == 'navigation' || ($module == 'system' and in_array($method, array('installdevops', 'progressdevops')))) return;
 
         if($this->isNotIframeMethod($module, $method)) return;
 

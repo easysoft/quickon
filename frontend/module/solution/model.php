@@ -43,8 +43,20 @@ class solutionModel extends model
     {
         return $this->dao->select('*')->from(TABLE_SOLUTION)
             ->where('deleted')->eq(0)
+            ->andWhere('name')->ne('system devops')
             ->beginIF($keyword)->andWhere('name')->like($keyword)->fi()
             ->orderBy('createdAt desc')->fetchAll();
+    }
+
+    /**
+     * Get system devops.
+     *
+     * @access public
+     * @return void
+     */
+    public function getDevops()
+    {
+        return $this->dao->select('*')->from(TABLE_SOLUTION)->where('name')->eq('system devops')->andWhere('deleted')->eq(0)->fetch();
     }
 
     /**
@@ -68,7 +80,7 @@ class solutionModel extends model
      * @access public
      * @return object
      */
-    public function create($cloudSolution, $components)
+    public function create($cloudSolution, $components, $name = '')
     {
         $postedCharts = $this->session->solutionCharts == '' ? fixer::input('post')->get() : $this->session->solutionCharts;
 
@@ -84,7 +96,7 @@ class solutionModel extends model
 
         /* Create solution. */
         $solution = new stdclass;
-        $solution->name         = $cloudSolution->title;
+        $solution->name         = $name ? $name : $cloudSolution->title;
         $solution->appID        = $cloudSolution->id;
         $solution->appName      = $cloudSolution->name;
         $solution->appVersion   = $cloudSolution->app_version;

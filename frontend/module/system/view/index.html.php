@@ -56,6 +56,12 @@
           <span class='plug-title text-center'><?php echo $lang->system->SLB->common;?></span>
         </a>
       </div>
+      <div class='text-center col-xs-6 col-sm-3 col-md-2 col-lg-2'>
+        <a class='cell' href='<?php echo helper::createLink('system', 'devopsView');?>'>
+          <span class='logo devops-logo'><img src='/theme/default/images/main/devops.png' /></span><br/>
+          <span class='plug-title text-center'><?php echo $lang->system->devops->common;?></span>
+        </a>
+      </div>
       <?php if($config->edition == 'biz'):?>
       <div class='text-center col-xs-6 col-sm-3 col-md-2 col-lg-2'>
         <a class='cell' href='<?php echo helper::createLink('system', 'license');?>'>

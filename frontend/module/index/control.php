@@ -39,6 +39,10 @@ class index extends control
             $this->loadModel('system')->checkOutdate();
         }
 
+        $devops = $this->loadModel('solution')->getDevops('devops');
+        if(!$devops) $this->locate($this->createLink('system', 'installDevops'));
+        if($devops and $devops->status != 'installed') $this->locate($this->createLink('system', 'progressDevops', "id={$devops->id}"));
+
         $this->view->title         = $this->lang->index->common;
         $this->view->open          = helper::safe64Decode($open);
         $this->view->shouldUpgrade = version_compare($this->session->platformLatestVersion->version, $this->config->platformVersion, '>');

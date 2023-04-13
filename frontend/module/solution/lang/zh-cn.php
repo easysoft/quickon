@@ -15,6 +15,7 @@ $lang->solution->uninstall     = '卸载';
 $lang->solution->retryInstall  = '重试';
 $lang->solution->nextStep      = '下一步';
 $lang->solution->config        = '配置';
+$lang->solution->upgrade       = '升级';
 
 $lang->solution->introduction = '基本介绍';
 $lang->solution->scenes       = '适用场景';
