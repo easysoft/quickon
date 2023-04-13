@@ -26,7 +26,7 @@
       <tbody>
         <?php foreach($components as $category => $component):?>
         <tr>
-          <th><?php echo $category;?></th>
+          <th><?php echo $lang->system->devops->category[$category];?></th>
           <td>
             <?php $canVisit = $this->instance->canDo('visit', $component->instance);?>
             <?php echo html::a($this->instance->url($component->instance), $component->instance->name, '_blank', "class='btn btn-primary' title='{$component->instance->name}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
