@@ -24,22 +24,15 @@
     </div>
     <table class='table table-form instance-status'>
       <tbody>
+        <?php foreach($components as $category => $component):?>
         <tr>
-          <th><?php echo $lang->system->oss->apiURL;?></th>
-          <td><?php echo zget($ossDomain->extra_hosts, 'api', '');?></td>
+          <th><?php echo $category;?></th>
+          <td>
+            <?php $canVisit = $this->instance->canDo('visit', $component->instance);?>
+            <?php echo html::a($this->instance->url($component->instance), $component->instance->name, '_blank', "class='btn btn-primary' title='{$component->instance->name}'". ($canVisit ? '' : ' disabled style="pointer-events: none;"'));?>
           <td></td>
         </tr>
-        <tr>
-          <th><?php echo $lang->system->oss->accessKey;?></th>
-          <td><?php echo $ossAccount->username;?></td>
-        </tr>
-        <tr>
-          <th><?php echo $lang->system->oss->secretKey;?></th>
-          <td>
-            <input id='ossSK' class='hidden' value='<?php echo $ossAccount->password;?>' />
-            <?php echo html::commonButton($lang->system->copy, "id='copySKBtn'");?>
-          </td>
-        </tr>
+        <?php endforeach;?>
       </tbody>
     </table>
   </div>
