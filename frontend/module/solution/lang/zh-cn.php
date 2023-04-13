@@ -14,6 +14,7 @@ $lang->solution->cancelInstall = '取消安装';
 $lang->solution->uninstall     = '卸载';
 $lang->solution->retryInstall  = '重试';
 $lang->solution->nextStep      = '下一步';
+$lang->solution->prevStep      = '上一步';
 $lang->solution->config        = '配置';
 $lang->solution->upgrade       = '升级';
 
