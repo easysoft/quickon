@@ -107,9 +107,14 @@ $lang->system->SLB->leftSeconds   = '预计剩余';
 $lang->system->SLB->second        = '秒';
 
 $lang->system->devops = new stdclass;
-$lang->system->devops->common = 'DevOps模块';
-$lang->system->devops->peizhi = 'DevOps配置';
+$lang->system->devops->common    = 'DevOps模块';
+$lang->system->devops->peizhi    = 'DevOps配置';
 $lang->system->devops->selectPms = '请选择禅道版本';
+
+$lang->system->devops->category['pms']      = '项目管理';
+$lang->system->devops->category['analysis'] = '代码扫描';
+$lang->system->devops->category['ci']       = '流水线引擎';
+$lang->system->devops->category['git']      = '源代码管理';
 
 $lang->system->notices = new stdclass;
 $lang->system->notices->success               = '成功';
