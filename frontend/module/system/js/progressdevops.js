@@ -61,7 +61,7 @@ $(function()
                 if(installed)
                 {
                     $('.progress-message').text(notices.installationSuccess);
-                    parent.window.location.href = createLink('system', 'devopsView', 'id=' + solutionID);
+                    parent.window.location.href = createLink('my', 'index');
                 }
             }
             else
