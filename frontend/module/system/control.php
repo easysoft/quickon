@@ -524,7 +524,18 @@ class system extends control
      */
     public function devopsView()
     {
-        $solution = $this->solution->getDevops();
+        $this->loadModel('instance');
+
+        $solution   = $this->loadModel('solution')->getDevops();
+        $components = json_decode($solution->components);
+        foreach($components as $category => $component)
+        {
+            $component->instance = $this->dao->select('*')->from(TABLE_INSTANCE)->where('solution')->eq($solution->id)->andWhere('chart')->eq($component->chart)->fetch();
+        }
+
+        $this->view->title      = $this->lang->system->devops->common;
+        $this->view->solution   = $solution;
+        $this->view->components = $components;
         $this->display();
     }
 
@@ -567,7 +578,7 @@ class system extends control
             }
         }
 
-        $this->view->title         = $this->lang->system->devops->common;
+        $this->view->title         = $this->lang->system->devops->peizhi;
         $this->view->step          = $step;
         $this->view->cloudSolution = $cloudSolution;
         $this->view->components    = $components;
@@ -585,7 +596,7 @@ class system extends control
     {
         $solution  = $this->loadModel('solution')->getByID($id);
 
-        $this->view->title    = $this->lang->system->devops->common;
+        $this->view->title    = $this->lang->system->devops->peizhi;
         $this->view->solution = $solution;
         $this->display();
     }

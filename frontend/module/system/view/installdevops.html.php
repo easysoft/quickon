@@ -18,7 +18,7 @@
 <div class='modal-dialog'>
 <div class='modal-body'>
     <div>
-      <h2><?php echo $lang->system->devops->common;?></h2>
+      <h2><?php echo $lang->system->devops->peizhi;?></h2>
     </div>
     <form id='installForm' method='post' class='form not-watch'>
       <table class='table table-form'>

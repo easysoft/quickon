@@ -13,7 +13,7 @@ js::import($jsRoot . 'xterm/lib/xterm.js');
 <div class='modal-dialog'>
 <div class='modal-body'>
     <div class='solution-progress'>
-      <h2><?php echo $lang->system->devops->common;?></h2>
+      <h2><?php echo $lang->system->devops->peizhi;?></h2>
       <div class='text-center'>
         <?php $components = json_decode($solution->components);?>
         <?php $order =0;?>
