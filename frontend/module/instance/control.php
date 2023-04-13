@@ -360,13 +360,23 @@ class instance extends control
      * Install app.
      *
      * @param  int    $appID
+     * @param  bool   $checkExist
      * @access public
      * @return void
      */
-    public function install($appID)
+    public function install($appID, $checkExist = true)
     {
         $cloudApp = $this->store->getAppInfo($appID);
         if(empty($cloudApp)) return $this->send(array('result' => 'fail', 'message' => $this->lang->instance->errors->noAppInfo));
+
+        if(empty($_POST) and $checkExist)
+        {
+            $instances = $this->instance->getByChart($cloudApp->chart);
+
+            $this->view->appID     = $appID;
+            $this->view->instances = $instances;
+            if($instances) return $this->display('instance', 'instancecheck');
+        }
 
         if(empty($this->config->demoAccounts))
         {

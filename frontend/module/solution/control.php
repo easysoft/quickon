@@ -129,6 +129,16 @@ class solution extends control
         $this->display();
     }
 
+    public function upgrade($solutionID)
+    {
+        $solution      = $this->solution->getByID($solutionID);
+        $cloudSolution = $this->loadModel('store')->getSolutionByID($solution->appID);
+a($solution);
+        $this->view->cloudSolution = $cloudSolution;
+        $this->view->solution      = $solution;
+        $this->display();
+    }
+
     /**
      * Show installing solution progress.
      *

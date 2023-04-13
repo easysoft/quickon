@@ -517,6 +517,80 @@ class system extends control
     }
 
     /**
+     * Devops view.
+     *
+     * @access public
+     * @return void
+     */
+    public function devopsView()
+    {
+        $solution = $this->solution->getDevops();
+        $this->display();
+    }
+
+    /**
+     * Install devops.
+     *
+     * @access public
+     * @return void
+     */
+    public function installDevops()
+    {
+        $this->loadModel('solution');
+        $step = 1;
+
+        $solutions = $this->loadModel('store')->searchSolutions();
+        foreach($solutions->solutions as $solution)
+        {
+            if($solution->name == 'devops')
+            {
+                $cloudDevops = $solution;
+                break;
+            }
+        }
+        $cloudSolution = $this->loadModel('store')->getSolutionByID($cloudDevops->id);
+        $components    = $this->loadModel('store')->solutionConfigByID($cloudDevops->id);
+
+        if($_POST)
+        {
+            $data = fixer::input('post')->get();
+            if(!empty($data->pms))
+            {
+                $this->session->set('pms', $data->pms);
+                $step = 2;
+            }
+            elseif(!empty($data->git))
+            {
+                $this->session->set('solutionCharts', array('pms' => $this->session->pms, 'git' => $data->git, 'ci' => 'jenkins', 'analysis' => 'sonarqube'));
+                $solution = $this->solution->create($cloudSolution, $components, 'system devops');
+                $this->locate($this->createLink('system', 'progressDevops', "id={$solution->id}"));
+            }
+        }
+
+        $this->view->title         = $this->lang->system->devops->common;
+        $this->view->step          = $step;
+        $this->view->cloudSolution = $cloudSolution;
+        $this->view->components    = $components;
+        $this->display();
+    }
+
+    /**
+     * Show the install progress.
+     *
+     * @param mixed $id
+     * @access public
+     * @return void
+     */
+    public function progressDevops($id)
+    {
+        $solution  = $this->loadModel('solution')->getByID($id);
+
+        $this->view->title    = $this->lang->system->devops->common;
+        $this->view->solution = $solution;
+        $this->display();
+    }
+
+    /**
      * Verify SMTP account by ajax.
      *
      * @access public

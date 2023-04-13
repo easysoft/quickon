@@ -106,6 +106,10 @@ $lang->system->SLB->installing    = '正在配置负载均衡';
 $lang->system->SLB->leftSeconds   = '预计剩余';
 $lang->system->SLB->second        = '秒';
 
+$lang->system->devops = new stdclass;
+$lang->system->devops->common = 'DevOps配置';
+$lang->system->devops->selectPms = '请选择禅道版本';
+
 $lang->system->notices = new stdclass;
 $lang->system->notices->success               = '成功';
 $lang->system->notices->fail                  = '失败';

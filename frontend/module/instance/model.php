@@ -80,6 +80,23 @@ class InstanceModel extends model
     }
 
     /**
+     * Get by chart.
+     *
+     * @param string $chart
+     * @access public
+     * @return object
+     */
+    public function getByChart($chart)
+    {
+        if(strpos($chart, 'zentao') !== false) $chart = array('zentao', 'zentao-biz', 'zentao-max');
+        $instances = $this->dao->select('*')->from(TABLE_INSTANCE)
+            ->where('chart')->in($chart)
+            ->andWhere('deleted')->eq(0)
+            ->fetchAll('id');
+        return $instances;
+    }
+
+    /**
      * Get instance list by solution.
      *
      * @param  object $solution

@@ -4,4 +4,6 @@
 .logo { display: inline-block; padding: 10px;}
 .logo .icon {font-size: 100px; color: #70c0fb;}
 .logo img {width: 100px; height:100px;}
+.devops-logo {height: 100px; display: table-cell; vertical-align: middle;}
+.devops-logo img{width: auto; height: auto;}
 .plug-title {display: inline-block; padding-top: 10px; text-align: center; font-size: 16px; font-weight: 500;}

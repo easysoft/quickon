@@ -63,6 +63,7 @@ $lang->instance->switchTo         = '升级到';
 $lang->instance->or               = '或';
 $lang->instance->hasRead          = '已阅读';
 $lang->instance->stopInstanceTips = '关闭服务后才能升级到高级版！';
+$lang->instance->installConfirm   = '平台已经安装了该应用，仍要继续安装？';
 
 $lang->instance->dbTypes = array();
 $lang->instance->dbTypes['sharedDB']   = '共享数据库';
