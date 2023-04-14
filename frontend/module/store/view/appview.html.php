@@ -16,6 +16,7 @@
 <div id='mainMenu' class='clearfix'>
   <div class="btn-toolbar pull-left">
     <?php echo html::a($this->createLink('store', 'browse'), '<i class="icon icon-back icon-sm"></i> ' . $lang->goback, '', "class='btn btn-secondary'");?>
+    <?php echo html::a($this->createLink('system', 'devopsView'), 'devops', '', 'id="devopsLink" class="text-primary hide" data-app="system"');?>
   </div>
 </div>
 <div id="mainContent" class="main-row">

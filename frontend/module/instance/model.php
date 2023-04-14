@@ -88,7 +88,6 @@ class InstanceModel extends model
      */
     public function getByChart($chart)
     {
-        if(strpos($chart, 'zentao') !== false) $chart = array('zentao', 'zentao-biz', 'zentao-max');
         $instances = $this->dao->select('*')->from(TABLE_INSTANCE)
             ->where('chart')->in($chart)
             ->andWhere('deleted')->eq(0)

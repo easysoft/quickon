@@ -1,0 +1,4 @@
+function goDevops()
+{
+    $('#devopsLink').click();
+}
