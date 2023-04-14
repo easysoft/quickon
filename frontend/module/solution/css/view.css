@@ -1,4 +1,5 @@
 .solution-name {margin-left: 20px; display: inline-block;}
+.solution-version {font-size: 14px; font-weight: bolder; padding: 3px 3px; margin: 0 5px;}
 #uninstallBtn {margin: 20px;}
 .instance-logo img {width: 40px; height: 40px;}
 #solutionContainer .panel {border: 1px solid #dddddd;}
