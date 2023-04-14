@@ -20,6 +20,7 @@
     <div class='row'>
       <div class='col-sm-12'>
         <h3 class='solution-name' title='<?php echo $solution->name;?>'><?php echo $solution->name;?></h3>
+        <span class='solution-version'><?php echo $solution->appVersion;?></span>
         <?php if($solution->name != 'system devops') echo html::a($this->createLink('solution', 'editname', "id=$solution->id", '', true), '<i class="icon-edit"></i>', '', "class='iframe edit-name-icon' title='$lang->edit' data-width='600'");?>
         <div class='pull-right'>
           <?php //echo html::a($this->createLink('solution', 'upgrade', "id=$solution->id", '', true), $lang->solution->upgrade, '', "class='iframe btn btn-primary btn-wide' title='$lang->edit' data-width='600'");?>
