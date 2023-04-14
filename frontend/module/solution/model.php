@@ -43,7 +43,6 @@ class solutionModel extends model
     {
         return $this->dao->select('*')->from(TABLE_SOLUTION)
             ->where('deleted')->eq(0)
-            ->andWhere('name')->ne('system devops')
             ->beginIF($keyword)->andWhere('name')->like($keyword)->fi()
             ->orderBy('createdAt desc')->fetchAll();
     }
