@@ -372,9 +372,11 @@ class instance extends control
         if(empty($_POST) and $checkExist)
         {
             $instances = $this->instance->getByChart($cloudApp->chart);
+            $devops    = $this->loadModel('solution')->getDevops();
 
             $this->view->appID     = $appID;
             $this->view->instances = $instances;
+            $this->view->devops    = $devops;
             if($instances) return $this->display('instance', 'instancecheck');
         }
 
