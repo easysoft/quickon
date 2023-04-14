@@ -12,9 +12,9 @@
         <tr>
           <td>
             <?php if($instance->solution == $devops->id):?>
-            <?php echo html::a('javascript:void(0)', $instance->name, '', 'onclick="window.parent.goDevops()" class="text-primary" data-app="system" target="_top"');?>
+            <?php echo html::a('javascript:void(0)', $instance->name . "（{$instance->appVersion}）", '', 'onclick="window.parent.goDevops()" class="text-primary" data-app="system" target="_top"');?>
             <?php else:?>
-            <?php echo html::a($this->createLink('instance', 'view', 'id=' . $instance->id), $instance->name, '', 'class="text-primary" target="_parent"');?>
+            <?php echo html::a($this->createLink('instance', 'view', 'id=' . $instance->id), $instance->name . "（{$instance->appVersion}）", '', 'class="text-primary" target="_parent"');?>
             <?php endif;?>
           </td>
         </tr>
