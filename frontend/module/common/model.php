@@ -583,6 +583,8 @@ class commonModel extends model
 
         foreach($menuOrder as $key => $group)
         {
+			if(!$app->user->admin && $group == 'solution') continue;
+
             $nav = $lang->mainNav->$group;
             list($title, $currentModule, $currentMethod, $vars) = explode('|', $nav);
 
